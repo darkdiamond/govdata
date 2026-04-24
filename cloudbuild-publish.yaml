@@ -45,7 +45,13 @@ steps:
       - '-c'
       - |
         set -euo pipefail
-        npm ci --prefer-offline --no-audit
+        npm config set fetch-retries 5
+        npm config set fetch-retry-mintimeout 10000
+        for i in 1 2 3; do
+          npm ci --prefer-offline --no-audit && break
+          echo "npm ci retry $i/3"
+          sleep 10
+        done
         npm run generate
 
   # [4] Deploy to Firebase Hosting (firebase-tools is installed per build;
@@ -57,7 +63,13 @@ steps:
       - '-c'
       - |
         set -euo pipefail
-        npm install -g firebase-tools@latest
+        npm config set fetch-retries 5
+        npm config set fetch-retry-mintimeout 10000
+        for i in 1 2 3; do
+          npm install -g firebase-tools@latest && break
+          echo "firebase-tools install retry $i/3"
+          sleep 10
+        done
         firebase deploy \
           --only hosting \
           --project "${_FIREBASE_PROJECT}" \
