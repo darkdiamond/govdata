@@ -27,10 +27,9 @@ Must include (in this order, roughly):
 2. Tag chips — `<div class="flex flex-wrap gap-2 mb-4"><span class="tag-chip">…</span>…</div>`.
 3. AI summary card — 2–3 sentences in a `<section class="card p-5 mb-4">` with a confidence badge.
 4. Metadata + Resources — two cards side by side (grid).
-5. Insights — a `<ul>` of 1–3 bullets.
+5. Insights — a `<ul>` of as many bullets as the data genuinely supports (1 minimum, no upper cap). Don't pad with filler — a thin dataset with one real finding gets one bullet.
 6. **Data Explorer** — your visualizations, each in a `<section class="card p-5 mb-5">`.
 7. Original notes (CKAN `notes` verbatim) in a `<section>`.
-8. Quality bar — `<div class="quality-track"><div class="quality-fill" style="width: 75%"></div></div>` (blue fill).
 
 **DO NOT** include `<html>`, `<head>`, `<body>`, a site `<header>` nav,
 breadcrumb, or footer. The wrapper owns those.
@@ -84,7 +83,6 @@ Component utilities the wrapper defines:
 - `.badge` — neutral small pill for org/format chips.
 - `.btn-primary` — solid brand-blue button.
 - `.btn-ghost` — outlined brand-blue button.
-- `.quality-track` / `.quality-fill` — the quality progress bar (blue fill).
 
 `<html dir="rtl" lang="he">` is already set by the wrapper.
 
@@ -273,15 +271,6 @@ sizes you to `max-w-gov` already).
 <section class="card p-5 mb-4">
   <h2 class="m-0 mb-2 text-base font-display">תיאור מקורי</h2>
   <p class="m-0 text-sm text-subtle whitespace-pre-line">…</p>
-</section>
-
-<!-- quality bar -->
-<section class="card p-5 mb-4">
-  <div class="flex items-center justify-between mb-2 text-sm">
-    <span class="font-display">ציון איכות</span>
-    <span class="text-subtle">83 / 100</span>
-  </div>
-  <div class="quality-track"><div class="quality-fill" style="width: 83%"></div></div>
 </section>
 
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
