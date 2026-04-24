@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useManifest } from '~/composables/useManifest'
 
-useHead({ title: 'נושאים — GovData.IL' })
+useHead({ title: 'נושאים — gov-il.ai' })
 
 const manifest = useManifest()
 
@@ -15,12 +15,12 @@ const tags = computed(() => {
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="max-w-gov mx-auto px-4 py-8">
     <section class="mb-6">
       <div class="text-xs text-subtle mb-2">
         <NuxtLink to="/">ראשי</NuxtLink> › נושאים
       </div>
-      <h1 class="font-display text-3xl">נושאים</h1>
+      <h1 class="font-display">נושאים</h1>
       <p class="text-subtle mt-2">{{ tags.length }} תגיות ייחודיות.</p>
     </section>
 
@@ -29,8 +29,9 @@ const tags = computed(() => {
         v-for="[t, n] in tags"
         :key="t"
         :to="`/tags/${encodeURIComponent(t)}/`"
-        class="tag-chip hover:bg-brand-100 no-underline hover:no-underline"
+        class="tag-chip hover:bg-brand-100 no-underline hover:no-underline inline-flex items-center gap-1.5"
       >
+        <img src="/icons/tag.svg" alt="" class="w-3.5 h-3.5 opacity-80" />
         {{ t }} <span class="text-subtle ms-1">· {{ n }}</span>
       </NuxtLink>
     </section>

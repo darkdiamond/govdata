@@ -5,7 +5,7 @@ These models represent datasets, resources, and scan results
 as returned from the CKAN API and stored locally.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Optional
 
@@ -142,12 +142,17 @@ class ScanSummary(BaseModel):
 
 
 def _parse_datetime(value: Optional[str]) -> Optional[datetime]:
-    """Parse datetime string from CKAN API."""
+    """Parse datetime string from CKAN API. Always returns tz-aware UTC —
+    CKAN frequently returns naive ISO timestamps (e.g. `2024-01-15T10:30:00`)
+    that would be silently stored as UTC by Firestore and then come back
+    tz-aware, breaking naive/aware comparisons on the next scan."""
     if not value:
         return None
     try:
-        # CKAN uses ISO format: 2024-01-15T10:30:00
-        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(value.replace("Z", "+00:00"))
     except (ValueError, TypeError):
         return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt
 

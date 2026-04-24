@@ -1,0 +1,27 @@
+# Keep the Cloud Run build context small — only the Python service ships.
+frontend/
+docs/
+tests/
+venv/
+.venv/
+node_modules/
+.output/
+.nuxt/
+.git/
+.github/
+.claude/
+data/
+*.db
+**/__pycache__/
+**/*.pyc
+.env
+.env.local
+.DS_Store
+*.md
+LICENSE
+.dockerignore
+Dockerfile
+cloudbuild-publish.yaml
+firebase.json
+.firebaserc
+infra/

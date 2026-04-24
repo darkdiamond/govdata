@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Base layer — gov.il-aligned globals.
+   Body text is #0c3058, background #f1f7ff, font Rubik everywhere.
+   Heading sizes use clamp() to reproduce gov.il's fluid calc()+vw scale
+   (capped at the values it settles to ≥1200px). */
 @layer base {
   html {
     font-family: theme('fontFamily.sans');
@@ -9,38 +13,52 @@
     background: theme('colors.surface');
   }
   body {
-    line-height: 1.7;
+    line-height: 1.5;
   }
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, h5, h6 {
     font-family: theme('fontFamily.display');
-    line-height: 1.35;
+    line-height: 1.2;
     font-weight: 500;
+    color: theme('colors.ink');
   }
-  h1 { font-size: 1.875rem; }
-  h2 { font-size: 1.375rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
-  h3 { font-size: 1.125rem; margin-top: 1rem; margin-bottom: 0.5rem; }
-  a { color: theme('colors.brand.600'); }
-  a:hover { color: theme('colors.brand.500'); text-decoration: underline; }
+  h1 { font-size: clamp(1.625rem, 1.3875rem + 1.65vw, 2.625rem); }
+  h2 { font-size: clamp(1.5rem,   1.3375rem + 1.05vw, 2.125rem); margin-top: 1.5rem; margin-bottom: 0.75rem; }
+  h3 { font-size: clamp(1.3125rem, 1.275rem + 0.3vw,  1.5rem);   margin-top: 1rem;   margin-bottom: 0.5rem;  }
+  h4 { font-size: 1.125rem; }
+  h5 { font-size: 1rem; }
+  h6 { font-size: 0.875rem; }
+
+  a        { color: theme('colors.brand.DEFAULT'); }
+  a:hover  { color: theme('colors.brand.600'); text-decoration: underline; }
 }
 
 @layer components {
   .card {
-    @apply bg-white border border-rule rounded-xl shadow-card;
+    @apply bg-white border border-rule rounded-gov shadow-card;
   }
   .card-hover {
     @apply hover:shadow-card-hover transition-shadow;
   }
   .tag-chip {
-    @apply inline-block px-2 py-0.5 text-xs bg-brand-50 text-brand-700 rounded-full border border-brand-100;
+    @apply inline-block px-2 py-0.5 text-xs bg-brand-50 text-brand-800 rounded-gov-pill border border-brand-100;
   }
   .badge {
-    @apply inline-block px-2 py-0.5 text-xs bg-surface border border-rule rounded-md text-subtle;
+    @apply inline-block px-2 py-0.5 text-xs bg-white border border-rule rounded-gov-sm text-subtle;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 bg-brand text-white rounded-gov px-4 py-2 no-underline hover:bg-brand-600 hover:no-underline transition-colors;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 text-brand border border-brand rounded-gov px-4 py-2 no-underline hover:bg-brand-50 hover:no-underline transition-colors;
+  }
+  .gov-header {
+    @apply bg-gov-header text-white;
   }
   .quality-track {
-    @apply h-2 bg-rule rounded-full overflow-hidden;
+    @apply h-2 bg-rule rounded-gov-pill overflow-hidden;
   }
   .quality-fill {
-    @apply h-full bg-accent;
+    @apply h-full bg-brand;
   }
 }
 

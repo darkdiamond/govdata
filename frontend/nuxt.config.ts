@@ -49,12 +49,19 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Rubik:wght@500&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap',
         },
       ],
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'theme-color', content: '#0068f5' },
+        { name: 'generator', content: 'Nuxt + agentic AI pipeline' },
+        { name: 'author', content: 'GovData.IL' },
+        // Per-page useSeo() overrides these; they exist as fallbacks for
+        // any page that forgets to call useSeo().
+        { name: 'description', content: 'דפי נחיתה אוטומטיים בעברית למאגרי data.gov.il — נכתבים על ידי סוכן בינה מלאכותית (agentic AI).' },
+        { name: 'keywords', content: 'מידע ממשלתי, data.gov.il, בינה מלאכותית, AI, סוכן AI, agentic, אג׳נטי, open data Israel' },
       ],
     },
   },
@@ -62,7 +69,14 @@ export default defineNuxtConfig({
   nitro: {
     prerender: {
       crawlLinks: false,
-      routes: ['/', ...categoryRoutes()],
+      routes: [
+        '/',
+        '/datasets/',
+        '/about/',
+        '/how-it-works/',
+        '/faq/',
+        ...categoryRoutes(),
+      ],
       failOnError: false,
     },
   },

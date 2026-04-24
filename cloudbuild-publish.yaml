@@ -1,0 +1,74 @@
+# Cloud Build pipeline — regenerate manifest, build Nuxt site, deploy to
+# Firebase Hosting. Triggered by govdata-builder after a successful agent
+# run (see services/page_builder/pipeline.py::_trigger_publish).
+#
+# Substitutions:
+#   _STAGING_BUCKET    GCS bucket the builder stages agent outputs to
+#   _FIREBASE_PROJECT  Firebase / GCP project that owns Hosting + Firestore
+
+steps:
+  # [1] Pull staged agent artifacts into the Nuxt public dir so they ship
+  #     alongside Nuxt's generated category pages.
+  - id: 'fetch-pages'
+    name: 'gcr.io/cloud-builders/gsutil'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -euo pipefail
+        mkdir -p frontend/public/datasets
+        gsutil -m rsync -r "gs://${_STAGING_BUCKET}/datasets/" frontend/public/datasets/
+
+  # [2] Build manifest.json from Firestore sources (analysis_status=succeeded).
+  - id: 'build-manifest'
+    name: 'python:3.12-slim'
+    entrypoint: 'bash'
+    env:
+      - 'FIRESTORE_PROJECT_ID=${_FIREBASE_PROJECT}'
+      - 'GOOGLE_CLOUD_PROJECT=${_FIREBASE_PROJECT}'
+    args:
+      - '-c'
+      - |
+        set -euo pipefail
+        pip install --no-cache-dir -r services/page_builder/requirements.txt
+        mkdir -p frontend/public/data
+        python3 -m services.page_builder.manifest \
+          --from-firestore \
+          --out frontend/public/data/manifest.json
+
+  # [3] Install Nuxt deps and run `nuxt generate` (static site → frontend/.output/public/).
+  - id: 'nuxt-generate'
+    name: 'node:20'
+    entrypoint: 'bash'
+    dir: 'frontend'
+    args:
+      - '-c'
+      - |
+        set -euo pipefail
+        npm ci --prefer-offline --no-audit
+        npm run generate
+
+  # [4] Deploy to Firebase Hosting (firebase-tools is installed per build;
+  #     keeps the image pinned to node:20 rather than a separate builder).
+  - id: 'firebase-deploy'
+    name: 'node:20'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        set -euo pipefail
+        npm install -g firebase-tools@latest
+        firebase deploy \
+          --only hosting \
+          --project "${_FIREBASE_PROJECT}" \
+          --non-interactive
+
+substitutions:
+  _STAGING_BUCKET: 'govdata-il-staging'
+  _FIREBASE_PROJECT: 'govdata-il'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+timeout: '1800s'

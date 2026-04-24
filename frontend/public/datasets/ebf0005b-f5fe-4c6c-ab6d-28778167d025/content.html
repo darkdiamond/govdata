@@ -1,0 +1,470 @@
+<!-- ════════════════════════════════════════════════════════════
+     מפלס ים המלח — body fragment only (wrapper provides shell)
+     ════════════════════════════════════════════════════════════ -->
+
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+  .kpi-card { background: #fff; border: 1px solid #c3cfe7; border-radius: 0.5rem;
+              padding: 1.25rem 1rem; text-align: center; }
+  .kpi-value { font-size: 2rem; font-weight: 700; color: #0068f5; line-height: 1.1; }
+  .kpi-label { font-size: 0.82rem; color: #6c757d; margin-top: 0.3rem; }
+  .kpi-sub   { font-size: 0.78rem; color: #0c3058; margin-top: 0.2rem; font-weight: 500; }
+  .milestone-row { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .ms-badge { display: inline-flex; align-items: center; gap: 0.35rem;
+              background: #dbe8fb; color: #0b3668; border-radius: 50rem;
+              padding: 0.25rem 0.75rem; font-size: 0.8rem; font-weight: 600; }
+  .ms-year  { color: #0068f5; font-weight: 700; }
+  .insight-list { list-style: none; padding: 0; margin: 0; }
+  .insight-list li { padding: 0.55rem 0; border-bottom: 1px solid #f0f4fa;
+                     display: flex; gap: 0.6rem; align-items: flex-start; }
+  .insight-list li:last-child { border-bottom: none; }
+  .insight-icon { flex-shrink: 0; margin-top: 0.1rem; }
+  .chart-wrap { width: 100%; height: 420px; }
+  .chart-wrap-sm { width: 100%; height: 300px; }
+</style>
+
+<!-- ── כותרת ──────────────────────────────────────────────── -->
+<h1 class="text-2xl font-bold text-ink-deep mb-3">מפלס ים המלח</h1>
+
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">ים המלח</span>
+  <span class="tag-chip">מפלס מים</span>
+  <span class="tag-chip">הידרולוגיה</span>
+  <span class="tag-chip">סביבה</span>
+  <span class="tag-chip">סדרת זמן</span>
+</div>
+
+<!-- ── סיכום AI ───────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <div class="flex items-start gap-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 mt-0.5 text-ok" style="color:#198754" />
+    <div>
+      <p class="font-semibold text-ink-deep mb-1">
+        סיכום המאגר
+        <span class="badge ms-2" style="background:#d1fae5;color:#065f46;font-size:0.72rem;">מהימנות גבוהה</span>
+      </p>
+      <p class="text-sm text-ink" style="max-width:72ch;">
+        המאגר מכיל 687 מדידות חודשיות של מפלס ים המלח מאוקטובר 1976 ועד מרץ 2026.
+        הנתונים מתועדים על-ידי השירות ההידרולוגי ברשות הממשלתית למים ולביוב ומשקפים
+        ירידה מצטברת של כ-41.8 מטר — מ-398.95- מ' ל-440.81- מ' — בקצב ממוצע של
+        כ-0.84 מ' לשנה.
+      </p>
+      <p class="text-sm text-ink mt-1" style="max-width:72ch;">
+        הירידה נובעת ממניעת זרימת נהר הירדן והירמוך לאחר הקמת סכרים, ומפעולות
+        שאיבה ישראליות וירדניות. הנתונים פתוחים לשימוש חופשי לפי רישיון "אחר (פתוח)".
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── מטא-דאטה + משאבים ──────────────────────────────────── -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+  <!-- מידע על המאגר -->
+  <section class="card p-5">
+    <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+      <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+      פרטי המאגר
+    </h2>
+    <dl class="text-sm space-y-2">
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">ארגון</dt>
+        <dd class="font-medium text-ink">הרשות הממשלתית למים ולביוב</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">רישיון</dt>
+        <dd class="font-medium text-ink">אחר (פתוח)</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">עדכון אחרון</dt>
+        <dd class="font-medium text-ink">24 אפריל 2026</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">תקופה</dt>
+        <dd class="font-medium text-ink">אוקטובר 1976 – מרץ 2026</dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-subtle">סה"כ רשומות</dt>
+        <dd class="font-medium text-ink">687 מדידות חודשיות</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- קישורי הורדה -->
+  <section class="card p-5">
+    <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+      <img src="/icons/download.svg" alt="" class="w-5 h-5" />
+      הורדת נתונים
+    </h2>
+    <p class="text-sm text-subtle mb-3">מפלס ים המלח משנת 1976 — נתונים חודשיים</p>
+    <a href="https://data.gov.il/api/3/action/datastore_search?resource_id=823479b4-4771-43d8-9189-6a2a1dcaaf10&limit=32000"
+       target="_blank" rel="noopener"
+       class="btn-primary inline-flex items-center gap-2 text-sm px-4 py-2 mb-2">
+      <img src="/icons/download.svg" alt="" class="w-4 h-4" />
+      הורד JSON
+      <span class="badge" style="background:#dbe8fb;color:#0b3668;margin-right:4px;">JSON</span>
+    </a>
+    <br>
+    <a href="https://e.data.gov.il/dataset/ebf0005b-f5fe-4c6c-ab6d-28778167d025/resource/823479b4-4771-43d8-9189-6a2a1dcaaf10/download/"
+       target="_blank" rel="noopener"
+       class="btn-ghost inline-flex items-center gap-2 text-sm px-4 py-2 mt-2">
+      <img src="/icons/download.svg" alt="" class="w-4 h-4" />
+      הורד CSV
+      <span class="badge" style="background:#f0f4fa;color:#0b3668;margin-right:4px;">CSV</span>
+    </a>
+  </section>
+</div>
+
+<!-- ── KPI cards ──────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold text-ink-deep mb-4 flex items-center gap-2">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    נתוני מפתח
+  </h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">440.81-</div>
+      <div class="kpi-label">מפלס נמוך שיא (מרץ 2026)</div>
+      <div class="kpi-sub">מטר מתחת לפני הים התיכון</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">41.8</div>
+      <div class="kpi-label">ירידה מצטברת 1976–2026</div>
+      <div class="kpi-sub">מטר בסך הכול</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">0.84</div>
+      <div class="kpi-label">קצב ירידה ממוצע</div>
+      <div class="kpi-sub">מטר לשנה</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">50</div>
+      <div class="kpi-label">שנות תיעוד</div>
+      <div class="kpi-sub">687 מדידות חודשיות</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">398.95-</div>
+      <div class="kpi-label">מפלס גבוה בתקופה</div>
+      <div class="kpi-sub">אוקטובר 1976</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── תובנות ─────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    תובנות מרכזיות
+  </h2>
+  <ul class="insight-list text-sm text-ink">
+    <li>
+      <img src="/icons/triangle-alert.svg" alt="" class="w-5 h-5 insight-icon" style="color:#dc3545" />
+      <span>
+        <strong>ירידה מצטברת של 41.86 מ'</strong> בין אוקטובר 1976 (398.95-) לפברואר 2026 (440.81-)
+        — ממוצע של <strong>0.84 מ' לשנה</strong>. הנתון עולה בקנה אחד עם האמדן המוזכר בתיאור המאגר
+        (כ-1 מ' לשנה בעשורים האחרונים; ממוצע כולל שנות התחלה של ירידה מתונה יותר).
+      </span>
+    </li>
+    <li>
+      <img src="/icons/triangle-alert.svg" alt="" class="w-5 h-5 insight-icon" style="color:#ffc107" />
+      <span>
+        <strong>האצת הירידה:</strong> בשנות ה-70 וה-80 ירד המפלס בממוצע ~0.4 מ' לשנה; בעשור
+        2016–2025 הממוצע עלה לכ-<strong>1.07 מ' לשנה</strong> — האצה של פי 2.5.
+      </span>
+    </li>
+    <li>
+      <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 insight-icon" style="color:#0068f5" />
+      <span>
+        <strong>מאבני דרך:</strong> המפלס חצה את -400 מ' לראשונה ב-1979, את -420 מ' ב-2007
+        ואת -440 מ' ב-2025 — כ-10 מ' בכל ~23 שנה בתחילה, ואח"כ 10 מ' בכל ~9 שנים בלבד.
+      </span>
+    </li>
+  </ul>
+
+  <div class="mt-4">
+    <p class="text-xs text-subtle mb-2 font-semibold">חצייה של מאבני-מפלס (ממוצע שנתי)</p>
+    <div class="milestone-row">
+      <span class="ms-badge">מתחת ל-400- מ': <span class="ms-year">&nbsp;1979</span></span>
+      <span class="ms-badge">מתחת ל-410- מ': <span class="ms-year">&nbsp;1997</span></span>
+      <span class="ms-badge">מתחת ל-420- מ': <span class="ms-year">&nbsp;2007</span></span>
+      <span class="ms-badge">מתחת ל-430- מ': <span class="ms-year">&nbsp;2016</span></span>
+      <span class="ms-badge">מתחת ל-440- מ': <span class="ms-year">&nbsp;2025</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ויזואליזציות ══════════════════════════════════════════ -->
+
+<!-- ── גרף סדרת הזמן הראשי ────────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-1 flex items-center gap-2">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    ירידת מפלס ים המלח לאורך הזמן (1976–2026)
+  </h2>
+  <p class="text-xs text-subtle mb-3">ממוצע שנתי של מפלס ים המלח (מטרים, ביחס לפני הים התיכון)</p>
+  <div id="chart-timeseries" class="chart-wrap"></div>
+</section>
+
+<!-- ── גרף עשורים ─────────────────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-1 flex items-center gap-2">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    ממוצע מפלס ים המלח לפי עשור
+  </h2>
+  <p class="text-xs text-subtle mb-3">ממוצע המפלס (מ') לפי עשור קלנדרי — מדגים את האצת הירידה</p>
+  <div id="chart-decades" class="chart-wrap-sm"></div>
+</section>
+
+<!-- ── גרף קצב ירידה שנתי ──────────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-1 flex items-center gap-2">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    שינוי שנתי במפלס (מטר לשנה)
+  </h2>
+  <p class="text-xs text-subtle mb-3">הפרש הממוצע השנתי בין שנה לקודמתה — שלילי = ירידה</p>
+  <div id="chart-annual-change" class="chart-wrap-sm"></div>
+</section>
+
+<!-- ── הערות ─────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold text-ink-deep mb-2 flex items-center gap-2">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    אודות המאגר (תיאור מקורי)
+  </h2>
+  <p class="text-sm text-ink leading-relaxed" style="max-width:80ch;">
+    נתונים חודשיים של מפלס ים המלח משנת 1976. בעשורים האחרונים יורד מפלס ים המלח בקצב של כמטר
+    בשנה, כתוצאה ממניעה כמעט מוחלטת של כניסות מים מנהר הירדן (הקמת סכר דגניה בשנת 1964)
+    ומהירמוך (הקמת סכרים על הירמוך בסוריה וירדן) וכן כתוצאה מפעולות אנטרופגניות כגון שאיבות
+    בצד הישראלי והירדני (מפעלי ים המלח הישראליים והירדנים). ירידת מפלס זו הביאה לנזקים
+    תשתיתיים ותיירותיים, הן בשל נסיגת קו החוף והן בשל היווצרות הבולענים (בורות עגולים ועמוקים
+    הנוצרים בשל המסת סלעי מלח בעומק). הבולענים בחופי ים המלח הפכו למטרד תשתיתי הפוגע
+    בכבישים, צינורות, בתי מלון ועוד. מדידות רשמיות של מפלס ים המלח קיימות משנת 1900, אז עמד
+    המפלס על רום של 392- מ'. כיום, מדידות מפלס ים המלח מתבצעות באחריותו של השירות
+    ההידרולוגי ברשות הממשלתית למים ולביוב.
+  </p>
+</section>
+
+<!-- ── איכות מאגר ─────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    ציון איכות מאגר
+  </h2>
+  <div class="flex items-center gap-3 mb-1">
+    <div class="quality-track flex-1">
+      <div class="quality-fill" style="width:82%"></div>
+    </div>
+    <span class="font-bold text-brand text-lg">82 / 100</span>
+  </div>
+  <p class="text-xs text-subtle">
+    מאגר מתעדכן שוטף, מכיל שדות מובנים וברורים, ללא ערכים חסרים. ניכוד: שני עמודות בלבד, ללא
+    מיקום גאוגרפי מפורש ו/או מסמך מתודולוגי מצורף.
+  </p>
+</section>
+
+<!-- ════ ספריות וקוד תרשימים ════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+(function () {
+  /* ── קבועים ───────────────────────────────────────────── */
+  const GOVIL_PALETTE = [
+    '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+    '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+  ];
+
+  const baseECharts = {
+    color: GOVIL_PALETTE,
+    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+    tooltip: {
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff',
+      borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+  };
+
+  /* ── נתוני ממוצע שנתי ───────────────────────────────── */
+  const yearlyData = [[1976,-399.03],[1977,-399.33],[1978,-399.89],[1979,-400.56],[1980,-400.12],
+    [1981,-400.07],[1982,-400.84],[1983,-401.49],[1984,-402.53],[1985,-403.2],
+    [1986,-403.98],[1987,-404.87],[1988,-405.22],[1989,-406.18],[1990,-407.14],
+    [1991,-407.88],[1992,-407.0],[1993,-407.07],[1994,-407.87],[1995,-408.53],
+    [1996,-409.56],[1997,-410.39],[1998,-411.36],[1999,-412.49],[2000,-413.73],
+    [2001,-414.82],[2002,-415.79],[2003,-416.19],[2004,-417.12],[2005,-417.98],
+    [2006,-418.99],[2007,-420.05],[2008,-421.45],[2009,-422.6],[2010,-423.46],
+    [2011,-424.75],[2012,-426.19],[2013,-427.12],[2014,-428.24],[2015,-429.18],
+    [2016,-430.29],[2017,-431.64],[2018,-432.71],[2019,-433.78],[2020,-434.61],
+    [2021,-435.75],[2022,-436.99],[2023,-438.0],[2024,-438.95],[2025,-440.28],
+    [2026,-440.78]];
+
+  const years     = yearlyData.map(d => d[0]);
+  const levels    = yearlyData.map(d => d[1]);
+
+  /* ── גרף 1: סדרת זמן ────────────────────────────────── */
+  const chart1 = echarts.init(document.getElementById('chart-timeseries'));
+  const milestoneLines = [-400, -410, -420, -430, -440].map((v, i) => ({
+    yAxis: v,
+    label: {
+      formatter: `${v} מ'`,
+      position: 'insideEndTop',
+      color: '#6c757d',
+      fontSize: 11,
+      fontFamily: 'Rubik, sans-serif'
+    },
+    lineStyle: { type: 'dashed', color: '#c3cfe7', width: 1 }
+  }));
+
+  const opt1 = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: params => {
+        const p = params[0];
+        return `<div style="direction:rtl;text-align:right;">
+          <strong>${p.axisValue}</strong><br/>
+          מפלס ממוצע: <strong>${p.value} מ'</strong>
+        </div>`;
+      }
+    }),
+    xAxis: {
+      type: 'category',
+      data: years,
+      axisLine: { lineStyle: { color: '#c3cfe7' } },
+      axisLabel: { color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif',
+                   interval: 4 }
+    },
+    yAxis: {
+      type: 'value',
+      name: "מפלס (מ')",
+      nameLocation: 'end',
+      nameTextStyle: { color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif' },
+      axisLabel: {
+        color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif',
+        formatter: v => `${v}`
+      },
+      splitLine: { lineStyle: { color: '#f0f4fa' } },
+      min: -445, max: -396
+    },
+    series: [{
+      name: "מפלס ממוצע שנתי",
+      type: 'line',
+      data: levels,
+      smooth: 0.3,
+      symbol: 'circle',
+      symbolSize: 5,
+      lineStyle: { color: '#0068f5', width: 2.5 },
+      itemStyle: { color: '#0068f5' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(0,104,245,0.18)' },
+            { offset: 1, color: 'rgba(0,104,245,0.01)' }
+          ]
+        }
+      },
+      markLine: { silent: true, data: milestoneLines }
+    }]
+  });
+  chart1.setOption(opt1);
+
+  /* ── גרף 2: עשורים ───────────────────────────────────── */
+  const decadeLabels = ["שנות ה-70", "שנות ה-80", "שנות ה-90", "שנות ה-2000", "שנות ה-2010", "שנות ה-2020"];
+  const decadeValues = [-399.86, -402.72, -408.89, -417.36, -428.70, -437.56];
+
+  const chart2 = echarts.init(document.getElementById('chart-decades'));
+  const opt2 = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: params => {
+        const p = params[0];
+        return `<div style="direction:rtl;text-align:right;">
+          <strong>${p.name}</strong><br/>ממוצע מפלס: <strong>${p.value} מ'</strong></div>`;
+      }
+    }),
+    xAxis: {
+      type: 'category',
+      data: decadeLabels,
+      axisLabel: { color: '#6c757d', fontSize: 12, fontFamily: 'Rubik, sans-serif' },
+      axisLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'value',
+      name: "מפלס ממוצע (מ')",
+      nameLocation: 'end',
+      nameTextStyle: { color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif' },
+      axisLabel: {
+        color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif',
+        formatter: v => `${v}`
+      },
+      splitLine: { lineStyle: { color: '#f0f4fa' } },
+      min: -445, max: -396
+    },
+    series: [{
+      name: "ממוצע מפלס",
+      type: 'bar',
+      data: decadeValues.map((v, i) => ({
+        value: v,
+        itemStyle: { color: GOVIL_PALETTE[i % GOVIL_PALETTE.length] }
+      })),
+      barWidth: '55%',
+      label: {
+        show: true, position: 'inside',
+        formatter: p => `${p.value} מ'`,
+        color: '#fff', fontSize: 11, fontFamily: 'Rubik, sans-serif', fontWeight: 600
+      }
+    }]
+  });
+  chart2.setOption(opt2);
+
+  /* ── גרף 3: שינוי שנתי ───────────────────────────────── */
+  const annualChanges = [];
+  for (let i = 1; i < yearlyData.length; i++) {
+    const yr   = yearlyData[i][0];
+    const diff = +(yearlyData[i][1] - yearlyData[i-1][1]).toFixed(2);
+    annualChanges.push([yr, diff]);
+  }
+  const acYears  = annualChanges.map(d => d[0]);
+  const acValues = annualChanges.map(d => d[1]);
+
+  const chart3 = echarts.init(document.getElementById('chart-annual-change'));
+  const opt3 = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: params => {
+        const p = params[0];
+        const sign = p.value > 0 ? '+' : '';
+        return `<div style="direction:rtl;text-align:right;">
+          <strong>${p.axisValue}</strong><br/>שינוי: <strong>${sign}${p.value} מ'</strong></div>`;
+      }
+    }),
+    xAxis: {
+      type: 'category',
+      data: acYears,
+      axisLabel: { color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif', interval: 4 },
+      axisLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'value',
+      name: "שינוי (מ')",
+      nameLocation: 'end',
+      nameTextStyle: { color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif' },
+      axisLabel: { color: '#6c757d', fontSize: 11, fontFamily: 'Rubik, sans-serif' },
+      splitLine: { lineStyle: { color: '#f0f4fa' } }
+    },
+    series: [{
+      name: "שינוי שנתי",
+      type: 'bar',
+      data: acValues.map(v => ({
+        value: v,
+        itemStyle: { color: v >= 0 ? '#198754' : (v > -0.5 ? '#6c9fd8' : '#0068f5') }
+      })),
+      barWidth: '70%'
+    }]
+  });
+  chart3.setOption(opt3);
+
+  /* ── Resize ─────────────────────────────────────────── */
+  window.addEventListener('resize', () => {
+    chart1.resize(); chart2.resize(); chart3.resize();
+  });
+})();
+</script>

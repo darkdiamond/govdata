@@ -1,48 +1,68 @@
 {
   "version": 1,
-  "generated_at": "2026-04-24T12:00:00Z",
+  "generated_at": "2026-04-24T11:24:56.181814Z",
   "datasets": [
     {
+      "id": "ebf0005b-f5fe-4c6c-ab6d-28778167d025",
+      "slug": "miflas-yam-hamelach",
+      "title": "מפלס ים המלח",
+      "organization": "הרשות הממשלתית למים ולביוב",
+      "summary_he": "נתונים חודשיים של מפלס ים המלח מ-1976 עד 2026 (687 מדידות), המתעדים ירידה רציפה של 41.84 מטר בממוצע 0.84 מ' לשנה.",
+      "tags_he": [
+        "ים המלח",
+        "הידרומטריה",
+        "נתוני זמן",
+        "משבר אקולוגי",
+        "נתונים פתוחים"
+      ],
+      "primary_resource_id": "823479b4-4771-43d8-9189-6a2a1dcaaf10",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T08:44:42.134011",
+      "related_ids": [],
+      "version": 1
+    },
+    {
       "id": "995eb826-c471-4572-8fd3-39d92a3a9603",
-      "slug": "antennot-seluleriot",
+      "slug": "antenot-selulaiot-peylot",
       "title": "אנטנות סלולריות פעילות",
       "organization": "המשרד להגנת הסביבה",
-      "organization_slug": "ministry-of-environmental-protection",
-      "summary_he": "מאגר של אנטנות סלולריות פעילות, כולל מיקום, חברה, טכנולוגיה ורמות קרינה.",
-      "tags_he": ["תקשורת", "קרינה", "סלולר"],
+      "summary_he": "8,411 מוקדי שידור סלולרי פעילים ברחבי ישראל (PHI/הוט/פרטנר, פלאפון, סלקום) עם מיקום, סוג אתר, טכנולוגיית שידור ומדידות קרינה — כולן מתחת לסף הבריאות.",
+      "tags_he": [
+        "קרינה סלולרית",
+        "תשתיות תקשורת",
+        "בריאות הציבור",
+        "מידע גיאוגרפי",
+        "סביבה"
+      ],
       "primary_resource_id": "8935c8e5-ec77-421f-af86-d970583195f8",
-      "formats": ["CSV"],
-      "metadata_modified": "2026-04-20T10:00:00Z",
-      "dataset_kind": "map",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-23T19:01:06.011598",
       "related_ids": [],
       "version": 1
     },
     {
       "id": "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9",
-      "slug": "amutot-veh-lhtvlt-hziboor",
+      "slug": "amutot-chalatz",
       "title": "מאגר עמותות וחברות לתועלת הציבור",
       "organization": "משרד המשפטים",
-      "organization_slug": "ministry-of-justice",
-      "summary_he": "רשימת העמותות והחברות לתועלת הציבור הרשומות בישראל.",
-      "tags_he": ["חברה אזרחית", "משפט", "עמותות"],
+      "summary_he": "מאגר רשמי של רשות התאגידים הכולל 74,976 עמותות ו-1,500 חל\"צ הרשומות בישראל, לצד דיווחי תרומות מישויות מדיניות זרות ואישורי ניהול תקין — מתעדכן מדי שבוע.",
+      "tags_he": [
+        "עמותות",
+        "חברות לתועלת הציבור",
+        "מגזר שלישי",
+        "תרומות זרות",
+        "ניהול תקין"
+      ],
       "primary_resource_id": "be5b7935-3922-45d4-9638-08871b17ec95",
-      "formats": ["CSV"],
-      "metadata_modified": "2026-04-18T09:00:00Z",
-      "dataset_kind": "registry",
-      "related_ids": [],
-      "version": 1
-    },
-    {
-      "id": "ebf0005b-f5fe-4c6c-ab6d-28778167d025",
-      "slug": "maflas-yam-hamelah",
-      "title": "מפלס ים המלח",
-      "organization": "הרשות הממשלתית למים ולביוב",
-      "organization_slug": "israel-water-authority",
-      "summary_he": "מדידות חודשיות של מפלס ים המלח משנת 1976 ואילך.",
-      "tags_he": ["מים", "סביבה", "ים המלח"],
-      "formats": ["CSV"],
-      "metadata_modified": "2026-04-15T08:00:00Z",
-      "dataset_kind": "timeseries",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-23T18:12:25.328767",
       "related_ids": [],
       "version": 1
     }

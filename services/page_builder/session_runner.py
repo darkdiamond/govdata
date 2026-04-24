@@ -1,4 +1,4 @@
-"""Managed Agents controller — one session per dataset, then wrap and publish.
+"""Managed Agents controller — one session per dataset, stage to GCS.
 
 Flow:
     1. Create session (agent + env).
@@ -6,30 +6,32 @@ Flow:
        No client-side time cap — the agent decides when it's done.
     3. Download the session's outputs (expect `content.html` + `data.json`).
     4. Parse data.json → ManifestEntry; enrich with a Voyage embedding.
-    5. Load the existing manifest and compute related datasets.
+    5. Load existing ManifestEntry records from Firestore for related-scoring.
     6. Wrap content.html into a full HTML page (shared chrome + related
        sidebar + category links).
     7. Upload index.html (wrapped) + data.json (enriched) + content.html
-       (kept for debugging) under datasets/<id>/.
-    8. Rebuild manifest.json from all per-dataset data.json files.
+       (debug) to `gs://<staging>/datasets/<id>/`.
+
+The manifest is NOT rebuilt here — that's the publisher's job (it reads
+Firestore and writes `frontend/public/data/manifest.json` during the
+Cloud Build run).
 """
 from __future__ import annotations
 
-import json
 import logging
 import os
 import time
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Optional
 
 from anthropic import Anthropic
 
-from . import manifest as manifest_module
+from services.shared.firestore import FirestoreStateStore
+
 from .embeddings import embed, embedding_input
 from .page_wrapper import wrap_page
 from .related import top_related
-from .schema import Manifest, ManifestEntry
+from .schema import ManifestEntry
 
 log = logging.getLogger(__name__)
 
@@ -45,6 +47,7 @@ INDEX_FILENAME = "index.html"
 class SessionResult:
     session_id: str
     title: str
+    entry: Optional[ManifestEntry] = None
     written: list[str] = field(default_factory=list)
     events_seen: int = 0
     usage: dict[str, int] = field(default_factory=dict)
@@ -55,7 +58,11 @@ class SessionResult:
 
 
 def _build_user_message(
-    *, dataset_id: str, title: str, notes: str, org_title: str,
+    *,
+    dataset_id: str,
+    title: str,
+    notes: str,
+    org_title: str,
     primary_resource_id: Optional[str],
 ) -> str:
     resource_line = (
@@ -90,56 +97,50 @@ def _accumulate_usage(event, out: dict[str, int]) -> None:
     if getattr(event, "type", None) != "span.model_request_end":
         return
     mu = getattr(event, "model_usage", None) or {}
-    for k in ("input_tokens", "output_tokens",
-              "cache_creation_input_tokens", "cache_read_input_tokens"):
+    for k in (
+        "input_tokens",
+        "output_tokens",
+        "cache_creation_input_tokens",
+        "cache_read_input_tokens",
+    ):
         v = mu.get(k) if isinstance(mu, dict) else getattr(mu, k, None)
         out[k] = out.get(k, 0) + int(v or 0)
 
 
 def _content_type(filename: str) -> str:
     lower = filename.lower()
-    if lower.endswith(".html"): return "text/html; charset=utf-8"
-    if lower.endswith(".json"): return "application/json; charset=utf-8"
-    if lower.endswith(".js"):   return "application/javascript; charset=utf-8"
-    if lower.endswith(".css"):  return "text/css; charset=utf-8"
+    if lower.endswith(".html"):
+        return "text/html; charset=utf-8"
+    if lower.endswith(".json"):
+        return "application/json; charset=utf-8"
+    if lower.endswith(".js"):
+        return "application/javascript; charset=utf-8"
+    if lower.endswith(".css"):
+        return "text/css; charset=utf-8"
     return "application/octet-stream"
 
 
-def _write_local(data: bytes, root: Path, relpath: str) -> str:
-    dest = root / relpath
-    dest.parent.mkdir(parents=True, exist_ok=True)
-    dest.write_bytes(data)
-    return str(dest)
-
-
-def _write_gcs(data: bytes, bucket: str, relpath: str,
-               content_type: Optional[str] = None) -> str:
+def _write_gcs(data: bytes, bucket: str, relpath: str) -> str:
     from google.cloud import storage
+
     client = storage.Client()
     blob = client.bucket(bucket).blob(relpath)
-    blob.upload_from_string(data, content_type=content_type or _content_type(relpath))
+    blob.upload_from_string(data, content_type=_content_type(relpath))
     return f"gs://{bucket}/{relpath}"
 
 
-def _load_existing_manifest(
-    *, out_dir: Optional[Path], gcs_bucket: Optional[str],
-) -> Manifest:
-    """Read the currently-published manifest. Return empty manifest if missing."""
+def _load_existing_manifest_entries(store: FirestoreStateStore) -> list[ManifestEntry]:
+    """Load enriched ManifestEntry records from Firestore for related-scoring."""
+    entries: list[ManifestEntry] = []
     try:
-        if out_dir is not None:
-            path = out_dir / "manifest.json"
-            if path.exists():
-                return Manifest.model_validate_json(path.read_text("utf-8"))
-        elif gcs_bucket is not None:
-            from google.cloud import storage
-            client = storage.Client()
-            blob = client.bucket(gcs_bucket).blob("manifest.json")
-            if blob.exists():
-                return Manifest.model_validate_json(blob.download_as_text())
+        for raw in store.iter_manifest_entries():
+            try:
+                entries.append(ManifestEntry.model_validate(raw))
+            except Exception as e:
+                log.warning("skipping malformed manifest_entry: %s", e)
     except Exception as e:
-        log.warning("couldn't load existing manifest: %s", e)
-    from datetime import datetime, timezone
-    return Manifest(generated_at=datetime.now(timezone.utc))
+        log.warning("couldn't list succeeded sources: %s", e)
+    return entries
 
 
 def run_session(
@@ -152,12 +153,12 @@ def run_session(
     agent_id: Optional[str] = None,
     environment_id: Optional[str] = None,
     api_key: Optional[str] = None,
-    out_dir: Optional[Path] = None,
-    gcs_bucket: Optional[str] = None,
+    gcs_bucket: str,
+    store: Optional[FirestoreStateStore] = None,
 ) -> SessionResult:
-    """Run one Managed Agents session end-to-end and publish the wrapped page."""
-    if bool(out_dir) == bool(gcs_bucket):
-        raise ValueError("pass exactly one of out_dir / gcs_bucket")
+    """Run one Managed Agents session end-to-end and upload wrapped artifacts to GCS staging."""
+    if not gcs_bucket:
+        raise ValueError("gcs_bucket is required")
 
     agent_id = agent_id or os.environ.get("ANTHROPIC_AGENT_ID")
     environment_id = environment_id or os.environ.get("ANTHROPIC_ENV_ID")
@@ -168,6 +169,7 @@ def run_session(
         )
 
     client = Anthropic(api_key=api_key or os.environ.get("ANTHROPIC_API_KEY"))
+    store = store or FirestoreStateStore()
     started = time.monotonic()
 
     session_title = f"build {dataset_id[:8]} — {title[:60]}"
@@ -178,16 +180,23 @@ def run_session(
     result.note("created")
 
     user_msg = _build_user_message(
-        dataset_id=dataset_id, title=title, notes=notes,
-        org_title=org_title, primary_resource_id=primary_resource_id,
+        dataset_id=dataset_id,
+        title=title,
+        notes=notes,
+        org_title=org_title,
+        primary_resource_id=primary_resource_id,
     )
 
     # Stream-first, then send.
-    with client.beta.sessions.stream(session_id=session.id) as stream:
+    with client.beta.sessions.events.stream(session_id=session.id) as stream:
         client.beta.sessions.events.send(
             session_id=session.id,
-            events=[{"type": "user.message",
-                     "content": [{"type": "text", "text": user_msg}]}],
+            events=[
+                {
+                    "type": "user.message",
+                    "content": [{"type": "text", "text": user_msg}],
+                }
+            ],
         )
         for event in stream:
             result.events_seen += 1
@@ -199,8 +208,9 @@ def run_session(
     # Collect session outputs. Retry briefly for indexing lag.
     files_list = []
     for _ in range(3):
-        page = client.beta.files.list(scope_id=session.id,
-                                       betas=[MA_BETA, FILES_BETA])
+        page = client.beta.files.list(
+            scope_id=session.id, betas=[MA_BETA, FILES_BETA]
+        )
         files_list = list(page)
         if files_list:
             break
@@ -210,7 +220,6 @@ def run_session(
 
     result.note(f"{len(files_list)} output file(s)")
 
-    # Fetch content.html + data.json; keep any extras to upload as-is.
     content_html: Optional[str] = None
     data_json_bytes: Optional[bytes] = None
     extras: list[tuple[str, bytes]] = []
@@ -234,25 +243,24 @@ def run_session(
             f"data.json={data_json_bytes is not None}"
         )
 
-    # Parse + enrich manifest entry.
     entry = ManifestEntry.model_validate_json(data_json_bytes)
     if entry.embedding is None:
-        text = embedding_input(entry.title, entry.summary_he,
-                               entry.organization, entry.tags_he)
+        text = embedding_input(
+            entry.title, entry.summary_he, entry.organization, entry.tags_he
+        )
         entry.embedding = embed(text)
 
-    existing = _load_existing_manifest(out_dir=out_dir, gcs_bucket=gcs_bucket)
-    candidates = [e for e in existing.datasets if e.id != entry.id]
+    # Compute related from Firestore-known succeeded sources.
+    candidates = _load_existing_manifest_entries(store)
+    candidates = [e for e in candidates if e.id != entry.id]
     related_scored = top_related(entry, candidates, k=5)
     related_entries = [c for c, _, _ in related_scored]
     result.note(f"related: {[c.id[:8] for c in related_entries]}")
 
-    # Wrap the agent content with shared chrome.
     index_html = wrap_page(
-        content_html=content_html, entry=entry, related=related_entries,
+        content_html=content_html, entry=entry, related=related_entries
     )
 
-    # Publish: index.html + (enriched) data.json + content.html + any extras.
     prefix = f"datasets/{entry.id}"
     enriched_json = entry.model_dump_json(exclude_none=True, indent=2).encode("utf-8")
     writes: list[tuple[str, bytes]] = [
@@ -264,29 +272,12 @@ def run_session(
         writes.append((f"{prefix}/{name}", body))
 
     for relpath, body in writes:
-        if out_dir is not None:
-            target = _write_local(body, out_dir, relpath)
-        else:
-            target = _write_gcs(body, gcs_bucket, relpath)
-        result.written.append(target)
+        result.written.append(_write_gcs(body, gcs_bucket, relpath))
 
-    # Rebuild manifest.json so the home page picks up the new entry.
-    _rebuild_manifest(out_dir=out_dir, gcs_bucket=gcs_bucket)
-
+    result.entry = entry
     result.elapsed_seconds = round(time.monotonic() - started, 2)
     result.note(
         f"done in {result.elapsed_seconds}s "
         f"(events={result.events_seen}, usage={result.usage})"
     )
     return result
-
-
-def _rebuild_manifest(
-    *, out_dir: Optional[Path], gcs_bucket: Optional[str],
-) -> None:
-    if out_dir is not None:
-        m = manifest_module.build_manifest(local_root=out_dir)
-        manifest_module.write_manifest(m, local_path=out_dir / "manifest.json")
-    elif gcs_bucket is not None:
-        m = manifest_module.build_manifest(gcs_bucket=gcs_bucket)
-        manifest_module.write_manifest(m, gcs_bucket=gcs_bucket)

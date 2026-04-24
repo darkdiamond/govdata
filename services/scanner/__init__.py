@@ -1,22 +1,23 @@
 """
 GovData Scanner Service
 
-Scans Israeli government datasets from data.gov.il CKAN API,
-tracks state changes, and triggers appropriate downstream flows.
+Scans Israeli government datasets from data.gov.il CKAN API, writes per-source
+state to Firestore, and exposes CLI + programmatic entry points.
+
+Intentionally thin re-exports to avoid importing `main` at package-import
+time (which shadows `python -m services.scanner.main`).
 """
 
-from .models import Dataset, Resource, DatasetStatus, ScanResult, ScanSummary
 from .client import CKANClient
 from .config import ScannerSettings, settings
-from .state import StateDB
 from .detector import ChangeDetector
 from .filters import DatasetFilter, create_filter
-from .downloader import ResourceDownloader
-from .main import Scanner, ScanCallbacks
+from .models import Dataset, DatasetStatus, Resource, ScanResult, ScanSummary
+from .state import StateDB
 
 __all__ = [
     "Dataset",
-    "Resource", 
+    "Resource",
     "DatasetStatus",
     "ScanResult",
     "ScanSummary",
@@ -27,8 +28,4 @@ __all__ = [
     "ChangeDetector",
     "DatasetFilter",
     "create_filter",
-    "ResourceDownloader",
-    "Scanner",
-    "ScanCallbacks",
 ]
-

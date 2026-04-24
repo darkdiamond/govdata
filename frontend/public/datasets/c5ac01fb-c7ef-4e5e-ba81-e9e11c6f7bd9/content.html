@@ -1,0 +1,462 @@
+<!-- ============================================================
+     מאגר עמותות וחברות לתועלת הציבור — body fragment only
+     dataset_id: c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9
+     ============================================================ -->
+
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .kpi-card {
+    background: #fff;
+    border: 1px solid #c3cfe7;
+    border-radius: 0.5rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,104,245,.07);
+  }
+  .kpi-num {
+    font-size: 2.1rem;
+    font-weight: 700;
+    color: #0068f5;
+    line-height: 1.1;
+    display: block;
+  }
+  .kpi-label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-top: 0.3rem;
+    display: block;
+  }
+  .resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 0.75rem;
+  }
+  .resource-item {
+    background: #f1f7ff;
+    border: 1px solid #c3cfe7;
+    border-radius: 0.3rem;
+    padding: 0.75rem 1rem;
+  }
+  .insight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #c3cfe7;
+  }
+  .insight-item:last-child { border-bottom: none; }
+  .insight-dot {
+    width: 0.55rem; height: 0.55rem;
+    background: #0068f5; border-radius: 50%;
+    flex-shrink: 0; margin-top: 0.45rem;
+  }
+  .chart-wrap { width: 100%; }
+</style>
+
+<!-- ====== כותרת + תגיות ====== -->
+<h1 style="font-size:1.75rem;font-weight:700;color:#0b3668;margin-bottom:0.6rem;">
+  מאגר עמותות וחברות לתועלת הציבור
+</h1>
+<div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:1.5rem;">
+  <span class="tag-chip">עמותות</span>
+  <span class="tag-chip">חברות לתועלת הציבור (חל"צ)</span>
+  <span class="tag-chip">ניהול תקין</span>
+  <span class="tag-chip">תרומות מגורמים זרים</span>
+  <span class="tag-chip">רשות התאגידים</span>
+</div>
+
+<!-- ====== סיכום AI ====== -->
+<section class="card p-5 mb-4">
+  <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" style="color:#198754;" />
+    <h2 style="font-size:1.1rem;font-weight:600;color:#0b3668;margin:0;">סיכום המאגר</h2>
+    <span class="badge" style="background:#d1fae5;color:#198754;margin-right:auto;font-size:0.75rem;">אמינות גבוהה</span>
+  </div>
+  <p style="color:#0c3058;margin:0 0 0.5rem;">
+    מאגר זה, המנוהל על-ידי רשות התאגידים במשרד המשפטים, מרכז ארבעה קבצי מידע על עמותות וחברות לתועלת הציבור (חל"צ) הרשומות בישראל.
+    כיום מכיל המאגר <strong>74,976</strong> רשומות עמותות (מהן <strong>38,388</strong> פעילות) ו-<strong>1,500</strong> חל"צ רשומות.
+  </p>
+  <p style="color:#0c3058;margin:0;">
+    בנוסף כולל המאגר <strong>13,454</strong> דיווחים רבעוניים על תרומות מגורמים מדיניים זרים ו-<strong>324,883</strong> רשומות אישורי ניהול תקין לאורך השנים.
+    המידע מתעדכן מדי שבוע ממאגרי רשם העמותות ורשם ההקדשות.
+  </p>
+</section>
+
+<!-- ====== KPI Cards ====== -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 1rem;">נתוני מפתח</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <span class="kpi-num">74,976</span>
+      <span class="kpi-label">סך רשומות עמותות במאגר</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-num">38,388</span>
+      <span class="kpi-label">עמותות רשומות פעילות</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-num">1,500</span>
+      <span class="kpi-label">חברות לתועלת הציבור (חל"צ)</span>
+    </div>
+    <div class="kpi-card">
+      <span class="kpi-num">13,454</span>
+      <span class="kpi-label">דיווחי תרומות מגורמים זרים</span>
+    </div>
+  </div>
+</section>
+
+<!-- ====== מטה-דאטה ומשאבים ====== -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 1rem;">פרטי המאגר</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" class="meta-grid">
+    <div>
+      <table style="width:100%;border-collapse:collapse;font-size:0.875rem;">
+        <tr>
+          <td style="padding:0.35rem 0;color:#6c757d;white-space:nowrap;padding-left:1rem;">ארגון</td>
+          <td style="padding:0.35rem 0;color:#0c3058;font-weight:500;">משרד המשפטים — רשות התאגידים</td>
+        </tr>
+        <tr>
+          <td style="padding:0.35rem 0;color:#6c757d;white-space:nowrap;padding-left:1rem;">רישיון</td>
+          <td style="padding:0.35rem 0;color:#0c3058;">אחר (פתוח)</td>
+        </tr>
+        <tr>
+          <td style="padding:0.35rem 0;color:#6c757d;white-space:nowrap;padding-left:1rem;">עדכון אחרון</td>
+          <td style="padding:0.35rem 0;color:#0c3058;">2026-04-23</td>
+        </tr>
+        <tr>
+          <td style="padding:0.35rem 0;color:#6c757d;white-space:nowrap;padding-left:1rem;">תדירות עדכון</td>
+          <td style="padding:0.35rem 0;color:#0c3058;">שבועית (אוטומטית)</td>
+        </tr>
+        <tr>
+          <td style="padding:0.35rem 0;color:#6c757d;white-space:nowrap;padding-left:1rem;">סך רשומות (כלל קבצים)</td>
+          <td style="padding:0.35rem 0;color:#0c3058;">~414,813</td>
+        </tr>
+      </table>
+    </div>
+    <div>
+      <p style="font-size:0.8rem;color:#6c757d;margin:0 0 0.5rem;font-weight:500;">קבצי המאגר (CSV)</p>
+      <div class="resources-grid">
+        <div class="resource-item">
+          <div style="font-size:0.85rem;font-weight:500;color:#0b3668;margin-bottom:0.25rem;">עמותות רשומות</div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            <span class="badge" style="background:#dbe8fb;color:#0053c4;">CSV</span>
+            <span class="badge" style="background:#f0f4fa;color:#6c757d;">~45 MB</span>
+            <span class="badge" style="background:#d1fae5;color:#198754;">74,976 רשומות</span>
+          </div>
+        </div>
+        <div class="resource-item">
+          <div style="font-size:0.85rem;font-weight:500;color:#0b3668;margin-bottom:0.25rem;">תרומות מגורמים זרים</div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            <span class="badge" style="background:#dbe8fb;color:#0053c4;">CSV</span>
+            <span class="badge" style="background:#f0f4fa;color:#6c757d;">~5 MB</span>
+            <span class="badge" style="background:#d1fae5;color:#198754;">13,454 רשומות</span>
+          </div>
+        </div>
+        <div class="resource-item">
+          <div style="font-size:0.85rem;font-weight:500;color:#0b3668;margin-bottom:0.25rem;">אישור ניהול תקין</div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            <span class="badge" style="background:#dbe8fb;color:#0053c4;">CSV</span>
+            <span class="badge" style="background:#f0f4fa;color:#6c757d;">~37 MB</span>
+            <span class="badge" style="background:#d1fae5;color:#198754;">324,883 רשומות</span>
+          </div>
+        </div>
+        <div class="resource-item">
+          <div style="font-size:0.85rem;font-weight:500;color:#0b3668;margin-bottom:0.25rem;">חברות רשומות לתועלת הציבור</div>
+          <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+            <span class="badge" style="background:#dbe8fb;color:#0053c4;">CSV</span>
+            <span class="badge" style="background:#f0f4fa;color:#6c757d;">~680 KB</span>
+            <span class="badge" style="background:#d1fae5;color:#198754;">1,500 רשומות</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ====== תובנות ====== -->
+<section class="card p-5 mb-4">
+  <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0;">תובנות מרכזיות</h2>
+  </div>
+  <div>
+    <div class="insight-item">
+      <span class="insight-dot"></span>
+      <p style="margin:0;color:#0c3058;font-size:0.9rem;">
+        מתוך <strong>74,976</strong> עמותות שנרשמו בישראל מאז 1981, <strong>38,388</strong> (כ-51%) עדיין מחזיקות בסטטוס "רשומה" פעילה —
+        כ-<strong>32,670</strong> עמותות נמחקו מהרשם לאורך השנים.
+      </p>
+    </div>
+    <div class="insight-item">
+      <span class="insight-dot"></span>
+      <p style="margin:0;color:#0c3058;font-size:0.9rem;">
+        תחום <strong>חינוך, השכלה והכשרה מקצועית</strong> מוביל עם כ-32% מהעמותות הפעילות, אחריו <strong>דת</strong> (כ-24%)
+        ו-<strong>שירותי רווחה</strong> (כ-18%) — נתונים המשקפים מדגם של 2,000 עמותות רשומות.
+      </p>
+    </div>
+    <div class="insight-item">
+      <span class="insight-dot"></span>
+      <p style="margin:0;color:#0c3058;font-size:0.9rem;">
+        מאז 2012 הוגשו <strong>13,454</strong> דיווחים על תרומות ממדינות ומגורמים מדיניים זרים; שיא נרשם בשנת 2017 (493 דיווחים בדגימה). 
+        הגורמים הזרים המדווחים ביותר: האיחוד האירופי, שגרירויות נורווגיה וארה"ב, ו-Bread for the World.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ====== ויזואליזציות ====== -->
+
+<!-- Chart 1: Status Distribution -->
+<section class="card p-5 mb-5">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 0.25rem;">התפלגות סטטוס עמותות</h2>
+  <p style="font-size:0.8rem;color:#6c757d;margin:0 0 1rem;">מתוך 74,976 רשומות עמותות במאגר</p>
+  <div class="chart-wrap">
+    <div id="chart-status" style="height:320px;width:100%;"></div>
+  </div>
+</section>
+
+<!-- Chart 2: Activity Breakdown -->
+<section class="card p-5 mb-5">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 0.25rem;">תחומי פעילות — עמותות פעילות</h2>
+  <p style="font-size:0.8rem;color:#6c757d;margin:0 0 1rem;">הערכה על בסיס מדגם של 2,000 עמותות רשומות (מתוך 38,388 סה"כ)</p>
+  <div class="chart-wrap">
+    <div id="chart-activity" style="height:380px;width:100%;"></div>
+  </div>
+</section>
+
+<!-- Chart 3: Foreign Donations Time Series -->
+<section class="card p-5 mb-5">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 0.25rem;">דיווחי תרומות מגורמים מדיניים זרים לפי שנה</h2>
+  <p style="font-size:0.8rem;color:#6c757d;margin:0 0 1rem;">מבוסס על מדגם של 5,000 מתוך 13,454 דיווחים (2012–2026)</p>
+  <div class="chart-wrap">
+    <div id="chart-donations" style="height:300px;width:100%;"></div>
+  </div>
+</section>
+
+<!-- ====== הערות המאגר ====== -->
+<section class="card p-5 mb-4">
+  <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.75rem;">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0;">תיאור המאגר (מקורי)</h2>
+  </div>
+  <p style="color:#0c3058;font-size:0.9rem;margin:0 0 0.6rem;">
+    מאגר מידע זה מכיל ארבעה קבצי מידע אודות עמותות וחברות לתועלת הציבור, המבוססים על מאגרי רשם העמותות ורשם ההקדשות ברשות התאגידים:
+  </p>
+  <ul style="color:#0c3058;font-size:0.9rem;padding-right:1.25rem;margin:0;line-height:1.7;">
+    <li>הקובץ הראשון כולל מידע כללי על עמותות הרשומות במרשם שמנהל רשם העמותות (שם, מספר, תאריך רישום, כתובת, מטרות, תחומי פעילות, שנת דיווח אחרונה).</li>
+    <li>הקובץ השני כולל מידע כללי על חברות לתועלת הציבור (חל"צ) הרשומות במרשם שמנהל רשם ההקדשות (שם, מספר, תחומי פעילות, אזורי פעילות, כתובת וסטטוס).</li>
+    <li>הקובץ השלישי כולל את פרטי הדיווחים הרבעוניים שהוגשו על-ידי עמותות וחל"צ אשר קיבלו תרומות מישויות מדיניות זרות.</li>
+    <li>הקובץ הרביעי כולל את רשימת העמותות והחל"צ שקיבלו אישור ניהול תקין או אישור על הגשת מסמכים.</li>
+  </ul>
+  <p style="color:#6c757d;font-size:0.8rem;margin:0.75rem 0 0;">המידע מתעדכן מדי שבוע.</p>
+</section>
+
+<!-- ====== ציון איכות ====== -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 0.75rem;">ציון איכות מאגר</h2>
+  <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+    <div style="flex:1;min-width:200px;">
+      <div class="quality-track">
+        <div class="quality-fill" style="width:78%;"></div>
+      </div>
+    </div>
+    <span style="font-size:1.1rem;font-weight:700;color:#0068f5;">78 / 100</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:0.5rem;margin-top:0.75rem;font-size:0.8rem;color:#6c757d;">
+    <div><span style="color:#198754;font-weight:600;">100</span> — עדכניות הנתונים</div>
+    <div><span style="color:#198754;font-weight:600;">100</span> — נגישות API</div>
+    <div><span style="color:#198754;font-weight:600;">100</span> — שורות ייחודיות</div>
+    <div><span style="color:#198754;font-weight:600;">100</span> — מטה-דאטה</div>
+    <div><span style="color:#ffc107;font-weight:600;">68</span> — שלמות שדות</div>
+  </div>
+</section>
+
+<!-- ====== ECharts ====== -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+(function() {
+
+  const GOVIL_PALETTE = [
+    '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
+    '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
+  ];
+
+  const baseECharts = {
+    color: GOVIL_PALETTE,
+    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+    tooltip: {
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff',
+      borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+  };
+
+  /* ---- Chart 1: Status Donut ---- */
+  (function() {
+    var dom = document.getElementById('chart-status');
+    if (!dom) return;
+    var chart = echarts.init(dom);
+    var option = Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'item',
+        formatter: function(p) {
+          return '<div style="text-align:right">' + p.name + '<br/><strong>' + p.value.toLocaleString('he-IL') + '</strong> (' + p.percent + '%)</div>';
+        }
+      }),
+      legend: {
+        orient: 'vertical',
+        right: '5%',
+        top: 'center',
+        textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 13 }
+      },
+      series: [{
+        name: 'סטטוס עמותה',
+        type: 'pie',
+        radius: ['40%', '68%'],
+        center: ['38%', '50%'],
+        avoidLabelOverlap: true,
+        label: { show: false },
+        labelLine: { show: false },
+        emphasis: {
+          label: { show: true, fontSize: 14, fontFamily: 'Rubik', fontWeight: '600' }
+        },
+        data: [
+          { value: 38388, name: 'רשומה (פעילה)',    itemStyle: { color: '#0068f5' } },
+          { value: 32670, name: 'נמחקה',             itemStyle: { color: '#6c9fd8' } },
+          { value: 3918,  name: 'פורקה / חוסל',      itemStyle: { color: '#b7d2f7' } }
+        ]
+      }]
+    });
+    chart.setOption(option);
+    window.addEventListener('resize', function() { chart.resize(); });
+  })();
+
+  /* ---- Chart 2: Activity Horizontal Bar ---- */
+  (function() {
+    var dom = document.getElementById('chart-activity');
+    if (!dom) return;
+    var chart = echarts.init(dom);
+
+    // Estimated counts from 2000-record sample scaled to 38,388 registered associations
+    var cats = [
+      'מורשת והנצחה', 'מחקר, מדע וטכנולוגיה', 'בריאות והצלת חיים',
+      'ספורט', 'תרבות ואמנות', 'קהילה וחברה',
+      'שירותי רווחה', 'דת', 'חינוך, השכלה והכשרה מקצועית'
+    ];
+    // Scaled values (sample proportion × 38,388)
+    var vals = [980, 1056, 1152, 1152, 2188, 2342, 7006, 9175, 12284];
+
+    var option = Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'axis',
+        axisPointer: { type: 'shadow' },
+        formatter: function(p) {
+          return '<div style="text-align:right">' + p[0].name + '<br/>הערכה: <strong>' + p[0].value.toLocaleString('he-IL') + '</strong> עמותות</div>';
+        }
+      }),
+      grid: { left: 20, right: 80, top: 20, bottom: 20, containLabel: true },
+      xAxis: {
+        type: 'value',
+        name: 'מספר עמותות (הערכה)',
+        nameLocation: 'end',
+        nameTextStyle: { fontFamily: 'Rubik', fontSize: 11, color: '#6c757d' },
+        axisLabel: {
+          fontFamily: 'Rubik', color: '#6c757d', fontSize: 11,
+          formatter: function(v) { return v >= 1000 ? (v/1000).toFixed(0) + 'K' : v; }
+        },
+        splitLine: { lineStyle: { color: '#e8eef8' } }
+      },
+      yAxis: {
+        type: 'category',
+        data: cats,
+        axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 12 },
+        axisLine: { lineStyle: { color: '#c3cfe7' } }
+      },
+      series: [{
+        type: 'bar',
+        data: vals,
+        barMaxWidth: 36,
+        itemStyle: {
+          color: function(p) { return GOVIL_PALETTE[p.dataIndex % GOVIL_PALETTE.length]; },
+          borderRadius: [0, 4, 4, 0]
+        },
+        label: {
+          show: true, position: 'right',
+          fontFamily: 'Rubik', color: '#0c3058', fontSize: 11,
+          formatter: function(p) { return p.value.toLocaleString('he-IL'); }
+        }
+      }]
+    });
+    chart.setOption(option);
+    window.addEventListener('resize', function() { chart.resize(); });
+  })();
+
+  /* ---- Chart 3: Foreign Donations Line ---- */
+  (function() {
+    var dom = document.getElementById('chart-donations');
+    if (!dom) return;
+    var chart = echarts.init(dom);
+
+    // Counts per year from 5,000-record sample (37% of 13,454)
+    var years = ['2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+    var counts = [191,228,238,486,455,493,389,350,365,432,377,364,370,241];
+
+    var option = Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'axis',
+        formatter: function(p) {
+          return '<div style="text-align:right">' + p[0].axisValue + '<br/>דיווחים (מדגם): <strong>' + p[0].value + '</strong></div>';
+        }
+      }),
+      grid: { left: 48, right: 32, top: 32, bottom: 40, containLabel: true },
+      xAxis: {
+        type: 'category',
+        data: years,
+        axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+        axisLine: { lineStyle: { color: '#c3cfe7' } }
+      },
+      yAxis: {
+        type: 'value',
+        name: 'מספר דיווחים',
+        nameTextStyle: { fontFamily: 'Rubik', fontSize: 11, color: '#6c757d' },
+        axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+        splitLine: { lineStyle: { color: '#e8eef8' } }
+      },
+      series: [{
+        type: 'line',
+        data: counts,
+        smooth: true,
+        symbol: 'circle',
+        symbolSize: 6,
+        lineStyle: { color: '#0068f5', width: 2.5 },
+        itemStyle: { color: '#0068f5', borderColor: '#fff', borderWidth: 2 },
+        areaStyle: {
+          color: {
+            type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+            colorStops: [
+              { offset: 0, color: 'rgba(0,104,245,0.18)' },
+              { offset: 1, color: 'rgba(0,104,245,0.01)' }
+            ]
+          }
+        },
+        markPoint: {
+          data: [{ type: 'max', name: 'מקסימום' }],
+          label: { fontFamily: 'Rubik', fontSize: 11 },
+          itemStyle: { color: '#0b3668' }
+        }
+      }]
+    });
+    chart.setOption(option);
+    window.addEventListener('resize', function() { chart.resize(); });
+  })();
+
+})();
+</script>
+
+<style>
+@media (max-width: 640px) {
+  .meta-grid { grid-template-columns: 1fr !important; }
+}
+</style>
