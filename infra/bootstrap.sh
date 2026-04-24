@@ -19,8 +19,11 @@ PROJECT=${FIREBASE_PROJECT:-govdata-il}
 REGION=${REGION:-me-west1}
 STAGING_BUCKET=${GCS_STAGING_BUCKET:-${PROJECT}-staging}
 TRIGGER_ID=${PUBLISH_TRIGGER_ID:-govdata-publish}
+IMAGE_TRIGGER_ID=${PUBLISHER_IMAGE_TRIGGER_ID:-govdata-publisher-image}
 PUBLISH_BRANCH=${PUBLISH_BRANCH:-main}
 REPO_NAME=${CSR_REPO_NAME:-govdata-il}
+AR_LOCATION=${AR_LOCATION:-$REGION}
+AR_REPO=${AR_REPO:-publisher}
 
 cd "$(dirname "$0")/.."
 
@@ -97,8 +100,9 @@ done
 gcloud storage buckets add-iam-policy-binding "gs://$STAGING_BUCKET" \
   --member="serviceAccount:$BUILDER_SA" --role=roles/storage.objectAdmin --quiet >/dev/null
 
-# Publisher: read Firestore + staging, deploy Firebase Hosting.
-for role in roles/datastore.viewer roles/logging.logWriter roles/firebasehosting.admin; do
+# Publisher: read Firestore + staging, deploy Firebase Hosting, pull the
+# pre-baked publisher image from Artifact Registry.
+for role in roles/datastore.viewer roles/logging.logWriter roles/firebasehosting.admin roles/artifactregistry.reader; do
   gcloud projects add-iam-policy-binding "$PROJECT" \
     --member="serviceAccount:$PUBLISHER_SA" --role="$role" --condition=None --quiet >/dev/null
 done
@@ -114,6 +118,21 @@ gcloud iam service-accounts add-iam-policy-binding "$PUBLISHER_SA" \
 # Scheduler: may invoke the Cloud Run builder.
 # (The run.invoker binding is attached to the service after deploy; see builder.deploy.sh.)
 
+# ---- 5b. Artifact Registry (pre-baked publisher image) ---------------------
+if ! gcloud artifacts repositories describe "$AR_REPO" --location="$AR_LOCATION" --project "$PROJECT" >/dev/null 2>&1; then
+  echo "==> creating Artifact Registry repo '$AR_REPO' in $AR_LOCATION"
+  gcloud artifacts repositories create "$AR_REPO" \
+    --repository-format=docker \
+    --location="$AR_LOCATION" \
+    --project "$PROJECT" >/dev/null
+else
+  echo "==> Artifact Registry repo '$AR_REPO' already exists"
+fi
+gcloud artifacts repositories add-iam-policy-binding "$AR_REPO" \
+  --location="$AR_LOCATION" --project "$PROJECT" \
+  --member="serviceAccount:$PUBLISHER_SA" \
+  --role=roles/artifactregistry.reader --quiet >/dev/null
+
 # ---- 6. Secret Manager -----------------------------------------------------
 if ! gcloud secrets describe anthropic-api-key --project "$PROJECT" >/dev/null 2>&1; then
   echo "==> creating Secret Manager secret 'anthropic-api-key' (empty; populate via: "
@@ -123,8 +142,8 @@ fi
 gcloud secrets add-iam-policy-binding anthropic-api-key \
   --member="serviceAccount:$BUILDER_SA" --role=roles/secretmanager.secretAccessor --quiet >/dev/null || true
 
-# ---- 7. Cloud Build trigger (publisher) ------------------------------------
-echo "==> Cloud Build trigger '$TRIGGER_ID'"
+# ---- 7. Cloud Build triggers (publisher + publisher image) -----------------
+echo "==> Cloud Build trigger '$TRIGGER_ID' (publisher — cloudbuild-publish.yaml)"
 if ! gcloud builds triggers describe "$TRIGGER_ID" --region=global --project "$PROJECT" >/dev/null 2>&1; then
   echo "    NOTE: this trigger must be connected to the source repo manually."
   echo "          Options:"
@@ -141,6 +160,30 @@ if ! gcloud builds triggers describe "$TRIGGER_ID" --region=global --project "$P
   echo "        --branch=$PUBLISH_BRANCH \\"
   echo "        --service-account=projects/$PROJECT/serviceAccounts/$PUBLISHER_SA \\"
   echo "        --project=$PROJECT"
+else
+  echo "    trigger already configured"
+fi
+
+echo "==> Cloud Build trigger '$IMAGE_TRIGGER_ID' (publisher image — cloudbuild-publisher-image.yaml)"
+if ! gcloud builds triggers describe "$IMAGE_TRIGGER_ID" --region=global --project "$PROJECT" >/dev/null 2>&1; then
+  echo "    Register a push trigger path-filtered to the files that invalidate"
+  echo "    the pre-baked publisher image:"
+  echo "      - infra/Dockerfile.publisher"
+  echo "      - frontend/package-lock.json"
+  echo "      - services/page_builder/requirements.txt"
+  echo
+  echo "    With a GitHub 2nd-gen connection:"
+  echo "      gcloud builds triggers create github \\"
+  echo "        --name=$IMAGE_TRIGGER_ID \\"
+  echo "        --repo-owner=<OWNER> --repo-name=<REPO> \\"
+  echo "        --branch-pattern='^${PUBLISH_BRANCH}$' \\"
+  echo "        --included-files='infra/Dockerfile.publisher,frontend/package-lock.json,services/page_builder/requirements.txt' \\"
+  echo "        --build-config=cloudbuild-publisher-image.yaml \\"
+  echo "        --service-account=projects/$PROJECT/serviceAccounts/$PUBLISHER_SA \\"
+  echo "        --project=$PROJECT"
+  echo
+  echo "    (Run once manually after registering to populate :latest:"
+  echo "      gcloud builds triggers run $IMAGE_TRIGGER_ID --branch=$PUBLISH_BRANCH --project=$PROJECT)"
 else
   echo "    trigger already configured"
 fi

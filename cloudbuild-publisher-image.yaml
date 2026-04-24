@@ -1,0 +1,47 @@
+# Rebuilds the pre-baked publisher image consumed by cloudbuild-publish.yaml.
+#
+# Register as a second Cloud Build trigger, path-filtered to:
+#   - infra/Dockerfile.publisher
+#   - frontend/package-lock.json
+#   - services/page_builder/requirements.txt
+#
+# Example:
+#   gcloud builds triggers create manual \
+#     --name=govdata-publisher-image \
+#     --repo=projects/$PROJECT/locations/global/connections/<CONN>/repositories/<REPO> \
+#     --build-config=cloudbuild-publisher-image.yaml \
+#     --branch=main \
+#     --service-account=projects/$PROJECT/serviceAccounts/$PUBLISHER_SA
+#
+# (Or the equivalent github-trigger variant — see infra/DEPLOY.md.)
+
+steps:
+  - id: 'build-image'
+    name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '--cache-from=${_IMAGE}:latest'
+      - '-t'
+      - '${_IMAGE}:latest'
+      - '-t'
+      - '${_IMAGE}:${COMMIT_SHA}'
+      - '-f'
+      - 'infra/Dockerfile.publisher'
+      - '.'
+
+  - id: 'push-image'
+    name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '--all-tags', '${_IMAGE}']
+
+substitutions:
+  _IMAGE: 'me-west1-docker.pkg.dev/govdata-il/publisher/publisher'
+
+images:
+  - '${_IMAGE}:latest'
+  - '${_IMAGE}:${COMMIT_SHA}'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+timeout: '1200s'

@@ -2,15 +2,22 @@
 # Firebase Hosting. Triggered by govdata-builder after a successful agent
 # run (see services/page_builder/pipeline.py::_trigger_publish).
 #
+# Uses a pre-baked image built by cloudbuild-publisher-image.yaml — it
+# carries node 22, firebase-tools, gsutil, page_builder Python deps, and
+# frontend/node_modules. That lets every step run on the same image
+# (single pull) and skips `npm ci` + firebase-tools install on every
+# publish.
+#
 # Substitutions:
 #   _STAGING_BUCKET    GCS bucket the builder stages agent outputs to
 #   _FIREBASE_PROJECT  Firebase / GCP project that owns Hosting + Firestore
+#   _PUBLISHER_IMAGE   Pre-baked image (see cloudbuild-publisher-image.yaml)
 
 steps:
   # [1] Pull staged agent artifacts into the Nuxt public dir so they ship
   #     alongside Nuxt's generated category pages.
   - id: 'fetch-pages'
-    name: 'gcr.io/cloud-builders/gsutil'
+    name: '${_PUBLISHER_IMAGE}'
     entrypoint: 'bash'
     args:
       - '-c'
@@ -21,7 +28,7 @@ steps:
 
   # [2] Build manifest.json from Firestore sources (analysis_status=succeeded).
   - id: 'build-manifest'
-    name: 'python:3.12-slim'
+    name: '${_PUBLISHER_IMAGE}'
     entrypoint: 'bash'
     env:
       - 'FIRESTORE_PROJECT_ID=${_FIREBASE_PROJECT}'
@@ -30,46 +37,40 @@ steps:
       - '-c'
       - |
         set -euo pipefail
-        pip install --no-cache-dir -r services/page_builder/requirements.txt
         mkdir -p frontend/public/data
         python3 -m services.page_builder.manifest \
           --from-firestore \
           --out frontend/public/data/manifest.json
 
-  # [3] Install Nuxt deps and run `nuxt generate` (static site → frontend/.output/public/).
-  - id: 'nuxt-generate'
-    name: 'node:22'
+  # [3] nuxt generate + firebase deploy, in one step on the pre-baked image.
+  #     Reuses /opt/frontend-deps/node_modules when package-lock matches the
+  #     image; falls back to `npm ci` if the lock has drifted (rebuild the
+  #     image via cloudbuild-publisher-image.yaml to restore the fast path).
+  - id: 'generate-and-deploy'
+    name: '${_PUBLISHER_IMAGE}'
     entrypoint: 'bash'
-    dir: 'frontend'
     args:
       - '-c'
       - |
         set -euo pipefail
-        npm config set fetch-retries 5
-        npm config set fetch-retry-mintimeout 10000
-        for i in 1 2 3; do
-          npm ci --prefer-offline --no-audit && break
-          echo "npm ci retry $i/3"
-          sleep 10
-        done
+        cd frontend
+        IMAGE_LOCK="/opt/frontend-deps/package-lock.json"
+        if [ -f "$IMAGE_LOCK" ] \
+           && [ "$(md5sum < "$IMAGE_LOCK" | cut -d' ' -f1)" = "$(md5sum < package-lock.json | cut -d' ' -f1)" ]; then
+          echo "package-lock.json matches image; reusing pre-baked node_modules"
+          cp -a /opt/frontend-deps/node_modules node_modules
+        else
+          echo "package-lock.json differs from image; running npm ci (rebuild publisher image to restore fast path)"
+          npm config set fetch-retries 5
+          npm config set fetch-retry-mintimeout 10000
+          for i in 1 2 3; do
+            npm ci --prefer-offline --no-audit && break
+            echo "npm ci retry $i/3"
+            sleep 10
+          done
+        fi
         npm run generate
-
-  # [4] Deploy to Firebase Hosting (firebase-tools is installed per build;
-  #     keeps the image pinned to node:20 rather than a separate builder).
-  - id: 'firebase-deploy'
-    name: 'node:22'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        set -euo pipefail
-        npm config set fetch-retries 5
-        npm config set fetch-retry-mintimeout 10000
-        for i in 1 2 3; do
-          npm install -g firebase-tools@latest && break
-          echo "firebase-tools install retry $i/3"
-          sleep 10
-        done
+        cd ..
         firebase deploy \
           --only hosting \
           --project "${_FIREBASE_PROJECT}" \
@@ -78,6 +79,7 @@ steps:
 substitutions:
   _STAGING_BUCKET: 'govdata-il-staging'
   _FIREBASE_PROJECT: 'govdata-il'
+  _PUBLISHER_IMAGE: 'me-west1-docker.pkg.dev/govdata-il/publisher/publisher:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY

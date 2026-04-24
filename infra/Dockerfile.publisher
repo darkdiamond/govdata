@@ -1,0 +1,43 @@
+# Pre-baked image used by cloudbuild-publish.yaml.
+#
+# Bundles node 22, python 3.12, gcloud SDK (incl. gsutil), firebase-tools,
+# the page_builder Python deps, and frontend/node_modules. Rebuilt on changes
+# to this Dockerfile, frontend/package-lock.json, or
+# services/page_builder/requirements.txt via cloudbuild-publisher-image.yaml.
+#
+# The image intentionally carries node_modules at /opt/frontend-deps/ so the
+# publish build can skip `npm ci` — see cloudbuild-publish.yaml.
+
+FROM node:22-bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
+    PIP_NO_CACHE_DIR=1
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3 python3-pip \
+        curl ca-certificates gnupg \
+    && install -d -m 0755 /etc/apt/keyrings \
+    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+        | gpg --dearmor -o /etc/apt/keyrings/cloud.google.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" \
+        > /etc/apt/sources.list.d/google-cloud-sdk.list \
+    && apt-get update && apt-get install -y --no-install-recommends google-cloud-cli \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+RUN npm install -g firebase-tools@latest && npm cache clean --force
+
+COPY services/page_builder/requirements.txt /tmp/requirements.txt
+RUN pip3 install -r /tmp/requirements.txt && rm /tmp/requirements.txt
+
+# Pre-install frontend deps so the publish build can `cp -a` them into place
+# instead of re-running `npm ci`. --ignore-scripts skips `nuxt prepare`
+# (needs repo sources we don't have here); `nuxt generate` re-runs prepare
+# at build time anyway.
+RUN mkdir -p /opt/frontend-deps
+COPY frontend/package.json frontend/package-lock.json /opt/frontend-deps/
+RUN cd /opt/frontend-deps \
+    && npm ci --prefer-offline --no-audit --ignore-scripts \
+    && npm cache clean --force
+
+WORKDIR /workspace
