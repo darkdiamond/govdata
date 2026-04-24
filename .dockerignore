@@ -1,5 +1,9 @@
 # Keep the Cloud Run build context small — only the Python service ships.
+# Exceptions are whitelisted below for images that need a narrow slice
+# of other dirs (e.g. the publisher image needs the frontend lock files).
 frontend/
+!frontend/package.json
+!frontend/package-lock.json
 docs/
 tests/
 venv/
