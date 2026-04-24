@@ -1,0 +1,373 @@
+<!-- ======================================================
+     סימני מסחר — סיווגים | משרד המשפטים
+     dataset: 556634fd-fcec-4bbd-8bd5-ba1390bc1c14
+     resource (nice):   bc9b55dc-a0c6-4b52-a925-5dabc7ef7979
+     resource (vienna): 820e988c-2740-46ca-8df4-2ed04ec7bf01
+     ====================================================== -->
+
+<style>
+  .kpi-num   { font-size: 2rem; font-weight: 700; line-height: 1; }
+  .kpi-lbl   { font-size: 0.8rem; color: #6c757d; margin-top: .35rem; }
+  .type-good { background: #dbe8fb; color: #0053c4; border-radius: 50rem; padding: .15rem .6rem; font-size: .72rem; font-weight: 500; }
+  .type-svc  { background: #e0f0ff; color: #0b3668; border-radius: 50rem; padding: .15rem .6rem; font-size: .72rem; font-weight: 500; }
+  #nice-search { direction: rtl; }
+  .nice-row td { padding: .45rem .4rem; border-bottom: 1px solid #c3cfe7; vertical-align: middle; }
+  .nice-row:last-child td { border-bottom: none; }
+  .nice-row.hidden { display: none; }
+</style>
+
+<!-- ── כותרת ────────────────────────────────────────── -->
+<h1 class="text-2xl font-bold mb-3" style="color:#0b3668;">סימני מסחר — סיווגים</h1>
+
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">סימני מסחר</span>
+  <span class="tag-chip">סיווג ניצה</span>
+  <span class="tag-chip">סיווג וינה</span>
+  <span class="tag-chip">קניין רוחני</span>
+  <span class="tag-chip">WIPO</span>
+</div>
+
+<!-- ── סיכום AI ────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <div class="flex items-start gap-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 shrink-0" style="margin-top:.15rem;color:#198754;" />
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="font-semibold" style="color:#0b3668;">סיכום</span>
+        <span class="badge" style="background:#d1fae5;color:#065f46;border-radius:50rem;padding:.15rem .6rem;font-size:.72rem;">אמינות גבוהה</span>
+      </div>
+      <p class="text-sm" style="color:#0c3058;line-height:1.6;">
+        המאגר מכיל שני קודי ייחוס רשמיים לרישום סימני מסחר בישראל:
+        <strong>סיווג ניצה</strong> — 45 מחלקות בינלאומיות (WIPO) המחלקות את הסחורות למחלקות 1–34 ואת השירותים למחלקות 35–45 —
+        ו<strong>סיווג וינה</strong> — 144 ערכים ל-29 קטגוריות ראשיות לסיווג אלמנטים ציוריים בסמלים גרפיים.
+        שני הטבלאות מסופקות בדו-לשוניות מלאה (עברית ואנגלית), מתעדכנות אוטומטית ומשמשות בסיס לרישום ולבחינה של סימני מסחר בלשכת הפטנטים.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── תובנות ────────────────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold mb-3 flex items-center gap-2" style="color:#0b3668;">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    תובנות מרכזיות
+  </h2>
+  <ul class="space-y-2 text-sm" style="color:#0c3058;">
+    <li class="flex items-start gap-2">
+      <span class="shrink-0 w-2 h-2 rounded-full mt-1.5" style="background:#0068f5;"></span>
+      סיווג ניצה כולל <strong>45 מחלקות</strong> בסך הכול: <strong>34 מחלקות לסחורות</strong> (1–34) ו-<strong>11 מחלקות לשירותים</strong> (35–45), בהתאם לסטנדרט הבינלאומי של WIPO משנת 1957.
+    </li>
+    <li class="flex items-start gap-2">
+      <span class="shrink-0 w-2 h-2 rounded-full mt-1.5" style="background:#0068f5;"></span>
+      סיווג וינה כולל <strong>144 ערכים</strong> ב-<strong>29 קטגוריות ראשיות</strong>; הקטגוריות הגדולות ביותר הן <strong>קטגוריה 3 (בעלי חיים)</strong> עם 12 תתי-מחלקות, וקטגוריות 24 (סמלים ועיטורים) ו-26 (צורות גיאומטריות) עם 9 תתי-מחלקות כל אחת.
+    </li>
+    <li class="flex items-start gap-2">
+      <span class="shrink-0 w-2 h-2 rounded-full mt-1.5" style="background:#0068f5;"></span>
+      שני קבצי ה-CSV מוצגים בדו-לשוניות מלאה ומתעדכנים אוטומטית עם ציון שלמות תאים של <strong>100%</strong> ונגישות מלאה דרך API.
+    </li>
+  </ul>
+</section>
+
+<!-- ── KPI ──────────────────────────────────────────── -->
+<div class="grid grid-cols-2 gap-3 mb-5" style="grid-template-columns:repeat(4,1fr);">
+  <div class="card p-4 text-center">
+    <div class="kpi-num" style="color:#0068f5;">45</div>
+    <div class="kpi-lbl">מחלקות ניצה סה"כ</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="kpi-num" style="color:#0b3668;">34</div>
+    <div class="kpi-lbl">מחלקות סחורות</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="kpi-num" style="color:#3d70b0;">11</div>
+    <div class="kpi-lbl">מחלקות שירותים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="kpi-num" style="color:#6c9fd8;">144</div>
+    <div class="kpi-lbl">סיווגי וינה</div>
+  </div>
+</div>
+
+<!-- ── גרף 1: תרשים עוגה — ניצה ────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold mb-1" style="color:#0b3668;">חלוקת מחלקות ניצה: סחורות לעומת שירותים</h2>
+  <p class="text-sm mb-4" style="color:#6c757d;">בהתאם לנתוני המאגר — 45 מחלקות סה"כ</p>
+  <div id="nice-donut" style="height:300px;"></div>
+</section>
+
+<!-- ── טבלת מחלקות ניצה ──────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <div class="flex items-center justify-between flex-wrap gap-3 mb-4">
+    <h2 class="text-base font-semibold" style="color:#0b3668;">כל 45 מחלקות ניצה</h2>
+    <input id="nice-search" type="text" placeholder="חיפוש מחלקה..."
+      style="border:1px solid #c3cfe7;border-radius:.5rem;padding:.35rem .75rem;font-size:.85rem;color:#0c3058;width:180px;outline:none;font-family:Rubik,sans-serif;" />
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead>
+        <tr style="border-bottom:2px solid #c3cfe7;color:#6c757d;text-align:right;">
+          <th class="pb-2 font-medium" style="width:60px;">מחלקה</th>
+          <th class="pb-2 font-medium">תיאור בעברית</th>
+          <th class="pb-2 font-medium">Description</th>
+          <th class="pb-2 font-medium text-center" style="width:90px;">סוג</th>
+        </tr>
+      </thead>
+      <tbody id="nice-tbody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── גרף 2: סיווג וינה — תרשים עמודות אופקיות ────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold mb-1" style="color:#0b3668;">סיווג וינה — מספר תתי-מחלקות לפי קטגוריה ראשית</h2>
+  <p class="text-sm mb-4" style="color:#6c757d;">29 קטегוריות | 144 ערכים סה"כ</p>
+  <div id="vienna-bar" style="height:580px;"></div>
+</section>
+
+<!-- ── הערות ──────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold mb-2 flex items-center gap-2" style="color:#0b3668;">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    הערות למאגר
+  </h2>
+  <p class="text-sm" style="color:#0c3058;">המאגר מכיל סיווגים של סימני מסחר</p>
+</section>
+
+<!-- ── ציון איכות ──────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold mb-3" style="color:#0b3668;">ציון איכות המאגר</h2>
+  <div class="flex items-center gap-3">
+    <div class="quality-track" style="flex:1;">
+      <div class="quality-fill" style="width:83%;"></div>
+    </div>
+    <span class="font-bold" style="color:#0068f5;min-width:60px;text-align:left;">83 / 100</span>
+  </div>
+  <p class="text-xs mt-2" style="color:#6c757d;">
+    שלמות תאים: 100% | שורות ייחודיות: 100% | נגישות API: 100% | מטא-נתונים: 100%
+  </p>
+</section>
+
+<!-- ======================================================
+     Scripts
+     ====================================================== -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+/* ── Palette & ECharts base ──────────────────────────── */
+const GOVIL_PALETTE = [
+  '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+  '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+];
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction:rtl;box-shadow:0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true }
+};
+
+/* ── Nice classification data ────────────────────────── */
+const niceData = [
+  {num:1,  he:'חומרים כימיים',                   en:'Chemicals',                              goods:true },
+  {num:2,  he:'צבעים',                            en:'Paints',                                 goods:true },
+  {num:3,  he:'תכשירי ניקוי, קוסמטיקה',          en:'Cleaning preparations, cosmetics',       goods:true },
+  {num:4,  he:'שמנים תעשיתיים',                  en:'Industrial oils',                        goods:true },
+  {num:5,  he:'תכשירי רוקחות',                   en:'Pharmaceutical preparations',            goods:true },
+  {num:6,  he:'מתכות פשוטות',                    en:'Common metals',                          goods:true },
+  {num:7,  he:'מכונות',                           en:'Machines',                               goods:true },
+  {num:8,  he:'כלי עבודה ידניים',                en:'Hand tools',                             goods:true },
+  {num:9,  he:'מכשירי מדע, חשמל, מחשבים',       en:'Scientific, electric apparatus, computers', goods:true },
+  {num:10, he:'מכשירים רפואיים',                 en:'Medical apparatus',                      goods:true },
+  {num:11, he:'התקני תאורה',                     en:'Apparatus for lighting',                 goods:true },
+  {num:12, he:'כלי רכב',                         en:'Vehicles',                               goods:true },
+  {num:13, he:'כלי נשק',                         en:'Firearms',                               goods:true },
+  {num:14, he:'מתכות יקרות',                     en:'Precious metals',                        goods:true },
+  {num:15, he:'כלי נגינה',                       en:'Musical instruments',                    goods:true },
+  {num:16, he:'נייר וצרכי נייר',                 en:'Paper and paper goods',                  goods:true },
+  {num:17, he:'חמרי אטימה ובידוד',              en:'Stopping and insulating materials',      goods:true },
+  {num:18, he:'עור וחיקויי עור',                 en:'Leather and imitations of leather',      goods:true },
+  {num:19, he:'חמרי בנייה לא מתכתיים',          en:'Non-metallic building materials',        goods:true },
+  {num:20, he:'רהיטים',                          en:'Furniture',                              goods:true },
+  {num:21, he:'כלי מטבח, ניקוי וזכוכית',        en:'Kitchen and cleaning utensils, glassware', goods:true },
+  {num:22, he:'חבלים, חמרי טקסטיל גולמיים',    en:'Ropes, raw textile materials',           goods:true },
+  {num:23, he:'מטווה וחוטים',                   en:'Yarns and threads',                      goods:true },
+  {num:24, he:'אריגים',                          en:'Textiles',                               goods:true },
+  {num:25, he:'דברי הלבשה',                     en:'Clothing',                               goods:true },
+  {num:26, he:'תחרה, רקמה, כפתורים',            en:'Lace, embroidery, buttons',              goods:true },
+  {num:27, he:'שטיחים, מרבדים',                 en:'Carpets, rugs',                          goods:true },
+  {num:28, he:'משחקים, צרכי התעמלות',           en:'Games, sporting articles',               goods:true },
+  {num:29, he:'בשר, דגים, חלב, שימורים',        en:'Meat, fish, milk, preserves',            goods:true },
+  {num:30, he:'דברי מאפה',                      en:'Pastry',                                 goods:true },
+  {num:31, he:'פירות וירקות טריים',             en:'Fresh fruits and vegetables',            goods:true },
+  {num:32, he:'משקאות לא כהליים',              en:'Non-alcoholic beverages',                goods:true },
+  {num:33, he:'משקאות כהליים',                 en:'Alcoholic beverages',                    goods:true },
+  {num:34, he:'צרכי מעשנים',                   en:'Smokers\' articles',                     goods:true },
+  {num:35, he:'פרסומת ומסחר',                  en:'Advertising and commerce',               goods:false},
+  {num:36, he:'ביטוח ומימון',                  en:'Insurance and financing',                goods:false},
+  {num:37, he:'בינוי ותיקון',                  en:'Building and repair',                    goods:false},
+  {num:38, he:'תקשורת',                        en:'Telecommunications',                     goods:false},
+  {num:39, he:'הובלה ואחסנה',                  en:'Transport and storage',                  goods:false},
+  {num:40, he:'טיפול בחומרים',                 en:'Treatment of materials',                 goods:false},
+  {num:41, he:'חינוך ובידור',                  en:'Education and entertainment',            goods:false},
+  {num:42, he:'שרותים מדעיים וטכנולוגיים',    en:'Scientific and technological services',  goods:false},
+  {num:43, he:'הספקת מזון ומשקה',             en:'Providing food and drink',               goods:false},
+  {num:44, he:'שרותים רפואיים',               en:'Medical services',                       goods:false},
+  {num:45, he:'שרותים אישיים וחברתיים',       en:'Personal and social services',           goods:false}
+];
+
+/* ── Vienna categories (computed from raw data) ──────── */
+const viennaCategories = [
+  { cat: 1,  name: 'גרמי שמים ותופעות טבע',          count: 8  },
+  { cat: 2,  name: 'בני אדם',                          count: 5  },
+  { cat: 3,  name: 'בעלי חיים',                        count: 12 },
+  { cat: 4,  name: 'יצורים פנטסטיים',                 count: 5  },
+  { cat: 5,  name: 'צמחים',                            count: 7  },
+  { cat: 6,  name: 'נופים',                            count: 5  },
+  { cat: 7,  name: 'מבנים ואדריכלות',                  count: 5  },
+  { cat: 8,  name: 'מוצרי מזון',                       count: 4  },
+  { cat: 9,  name: 'טקסטיל והלבשה',                   count: 5  },
+  { cat: 10, name: 'טבק, תיקים ואביזרי טואלט',        count: 3  },
+  { cat: 11, name: 'כלי בית',                          count: 3  },
+  { cat: 12, name: 'ריהוט ומתקנים',                   count: 2  },
+  { cat: 13, name: 'מאורות וציוד חימום',              count: 2  },
+  { cat: 14, name: 'כלי מתכת וכלי עבודה',             count: 6  },
+  { cat: 15, name: 'מכונות ומכשירים',                  count: 5  },
+  { cat: 16, name: 'אמצעי תקשורת ואופטיקה',           count: 2  },
+  { cat: 17, name: 'שעונים, תכשיטים ומידות',          count: 4  },
+  { cat: 18, name: 'כלי תחבורה',                       count: 6  },
+  { cat: 19, name: 'מיכלים',                           count: 8  },
+  { cat: 20, name: 'חומרי כתיבה ונייר',               count: 3  },
+  { cat: 21, name: 'משחקים וספורט',                   count: 2  },
+  { cat: 22, name: 'כלי נגינה ואמנות',                count: 3  },
+  { cat: 23, name: 'כלי נשק',                         count: 3  },
+  { cat: 24, name: 'סמלים, עיטורים ודגלים',           count: 9  },
+  { cat: 25, name: 'מוטיבים קישוטיים',                count: 5  },
+  { cat: 26, name: 'צורות גיאומטריות',                count: 9  },
+  { cat: 27, name: 'אותיות ומספרים בצורות מיוחדות',  count: 4  },
+  { cat: 28, name: 'כתובות בשפות שונות',              count: 8  },
+  { cat: 29, name: 'צבעים',                            count: 1  }
+];
+
+/* ── Build Nice table ────────────────────────────────── */
+(function buildNiceTable() {
+  const tbody = document.getElementById('nice-tbody');
+  niceData.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.className = 'nice-row';
+    tr.dataset.search = (r.num + ' ' + r.he + ' ' + r.en).toLowerCase();
+    tr.innerHTML =
+      `<td class="font-bold" style="color:#0068f5;white-space:nowrap;">${r.num}</td>` +
+      `<td style="color:#0c3058;">${r.he}</td>` +
+      `<td style="color:#6c757d;font-size:.8rem;">${r.en}</td>` +
+      `<td class="text-center">` +
+        `<span class="${r.goods ? 'type-good' : 'type-svc'}">${r.goods ? 'סחורה' : 'שירות'}</span>` +
+      `</td>`;
+    tbody.appendChild(tr);
+  });
+
+  document.getElementById('nice-search').addEventListener('input', function() {
+    const q = this.value.toLowerCase();
+    document.querySelectorAll('.nice-row').forEach(row => {
+      row.classList.toggle('hidden', q && !row.dataset.search.includes(q));
+    });
+  });
+})();
+
+/* ── Chart 1: Nice donut ─────────────────────────────── */
+(function initNiceDonut() {
+  const chart = echarts.init(document.getElementById('nice-donut'), null, { renderer: 'svg' });
+  const option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'item',
+      formatter: '{b}: {c} מחלקות ({d}%)'
+    }),
+    legend: {
+      bottom: 0,
+      right: 'center',
+      orient: 'horizontal',
+      textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 13 }
+    },
+    series: [{
+      type: 'pie',
+      radius: ['42%', '68%'],
+      center: ['50%', '44%'],
+      label: {
+        show: true,
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        formatter: '{b}\n{c} מחלקות',
+        lineHeight: 20
+      },
+      labelLine: { show: true },
+      data: [
+        { value: 34, name: 'סחורות (1–34)', itemStyle: { color: '#0068f5' } },
+        { value: 11, name: 'שירותים (35–45)', itemStyle: { color: '#6c9fd8' } }
+      ]
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+/* ── Chart 2: Vienna horizontal bar ─────────────────── */
+(function initViennaBar() {
+  const sorted  = [...viennaCategories].sort((a, b) => a.count - b.count);
+  const labels  = sorted.map(d => `${d.cat}. ${d.name}`);
+  const values  = sorted.map(d => d.count);
+  const colors  = sorted.map((_, i) => GOVIL_PALETTE[i % GOVIL_PALETTE.length]);
+
+  const chart = echarts.init(document.getElementById('vienna-bar'), null, { renderer: 'svg' });
+  const option = Object.assign({}, baseECharts, {
+    grid: { left: 20, right: 60, top: 20, bottom: 20, containLabel: true },
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: params => {
+        const p = params[0];
+        return `<span style="font-family:Rubik;">${p.name}<br/><b>${p.value}</b> תתי-מחלקות</span>`;
+      }
+    }),
+    xAxis: {
+      type: 'value',
+      name: 'מספר תתי-מחלקות',
+      nameLocation: 'end',
+      nameTextStyle: { fontFamily: 'Rubik, sans-serif', color: '#6c757d', fontSize: 11 },
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d' },
+      splitLine: { lineStyle: { color: '#e8eef7' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: labels,
+      axisLabel: {
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        fontSize: 11,
+        width: 180,
+        overflow: 'truncate'
+      },
+      axisTick: { show: false },
+      axisLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    series: [{
+      type: 'bar',
+      data: values.map((v, i) => ({
+        value: v,
+        itemStyle: { color: colors[i], borderRadius: [0, 3, 3, 0] }
+      })),
+      label: {
+        show: true,
+        position: 'right',
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        fontSize: 11
+      },
+      barMaxWidth: 28
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+</script>

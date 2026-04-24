@@ -1,0 +1,339 @@
+<!-- ================================================
+     מאגר שמאי מקרקעין — body fragment
+     ================================================ -->
+
+<h1 class="text-3xl font-bold text-ink-deep mb-3">מאגר שמאי מקרקעין</h1>
+
+<!-- Tag chips -->
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">שמאי מקרקעין</span>
+  <span class="tag-chip">רישוי</span>
+  <span class="tag-chip">בחינות מקצועיות</span>
+  <span class="tag-chip">משרד המשפטים</span>
+  <span class="tag-chip">פטורים אקדמיים</span>
+</div>
+
+<!-- AI Summary -->
+<section class="card p-5 mb-4">
+  <div class="flex items-start gap-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 mt-1 text-ok" style="filter: invert(38%) sepia(72%) saturate(400%) hue-rotate(100deg);" />
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-sm font-semibold text-ok">סיכום בינה מלאכותית</span>
+        <span class="badge" style="background:#d1fae5;color:#065f46;">אמינות גבוהה</span>
+      </div>
+      <p class="text-ink text-sm leading-relaxed">
+        המאגר מכיל שלושה קובצי נתונים: <strong>3,102 שמאי מקרקעין בעלי רישיון פעיל</strong>,
+        <strong>91,848 רשומות בחינות</strong> לפי מועד וציון, ו-<strong>4,729 פטורים</strong> ממבחנים שניתנו לבוגרים אקדמאיים.
+        המאגר מתעדכן אחת לשלושה חודשים ומאפשר לציבור לאמת את רישיונם של שמאי מקרקעין ולהבין את מסלול ההסמכה המקצועית.
+        הנתונים מצביעים על ריכוז גדול של שמאים רשומים במרכז הארץ, כשתל אביב-יפו מובילה.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- KPI cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+  <div class="card p-5 text-center">
+    <div class="text-4xl font-bold text-brand mb-1">3,102</div>
+    <div class="text-sm text-subtle">שמאים בעלי רישיון פעיל</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-4xl font-bold text-brand mb-1">91,848</div>
+    <div class="text-sm text-subtle">רשומות בחינות (2002–2026)</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-4xl font-bold text-brand mb-1">56.1%</div>
+    <div class="text-sm text-subtle">שיעור עמידה בבחינות (ציון &ge;56)</div>
+  </div>
+</div>
+
+<!-- Insights -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+    <img src="/icons/tag.svg" alt="" class="w-4 h-4" />
+    תובנות מרכזיות
+  </h2>
+  <ul class="space-y-2 text-sm text-ink list-disc list-inside">
+    <li>
+      <strong>ריכוז גיאוגרפי:</strong> מתוך 375 שמאים שמוינו לפי עיר, 128 (34%) פועלים בתל אביב-יפו, 43 ברמת גן, ו-30 בירושלים — מה שמצביע על ריכוז גבוה במרכז הארץ.
+    </li>
+    <li>
+      <strong>קושי בבחינות:</strong> בניתוח מדגם של 4,424 בחינות נמצא כי 43.9% הסתיימו בציון נכשל (מתחת ל-56), ורק 4.3% קיבלו ציון של 86 ומעלה — מה שמעיד על רמת דרישה גבוהה.
+    </li>
+    <li>
+      <strong>עלייה בהיקף הפעילות:</strong> מספר רשומות הבחינות בשנת 2016 ואילך עולה על 280 לשנה (במדגם), לעומת פחות מ-100 בשנים 2006–2010, המעיד על גידול משמעותי במספר הנגשים לבחינות ההסמכה.
+    </li>
+  </ul>
+  <p class="text-xs text-subtle mt-3">* נתוני הבחינות מבוססים על מדגם של 5,000 רשומות מתוך 91,848.</p>
+</section>
+
+<!-- ===== VISUALIZATIONS ===== -->
+
+<!-- Chart 1: Top cities for licensed appraisers -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-1">פיזור שמאים לפי עיר — עשר הערים המובילות</h2>
+  <p class="text-xs text-subtle mb-3">מתוך 375 שמאים שדווחה עבורם עיר (מתוך 3,102 סה"כ)</p>
+  <div id="chart-cities" style="height:340px;"></div>
+</section>
+
+<!-- Chart 2: Exam subjects distribution -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-1">נושאי בחינות שכיחים — 10 מובילים</h2>
+  <p class="text-xs text-subtle mb-3">על בסיס מדגם של 5,000 רשומות מתוך 91,848</p>
+  <div id="chart-exams" style="height:380px;"></div>
+</section>
+
+<!-- Chart 3: Exams by year -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-1">מגמת בחינות לאורך השנים (2002–2026)</h2>
+  <p class="text-xs text-subtle mb-3">על בסיס מדגם של 5,000 רשומות — מספרים יחסיים, לא מוחלטים</p>
+  <div id="chart-years" style="height:300px;"></div>
+</section>
+
+<!-- Chart 4: Score distribution -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-1">התפלגות ציוני הבחינות</h2>
+  <p class="text-xs text-subtle mb-3">על בסיס מדגם של 4,424 ציוני בחינות תקינים</p>
+  <div id="chart-scores" style="height:260px;"></div>
+</section>
+
+<!-- Notes -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+    <img src="/icons/database.svg" alt="" class="w-4 h-4" />
+    אודות המאגר
+  </h2>
+  <p class="text-sm text-ink leading-relaxed">
+    מאגר מידע זה מכיל שלושה קבצי מידע אודות שמאים: רשימת שמאים בעלי רישיון, רשימת בחינות שמאים לפי מועד וציון, רשימת מבחנים שהתקבל פטור עבורם בגין לימודים אקדמאיים.
+    המאגר מתעדכן כל שלושה חודשים.
+  </p>
+</section>
+
+<!-- Quality -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold text-ink-deep mb-3">איכות המאגר</h2>
+  <div class="flex items-center gap-3 mb-1">
+    <div class="quality-track flex-1">
+      <div class="quality-fill" style="width: 62%;"></div>
+    </div>
+    <span class="text-sm font-semibold text-ink-deep">62 / 100</span>
+  </div>
+  <ul class="text-xs text-subtle mt-3 space-y-1">
+    <li class="flex items-center gap-1.5"><img src="/icons/circle-check.svg" alt="" class="w-3.5 h-3.5" style="filter:invert(38%) sepia(72%) saturate(400%) hue-rotate(100deg);" /> שלושה קבצים מובנים עם סכמה מוגדרת</li>
+    <li class="flex items-center gap-1.5"><img src="/icons/circle-check.svg" alt="" class="w-3.5 h-3.5" style="filter:invert(38%) sepia(72%) saturate(400%) hue-rotate(100deg);" /> עדכון קבוע אחת לרבעון</li>
+    <li class="flex items-center gap-1.5"><img src="/icons/triangle-alert.svg" alt="" class="w-3.5 h-3.5" style="filter:invert(55%) sepia(80%) saturate(500%) hue-rotate(10deg);" /> שדה "עיר" חסר עבור 88% מהשמאים (2,727 מתוך 3,102)</li>
+    <li class="flex items-center gap-1.5"><img src="/icons/triangle-alert.svg" alt="" class="w-3.5 h-3.5" style="filter:invert(55%) sepia(80%) saturate(500%) hue-rotate(10deg);" /> אין מידע על תחומי התמחות, ניסיון או סטטוס פעיל/לא-פעיל</li>
+  </ul>
+</section>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+(function () {
+  const GOVIL_PALETTE = [
+    '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
+    '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
+  ];
+
+  const baseECharts = {
+    color: GOVIL_PALETTE,
+    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+    tooltip: {
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff',
+      borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+  };
+
+  /* ---- Chart 1: Top cities ---- */
+  const citiesData = [
+    { city: 'תל אביב - יפו', count: 128 },
+    { city: 'רמת גן', count: 43 },
+    { city: 'ירושלים', count: 30 },
+    { city: 'חיפה', count: 22 },
+    { city: 'פתח תקווה', count: 14 },
+    { city: 'הרצליה', count: 13 },
+    { city: 'בני ברק', count: 12 },
+    { city: 'חדרה', count: 8 },
+    { city: 'רמת השרון', count: 8 },
+    { city: 'ראשון לציון', count: 8 }
+  ].reverse();
+
+  const chartCities = echarts.init(document.getElementById('chart-cities'));
+  chartCities.setOption(Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function (params) {
+        return `<div style="font-family:Rubik;direction:rtl;">${params[0].name}: <strong>${params[0].value}</strong> שמאים</div>`;
+      }
+    }),
+    xAxis: {
+      type: 'value',
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d' },
+      splitLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: citiesData.map(d => d.city),
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 12 }
+    },
+    series: [{
+      type: 'bar',
+      data: citiesData.map(d => d.count),
+      itemStyle: { color: '#0068f5', borderRadius: [0, 4, 4, 0] },
+      label: { show: true, position: 'right', fontFamily: 'Rubik', color: '#0c3058', fontSize: 12 }
+    }]
+  }));
+
+  /* ---- Chart 2: Top exam subjects ---- */
+  const examData = [
+    { name: 'יסודות הכלכלה חלק ב׳', count: 259 },
+    { name: 'תכנון ובניה חלק א׳', count: 290 },
+    { name: 'דינים', count: 325 },
+    { name: 'יסודות מדידה ומיפוי', count: 351 },
+    { name: 'יישומים בשומת מקרקעין', count: 355 },
+    { name: 'יסודות הנדסת בנין', count: 365 },
+    { name: 'תכנון ובניה חלק ב׳', count: 365 },
+    { name: 'מיסוי מקרקעין ומסים אחרים', count: 400 },
+    { name: 'גישות ועקרונות בהערכת מקרקעין', count: 569 },
+    { name: 'מבוא לתורת השמאות', count: 622 }
+  ];
+
+  const chartExams = echarts.init(document.getElementById('chart-exams'));
+  chartExams.setOption(Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function (params) {
+        return `<div style="font-family:Rubik;direction:rtl;">${params[0].name}: <strong>${params[0].value}</strong> רשומות במדגם</div>`;
+      }
+    }),
+    grid: { left: 20, right: 80, top: 20, bottom: 20, containLabel: true },
+    xAxis: {
+      type: 'value',
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d' },
+      splitLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: examData.map(d => d.name),
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 11, width: 200, overflow: 'truncate' }
+    },
+    series: [{
+      type: 'bar',
+      data: examData.map((d, i) => ({
+        value: d.count,
+        itemStyle: { color: GOVIL_PALETTE[i % GOVIL_PALETTE.length], borderRadius: [0, 4, 4, 0] }
+      })),
+      label: { show: true, position: 'right', fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 }
+    }]
+  }));
+
+  /* ---- Chart 3: Exams by year ---- */
+  const yearsData = [
+    ['2002',65],['2003',151],['2004',155],['2005',112],['2006',87],
+    ['2007',81],['2008',61],['2009',80],['2010',80],['2011',131],
+    ['2012',180],['2013',183],['2014',293],['2015',150],['2016',321],
+    ['2017',336],['2018',285],['2019',288],['2020',298],['2021',334],
+    ['2022',330],['2023',330],['2024',307],['2025',253],['2026',109]
+  ];
+
+  const chartYears = echarts.init(document.getElementById('chart-years'));
+  chartYears.setOption(Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: function (params) {
+        return `<div style="font-family:Rubik;direction:rtl;">שנת ${params[0].name}: <strong>${params[0].value}</strong> רשומות במדגם</div>`;
+      }
+    }),
+    xAxis: {
+      type: 'category',
+      data: yearsData.map(d => d[0]),
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d', rotate: 45, fontSize: 11 },
+      axisLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'value',
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d' },
+      splitLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    series: [{
+      type: 'line',
+      data: yearsData.map(d => d[1]),
+      smooth: true,
+      lineStyle: { color: '#0068f5', width: 2.5 },
+      itemStyle: { color: '#0068f5' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(0,104,245,0.22)' },
+            { offset: 1, color: 'rgba(0,104,245,0.02)' }
+          ]
+        }
+      },
+      symbol: 'circle',
+      symbolSize: 5
+    }]
+  }));
+
+  /* ---- Chart 4: Score distribution ---- */
+  const scoresData = [
+    { band: 'כישלון (0–55)', count: 1940, pct: 43.9 },
+    { band: 'עובר (56–70)', count: 1473, pct: 33.3 },
+    { band: 'טוב (71–85)', count: 822, pct: 18.6 },
+    { band: 'מצוין (86–100)', count: 189, pct: 4.3 }
+  ];
+
+  const scoreColors = ['#dc3545', '#0068f5', '#3d70b0', '#0b3668'];
+
+  const chartScores = echarts.init(document.getElementById('chart-scores'));
+  chartScores.setOption(Object.assign({}, baseECharts, {
+    color: scoreColors,
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function (params) {
+        const item = scoresData[params[0].dataIndex];
+        return `<div style="font-family:Rubik;direction:rtl;">${item.band}<br/><strong>${item.count.toLocaleString()}</strong> בחינות (${item.pct}%)</div>`;
+      }
+    }),
+    grid: { left: 20, right: 80, top: 20, bottom: 20, containLabel: true },
+    xAxis: {
+      type: 'value',
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d' },
+      splitLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: scoresData.map(d => d.band),
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 12 }
+    },
+    series: [{
+      type: 'bar',
+      data: scoresData.map((d, i) => ({
+        value: d.count,
+        itemStyle: { color: scoreColors[i], borderRadius: [0, 4, 4, 0] }
+      })),
+      label: {
+        show: true, position: 'right', fontFamily: 'Rubik', color: '#0c3058', fontSize: 12,
+        formatter: function (params) {
+          return `${scoresData[params.dataIndex].pct}%`;
+        }
+      }
+    }]
+  }));
+
+  /* ---- Responsive resize ---- */
+  window.addEventListener('resize', function () {
+    chartCities.resize();
+    chartExams.resize();
+    chartYears.resize();
+    chartScores.resize();
+  });
+})();
+</script>

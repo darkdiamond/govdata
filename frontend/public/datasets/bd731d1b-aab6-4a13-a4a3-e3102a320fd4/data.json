@@ -1,0 +1,53 @@
+{
+  "id": "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
+  "slug": "azore-adifut-leumit-ve-pituah",
+  "title": "אזורי עדיפות לאומית ואזורי פיתוח",
+  "organization": "משרד הכלכלה והתעשייה",
+  "organization_slug": "moital",
+  "summary_he": "סיווג ישובים ואזורי תעשייה בישראל לפי אזורי פיתוח (א׳ וב׳) ועדיפות לאומית, הקובע את היקף ההטבות לעסקים — כולל היסטוריה מ-2003 ועד היום.",
+  "tags_he": [
+    "אזורי פיתוח",
+    "עדיפות לאומית",
+    "תמריצים עסקיים",
+    "פיתוח אזורי",
+    "ישובים"
+  ],
+  "primary_resource_id": "d0cfa550-51a5-438c-9336-7b117ed174f6",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-04-24T17:59:08.781698",
+  "dataset_kind": "registry",
+  "related_ids": [
+    "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+    "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+    "ed8ce28e-ae7f-4588-b3f9-59485960d521",
+    "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
+    "d08d4a17-78f6-43a5-83f9-e6465e64cd24"
+  ],
+  "version": 1,
+  "license": "אחר (פתוח)",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/bd731d1b-aab6-4a13-a4a3-e3102a320fd4/resource/d0cfa550-51a5-438c-9336-7b117ed174f6/download/d0cfa550-51a5-438c-9336-7b117ed174f6.csv",
+      "format": "CSV",
+      "name": "אזורי פיתוח כולל היסטוריה",
+      "size_bytes": 1144603,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/bd731d1b-aab6-4a13-a4a3-e3102a320fd4/resource/1277353c-25aa-43ac-86b7-08dc1dfe9d71/download/1277353c-25aa-43ac-86b7-08dc1dfe9d71.csv",
+      "format": "CSV",
+      "name": "אזורי פיתוח א",
+      "size_bytes": 82065,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/bd731d1b-aab6-4a13-a4a3-e3102a320fd4/resource/a118ea44-f5a4-4f1b-92e5-e37359983274/download/a118ea44-f5a4-4f1b-92e5-e37359983274.csv",
+      "format": "CSV",
+      "name": "אזורי עדיפות לאומית",
+      "size_bytes": 102531,
+      "description": null
+    }
+  ]
+}

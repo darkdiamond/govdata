@@ -1,0 +1,402 @@
+<!-- ממציאים לבקשות פטנטים – body fragment -->
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; }
+  .kpi-card {
+    background: #fff;
+    border: 1px solid #c3cfe7;
+    border-radius: 0.5rem;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: 0 2px 8px -2px rgba(0,104,245,.08);
+  }
+  .kpi-val { font-size: 2rem; font-weight: 700; color: #0068f5; line-height: 1.1; }
+  .kpi-lbl { font-size: 0.85rem; color: #6c757d; margin-top: 0.3rem; }
+  .chart-wrap { width: 100%; height: 380px; }
+  .chart-wrap-lg { width: 100%; height: 440px; }
+  .insight-list { list-style: none; padding: 0; margin: 0; }
+  .insight-list li {
+    padding: 0.6rem 0.75rem 0.6rem 0;
+    border-bottom: 1px solid #e9eef7;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    color: #0c3058;
+    font-size: 0.97rem;
+  }
+  .insight-list li:last-child { border-bottom: none; }
+  .dot-brand { width: 8px; height: 8px; min-width: 8px; background: #0068f5; border-radius: 50%; margin-top: 0.45rem; }
+  .sample-note { font-size: 0.78rem; color: #6c757d; margin-top: 0.5rem; }
+  .table-explorer { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .table-explorer th {
+    background: #f1f7ff;
+    color: #0b3668;
+    font-weight: 600;
+    padding: 0.55rem 0.75rem;
+    border-bottom: 2px solid #c3cfe7;
+    text-align: right;
+  }
+  .table-explorer td {
+    padding: 0.5rem 0.75rem;
+    border-bottom: 1px solid #e9eef7;
+    color: #0c3058;
+    vertical-align: top;
+  }
+  .table-explorer tr:hover td { background: #f8fbff; }
+  .table-explorer .num { color: #0068f5; font-variant-numeric: tabular-nums; }
+  .res-badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 50rem; font-size: 0.75rem; font-weight: 600; }
+  .badge-csv { background: #dbe8fb; color: #0053c4; }
+  .badge-pdf { background: #fce8e8; color: #b30000; }
+  .quality-track { background: #e9eef7; border-radius: 50rem; height: 10px; overflow: hidden; margin: 0.4rem 0 0.2rem; }
+  .quality-fill  { background: #0068f5; height: 100%; border-radius: 50rem; }
+  .confidence-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    background: #d4edda; color: #198754;
+    padding: 0.2rem 0.7rem; border-radius: 50rem;
+    font-size: 0.8rem; font-weight: 600;
+  }
+</style>
+
+<!-- Title -->
+<h1 class="text-2xl font-bold text-ink-deep mb-2" style="margin-top:0">ממציאים לבקשות פטנטים</h1>
+
+<!-- Tag chips -->
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">פטנטים</span>
+  <span class="tag-chip">ממציאים</span>
+  <span class="tag-chip">קניין רוחני</span>
+  <span class="tag-chip">רשות הפטנטים</span>
+  <span class="tag-chip">בקשות להגנה</span>
+</div>
+
+<!-- AI Summary -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center gap-2 mb-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 text-ok" style="filter: invert(40%) sepia(80%) saturate(400%) hue-rotate(100deg);" />
+    <span class="font-semibold text-ink-deep" style="font-size:1.05rem">סיכום המאגר</span>
+    <span class="confidence-badge" style="margin-right: auto;">
+      <img src="/icons/circle-check.svg" alt="" class="w-4 h-4" style="filter: invert(40%) sepia(80%) saturate(400%) hue-rotate(100deg);" />
+      אמינות גבוהה
+    </span>
+  </div>
+  <p style="color:#0c3058; margin:0 0 0.6rem;">
+    מאגר זה מפורסם על ידי משרד המשפטים וכולל את שמות הממציאים המופיעים בבקשות להגנה ישראלית על פטנט.
+    הוא מונה <strong>150,808 רשומות</strong> המתייחסות ל-<strong>47,267 בקשות פטנט</strong> ייחודיות, ומייצג <strong>87,632 ממציאים</strong> שונים.
+  </p>
+  <p style="color:#0c3058; margin:0;">
+    עבור כל בקשה נכללים שמות הממציאים בעברית ובאנגלית, שם האמצאה בשתי השפות, וכתובת הממציא.
+    ניתן להשתמש במאגר לניתוח פעילות חדשנות לפי ממציא, מוצא גיאוגרפי ותחום אמצאה.
+  </p>
+</section>
+
+<!-- KPI cards -->
+<div class="kpi-grid mb-5">
+  <div class="kpi-card">
+    <div class="kpi-val">150,808</div>
+    <div class="kpi-lbl">סך הרשומות במאגר</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">47,267</div>
+    <div class="kpi-lbl">בקשות פטנט ייחודיות</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">87,632</div>
+    <div class="kpi-lbl">ממציאים ייחודיים</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-val">3.2</div>
+    <div class="kpi-lbl">ממציאים לבקשה בממוצע</div>
+  </div>
+</div>
+
+<!-- Insights -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center gap-2 mb-3">
+    <img src="/icons/tag.svg" alt="" class="w-5 h-5" />
+    <span class="font-semibold text-ink-deep">תובנות מרכזיות</span>
+  </div>
+  <ul class="insight-list">
+    <li>
+      <span class="dot-brand"></span>
+      <span>המאגר כולל <strong>150,808 רשומות</strong> ל-<strong>47,267 בקשות פטנט ייחודיות</strong>, כלומר ממוצע של כ-<strong>3.2 ממציאים</strong> לכל בקשה — מה שמעיד על אופי שיתופי של תהליכי המצאה.</span>
+    </li>
+    <li>
+      <span class="dot-brand"></span>
+      <span>מניתוח מדגם של 8,890 רשומות עם כתובת ידועה, <strong>ישראל היא מקור ממציאים מוביל</strong> עם כ-<strong>52.9%</strong> מהרשומות, ואחריה ארצות הברית (<strong>22.7%</strong>) וסין (<strong>5.5%</strong>).</span>
+    </li>
+    <li>
+      <span class="dot-brand"></span>
+      <span>ממציאים רבים מופיעים בעשרות בקשות פטנט, מה שמלמד על מחקר מתמשך ועוצמת חדשנות גבוהה — בהתבסס על מדגם של 5,000 הרשומות הראשונות.</span>
+    </li>
+  </ul>
+</section>
+
+<!-- Chart 1: Top Inventors -->
+<section class="card p-5 mb-5">
+  <div class="flex items-center gap-2 mb-1">
+    <img src="/icons/tag.svg" alt="" class="w-5 h-5" />
+    <span class="font-semibold text-ink-deep">ממציאים מובילים לפי מספר בקשות פטנט</span>
+  </div>
+  <p class="sample-note" style="margin-bottom:0.75rem;">מבוסס על מדגם של 5,000 הרשומות הראשונות; ממציאים עם בקשות רבות עשויים להופיע גם בשאר הנתונים.</p>
+  <div id="chart-inventors" class="chart-wrap-lg"></div>
+</section>
+
+<!-- Chart 2: Country Distribution -->
+<section class="card p-5 mb-5">
+  <div class="flex items-center gap-2 mb-1">
+    <img src="/icons/map-pin.svg" alt="" class="w-5 h-5" />
+    <span class="font-semibold text-ink-deep">פיזור גיאוגרפי של ממציאים לפי מדינה</span>
+  </div>
+  <p class="sample-note" style="margin-bottom:0.75rem;">מבוסס על 8,890 רשומות עם כתובת ידועה מתוך מדגם של 15,000 רשומות.</p>
+  <div id="chart-countries" class="chart-wrap"></div>
+</section>
+
+<!-- Sample Table -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center gap-2 mb-3">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <span class="font-semibold text-ink-deep">תצוגה מקדימה — 8 רשומות לדוגמה</span>
+  </div>
+  <div style="overflow-x: auto;">
+    <table class="table-explorer">
+      <thead>
+        <tr>
+          <th>מספר בקשה</th>
+          <th>שם האמצאה בעברית</th>
+          <th>שם ממציא בעברית</th>
+          <th>כתובת ממציא</th>
+        </tr>
+      </thead>
+      <tbody id="preview-tbody">
+        <!-- populated by script -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Notes -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center gap-2 mb-2">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <span class="font-semibold text-ink-deep">אודות המאגר</span>
+  </div>
+  <p style="color:#0c3058; margin:0; font-size:0.95rem;">שמות ממציאים לבקשות להגנה ישראלית על פטנט</p>
+</section>
+
+<!-- Quality -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center gap-2 mb-2">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <span class="font-semibold text-ink-deep">ציון איכות מאגר</span>
+  </div>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap:1rem; margin-top:0.75rem;">
+    <div>
+      <div style="font-size:0.8rem; color:#6c757d; margin-bottom:0.2rem;">זמינות נתונים</div>
+      <div class="quality-track"><div class="quality-fill" style="width:95%"></div></div>
+      <div style="font-size:0.75rem; color:#0c3058;">95/100</div>
+    </div>
+    <div>
+      <div style="font-size:0.8rem; color:#6c757d; margin-bottom:0.2rem;">שלמות שדות</div>
+      <div class="quality-track"><div class="quality-fill" style="width:72%"></div></div>
+      <div style="font-size:0.75rem; color:#0c3058;">72/100</div>
+    </div>
+    <div>
+      <div style="font-size:0.8rem; color:#6c757d; margin-bottom:0.2rem;">עדכניות</div>
+      <div class="quality-track"><div class="quality-fill" style="width:90%"></div></div>
+      <div style="font-size:0.75rem; color:#0c3058;">90/100</div>
+    </div>
+    <div>
+      <div style="font-size:0.8rem; color:#6c757d; margin-bottom:0.2rem;">ניקוד כולל</div>
+      <div class="quality-track"><div class="quality-fill" style="width:82%"></div></div>
+      <div style="font-size:0.75rem; color:#0c3058;">82/100</div>
+    </div>
+  </div>
+</section>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+const GOVIL_PALETTE = [
+  '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
+  '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
+];
+
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+};
+
+// ── Chart 1: Top Inventors ──────────────────────────────────────────────────
+(function() {
+  const inventors = [
+    { name: 'אמיר סטרן', en: 'AMIR SATRAN', count: 38 },
+    { name: 'גל שבתאי', en: 'GAL SHABTAY', count: 36 },
+    { name: 'אהרון אייל', en: 'AHARON EYAL', count: 28 },
+    { name: 'יאיר רייזנר', en: 'YAIR REISNER', count: 26 },
+    { name: 'יוסף שאלתיאל', en: 'YOSEPH SHAALTIEL', count: 23 },
+    { name: 'אשר וינטר', en: 'ASHER VITNER', count: 22 },
+    { name: 'יוסף כספי', en: 'JOSEPH KASPI', count: 22 },
+    { name: 'גיל הכט', en: 'GIL HECHT', count: 21 },
+    { name: 'משה רביד', en: 'MOSHE RAVID', count: 18 },
+    { name: 'מרדכי ביאר', en: 'MORDECHAY BEYAR', count: 14 },
+    { name: 'מתתיהו פרידקין', en: 'MATITYAHU FRIDKIN', count: 14 },
+    { name: 'אבידור שולמן', en: 'AVIDOR SHULMAN', count: 14 },
+    { name: 'שלמה מגדסי', en: 'SHLOMO MAGDASSI', count: 13 },
+    { name: 'אורן גלוברמן', en: 'OREN GLOBERMAN', count: 13 },
+  ].reverse(); // ECharts horizontal bar is bottom-to-top
+
+  const el = document.getElementById('chart-inventors');
+  const chart = echarts.init(el);
+  const option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      formatter: p => `<strong>${p.name}</strong><br/>מספר בקשות: <strong>${p.value}</strong>`
+    }),
+    xAxis: {
+      type: 'value',
+      name: 'מספר בקשות',
+      nameLocation: 'end',
+      nameTextStyle: { color: '#6c757d', fontSize: 12 },
+      axisLine: { lineStyle: { color: '#c3cfe7' } },
+      splitLine: { lineStyle: { color: '#e9eef7', type: 'dashed' } },
+      axisLabel: { color: '#6c757d', fontSize: 11 }
+    },
+    yAxis: {
+      type: 'category',
+      data: inventors.map(d => d.name),
+      axisLine: { lineStyle: { color: '#c3cfe7' } },
+      axisLabel: { color: '#0c3058', fontSize: 12, fontFamily: 'Rubik' },
+      splitLine: { show: false }
+    },
+    series: [{
+      type: 'bar',
+      data: inventors.map((d, i) => ({
+        value: d.count,
+        itemStyle: {
+          color: GOVIL_PALETTE[i % GOVIL_PALETTE.length],
+          borderRadius: [0, 4, 4, 0]
+        }
+      })),
+      label: {
+        show: true,
+        position: 'right',
+        color: '#0c3058',
+        fontSize: 11,
+        fontFamily: 'Rubik',
+        formatter: '{c}'
+      },
+      barMaxWidth: 30
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+// ── Chart 2: Country Distribution ─────────────────────────────────────────
+(function() {
+  const countries = [
+    { name: 'ישראל', value: 4705 },
+    { name: 'ארה"ב', value: 2021 },
+    { name: 'סין', value: 494 },
+    { name: 'בריטניה', value: 186 },
+    { name: 'שווייץ', value: 179 },
+    { name: 'גרמניה', value: 175 },
+    { name: 'יפן', value: 167 },
+    { name: 'איטליה', value: 118 },
+    { name: 'הודו', value: 104 },
+    { name: 'קנדה', value: 102 },
+    { name: 'צרפת', value: 95 },
+    { name: 'הולנד', value: 62 },
+    { name: 'שוודיה', value: 48 },
+    { name: 'דנמרק', value: 42 },
+    { name: 'אחר', value: 392 },
+  ].sort((a, b) => b.value - a.value);
+
+  const el = document.getElementById('chart-countries');
+  const chart = echarts.init(el);
+
+  const sortedForBar = [...countries].sort((a, b) => b.value - a.value);
+  const option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      formatter: p => {
+        const total = 8890;
+        const pct = ((p.value / total) * 100).toFixed(1);
+        return `<strong>${p.name}</strong><br/>רשומות: <strong>${p.value.toLocaleString('he-IL')}</strong><br/>אחוז: <strong>${pct}%</strong>`;
+      }
+    }),
+    xAxis: {
+      type: 'category',
+      data: sortedForBar.map(d => d.name),
+      axisLabel: {
+        color: '#0c3058',
+        fontSize: 11,
+        fontFamily: 'Rubik',
+        rotate: 30,
+        interval: 0
+      },
+      axisLine: { lineStyle: { color: '#c3cfe7' } },
+      splitLine: { show: false }
+    },
+    yAxis: {
+      type: 'value',
+      name: 'מספר רשומות',
+      nameLocation: 'end',
+      nameTextStyle: { color: '#6c757d', fontSize: 12 },
+      axisLine: { lineStyle: { color: '#c3cfe7' } },
+      splitLine: { lineStyle: { color: '#e9eef7', type: 'dashed' } },
+      axisLabel: { color: '#6c757d', fontSize: 11 }
+    },
+    series: [{
+      type: 'bar',
+      data: sortedForBar.map((d, i) => ({
+        value: d.value,
+        itemStyle: {
+          color: GOVIL_PALETTE[i % GOVIL_PALETTE.length],
+          borderRadius: [4, 4, 0, 0]
+        }
+      })),
+      label: {
+        show: true,
+        position: 'top',
+        color: '#0c3058',
+        fontSize: 10,
+        fontFamily: 'Rubik',
+        formatter: p => p.value > 50 ? p.value.toLocaleString('he-IL') : ''
+      },
+      barMaxWidth: 55
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+// ── Preview Table ──────────────────────────────────────────────────────────
+(function() {
+  const rows = [
+    { app: 246305, title_he: 'מערכת ירי היברידית פרופלנטית אלקטרומגנטית', inventor_he: 'ד"ר יצחק הס ושותפיו', addr: 'רמת גן, ישראל' },
+    { app: 252072, title_he: 'וקטורי AAV מכוונים למערכת העצבים המרכזית', inventor_he: 'ד"ר יצחק הס ושותפיו', addr: 'רמת גן, ישראל' },
+    { app: 291322, title_he: 'תרכובות אקרילאמיד', inventor_he: 'ד"ר יצחק הס ושותפיו', addr: 'רמת גן, ישראל' },
+    { app: 95491, title_he: 'מכלול מיקרוסקופ-אנדוסקופה לשימוש בכירורגיה', inventor_he: 'יוסף שרב', addr: 'Buffalo, New York, U.S.A.' },
+    { app: 186198, title_he: 'תהליך להפקת מוצר מתהליך תסיסה', inventor_he: 'וולף, ברגמן וגולר', addr: 'ירושלים, ישראל' },
+    { app: 246305, title_he: 'מערכת ירי היברידית פרופלנטית אלקטרומגנטית', inventor_he: 'אמיר סטרן', addr: 'ישראל' },
+    { app: 252072, title_he: 'וקטורי AAV מכוונים למערכת העצבים המרכזית', inventor_he: 'יאיר רייזנר', addr: 'רחובות, ישראל' },
+    { app: 291322, title_he: 'תרכובות אקרילאמיד', inventor_he: 'גל שבתאי', addr: 'חיפה, ישראל' },
+  ];
+  const tbody = document.getElementById('preview-tbody');
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="num">${r.app.toLocaleString('he-IL')}</td>
+      <td>${r.title_he}</td>
+      <td>${r.inventor_he}</td>
+      <td style="color:#6c757d">${r.addr}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+})();
+</script>

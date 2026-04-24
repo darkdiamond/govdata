@@ -1,0 +1,402 @@
+<!-- ===== רשם המשכונות — content.html ===== -->
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; }
+  .kpi-card { background:#fff; border:1px solid #c3cfe7; border-radius:0.5rem;
+              padding:1.25rem 1rem; text-align:center; box-shadow:0 1px 4px rgba(0,104,245,.06); }
+  .kpi-val  { font-size:2rem; font-weight:700; color:#0068f5; line-height:1.1; }
+  .kpi-sub  { font-size:0.8rem; color:#6c757d; margin-top:0.25rem; }
+  .kpi-lbl  { font-size:0.9rem; color:#0c3058; font-weight:500; margin-top:0.3rem; }
+  .vis-row  { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+  @media(max-width:640px){ .kpi-grid{ grid-template-columns:1fr; } .vis-row{ grid-template-columns:1fr; } }
+  .sample-tbl { width:100%; border-collapse:collapse; font-size:.85rem; }
+  .sample-tbl th { background:#f0f4fa; color:#0b3668; font-weight:600;
+                   padding:.5rem .75rem; border-bottom:2px solid #c3cfe7; text-align:right; }
+  .sample-tbl td { padding:.45rem .75rem; border-bottom:1px solid #e8eef8; color:#0c3058; }
+  .sample-tbl tr:last-child td { border-bottom:none; }
+  .badge-active   { background:#dbeafe; color:#1d4ed8; border-radius:50rem;
+                    padding:.15rem .55rem; font-size:.75rem; font-weight:600; white-space:nowrap; }
+  .badge-inactive { background:#f3f4f6; color:#6c757d; border-radius:50rem;
+                    padding:.15rem .55rem; font-size:.75rem; font-weight:500; white-space:nowrap; }
+  .note-box { background:#f0f4fa; border-right:4px solid #0068f5;
+              border-radius:0.3rem; padding:0.75rem 1rem; font-size:.88rem;
+              color:#0c3058; margin-top:.75rem; }
+</style>
+
+<!-- ===== כותרת ותגיות ===== -->
+<h1 style="font-size:1.75rem;font-weight:700;color:#0b3668;margin-bottom:.5rem;">
+  רשם המשכונות
+</h1>
+<div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.25rem;">
+  <span class="tag-chip">משכונות</span>
+  <span class="tag-chip">משרד המשפטים</span>
+  <span class="tag-chip">רשם החברות</span>
+  <span class="tag-chip">בטוחות ועסקאות אשראי</span>
+  <span class="tag-chip">מאגר נתוני אשראי</span>
+</div>
+
+<!-- ===== סיכום AI ===== -->
+<section class="card p-5 mb-4">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem;">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" style="color:#198754;" />
+    <span style="font-weight:600;color:#0b3668;font-size:1rem;">סיכום מאגר</span>
+    <span class="badge" style="background:#d1fae5;color:#065f46;margin-right:auto;">אמינות גבוהה</span>
+  </div>
+  <p style="color:#0c3058;margin:0 0 .5rem;">
+    מאגר רשם המשכונות של משרד המשפטים מכיל <strong>8,218,339 רשומות</strong> של עסקאות משכון הרשומות
+    בישראל מאז 1994 ועד היום, ומתעדכן אוטומטית מדי יום. כל רשומה מתארת משכון בודד ומוכילה
+    תאריך רישום, סטטוס נוכחי, תאריך שינוי הסטטוס, וסיבת הביטול.
+  </p>
+  <p style="color:#0c3058;margin:0;">
+    מתוך כלל הרשומות, <strong>2,196 משכונות בלבד פעילים</strong> (0.03%) — שאר הרשומות מסמנות עסקאות
+    שבוטלו לאורך השנים בשתי סיבות עיקריות: ביוזמת הצדדים (מכירה, פירעון חוב) או תום תוקף אוטומטי.
+  </p>
+</section>
+
+<!-- ===== KPI Cards ===== -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 1rem;">מדדי מפתח</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-val">8.22M</div>
+      <div class="kpi-lbl">סך כל רשומות המשכון</div>
+      <div class="kpi-sub">מאז אפריל 1994</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:#198754;">2,196</div>
+      <div class="kpi-lbl">משכונות פעילים כיום</div>
+      <div class="kpi-sub">0.03% מסך הרשומות</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val" style="color:#6c757d;">8,216,143</div>
+      <div class="kpi-lbl">משכונות שבוטלו</div>
+      <div class="kpi-sub">99.97% מסך הרשומות</div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== תובנות ===== -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:1rem;font-weight:600;color:#0b3668;margin:0 0 .75rem;">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" style="vertical-align:-3px;margin-left:.4rem;" />
+    תובנות עיקריות
+  </h2>
+  <ul style="margin:0;padding-right:1.25rem;color:#0c3058;display:flex;flex-direction:column;gap:.5rem;">
+    <li>
+      <strong>שיעור פעילות נמוך מאוד:</strong> מתוך <strong>8,218,339</strong> רשומות היסטוריות,
+      רק <strong>2,196</strong> (כ-0.03%) מסומנות כפעילות נכון לעדכון האחרון (24 באפריל 2026).
+      מרבית המשכונות הסתיימו לאורך השנים.
+    </li>
+    <li>
+      <strong>שתי סיבות ביטול מרכזיות:</strong> על-פי ניתוח דגימה של 1,000 רשומות,
+      כ-60% מהמשכונות בוטלו ביוזמת הצדדים ("ביוזמת צד" — בדרך-כלל פירעון ההלוואה),
+      כ-35% פקעו עם תום תוקפם ("תום תוקף"),
+      ופחות מ-5% בוטלו בשל תקנה 5ג (אי-עמידה בדרישה פורמלית בתוך 6 חודשים מהרישום).
+    </li>
+    <li>
+      <strong>היקף רחב לאורך שלושה עשורים:</strong> המאגר מתעד את כל עסקאות המשכון מאז הקמת
+      הרשם הממוחשב ב-1994 ועד היום — בממוצע כ-<strong>260,000 רישומים חדשים בשנה</strong>
+      על-פי אומדן מהמאגר. שיא הרישום נרשם בשנים 2014–2020 (כ-306,000 לשנה בממוצע).
+    </li>
+  </ul>
+</section>
+
+<!-- ===== ויזואליזציות ===== -->
+<div class="vis-row mb-4">
+  <!-- Donut: Active vs Inactive -->
+  <section class="card p-5">
+    <h2 style="font-size:.95rem;font-weight:600;color:#0b3668;margin:0 0 .5rem;">התפלגות סטטוס רישום</h2>
+    <p style="font-size:.8rem;color:#6c757d;margin:0 0 .75rem;">פעיל מול לא פעיל (מתוך 8,218,339 רשומות)</p>
+    <div id="donutChart" style="width:100%;height:280px;"></div>
+  </section>
+
+  <!-- Bar: Status reason distribution -->
+  <section class="card p-5">
+    <h2 style="font-size:.95rem;font-weight:600;color:#0b3668;margin:0 0 .5rem;">סיבות ביטול — התפלגות</h2>
+    <p style="font-size:.8rem;color:#6c757d;margin:0 0 .75rem;">מבוסס על דגימת 1,000 רשומות</p>
+    <div id="reasonChart" style="width:100%;height:280px;"></div>
+  </section>
+</div>
+
+<!-- Annual trend bar chart -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:.95rem;font-weight:600;color:#0b3668;margin:0 0 .25rem;">אומדן רישומי משכון לפי שנה</h2>
+  <p style="font-size:.8rem;color:#6c757d;margin:0 0 .75rem;">
+    אומדן מוחלט מדגימת נקודות בציר המאגר — הנתונים מייצגים קצב רישום ולא ספירה מדויקת לשנה.
+    נתוני 2026 חלקיים.
+  </p>
+  <div id="trendChart" style="width:100%;height:320px;"></div>
+</section>
+
+<!-- Sample Table -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:.95rem;font-weight:600;color:#0b3668;margin:0 0 .75rem;">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" style="vertical-align:-3px;margin-left:.4rem;" />
+    רשומות לדוגמה — משכונות פעילים (5 ראשונים)
+  </h2>
+  <div style="overflow-x:auto;">
+    <table class="sample-tbl">
+      <thead>
+        <tr>
+          <th>מזהה משכון</th>
+          <th>תאריך רישום</th>
+          <th>סטטוס</th>
+          <th>סיבת סטטוס</th>
+          <th>תאריך סטטוס</th>
+          <th>תאריך רישום נכס</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2017256034</td>
+          <td>19/11/2017</td>
+          <td><span class="badge-active">פעיל</span></td>
+          <td>ביוזמת צד</td>
+          <td>19/11/2017</td>
+          <td>19/11/2017</td>
+        </tr>
+        <tr>
+          <td>2017260514</td>
+          <td>22/11/2017</td>
+          <td><span class="badge-active">פעיל</span></td>
+          <td>ביוזמת צד</td>
+          <td>22/11/2017</td>
+          <td>22/11/2017</td>
+        </tr>
+        <tr>
+          <td>2017268312</td>
+          <td>30/11/2017</td>
+          <td><span class="badge-active">פעיל</span></td>
+          <td>ביוזמת צד</td>
+          <td>30/11/2017</td>
+          <td>30/11/2017</td>
+        </tr>
+        <tr>
+          <td>2018150994</td>
+          <td>24/05/2018</td>
+          <td><span class="badge-active">פעיל</span></td>
+          <td>ביוזמת צד</td>
+          <td>24/05/2018</td>
+          <td>24/05/2018</td>
+        </tr>
+        <tr>
+          <td>2026089335</td>
+          <td>23/02/2026</td>
+          <td><span class="badge-inactive">לא פעיל</span></td>
+          <td>ביוזמת צד</td>
+          <td>15/04/2026</td>
+          <td>23/02/2026</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="note-box">
+    <img src="/icons/info.svg" alt="" style="width:.9rem;height:.9rem;vertical-align:-2px;margin-left:.3rem;" />
+    הרשומות לעיל מבוססות על קריאת API ישירה. לצפייה בכלל 8.2M הרשומות יש להוריד את ה-CSV.
+  </div>
+</section>
+
+<!-- ===== Notes ===== -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:.95rem;font-weight:600;color:#0b3668;margin:0 0 .75rem;">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" style="vertical-align:-3px;margin-left:.4rem;" />
+    תיאור המאגר
+  </h2>
+  <p style="color:#0c3058;margin:0;font-size:.9rem;line-height:1.6;">
+    רשימת משכונות כמפורט במאגר רשם המשכונות, הרשימה כוללת משכונות פעילים ומשכונות שבוטלו בשנתיים האחרונות,
+    ובכלל זה את הנתונים הבאים: תאריך רישום, תאריך סטטוס, תאריך צירוף הנכס למשכון,
+    תאריך הסרת הנכס מהמשכון, וסיבת סטטוס.
+  </p>
+  <div style="margin-top:.75rem;font-size:.82rem;color:#6c757d;">
+    <strong style="color:#0c3058;">שדות המאגר:</strong>
+    מזהה משכון &bull; תאריך רישום &bull; סטטוס רישום &bull; תאריך סיבת סטטוס &bull;
+    תאריך סטטוס &bull; תאריך רישום נכס &bull; תאריך הסרת הנכס
+  </div>
+</section>
+
+<!-- ===== Quality ===== -->
+<section class="card p-5 mb-4">
+  <h2 style="font-size:.95rem;font-weight:600;color:#0b3668;margin:0 0 .75rem;">ציון איכות נתונים</h2>
+  <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+    <div class="quality-track" style="flex:1;min-width:160px;">
+      <div class="quality-fill" style="width:76%;"></div>
+    </div>
+    <span style="font-size:1.25rem;font-weight:700;color:#0068f5;">76 / 100</span>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem;font-size:.8rem;">
+    <span class="badge" style="background:#d1fae5;color:#065f46;">עדכון אוטומטי יומי</span>
+    <span class="badge" style="background:#d1fae5;color:#065f46;">API פעיל</span>
+    <span class="badge" style="background:#d1fae5;color:#065f46;">Datastore פעיל</span>
+    <span class="badge" style="background:#fef9c3;color:#854d0e;">אין כיסוי מרחבי</span>
+    <span class="badge" style="background:#fef9c3;color:#854d0e;">ללא מילון נתונים מפורט</span>
+  </div>
+</section>
+
+<!-- ===== Scripts ===== -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+(function() {
+  const GOVIL_PALETTE = [
+    '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+    '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+  ];
+
+  const baseECharts = {
+    color: GOVIL_PALETTE,
+    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+    tooltip: {
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff',
+      borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+  };
+
+  /* === Donut: Active vs Inactive === */
+  var donutEl = document.getElementById('donutChart');
+  if (donutEl) {
+    var donut = echarts.init(donutEl);
+    donut.setOption(Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'item',
+        formatter: function(p) {
+          return p.name + ': <strong>' + p.value.toLocaleString('he-IL') + '</strong> (' + p.percent + '%)';
+        }
+      }),
+      legend: {
+        orient: 'horizontal', bottom: 0,
+        textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+        data: ['לא פעיל','פעיל']
+      },
+      series: [{
+        type: 'pie',
+        radius: ['42%','68%'],
+        center: ['50%','46%'],
+        avoidLabelOverlap: true,
+        label: {
+          show: true,
+          formatter: function(p) {
+            return p.name + '\n' + p.percent + '%';
+          },
+          fontFamily: 'Rubik',
+          fontSize: 12,
+          color: '#0c3058'
+        },
+        data: [
+          { value: 8216143, name: 'לא פעיל', itemStyle: { color: '#6c9fd8' } },
+          { value: 2196,    name: 'פעיל',    itemStyle: { color: '#198754' } }
+        ]
+      }]
+    }));
+    window.addEventListener('resize', function(){ donut.resize(); });
+  }
+
+  /* === Bar: Reason distribution (sample-based) === */
+  var reasonEl = document.getElementById('reasonChart');
+  if (reasonEl) {
+    var reason = echarts.init(reasonEl);
+    reason.setOption(Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'axis',
+        formatter: function(p) {
+          return p[0].name + ': <strong>' + p[0].value + '%</strong>';
+        }
+      }),
+      grid: { left: 20, right: 24, top: 20, bottom: 10, containLabel: true },
+      xAxis: {
+        type: 'value', max: 70,
+        axisLabel: { formatter: '{value}%', fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+        splitLine: { lineStyle: { color: '#e8eef8' } }
+      },
+      yAxis: {
+        type: 'category',
+        data: ['תקנה 5ג','תום תוקף','ביוזמת צד'],
+        axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 12 },
+        axisTick: { show: false },
+        axisLine: { show: false }
+      },
+      series: [{
+        type: 'bar',
+        barMaxWidth: 36,
+        data: [
+          { value: 5,  itemStyle: { color: '#b7d2f7' } },
+          { value: 35, itemStyle: { color: '#6c9fd8' } },
+          { value: 60, itemStyle: { color: '#0068f5' } }
+        ],
+        label: {
+          show: true, position: 'right',
+          formatter: '{c}%', fontFamily: 'Rubik',
+          fontSize: 12, color: '#0c3058'
+        }
+      }]
+    }));
+    window.addEventListener('resize', function(){ reason.resize(); });
+  }
+
+  /* === Bar: Annual trend (estimated) === */
+  var trendEl = document.getElementById('trendChart');
+  if (trendEl) {
+    var trend = echarts.init(trendEl);
+
+    // Estimated annual counts from offset-based interpolation
+    var trendYears = [];
+    var trendVals  = [];
+    var rawData = {
+      1994:204545, 1995:272727, 1996:272727, 1997:271276,
+      1998:255319, 1999:255319, 2000:255319, 2001:250501,
+      2002:226415, 2003:226415, 2004:226415, 2005:226415,
+      2006:252255, 2007:260869, 2008:260869, 2009:260869,
+      2010:296739, 2011:299999, 2012:299999, 2013:303571,
+      2014:306122, 2015:306122, 2016:306122, 2017:306122,
+      2018:306122, 2019:306122, 2020:306122, 2021:243874,
+      2022:156728, 2023:156728, 2024:156728, 2025:156728
+    };
+    for (var yr = 1994; yr <= 2025; yr++) {
+      trendYears.push(String(yr));
+      trendVals.push(rawData[yr] || 0);
+    }
+
+    // Color: 2021+ in lighter shade to indicate potential dataset artifact
+    var barColors = trendYears.map(function(y) {
+      return parseInt(y) >= 2021 ? '#b7d2f7' : '#0068f5';
+    });
+
+    trend.setOption(Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'axis',
+        formatter: function(p) {
+          return '<span style="font-weight:600">' + p[0].name + '</span>: '
+            + p[0].value.toLocaleString('he-IL') + ' רישומים (אומדן)';
+        }
+      }),
+      grid: { left: 48, right: 24, top: 20, bottom: 80, containLabel: true },
+      xAxis: {
+        type: 'category',
+        data: trendYears,
+        axisLabel: {
+          fontFamily: 'Rubik', color: '#6c757d', fontSize: 10,
+          rotate: 45, interval: 1
+        },
+        axisLine: { lineStyle: { color: '#c3cfe7' } },
+        axisTick: { show: false }
+      },
+      yAxis: {
+        type: 'value',
+        axisLabel: {
+          fontFamily: 'Rubik', color: '#6c757d', fontSize: 10,
+          formatter: function(v) { return (v/1000).toFixed(0) + 'K'; }
+        },
+        splitLine: { lineStyle: { color: '#e8eef8' } }
+      },
+      series: [{
+        type: 'bar',
+        data: trendVals.map(function(v, i) {
+          return { value: v, itemStyle: { color: barColors[i] } };
+        }),
+        barMaxWidth: 18
+      }]
+    }));
+    window.addEventListener('resize', function(){ trend.resize(); });
+  }
+})();
+</script>

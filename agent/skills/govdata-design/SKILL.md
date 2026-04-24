@@ -225,32 +225,10 @@ sizes you to `max-w-gov` already).
   <p class="m-0 text-subtle">שני עד שלושה משפטים בעברית, המתארים את המאגר…</p>
 </section>
 
-<!-- metadata + resources -->
-<div class="grid md:grid-cols-2 gap-4 mb-4">
-  <section class="card p-5">
-    <h3 class="m-0 mb-3 text-sm font-display text-subtle">פרטים</h3>
-    <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-      <dt class="text-subtle">משרד</dt><dd>המשרד להגנת הסביבה</dd>
-      <dt class="text-subtle">רישיון</dt><dd>CC-BY-SA</dd>
-      <dt class="text-subtle">עודכן</dt><dd>23 באפריל 2026</dd>
-      <dt class="text-subtle">רשומות</dt><dd>12,345</dd>
-    </dl>
-  </section>
-  <section class="card p-5">
-    <h3 class="m-0 mb-3 text-sm font-display text-subtle">משאבים</h3>
-    <ul class="list-none m-0 p-0 space-y-2">
-      <li>
-        <!-- href MUST use host `data.gov.il` (not `e.data.gov.il`).
-             CKAN's package_show returns resource urls on `e.data.gov.il`,
-             which is behind Google IAP. Rewrite before rendering. -->
-        <a class="btn-ghost w-full justify-start" href="https://data.gov.il/dataset/<pkg>/resource/<rid>/download/<file>.csv" download>
-          <img src="/icons/download.svg" alt="" class="w-4 h-4" />
-          CSV &nbsp;<span class="badge">1.2 MB</span>
-        </a>
-      </li>
-    </ul>
-  </section>
-</div>
+<!-- metadata + resources: rendered by the Nuxt shell (frontend/pages/datasets/[id].vue)
+     from data.json. Do NOT emit these two sections in content.html — the frontend owns
+     their markup as the single source of truth. Populate `record_count` in data.json
+     instead; `license` and `resources` are hoisted from the scanner by the controller. -->
 
 <!-- insights -->
 <section class="card p-5 mb-4">

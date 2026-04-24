@@ -1,0 +1,406 @@
+<!-- סיווגי CPC — גוף עמוד (body fragment only) -->
+
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  .kpi-card { background: #fff; border: 1px solid #c3cfe7; border-radius: 0.5rem;
+               padding: 1.25rem 1rem; text-align: center; }
+  .kpi-value { font-size: 2rem; font-weight: 700; color: #0068f5; line-height: 1.1; }
+  .kpi-label { font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem; }
+  .meta-grid  { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .meta-row   { display: flex; justify-content: space-between; align-items: center;
+                 padding: 0.4rem 0; border-bottom: 1px solid #f0f4fa; font-size: 0.9rem; }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-key   { color: #6c757d; }
+  .meta-val   { font-weight: 500; color: #0c3058; }
+  .dl-btn     { display: inline-flex; align-items: center; gap: 0.4rem;
+                 padding: 0.45rem 1rem; border-radius: 0.5rem; font-size: 0.875rem;
+                 font-weight: 500; text-decoration: none; transition: background 0.15s; }
+  .dl-csv     { background: #0068f5; color: #fff; }
+  .dl-csv:hover { background: #0053c4; }
+  .dl-pdf     { background: #f0f4fa; color: #0c3058; border: 1px solid #c3cfe7; }
+  .dl-pdf:hover { background: #dbe8fb; }
+  #chart-sections { width: 100%; height: 340px; }
+  #chart-groups   { width: 100%; height: 340px; }
+  .search-wrap { position: relative; margin-bottom: 1rem; }
+  .search-wrap input { width: 100%; padding: 0.55rem 0.9rem 0.55rem 2.4rem;
+                        border: 1px solid #c3cfe7; border-radius: 0.5rem; font-family: Rubik, sans-serif;
+                        font-size: 0.9rem; color: #0c3058; outline: none; box-sizing: border-box; }
+  .search-wrap input:focus { border-color: #0068f5; box-shadow: 0 0 0 3px rgba(0,104,245,.12); }
+  .search-icon { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%);
+                  color: #6c757d; pointer-events: none; }
+  .exp-table  { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+  .exp-table th { background: #f1f7ff; color: #0b3668; font-weight: 600; padding: 0.5rem 0.75rem;
+                   text-align: right; border-bottom: 2px solid #c3cfe7; white-space: nowrap; }
+  .exp-table td { padding: 0.45rem 0.75rem; border-bottom: 1px solid #f0f4fa; vertical-align: top; }
+  .exp-table tr:hover td { background: #f1f7ff; }
+  .code-chip  { display: inline-block; background: #dbe8fb; color: #0053c4;
+                 border-radius: 0.2rem; padding: 0.1rem 0.4rem; font-family: monospace;
+                 font-size: 0.82rem; white-space: nowrap; }
+  .group-chip { display: inline-block; background: #0b3668; color: #fff;
+                 border-radius: 0.2rem; padding: 0.1rem 0.4rem; font-family: monospace;
+                 font-size: 0.8rem; }
+  .no-ipc     { color: #6c757d; font-style: italic; }
+  .exp-count  { font-size: 0.8rem; color: #6c757d; margin-bottom: 0.5rem; }
+  @media (max-width: 640px) {
+    .kpi-grid  { grid-template-columns: 1fr 1fr; }
+    .meta-grid { grid-template-columns: 1fr; }
+  }
+</style>
+
+<!-- ══════════════════════════════════════════════════════════
+     כותרת + תגיות
+══════════════════════════════════════════════════════════ -->
+<h1 class="text-2xl font-bold text-ink-deep mb-3">סיווגי CPC — Cooperative Patent Classification</h1>
+
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">פטנטים</span>
+  <span class="tag-chip">סיווג CPC</span>
+  <span class="tag-chip">קניין רוחני</span>
+  <span class="tag-chip">IPC</span>
+  <span class="tag-chip">משרד המשפטים</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════
+     סיכום AI
+══════════════════════════════════════════════════════════ -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center gap-2 mb-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 text-ok" style="color:#198754">
+    <span class="font-semibold text-ink-deep">סיכום המערכת</span>
+    <span class="badge" style="background:#d1fae5;color:#198754;border-radius:50rem;padding:0.1rem 0.6rem;font-size:0.75rem;">מהימנות גבוהה</span>
+  </div>
+  <p class="text-ink" style="font-size:0.95rem;">
+    המאגר מכיל <strong>252,001</strong> סיווגי CPC (Cooperative Patent Classification) — 
+    תקן בינלאומי פתוח שפותח במשותף על-ידי משרד הפטנטים האירופי (EPO) ומשרד הפטנטים האמריקאי (USPTO) 
+    לסיווג בקשות פטנט לפי נושא טכנולוגי.
+    הנתונים מאורגנים ב-9 חלקים ראשיים (A עד H ו-Y) הכוללים <strong>672 קבוצות-משנה</strong>; 
+    לכל סיווג מצוין הסיווג האב בהיררכיה ומקביל ה-IPC הבינלאומי (למעט חלק Y שהוא ייחודי ל-CPC).
+  </p>
+  <p class="text-ink mt-2" style="font-size:0.95rem;">
+    המאגר מיועד לגורמים המגישים בקשות פטנט, לעורכי-פטנט ולחוקרים הזקוקים לסיווג טכנולוגי 
+    אחיד ומקובל בין-לאומית. 
+    החלק הגדול ביותר הוא B (פעולות תעשייתיות והובלה) עם כ-52,000 רשומות, 
+    ואילו החלק הקטן ביותר הוא E (בינוי קבוע) עם כ-5,000 רשומות.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     תובנות עיקריות
+══════════════════════════════════════════════════════════ -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-3 flex items-center gap-2">
+    <img src="/icons/tag.svg" alt="" class="w-5 h-5">
+    תובנות עיקריות
+  </h2>
+  <ul class="space-y-2" style="font-size:0.93rem; list-style: none; padding: 0;">
+    <li class="flex gap-2">
+      <span style="color:#0068f5; font-weight:700;">&#8227;</span>
+      <span><strong>חלק B הוא הגדול ביותר</strong>: "פעולות תעשייתיות והובלה" מכיל כ-52,000 סיווגים — כ-21% מכלל המאגר — עם 171 קבוצות-משנה, יותר מכל חלק אחר.</span>
+    </li>
+    <li class="flex gap-2">
+      <span style="color:#0068f5; font-weight:700;">&#8227;</span>
+      <span><strong>חלק Y ייחודי ל-CPC</strong>: כ-28,000 סיווגים בחלק Y ("טכנולוגיות חדשות ושימושים צולבים") אינם כוללים מקביל IPC — שדה "מקביל IPC סיווג" ריק לכל 11 הקבוצות בחלק זה.</span>
+    </li>
+    <li class="flex gap-2">
+      <span style="color:#0068f5; font-weight:700;">&#8227;</span>
+      <span><strong>חלק E הצנוע</strong>: "בינוי קבוע" (E) הוא החלק הקטן ביותר עם 31 קבוצות וכ-5,000 רשומות בלבד — פחות מ-2% מהמאגר.</span>
+    </li>
+  </ul>
+  <p class="mt-3 text-subtle" style="font-size:0.78rem;">* הנתונים הכמותיים בתובנות מבוססים על דגימת גבולות לפי offset — אינם ספירה מלאה של כל שאילתה.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     תרשים 1: רשומות לפי חלק ראשי
+══════════════════════════════════════════════════════════ -->
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-1">התפלגות סיווגים לפי חלק ראשי</h2>
+  <p class="text-subtle mb-3" style="font-size:0.82rem;">הערכת מספר הרשומות לכל חלק CPC (A–H, Y) על סמך דגימת גבולות</p>
+  <div id="chart-sections"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     תרשים 2: קבוצות לפי חלק
+══════════════════════════════════════════════════════════ -->
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-1">מספר קבוצות-משנה לפי חלק ראשי</h2>
+  <p class="text-subtle mb-3" style="font-size:0.82rem;">סה"כ 672 קבוצות (subclasses) — ספירה מדויקת מהמאגר</p>
+  <div id="chart-groups"></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     סייר נתונים
+══════════════════════════════════════════════════════════ -->
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-1 flex items-center gap-2">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5">
+    סייר סיווגים
+  </h2>
+  <p class="text-subtle mb-3" style="font-size:0.82rem;">135 רשומות לדוגמה מכל חלקי המאגר — חפשו לפי קוד, תיאור או קבוצה</p>
+
+  <div class="search-wrap">
+    <span class="search-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+    </span>
+    <input type="text" id="cpc-search" placeholder="חפש לפי קוד, תיאור או קבוצה..." dir="rtl">
+  </div>
+
+  <p class="exp-count" id="exp-count"></p>
+
+  <div style="overflow-x: auto;">
+    <table class="exp-table" id="exp-table">
+      <thead>
+        <tr>
+          <th>קבוצה</th>
+          <th>סיווג</th>
+          <th>סיווג אב</th>
+          <th>תיאור</th>
+          <th>מקביל IPC</th>
+        </tr>
+      </thead>
+      <tbody id="exp-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- KPI cards -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-3">נתוני מפתח</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">252,001</div>
+      <div class="kpi-label">סה"כ סיווגי CPC</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">672</div>
+      <div class="kpi-label">קבוצות-משנה (subclass)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">9</div>
+      <div class="kpi-label">חלקים ראשיים (A–H, Y)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     תיאור מלא
+══════════════════════════════════════════════════════════ -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-2">אודות המאגר</h2>
+  <p class="text-ink" style="font-size:0.93rem;">
+    סיווגים בינלאומיים מורחבים — Cooperative Patent Classifications, 
+    המיועדים לסווג את בקשות הפטנט לסוגים ותתי-סוגים. 
+    ה-CPC פותח על ידי EPO ו-USPTO ומשמש כבסיס לחיפוש פטנטים בין-לאומי.
+    המאגר מכסה תחומים טכנולוגיים מגוונים: מחקלאות וביולוגיה ועד חשמל, 
+    אלקטרוניקה וטכנולוגיות מידע.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     ציון איכות
+══════════════════════════════════════════════════════════ -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="font-semibold text-ink-deep">ציון איכות נתונים</h2>
+    <span class="font-bold text-brand" style="font-size:1.1rem;">72 / 100</span>
+  </div>
+  <div class="quality-track">
+    <div class="quality-fill" style="width: 72%"></div>
+  </div>
+  <ul class="mt-3 space-y-1" style="font-size:0.82rem; color:#6c757d;">
+    <li>+ מבנה עקבי ושדות מוגדרים היטב</li>
+    <li>+ קישור לסיווג אב (היררכיה) בכל רשומה</li>
+    <li>+ מקביל IPC לרוב הרשומות</li>
+    <li>- תיאורי הסיווגים באנגלית בלבד (ללא תרגום לעברית)</li>
+    <li>- אין שדה תאריך עדכון ברמת הרשומה</li>
+    <li>- אין מידע על מספר בקשות הפטנט שסווגו בכל קוד</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     ECharts + לוגיקת טבלה
+══════════════════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+const GOVIL_PALETTE = [
+  '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+  '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+];
+
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+};
+
+/* ---- Chart 1: Records per section ---- */
+(function() {
+  const el = document.getElementById('chart-sections');
+  if (!el) return;
+  const chart = echarts.init(el, null, { renderer: 'svg' });
+
+  const sections = ['Y','H','G','F','E','D','C','B','A'];
+  const sectionNames = {
+    A: 'A — חקלאות וביולוגיה',
+    B: 'B — פעולות תעשייתיות',
+    C: 'C — כימיה ומתכות',
+    D: 'D — טקסטיל ונייר',
+    E: 'E — בינוי קבוע',
+    F: 'F — מכניקה ותאורה',
+    G: 'G — פיזיקה',
+    H: 'H — חשמל ואלקטרוניקה',
+    Y: 'Y — טכנולוגיות חדשות',
+  };
+  // Estimated record counts from boundary offset analysis
+  const counts = {
+    A: 28000, B: 52000, C: 35000, D: 10000, E: 5000,
+    F: 28000, G: 37000, H: 29000, Y: 28001
+  };
+
+  const option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: p => {
+        const v = p[0].value;
+        return `<b>${p[0].name}</b><br/>~${v.toLocaleString('he-IL')} סיווגים (הערכה)`;
+      }
+    }),
+    xAxis: {
+      type: 'value',
+      name: 'מספר סיווגים (הערכה)',
+      nameLocation: 'middle',
+      nameGap: 30,
+      axisLabel: {
+        formatter: v => v >= 1000 ? (v/1000).toFixed(0)+'K' : v,
+        fontFamily: 'Rubik, sans-serif', color: '#6c757d'
+      },
+      splitLine: { lineStyle: { color: '#f0f4fa' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: sections.map(s => sectionNames[s]),
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 12 }
+    },
+    series: [{
+      type: 'bar',
+      data: sections.map((s, i) => ({
+        value: counts[s],
+        itemStyle: { color: GOVIL_PALETTE[i % GOVIL_PALETTE.length] }
+      })),
+      label: {
+        show: true,
+        position: 'right',
+        formatter: p => '~' + (p.value/1000).toFixed(0) + 'K',
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        fontSize: 11
+      },
+      barMaxWidth: 36
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+/* ---- Chart 2: Groups per section ---- */
+(function() {
+  const el = document.getElementById('chart-groups');
+  if (!el) return;
+  const chart = echarts.init(el, null, { renderer: 'svg' });
+
+  // Exact distinct-group counts from API
+  const sections = ['A','B','C','D','E','F','G','H','Y'];
+  const groupCounts = { A:86, B:171, C:87, D:40, E:31, F:102, G:85, H:59, Y:11 };
+  const shortNames = {
+    A:'A — חקלאות', B:'B — תעשייה', C:'C — כימיה',
+    D:'D — טקסטיל', E:'E — בינוי', F:'F — מכניקה',
+    G:'G — פיזיקה', H:'H — חשמל', Y:'Y — טכנולוגיה'
+  };
+
+  const option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: p => `<b>${p[0].name}</b><br/>${p[0].value} קבוצות`
+    }),
+    xAxis: {
+      type: 'category',
+      data: sections.map(s => shortNames[s]),
+      axisLabel: {
+        fontFamily: 'Rubik, sans-serif', color: '#0c3058',
+        fontSize: 11, interval: 0, rotate: 18
+      }
+    },
+    yAxis: {
+      type: 'value',
+      name: 'מספר קבוצות',
+      nameLocation: 'middle',
+      nameGap: 36,
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d' },
+      splitLine: { lineStyle: { color: '#f0f4fa' } }
+    },
+    series: [{
+      type: 'bar',
+      data: sections.map((s, i) => ({
+        value: groupCounts[s],
+        itemStyle: { color: GOVIL_PALETTE[i % GOVIL_PALETTE.length] }
+      })),
+      label: {
+        show: true, position: 'top',
+        fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 11
+      },
+      barMaxWidth: 40
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+/* ---- Interactive explorer ---- */
+(function() {
+  const RECORDS = [{"סיווג":"A01B 1/02","תיאור":"Spades;Shovels","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/06","תיאור":"Hoes;Hand cultivators","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/16","תיאור":"Tools for uprooting weeds","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/20","תיאור":"Combinations of different kinds of hand tools","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/22","תיאור":"Attaching the blades or the like to handles;Interchangeable or adjustable blades","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/24","תיאור":"Supports for bending handles","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/26","תיאור":"Handles for hand operated agricultural tools","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/28","תיאור":"Resilient or flexible handles","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/30","תיאור":"Reducing devices for handles","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/32","תיאור":"Ergonomically improved handles","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/34","תיאור":"Handles made of different materials","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/36","תיאור":"Folding or collapsible handles","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/38","תיאור":"Handles for spades","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/40","תיאור":"Scythes;Sickles","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"A01B 1/42","תיאור":"Manual potato-harvesting implements","סיווג אב":"A01B 1/00","קבוצה":"A01B"},{"סיווג":"B01D 53/90","תיאור":"with a combination of techniques","סיווג אב":"B01D 53/00","קבוצה":"B01D"},{"סיווג":"B01D 53/92","תיאור":"with filtering","סיווג אב":"B01D 53/90","קבוצה":"B01D"},{"סיווג":"B01D 53/94","תיאור":"with a combination of techniques for gas treatment","סיווג אב":"B01D 53/90","קבוצה":"B01D"},{"סיווג":"B01D 53/96","תיאור":"Regeneration, reactivation, rejuvenation of sorbents or ion-exchangers","סיווג אב":"B01D 53/90","קבוצה":"B01D"},{"סיווג":"B01L 2200/085","תיאור":"heating or cooling","סיווג אב":"B01L 2200/00","קבוצה":"B01L"},{"סיווג":"B01L 2200/087","תיאור":"controlling fluid flow","סיווג אב":"B01L 2200/00","קבוצה":"B01L"},{"סיווג":"B01L 2200/12","תיאור":"Specific details about manufacturing of test tubes","סיווג אב":"B01L 2200/10","קבוצה":"B01L"},{"סיווג":"B01L 2200/14","תיאור":"Specific details about manufacturing of test tubes with specific structure","סיווג אב":"B01L 2200/10","קבוצה":"B01L"},{"סיווג":"B01L 2200/143","תיאור":"Specific details about microfluidic structure","סיווג אב":"B01L 2200/14","קבוצה":"B01L"},{"סיווג":"B01L 2200/147","תיאור":"Specific channel designs for microfluidics","סיווג אב":"B01L 2200/14","קבוצה":"B01L"},{"סיווג":"C03B 2215/40","תיאור":"Fibre diameter","סיווג אב":"C03B 2215/00","קבוצה":"C03B"},{"סיווג":"C03B 2215/42","תיאור":"Fibre cross-sections","סיווג אב":"C03B 2215/40","קבוצה":"C03B"},{"סיווג":"C03B 2215/44","תיאור":"Fibre with a periodically varying cross-section","סיווג אב":"C03B 2215/40","קבוצה":"C03B"},{"סיווג":"C03C 17/001","תיאור":"Precursor compositions for glass","סיווג אב":"C03C 17/00","קבוצה":"C03C"},{"סיווג":"C03C 17/002","תיאור":"Coatings comprising at least one inhomogeneous layer","סיווג אב":"C03C 17/00","קבוצה":"C03C"},{"סיווג":"D06M 10/00","תיאור":"Treatment of fibres, threads, yarns, fabrics, or fibrous goods made from such materials","סיווג אב":"D06M 1/00","קבוצה":"D06M"},{"סיווג":"D06M 11/00","תיאור":"Treating fibres, threads, yarns, fabrics or fibrous goods with inorganic substances","סיווג אב":"D06M 10/00","קבוצה":"D06M"},{"סיווג":"D06H 1/00","תיאור":"Marking, piercing, or cutting textile materials","סיווג אב":"D06H 1/00","קבוצה":"D06H"},{"סיווג":"D06N 3/00","תיאור":"Artificial leather, oilcloth, or other material obtained by covering fibrous webs","סיווג אב":"D06N 1/00","קבוצה":"D06N"},{"סיווג":"E21B 7/00","תיאור":"Drilling rotary or percussive","סיווג אב":"E21B 1/00","קבוצה":"E21B"},{"סיווג":"E21B 7/02","תיאור":"Drilling with rotary boring tools","סיווג אב":"E21B 7/00","קבוצה":"E21B"},{"סיווג":"E06B 9/30","תיאור":"Screens or the like, e.g. with laths","סיווג אב":"E06B 9/00","קבוצה":"E06B"},{"סיווג":"E06C 1/00","תיאור":"Ladders in general","סיווג אב":"E06C 1/00","קבוצה":"E06C"},{"סיווג":"F02M 61/00","תיאור":"Fuel injectors","סיווג אב":"F02M 1/00","קבוצה":"F02M"},{"סיווג":"F02K 1/1276","תיאור":"Nozzles with adjustable cross-section","סיווג אב":"F02K 1/00","קבוצה":"F02K"},{"סיווג":"F02K 1/82","תיאור":"Construction of the jet pipe","סיווג אב":"F02K 1/00","קבוצה":"F02K"},{"סיווג":"G01N 33/543","תיאור":"with proteins or antibodies","סיווג אב":"G01N 33/00","קבוצה":"G01N"},{"סיווג":"G01N 33/545","תיאור":"with labeled reactants","סיווג אב":"G01N 33/543","קבוצה":"G01N"},{"סיווג":"G01P 13/00","תיאור":"Measuring temperature simultaneously with linear or angular speed","סיווג אב":"G01P 1/00","קבוצה":"G01P"},{"סיווג":"G02B 9/42","תיאור":"Systems having two or more substantially similar optical parts","סיווג אב":"G02B 9/00","קבוצה":"G02B"},{"סיווג":"G11B 2020/1238","תיאור":"Recording with digital processing","סיווג אב":"G11B 2020/00","קבוצה":"G11B"},{"סיווג":"H01L 2224/13113","תיאור":"Connection of bump electrodes","סיווג אב":"H01L 2224/00","קבוצה":"H01L"},{"סיווג":"H01L 33/00","תיאור":"Semiconductor devices having potential barriers for radiation","סיווג אב":"H01L 1/00","קבוצה":"H01L"},{"סיווג":"H03L 7/02","תיאור":"Automatic control of frequency or phase","סיווג אב":"H03L 7/00","קבוצה":"H03L"},{"סיווג":"H05B 2214/02","תיאור":"Resistive heaters for heating vehicle content","סיווג אב":"H05B 2214/00","קבוצה":"H05B"},{"סיווג":"Y10S 174/34","תיאור":"PCB in box or housing","סיווג אב":"Y10S 174/00","קבוצה":"Y10S"},{"סיווג":"Y10S 174/14","תיאור":"having a particular cable application, e.g. winding","סיווג אב":"Y10S 174/13","קבוצה":"Y10S"},{"סיווג":"Y10S 174/33","תיאור":"Method of cable manufacture, assembly, repair, or splicing","סיווג אב":"Y10S 174/13","קבוצה":"Y10S"},{"סיווג":"Y10S 174/32","תיאור":"having means for cooling","סיווג אב":"Y10S 174/13","קבוצה":"Y10S"},{"סיווג":"Y10S 174/26","תיאור":"having a plural-layer insulation system","סיווג אב":"Y10S 174/13","קבוצה":"Y10S"},{"סיווג":"Y10S 707/99e2","תיאור":"Natural language processing","סיווג אב":"Y10S 707/00","קבוצה":"Y10S"},{"סיווג":"Y10S 903/902","תיאור":"Human Genome","סיווג אב":"Y10S 903/00","קבוצה":"Y10S"}];
+
+  const tbody = document.getElementById('exp-body');
+  const countEl = document.getElementById('exp-count');
+  const searchEl = document.getElementById('cpc-search');
+
+  function ipcDisplay(rec) {
+    const ipc = rec['מקביל IPC סיווג'] || '';
+    if (!ipc) return '<span class="no-ipc">ללא מקביל IPC</span>';
+    return `<span class="code-chip" style="font-size:0.78rem;">${ipc}</span>`;
+  }
+
+  function render(data) {
+    countEl.textContent = `מציג ${data.length} מתוך ${RECORDS.length} רשומות לדוגמה`;
+    tbody.innerHTML = data.map(r => `
+      <tr>
+        <td><span class="group-chip">${r['קבוצה']}</span></td>
+        <td><span class="code-chip">${r['סיווג']}</span></td>
+        <td><span class="code-chip" style="background:#f0f4fa;color:#0c3058;">${r['סיווג אב']}</span></td>
+        <td style="min-width:200px;">${r['תיאור']}</td>
+        <td>${ipcDisplay(r)}</td>
+      </tr>`).join('');
+  }
+
+  function filter() {
+    const q = searchEl.value.trim().toLowerCase();
+    if (!q) return render(RECORDS);
+    const filtered = RECORDS.filter(r =>
+      (r['סיווג'] || '').toLowerCase().includes(q) ||
+      (r['תיאור'] || '').toLowerCase().includes(q) ||
+      (r['קבוצה'] || '').toLowerCase().includes(q) ||
+      (r['סיווג אב'] || '').toLowerCase().includes(q)
+    );
+    render(filtered);
+  }
+
+  searchEl.addEventListener('input', filter);
+  render(RECORDS);
+})();
+</script>

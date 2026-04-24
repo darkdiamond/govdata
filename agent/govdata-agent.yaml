@@ -162,9 +162,10 @@ system: |
     <ai-summary>          — 2-3 sentences in <section class="card p-5 mb-4">
                             with a confidence badge (use circle-check or
                             triangle-alert icons + the ok/warn colors)
-    <metadata + resources> — two-card grid: organization / license / last
-                            updated / record count + download links with
-                            format + size badges
+    <!-- metadata + resources cards are rendered by the Nuxt shell from
+         data.json (organization / license / last-updated / record_count +
+         downloads). Do NOT emit them in content.html — the frontend owns
+         that markup as the single source of truth. -->
     <insights>            — as many concrete bullets as the data genuinely
                             supports (1 minimum, no upper cap). Every
                             number cited from a query you actually ran
@@ -324,6 +325,7 @@ system: |
          "primary_resource_id": "<resource uuid>",
          "formats": ["CSV", ...],
          "metadata_modified": "<iso timestamp>",
+         "record_count": 12345,
          "dataset_kind": "map" | "timeseries" | "registry" | "rankings" | "misc",
          "related_ids": ["<id>", ...],
          "version": 1
@@ -331,6 +333,18 @@ system: |
      `dataset_kind` and `organization_slug` are REQUIRED. Without them
      the /ministries/<slug>/ and /kinds/<kind>/ routes silently drop
      this dataset.
+
+     `record_count` is REQUIRED whenever you ran datastore_search with
+     `include_total=true` (which the WORKFLOW mandates for CSV/datastore
+     resources). Use the `total` field from the first response. Omit it
+     only for datasets where no datastore resource exists (PDF / ZIP
+     only). The frontend renders it in the פרטים card.
+
+     The controller hoists `license` and the full `resources` list onto
+     data.json from the scanner's Firestore record before staging to
+     GCS, so you do NOT write those two fields. Do not emit metadata
+     or resources cards in content.html — the Nuxt shell renders them
+     from data.json.
 
   6. SELF-CHECK. Run these in bash — ALL must return zero hits:
 
@@ -342,6 +356,7 @@ system: |
        grep -nE '#(6f42c1|856404|fd7e14|e83e8c|20c997|6610f2|d63384|0B3D91|EAB308|FAFAF7)' content.html
        grep -nE '\bHeebo\b' content.html
        grep -nE 'https?://e\.data\.gov\.il' content.html
+       grep -nE '<h3[^>]*>\s*(פרטים|משאבים)\s*</h3>' content.html
 
      Also:
        python3 -c "

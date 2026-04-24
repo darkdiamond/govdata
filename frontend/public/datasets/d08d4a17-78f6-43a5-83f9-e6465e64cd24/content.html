@@ -1,0 +1,298 @@
+<!-- מאגר הנוטריונים — body fragment -->
+
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+  .kpi-card { background: #fff; border: 1px solid #c3cfe7; border-radius: 0.5rem;
+               padding: 1.25rem 1rem; text-align: center; }
+  .kpi-value { font-size: 2rem; font-weight: 700; color: #0068f5; line-height: 1.2; }
+  .kpi-label { font-size: 0.85rem; color: #6c757d; margin-top: 0.25rem; }
+  .chart-wrap { width: 100%; }
+  #chart-cities { width: 100%; height: 420px; }
+  #chart-langs  { width: 100%; height: 320px; }
+  .dl-row { display: flex; align-items: center; gap: 0.75rem; padding: 0.65rem 0;
+             border-bottom: 1px solid #f0f4fa; }
+  .dl-row:last-child { border-bottom: none; }
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .meta-grid { grid-template-columns: 1fr; } }
+  .meta-item { display: flex; flex-direction: column; gap: 0.15rem; }
+  .meta-label { font-size: 0.78rem; color: #6c757d; font-weight: 500; text-transform: uppercase; letter-spacing: .03em; }
+  .meta-value { font-size: 0.97rem; color: #0c3058; font-weight: 500; }
+</style>
+
+<!-- ── כותרת + תגיות ────────────────────────────────────────── -->
+<h1 class="text-3xl font-bold text-ink-deep mb-3">מאגר הנוטריונים</h1>
+
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">נוטריונים</span>
+  <span class="tag-chip">משרד המשפטים</span>
+  <span class="tag-chip">רישוי</span>
+  <span class="tag-chip">שירותים משפטיים</span>
+  <span class="tag-chip">ישובים</span>
+</div>
+
+<!-- ── סיכום AI ──────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <div class="flex items-start gap-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 mt-1 text-ok" style="filter: invert(40%) sepia(80%) saturate(400%) hue-rotate(100deg);" />
+    <div class="flex-1">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="font-semibold text-ink-deep">סיכום המאגר</span>
+        <span class="badge" style="background:#d1fae5; color:#065f46;">אמינות גבוהה</span>
+      </div>
+      <p class="text-ink" style="line-height:1.5;">
+        המאגר כולל <strong>7,609 נוטריונים פעילים</strong> ברחבי ישראל, המפורסם על-ידי משרד המשפטים
+        בהתאם לחוק הנוטריונים, התשל"ו-1976. לכל רשומה: שם הנוטריון, מספר תיק הרישיון, הישוב שבו הוא פועל
+        ורשימת השפות בהן הוא מוסמך לתת שירות.
+      </p>
+      <p class="text-ink mt-2" style="line-height:1.5;">
+        תל אביב-יפו היא העיר עם הריכוז הגבוה ביותר של נוטריונים (1,079), ואחריה ירושלים (719) ורמת גן (439).
+        כ-41% מהנוטריונים מציינים שפות נוספות מלבד עברית — האנגלית השכיחה ביותר (2,886 ציונים).
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── KPI cards ─────────────────────────────────────────────── -->
+<div class="kpi-grid mb-5">
+  <div class="kpi-card">
+    <div class="kpi-value">7,609</div>
+    <div class="kpi-label">נוטריונים פעילים</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">1,079</div>
+    <div class="kpi-label">נוטריונים בתל אביב-יפו (הרב)</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">41%</div>
+    <div class="kpi-label">מציינים שפות נוספות</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-value">15+</div>
+    <div class="kpi-label">שפות זרות מיוצגות</div>
+  </div>
+</div>
+
+<!-- ── תובנות ─────────────────────────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+    <img src="/icons/circle-check.svg" alt="" class="w-4 h-4" />
+    תובנות עיקריות
+  </h2>
+  <ul class="space-y-2 text-ink" style="list-style: disc; padding-right: 1.25rem;">
+    <li>
+      <strong>ריכוז עירוני גבוה:</strong> ארבע הערים הגדולות (תל אביב-יפו, ירושלים, רמת גן, חיפה) מרכזות
+      <strong>2,673 נוטריונים</strong> — כ-35% מכלל הרשימה — עם 7,609 נוטריונים ב-200+ ישובים ברחבי הארץ.
+    </li>
+    <li>
+      <strong>שפות שירות:</strong> 3,111 נוטריונים (41%) רשומים עם שפות נוספות. האנגלית נמצאת אצל
+      <strong>2,886</strong> מתוכם, ערבית אצל <strong>388</strong> ורוסית אצל <strong>354</strong> — מה שמאפשר
+      נגישות לאוכלוסיות מגוונות.
+    </li>
+    <li>
+      <strong>פיזור גיאוגרפי:</strong> מרבית הישובים בפריפריה (נצרת, עפולה, חדרה) מאוחסנים עם
+      עשרות נוטריונים, המעידים על מדיניות פיזור מגעים נוטריוניים גם מחוץ למרכז.
+    </li>
+  </ul>
+</section>
+
+<!-- ── ויזואליזציה 1: נוטריונים לפי ישוב ───────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-lg font-semibold text-ink-deep mb-1">15 הישובים המובילים — מספר נוטריונים</h2>
+  <p class="text-subtle text-sm mb-4">נתונים מלאים (7,609 רשומות)</p>
+  <div class="chart-wrap">
+    <div id="chart-cities"></div>
+  </div>
+</section>
+
+<!-- ── ויזואליזציה 2: שפות נוטריונים ───────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-lg font-semibold text-ink-deep mb-1">שפות שירות — 10 השפות הנפוצות ביותר</h2>
+  <p class="text-subtle text-sm mb-4">
+    3,111 נוטריונים מציינים שפה אחת לפחות (ניתן לציין מספר שפות). נוטריון אחד יכול להופיע בכמה שפות.
+  </p>
+  <div class="chart-wrap">
+    <div id="chart-langs"></div>
+  </div>
+</section>
+
+<!-- ── הערות מאגר ────────────────────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="text-base font-semibold text-ink-deep mb-2 flex items-center gap-2">
+    <img src="/icons/tag.svg" alt="" class="w-4 h-4" />
+    אודות המאגר
+  </h2>
+  <p class="text-ink" style="line-height:1.5;">המאגר מכיל את רשימת הנוטריונים הפעילים.</p>
+</section>
+
+<!-- ── ציון איכות ────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="text-base font-semibold text-ink-deep mb-3 flex items-center gap-2">
+    <img src="/icons/circle-check.svg" alt="" class="w-4 h-4" />
+    ציון איכות המאגר
+  </h2>
+  <div class="flex items-center gap-4 mb-2">
+    <div class="flex-1">
+      <div class="quality-track">
+        <div class="quality-fill" style="width: 72%;"></div>
+      </div>
+    </div>
+    <span class="text-2xl font-bold text-brand">72</span>
+    <span class="text-subtle text-sm">/ 100</span>
+  </div>
+  <div class="grid grid-cols-2 gap-2 text-sm mt-3" style="grid-template-columns: repeat(auto-fit, minmax(200px,1fr));">
+    <div class="flex items-center gap-2">
+      <img src="/icons/circle-check.svg" alt="" class="w-4 h-4" style="filter: invert(40%) sepia(80%) saturate(400%) hue-rotate(100deg);" />
+      <span class="text-ink">מאגר datastore פעיל</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <img src="/icons/circle-check.svg" alt="" class="w-4 h-4" style="filter: invert(40%) sepia(80%) saturate(400%) hue-rotate(100deg);" />
+      <span class="text-ink">רישיון CC-BY פתוח</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <img src="/icons/circle-check.svg" alt="" class="w-4 h-4" style="filter: invert(40%) sepia(80%) saturate(400%) hue-rotate(100deg);" />
+      <span class="text-ink">עדכון שוטף</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <img src="/icons/triangle-alert.svg" alt="" class="w-4 h-4" style="filter: invert(60%) sepia(80%) saturate(600%) hue-rotate(10deg);" />
+      <span class="text-ink">שדה שפות חסר ל-59% מהרשומות</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <img src="/icons/triangle-alert.svg" alt="" class="w-4 h-4" style="filter: invert(60%) sepia(80%) saturate(600%) hue-rotate(10deg);" />
+      <span class="text-ink">אין כתובת או קואורדינטות גיאוגרפיות</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Scripts ───────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+(function () {
+  const GOVIL_PALETTE = [
+    '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
+    '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
+  ];
+
+  const baseECharts = {
+    color: GOVIL_PALETTE,
+    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+    tooltip: {
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff',
+      borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+  };
+
+  /* ── Chart 1: Cities ── */
+  const citiesEl = document.getElementById('chart-cities');
+  citiesEl.style.height = '420px';
+  const citiesChart = echarts.init(citiesEl);
+
+  const cityNames = [
+    'כפר סבא','חולון','חדרה','מודיעין-מכבים-רעות','עפולה',
+    'אשקלון','רעננה','רחובות','באר שבע','אשדוד',
+    'פתח תקווה','בני ברק','נתניה','ראשון לציון',
+    'חיפה','רמת גן','ירושלים','תל אביב-יפו'
+  ];
+  const cityValues = [
+    114, 97, 94, 89, 80,
+    141, 138, 130, 186, 189,
+    242, 248, 251, 265,
+    436, 439, 719, 1079
+  ];
+
+  citiesChart.setOption(Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      formatter: function(p) {
+        return '<div style="text-align:right">' + p.name + '<br><b>' + p.value.toLocaleString('he-IL') + ' נוטריונים</b></div>';
+      }
+    }),
+    xAxis: {
+      type: 'value',
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d', fontSize: 12 },
+      splitLine: { lineStyle: { color: '#f0f4fa' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: cityNames,
+      axisLabel: {
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        fontSize: 12
+      }
+    },
+    series: [{
+      type: 'bar',
+      data: cityValues,
+      itemStyle: {
+        color: function(p) { return GOVIL_PALETTE[p.dataIndex % GOVIL_PALETTE.length]; }
+      },
+      label: {
+        show: true,
+        position: 'right',
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        fontSize: 11,
+        formatter: '{c}'
+      },
+      barMaxWidth: 36
+    }]
+  }));
+
+  /* ── Chart 2: Languages ── */
+  const langsEl = document.getElementById('chart-langs');
+  langsEl.style.height = '320px';
+  const langsChart = echarts.init(langsEl);
+
+  const langNames  = ['Italian','German','Romanian','Spanish','Ukrainian','French','Russian','Arabic','English','ללא שפה'];
+  const langValues = [38, 78, 115, 118, 143, 241, 354, 388, 2886, 4498];
+
+  langsChart.setOption(Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      formatter: function(p) {
+        return '<div style="text-align:right">' + p.name + '<br><b>' + p.value.toLocaleString('he-IL') + ' נוטריונים</b></div>';
+      }
+    }),
+    xAxis: {
+      type: 'value',
+      axisLabel: { fontFamily: 'Rubik, sans-serif', color: '#6c757d', fontSize: 12 },
+      splitLine: { lineStyle: { color: '#f0f4fa' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: langNames,
+      axisLabel: {
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        fontSize: 12
+      }
+    },
+    series: [{
+      type: 'bar',
+      data: langValues,
+      itemStyle: {
+        color: function(p) {
+          if (p.name === 'ללא שפה') return '#c3cfe7';
+          return GOVIL_PALETTE[p.dataIndex % (GOVIL_PALETTE.length - 1)];
+        }
+      },
+      label: {
+        show: true,
+        position: 'right',
+        fontFamily: 'Rubik, sans-serif',
+        color: '#0c3058',
+        fontSize: 11,
+        formatter: '{c}'
+      },
+      barMaxWidth: 36
+    }]
+  }));
+
+  /* resize on window change */
+  window.addEventListener('resize', function() {
+    citiesChart.resize();
+    langsChart.resize();
+  });
+})();
+</script>

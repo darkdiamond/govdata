@@ -1,0 +1,324 @@
+<!-- =========================================================
+     רשימת האגודות השיתופיות — body fragment (no html/head/body)
+     ========================================================= -->
+
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+  .kpi-card { background: #fff; border: 1px solid #c3cfe7; border-radius: 0.5rem; padding: 1.25rem 1rem; text-align: center; box-shadow: 0 2px 8px -3px rgba(0,104,245,.10); }
+  .kpi-num  { font-size: 2rem; font-weight: 700; color: #0068f5; line-height: 1.1; }
+  .kpi-lbl  { font-size: 0.82rem; color: #6c757d; margin-top: 0.3rem; }
+  .kpi-sub  { font-size: 0.75rem; color: #6c757d; }
+  .chart-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+  @media (max-width: 780px) { .chart-grid-2 { grid-template-columns: 1fr; } }
+  .chart-box { width: 100%; height: 340px; }
+  .chart-box-lg { width: 100%; height: 380px; }
+  .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  @media (max-width: 640px) { .meta-grid { grid-template-columns: 1fr; } }
+  .meta-row { display: flex; justify-content: space-between; align-items: baseline;
+              padding: 0.45rem 0; border-bottom: 1px solid #eef2fa; font-size: 0.9rem; }
+  .meta-row:last-child { border-bottom: none; }
+  .meta-label { color: #6c757d; }
+  .meta-val   { color: #0c3058; font-weight: 500; }
+  .insight-list li { padding: 0.45rem 0; border-bottom: 1px solid #eef2fa; color: #0c3058; font-size: 0.95rem; }
+  .insight-list li:last-child { border-bottom: none; }
+  .insight-list li::marker { color: #0068f5; }
+  .status-pill { display: inline-block; padding: 0.15rem 0.7rem; border-radius: 50rem; font-size: 0.78rem; font-weight: 600; }
+  .pill-active { background: #d1fae5; color: #065f46; }
+  .pill-closed { background: #fee2e2; color: #991b1b; }
+  .pill-liq    { background: #fef3c7; color: #92400e; }
+</style>
+
+<!-- ══════════════════════════════════════════════
+     כותרת ותגיות
+     ══════════════════════════════════════════════ -->
+<h1 class="text-2xl font-bold text-ink-deep mb-3">רשימת האגודות השיתופיות</h1>
+
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">אגודות שיתופיות</span>
+  <span class="tag-chip">רישום</span>
+  <span class="tag-chip">כלכלה</span>
+  <span class="tag-chip">התאגדות</span>
+  <span class="tag-chip">ישראל</span>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     סיכום AI
+     ══════════════════════════════════════════════ -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center gap-2 mb-2">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 text-ok" style="color:#198754" />
+    <span class="font-semibold text-ink-deep">סיכום המאגר</span>
+    <span class="badge" style="background:#d1fae5;color:#065f46;font-size:0.73rem;">אמינות גבוהה</span>
+  </div>
+  <p class="text-ink" style="font-size:0.95rem;">
+    המאגר מכיל <strong>7,157 אגודות שיתופיות</strong> הרשומות במדינת ישראל ומנוהל על-ידי משרד הכלכלה והתעשייה.
+    הוא כולל פרטים על שם האגודה, כתובת, סטטוס פעילות, תאריך הרישום וסוג פעילות ראשי.
+    מתוך כלל האגודות, <strong>4,340 פעילות</strong> כיום, ו-218 נוספות נמצאות בהליך פירוק.
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     מדדי מפתח
+     ══════════════════════════════════════════════ -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-num">7,157</div>
+    <div class="kpi-lbl">סה"כ אגודות רשומות</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num" style="color:#065f46;">4,340</div>
+    <div class="kpi-lbl">אגודות פעילות</div>
+    <div class="kpi-sub">60.6% מהסה"כ</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num" style="color:#991b1b;">2,598</div>
+    <div class="kpi-lbl">אגודות סגורות</div>
+    <div class="kpi-sub">36.3% מהסה"כ</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num" style="color:#92400e;">218</div>
+    <div class="kpi-lbl">בהליך פירוק</div>
+    <div class="kpi-sub">3.0% מהסה"כ</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num">1921</div>
+    <div class="kpi-lbl">שנת הרישום הראשונה</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-num">22</div>
+    <div class="kpi-lbl">סוגי אגודות שונים</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     ממצאים עיקריים
+     ══════════════════════════════════════════════ -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-3" style="font-size:1rem;">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5 inline-block ml-1" style="vertical-align:-3px;" />
+    ממצאים עיקריים
+  </h2>
+  <ul class="insight-list" style="padding-right:1.2rem;">
+    <li>מתוך 7,157 האגודות הרשומות, <strong>4,340 (60.6%) פעילות</strong>, 2,598 סגורות ו-218 בהליך פירוק.</li>
+    <li>סוג הפעילות הנפוץ ביותר הוא <strong>חקלאית</strong> עם 5,479 אגודות (76.6% מהסה"כ), הכולל קיבוצים, מושבים ויישובים.</li>
+    <li>תל אביב–יפו היא המרכז האורבני הגדול ביותר עם <strong>555 אגודות רשומות</strong>, אחריה ירושלים (243) וחיפה (152).</li>
+    <li>שיא הרישומים עד כה נרשם בשנות ה-2000 עם <strong>1,640 אגודות חדשות</strong> — פי שניים מכל עשור אחר.</li>
+    <li>גל הרישומים של שנות ה-2020 (678 אגודות עד 2026) מציב תקופה זו על מסלול לשיא חדש.</li>
+    <li>סוגי אגודה מגוונים כוללים יצרנות (581), שיכון (450), קופות תגמולים (160) ואשראי (126).</li>
+  </ul>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     ויזואליזציות — שורה 1: סטטוס + סוג ראשי
+     ══════════════════════════════════════════════ -->
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-4" style="font-size:1rem;">סקירה כללית</h2>
+  <div class="chart-grid-2">
+    <div>
+      <h3 style="font-size:0.88rem;color:#6c757d;margin-bottom:0.5rem;text-align:center;">התפלגות לפי סטטוס</h3>
+      <div id="chart-status" class="chart-box"></div>
+    </div>
+    <div>
+      <h3 style="font-size:0.88rem;color:#6c757d;margin-bottom:0.5rem;text-align:center;">סוגי אגודה (ראשי) — 10 גדולים</h3>
+      <div id="chart-ptype" class="chart-box"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     ויזואליזציות — שורה 2: מגמת רישום + ערים
+     ══════════════════════════════════════════════ -->
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-4" style="font-size:1rem;">מגמות ופיזור גיאוגרפי</h2>
+  <div class="chart-grid-2">
+    <div>
+      <h3 style="font-size:0.88rem;color:#6c757d;margin-bottom:0.5rem;text-align:center;">רישומים חדשים לפי עשור</h3>
+      <div id="chart-decades" class="chart-box-lg"></div>
+    </div>
+    <div>
+      <h3 style="font-size:0.88rem;color:#6c757d;margin-bottom:0.5rem;text-align:center;">15 ערים מובילות</h3>
+      <div id="chart-cities" class="chart-box-lg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     הערות המקור
+     ══════════════════════════════════════════════ -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-2" style="font-size:1rem;">
+    <img src="/icons/tag.svg" alt="" class="w-4 h-4 inline-block ml-1" style="vertical-align:-2px;" />
+    תיאור המקור
+  </h2>
+  <p class="text-ink" style="font-size:0.9rem;">המאגר כולל מידע אודות אגודות שיתופיות שרשומות במדינת ישראל</p>
+</section>
+
+<!-- ══════════════════════════════════════════════
+     ECharts scripts
+     ══════════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<script>
+(function () {
+  const GOVIL_PALETTE = [
+    '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+    '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+  ];
+
+  const baseECharts = {
+    color: GOVIL_PALETTE,
+    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+    tooltip: {
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff',
+      borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+  };
+
+  /* ── 1. Status donut ── */
+  const chartStatus = echarts.init(document.getElementById('chart-status'));
+  chartStatus.setOption(Object.assign({}, baseECharts, {
+    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)',
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff', borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    legend: {
+      orient: 'vertical', right: 10, top: 'center',
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 13 }
+    },
+    series: [{
+      type: 'pie',
+      radius: ['42%', '68%'],
+      center: ['38%', '50%'],
+      avoidLabelOverlap: true,
+      label: { show: false },
+      emphasis: { label: { show: true, fontSize: 14, fontWeight: 600, fontFamily: 'Rubik' } },
+      data: [
+        { name: 'פעילה',    value: 4340, itemStyle: { color: '#0068f5' } },
+        { name: 'סגורה',    value: 2598, itemStyle: { color: '#6c9fd8' } },
+        { name: 'בפירוק',   value: 218,  itemStyle: { color: '#b7d2f7' } }
+      ]
+    }]
+  }));
+
+  /* ── 2. Primary type horizontal bar ── */
+  const ptypeData = [
+    { name: 'חקלאית', value: 5479 },
+    { name: 'יצרנות', value: 581 },
+    { name: 'שיכון', value: 450 },
+    { name: 'קופת תגמולים', value: 160 },
+    { name: 'אשראי', value: 126 },
+    { name: 'צרכנות', value: 99 },
+    { name: 'שרותים', value: 99 },
+    { name: 'התיישבות קהילתית', value: 57 },
+    { name: 'ברית סיוע', value: 22 },
+    { name: 'ישוב קהילתי כפרי', value: 17 },
+  ].reverse();
+
+  const chartPtype = echarts.init(document.getElementById('chart-ptype'));
+  chartPtype.setOption(Object.assign({}, baseECharts, {
+    grid: { left: 12, right: 20, top: 10, bottom: 10, containLabel: true },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff', borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    xAxis: { type: 'value', axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 }, splitLine: { lineStyle: { color: '#eef2fa' } } },
+    yAxis: { type: 'category', data: ptypeData.map(d => d.name),
+      axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11.5 } },
+    series: [{
+      type: 'bar', barMaxWidth: 28,
+      data: ptypeData.map((d, i) => ({ value: d.value, itemStyle: { color: GOVIL_PALETTE[i % GOVIL_PALETTE.length] } })),
+      label: { show: true, position: 'right', fontFamily: 'Rubik', color: '#0c3058', fontSize: 11,
+               formatter: v => v.value.toLocaleString('he-IL') }
+    }]
+  }));
+
+  /* ── 3. Registration by decade ── */
+  const decadeLabels = ['1920', '1930', '1940', '1950', '1960', '1970', '1980', '1990', '2000', '2010', '2020'];
+  const decadeVals   = [58, 342, 485, 711, 467, 583, 393, 631, 1640, 1169, 678];
+
+  const chartDecades = echarts.init(document.getElementById('chart-decades'));
+  chartDecades.setOption(Object.assign({}, baseECharts, {
+    grid: { left: 12, right: 20, top: 20, bottom: 30, containLabel: true },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: p => `עשור ${p[0].name}ים: ${p[0].value.toLocaleString('he-IL')} אגודות`,
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff', borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    xAxis: {
+      type: 'category', data: decadeLabels,
+      axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11,
+                   formatter: v => `${v}ים` },
+      axisLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'value', name: 'אגודות',
+      nameTextStyle: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+      axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+      splitLine: { lineStyle: { color: '#eef2fa' } }
+    },
+    series: [{
+      type: 'bar', barMaxWidth: 40,
+      data: decadeVals.map((v, i) => ({
+        value: v,
+        itemStyle: { color: i === 8 ? '#0068f5' : '#6c9fd8' }
+      })),
+      label: { show: true, position: 'top', fontFamily: 'Rubik', fontSize: 10, color: '#0c3058',
+               formatter: v => v.value.toLocaleString('he-IL') }
+    }]
+  }));
+
+  /* ── 4. Top cities horizontal bar ── */
+  const cityData = [
+    { name: 'תל אביב - יפו', value: 555 },
+    { name: 'ירושלים',        value: 243 },
+    { name: 'חיפה',           value: 152 },
+    { name: 'פתח תקווה',      value: 48  },
+    { name: 'רחובות',         value: 47  },
+    { name: 'טמרה',           value: 46  },
+    { name: 'רמת גן',         value: 45  },
+    { name: 'חולון',          value: 44  },
+    { name: 'נתניה',          value: 43  },
+    { name: 'חדרה',           value: 40  },
+    { name: 'באר שבע',        value: 38  },
+    { name: 'הרצלייה',        value: 34  },
+    { name: 'מגדל העמק',      value: 34  },
+    { name: 'געש',            value: 31  },
+    { name: 'נצרת',           value: 26  },
+  ].reverse();
+
+  const chartCities = echarts.init(document.getElementById('chart-cities'));
+  chartCities.setOption(Object.assign({}, baseECharts, {
+    grid: { left: 12, right: 20, top: 10, bottom: 10, containLabel: true },
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' },
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff', borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    xAxis: { type: 'value', axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 }, splitLine: { lineStyle: { color: '#eef2fa' } } },
+    yAxis: { type: 'category', data: cityData.map(d => d.name),
+      axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11.5 } },
+    series: [{
+      type: 'bar', barMaxWidth: 24,
+      data: cityData.map((d, i) => ({
+        value: d.value,
+        itemStyle: { color: i >= 12 ? '#0053c4' : i >= 10 ? '#0068f5' : '#6c9fd8' }
+      })),
+      label: { show: true, position: 'right', fontFamily: 'Rubik', color: '#0c3058', fontSize: 11,
+               formatter: v => v.value.toLocaleString('he-IL') }
+    }]
+  }));
+
+  /* resize on window change */
+  window.addEventListener('resize', () => {
+    chartStatus.resize();
+    chartPtype.resize();
+    chartDecades.resize();
+    chartCities.resize();
+  });
+})();
+</script>

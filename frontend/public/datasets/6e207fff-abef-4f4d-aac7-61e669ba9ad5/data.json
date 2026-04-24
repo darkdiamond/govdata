@@ -1,0 +1,47 @@
+{
+  "id": "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
+  "slug": "cpc-patent-classifications",
+  "title": "סיווגי CPC לבקשות פטנט",
+  "organization": "משרד המשפטים",
+  "organization_slug": "ministry_of_justice",
+  "summary_he": "732,186 רשומות סיווג CPC המשויכות ל-78,651 בקשות לרישום פטנט בישראל, כולל שם האמצאה בעברית ובאנגלית וסימון סיווג ראשי.",
+  "tags_he": [
+    "פטנטים",
+    "CPC",
+    "קניין רוחני",
+    "רשות הפטנטים",
+    "חדשנות"
+  ],
+  "primary_resource_id": "b2c59e21-c345-4b02-b071-2890a3d431d6",
+  "formats": [
+    "CSV",
+    "PDF"
+  ],
+  "metadata_modified": "2026-04-24T20:13:09.958663",
+  "dataset_kind": "registry",
+  "related_ids": [
+    "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+    "025c3e07-358d-4892-ac2d-1e28f66ba188",
+    "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+    "176f2727-476e-440e-bc8d-5d3461ea0e76",
+    "3111ae54-790a-4d02-9750-d51e1134b405"
+  ],
+  "version": 1,
+  "license": "Creative Commons Attribution",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/6e207fff-abef-4f4d-aac7-61e669ba9ad5/resource/b2c59e21-c345-4b02-b071-2890a3d431d6/download/b2c59e21-c345-4b02-b071-2890a3d431d6.csv",
+      "format": "CSV",
+      "name": "סיווגי CPC לבקשות פטנט",
+      "size_bytes": 133895357,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/6e207fff-abef-4f4d-aac7-61e669ba9ad5/resource/a06821f5-874c-4483-92f3-5ff61d75014f/download/open-file-excel.pdf",
+      "format": "PDF",
+      "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+      "size_bytes": 968126,
+      "description": null
+    }
+  ]
+}

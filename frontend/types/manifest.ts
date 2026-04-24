@@ -2,6 +2,14 @@
 
 export type DatasetKind = 'map' | 'timeseries' | 'registry' | 'rankings' | 'misc'
 
+export interface ResourceEntry {
+  url: string
+  format: string
+  name?: string
+  size_bytes?: number
+  description?: string
+}
+
 export interface ManifestEntry {
   id: string
   slug: string
@@ -13,6 +21,9 @@ export interface ManifestEntry {
   primary_resource_id?: string
   formats: string[]
   metadata_modified?: string
+  license?: string
+  record_count?: number
+  resources?: ResourceEntry[]
   dataset_kind?: DatasetKind
   related_ids: string[]
   embedding?: number[]

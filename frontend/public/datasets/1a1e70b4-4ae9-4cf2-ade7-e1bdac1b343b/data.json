@@ -1,0 +1,37 @@
+{
+  "id": "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+  "slug": "minahel-yahalomim",
+  "title": "מינהל יהלומים",
+  "organization": "משרד הכלכלה והתעשייה",
+  "organization_slug": "moital",
+  "summary_he": "רשימת יהלומנים הרשומים אצל מינהל יהלומים, כולל סטטוס הרישיון (פעיל/לא פעיל/בהליך רישום) וסוג הרישיון (סחר, יצרן, צורף) — סה\"כ 7,496 עוסקים, מתוכם 2,183 פעילים.",
+  "tags_he": [
+    "יהלומנים",
+    "רישוי עסקים",
+    "כלכלה",
+    "תעשייה",
+    "סחר יהלומים"
+  ],
+  "primary_resource_id": "7a0727d5-17cf-4457-a5e2-ff6e07234347",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-04-24T17:59:04.808804",
+  "dataset_kind": "registry",
+  "related_ids": [
+    "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
+    "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+    "ed8ce28e-ae7f-4588-b3f9-59485960d521"
+  ],
+  "version": 1,
+  "license": "אחר (פתוח)",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b/resource/7a0727d5-17cf-4457-a5e2-ff6e07234347/download/7a0727d5-17cf-4457-a5e2-ff6e07234347.csv",
+      "format": "CSV",
+      "name": "רשימת יהלומנים וסטטוס הרישיון",
+      "size_bytes": 431687,
+      "description": null
+    }
+  ]
+}

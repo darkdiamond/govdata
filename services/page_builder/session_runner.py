@@ -31,7 +31,7 @@ from services.shared.firestore import FirestoreStateStore
 
 from .embeddings import embed, embedding_input
 from .related import top_related
-from .schema import ManifestEntry
+from .schema import ManifestEntry, ResourceEntry
 
 log = logging.getLogger(__name__)
 
@@ -246,6 +246,27 @@ def run_session(
         )
 
     entry = ManifestEntry.model_validate_json(data_json_bytes)
+
+    # Hoist structured metadata + resources from the scanner's Firestore record
+    # so the frontend can render those two cards itself (single source of truth,
+    # no per-session drift in content.html). Agent still owns `record_count`
+    # because the scanner doesn't hit datastore_search.
+    src = store.get_source(entry.id)
+    if src:
+        if not entry.resources:
+            entry.resources = [
+                ResourceEntry(
+                    url=r["url"],
+                    format=r.get("format") or "",
+                    name=r.get("name"),
+                    size_bytes=r.get("size"),
+                    description=r.get("description"),
+                )
+                for r in src.resources
+                if r.get("url")
+            ]
+        entry.license = entry.license or src.license_title
+
     if entry.embedding is None:
         text = embedding_input(
             entry.title, entry.summary_he, entry.organization, entry.tags_he
