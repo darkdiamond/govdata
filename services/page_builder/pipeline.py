@@ -78,20 +78,33 @@ async def _build_one(src: SourceRecord, staging_bucket: str, store: FirestoreSta
     }
 
 
-async def _trigger_publish(project_id: str, trigger_id: str, branch: str) -> Optional[str]:
-    """Fire the Cloud Build publisher. Fire-and-forget — don't wait for the build."""
+async def _trigger_publish(
+    project_id: str, trigger_id: str, branch: str, region: str = "me-west1"
+) -> Optional[str]:
+    """Fire the Cloud Build publisher. Fire-and-forget — don't wait for the build.
+
+    Uses the regional Cloud Build endpoint; triggers created with
+    `--region=me-west1` are not reachable via the global endpoint.
+    """
 
     def _run() -> Optional[str]:
+        from google.api_core.client_options import ClientOptions
         from google.cloud.devtools import cloudbuild_v1
+        from google.cloud.devtools.cloudbuild_v1.types import RunBuildTriggerRequest
         from google.cloud.devtools.cloudbuild_v1.types import RepoSource
 
-        client = cloudbuild_v1.CloudBuildClient()
-        source = RepoSource(branch_name=branch)
-        operation = client.run_build_trigger(
+        client = cloudbuild_v1.CloudBuildClient(
+            client_options=ClientOptions(
+                api_endpoint=f"{region}-cloudbuild.googleapis.com"
+            )
+        )
+        request = RunBuildTriggerRequest(
+            name=f"projects/{project_id}/locations/{region}/triggers/{trigger_id}",
             project_id=project_id,
             trigger_id=trigger_id,
-            source=source,
+            source=RepoSource(branch_name=branch),
         )
+        operation = client.run_build_trigger(request=request)
         meta = getattr(operation, "metadata", None)
         build = getattr(meta, "build", None)
         return getattr(build, "id", None) if build else None
@@ -125,6 +138,7 @@ async def run_pipeline(
     )
     trigger_id = os.environ.get("PUBLISH_TRIGGER_ID", "govdata-publish")
     publish_branch = os.environ.get("PUBLISH_BRANCH", "main")
+    publish_region = os.environ.get("PUBLISH_REGION", "me-west1")
 
     if not dry_run and not override_id and not staging_bucket:
         raise RuntimeError(
@@ -169,7 +183,9 @@ async def run_pipeline(
     # [4] trigger publisher if any page was written
     build_id = None
     if succeeded_ids and trigger_id:
-        build_id = await _trigger_publish(project_id, trigger_id, publish_branch)
+        build_id = await _trigger_publish(
+            project_id, trigger_id, publish_branch, region=publish_region
+        )
     summary["build_id"] = build_id
     summary["status"] = "ok" if succeeded_ids else "all_failed"
     return summary
