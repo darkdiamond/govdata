@@ -33,4 +33,4 @@ echo "ANTHROPIC_AGENT_ID=$AGENT_ID"
 echo "ANTHROPIC_ENV_ID=$ENV_ID"
 echo
 echo "# To update the agent's system prompt later (creates a new version):"
-echo "#   ant beta:agents update --agent-id $AGENT_ID --version <N> < agent/govdata-agent.yaml"
+echo "#   ANTHROPIC_AGENT_ID=$AGENT_ID python3 infra/update-agent.py"

@@ -6,11 +6,12 @@ Flow:
        No client-side time cap — the agent decides when it's done.
     3. Download the session's outputs (expect `content.html` + `data.json`).
     4. Parse data.json → ManifestEntry; enrich with a Voyage embedding.
-    5. Load existing ManifestEntry records from Firestore for related-scoring.
-    6. Wrap content.html into a full HTML page (shared chrome + related
-       sidebar + category links).
-    7. Upload index.html (wrapped) + data.json (enriched) + content.html
-       (debug) to `gs://<staging>/datasets/<id>/`.
+    5. Load existing ManifestEntry records from Firestore and compute the
+       top-5 related datasets — persist the result into `entry.related_ids`
+       so the Nuxt dataset page can render the sidebar at generate time.
+    6. Upload `content.html` (the agent's body) + `data.json` (enriched) to
+       `gs://<staging>/datasets/<id>/`. The full page is assembled later by
+       `frontend/pages/datasets/[id].vue` during `nuxt generate`.
 
 The manifest is NOT rebuilt here — that's the publisher's job (it reads
 Firestore and writes `frontend/public/data/manifest.json` during the
@@ -29,7 +30,6 @@ from anthropic import Anthropic
 from services.shared.firestore import FirestoreStateStore
 
 from .embeddings import embed, embedding_input
-from .page_wrapper import wrap_page
 from .related import top_related
 from .schema import ManifestEntry
 
@@ -40,7 +40,6 @@ FILES_BETA = "files-api-2025-04-14"
 
 CONTENT_FILENAME = "content.html"
 DATA_FILENAME = "data.json"
-INDEX_FILENAME = "index.html"
 
 
 @dataclass
@@ -156,7 +155,7 @@ def run_session(
     gcs_bucket: str,
     store: Optional[FirestoreStateStore] = None,
 ) -> SessionResult:
-    """Run one Managed Agents session end-to-end and upload wrapped artifacts to GCS staging."""
+    """Run one Managed Agents session end-to-end and upload body-only artifacts to GCS staging."""
     if not gcs_bucket:
         raise ValueError("gcs_bucket is required")
 
@@ -250,21 +249,18 @@ def run_session(
         )
         entry.embedding = embed(text)
 
-    # Compute related from Firestore-known succeeded sources.
+    # Compute related from Firestore-known succeeded sources and persist the
+    # top-5 onto the entry. The agent's own related_ids suggestion gets
+    # folded in via AGENT_SUGGESTED_WEIGHT inside top_related().
     candidates = _load_existing_manifest_entries(store)
     candidates = [e for e in candidates if e.id != entry.id]
     related_scored = top_related(entry, candidates, k=5)
-    related_entries = [c for c, _, _ in related_scored]
-    result.note(f"related: {[c.id[:8] for c in related_entries]}")
-
-    index_html = wrap_page(
-        content_html=content_html, entry=entry, related=related_entries
-    )
+    entry.related_ids = [c.id for c, _, _ in related_scored]
+    result.note(f"related: {[rid[:8] for rid in entry.related_ids]}")
 
     prefix = f"datasets/{entry.id}"
     enriched_json = entry.model_dump_json(exclude_none=True, indent=2).encode("utf-8")
     writes: list[tuple[str, bytes]] = [
-        (f"{prefix}/{INDEX_FILENAME}", index_html.encode("utf-8")),
         (f"{prefix}/{DATA_FILENAME}", enriched_json),
         (f"{prefix}/{CONTENT_FILENAME}", content_html.encode("utf-8")),
     ]

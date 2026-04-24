@@ -2,8 +2,9 @@ import type { Config } from 'tailwindcss'
 
 // Tokens mirror gov.il's public design system (extracted from
 // https://www.gov.il/govilHF/cdn/govil.min.css + header-footer.js).
-// Keep this file and services/page_builder/templates/dataset_page.html.j2
-// in sync — the wrapper inlines the same config for Tailwind CDN.
+// The dataset-body glob makes Tailwind's JIT scan agent-authored HTML so
+// any utility the agent used (e.g. `grid-cols-4`, `md:flex`) lands in the
+// compiled CSS.
 export default <Config>{
   content: [
     './components/**/*.{vue,ts}',
@@ -11,6 +12,7 @@ export default <Config>{
     './pages/**/*.vue',
     './app.vue',
     './composables/**/*.ts',
+    './public/datasets/**/*.html',
   ],
   theme: {
     extend: {

@@ -1,9 +1,12 @@
-// The agent owns /datasets/<id>/ as raw static HTML (served directly by the
-// CDN). Nuxt only generates the home + category pages. Routes for ministries,
-// tags, and kinds are enumerated from manifest.json at generate time so the
-// prerender step produces one static page per category.
+// Nuxt generates every page on the site, including dataset landing pages.
+// For each dataset under public/datasets/<id>/{content.html,data.json}
+// (rsynced from GCS by the publisher), pages/datasets/[id].vue reads the
+// body + data at build time and renders them inside the default layout —
+// so header/footer live in one place (layouts/default.vue) and can never
+// drift from dataset pages. Category routes (ministries/tags/kinds) are
+// enumerated from manifest.json the same way.
 
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 interface ManifestEntry {
@@ -27,6 +30,17 @@ function categoryRoutes(): string[] {
     if (d.dataset_kind) routes.add(`/kinds/${d.dataset_kind}/`)
   }
   return [...routes]
+}
+
+function datasetRoutes(): string[] {
+  const dir = resolve(__dirname, 'public/datasets')
+  try {
+    return readdirSync(dir, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => `/datasets/${d.name}/`)
+  } catch {
+    return []
+  }
 }
 
 export default defineNuxtConfig({
@@ -76,6 +90,7 @@ export default defineNuxtConfig({
         '/how-it-works/',
         '/faq/',
         ...categoryRoutes(),
+        ...datasetRoutes(),
       ],
       failOnError: false,
     },
