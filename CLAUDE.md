@@ -77,12 +77,13 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 | Pipeline orchestration | `services/page_builder/pipeline.py` | scan → select → asyncio.gather → mark → trigger publish |
 | Source selection | `services/page_builder/selector.py` | Cooldown + priority query |
 | Firestore layer | `services/shared/firestore.py` | `FirestoreStateStore`, schema, queries |
-| Session orchestration | `services/page_builder/session_runner.py` | Stream-first terminal-idle gate, GCS staging |
+| Session orchestration | `services/page_builder/session_runner.py` | Stream-first terminal-idle gate, GCS staging (body + data.json only) |
 | Agent behavior | `agent/govdata-agent.yaml` | Agent's system prompt. Skill content is inlined because the skill file is not sent to the runtime. |
 | Agent design | `agent/skills/govdata-design/SKILL.md` | Design tokens + output contract + chart palette + RTL snippets |
-| Page chrome | `services/page_builder/templates/dataset_page.html.j2` | Shared header/breadcrumb/related/footer |
+| Dataset page shell | `frontend/pages/datasets/[id].vue` | Breadcrumb + v-html body + related/tags/kind sidebar; wraps into default layout at `nuxt generate` time |
+| Page chrome | `frontend/layouts/default.vue` | Header/footer — sole source of truth, inherited by every page including datasets |
 | Schema | `services/page_builder/schema.py` | `ManifestEntry` — boundary between agent + builder + frontend |
-| Publisher | `cloudbuild-publish.yaml` | Generate Nuxt site + Firebase deploy |
+| Publisher | `cloudbuild-publish.yaml` | rsync GCS → public/, build manifest, `nuxt generate` (assembles dataset pages), Firebase deploy |
 | Hosting config | `firebase.json`, `.firebaserc` | Firebase Hosting target + project binding |
 
 ## Conventions you will be tempted to violate (don't)
@@ -97,11 +98,22 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   Managed Agents (the user explicitly asked to remove these earlier).
 - **Don't resurrect the viz taxonomy.** The agent picks libraries per
   dataset. Any code that hardcodes `VizType` / `VizSpec` is obsolete.
-- **Don't add a Nuxt route for `/datasets/[id]`.** Dataset pages are
-  agent-authored HTML placed at `frontend/public/datasets/<id>/` by
-  the publisher; Nuxt serves them as static assets, not through SSR.
-  Category routes (`/ministries/[slug]`, `/tags/[slug]`, `/kinds/[kind]`)
-  are the only dynamic ones Nuxt owns.
+- **Agent output is body-only.** The agent writes
+  `content.html` (no `<html>/<head>/<body>/<header>/<footer>`) + `data.json`
+  to GCS. The publisher rsyncs those into `frontend/public/datasets/<id>/`,
+  and `frontend/pages/datasets/[id].vue` reads them at `nuxt generate`
+  time and wraps them in the default layout via `v-html`. In SSG the
+  `<script>` tags inside the body land in the static HTML and execute on
+  browser load before Vue hydrates, so ECharts/Leaflet still work.
+  **Don't restore a Jinja wrapper** or hand-roll chrome in agent output —
+  `layouts/default.vue` is the single source of truth.
+- **Resource URLs use `data.gov.il` (no `e.`).** CKAN publishes resource
+  URLs on `e.data.gov.il`, which sits behind Google IAP and redirects
+  anonymous visitors to an OAuth consent screen. The scanner normalizes
+  on ingest (`services/scanner/models.py::_public_resource_url`), the
+  agent's HARD CONSTRAINTS + self-check enforce it on output, and the
+  Nuxt route regex-rewrites the body as a final belt. Don't skip any of
+  those layers — defense in depth.
 - **Don't set client-side wall-clock timeouts** on the agent session.
   Only the Cloud Run timeout (3600 s) bounds it.
 - **Don't push to `main` without asking.** Commits yes; pushes require

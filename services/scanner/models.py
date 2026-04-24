@@ -96,7 +96,7 @@ class Dataset(BaseModel):
                 id=res_data.get("id", ""),
                 name=res_data.get("name", ""),
                 format=res_data.get("format", "").upper(),
-                url=res_data.get("url", ""),
+                url=_public_resource_url(res_data.get("url", "")),
                 size=res_data.get("size"),
                 last_modified=_parse_datetime(res_data.get("last_modified")),
                 description=res_data.get("description"),
@@ -139,6 +139,21 @@ class ScanSummary(BaseModel):
     datasets_unchanged: int = 0
     errors: list[str] = Field(default_factory=list)
     results: list[ScanResult] = Field(default_factory=list)
+
+
+def _public_resource_url(url: str) -> str:
+    """CKAN publishes resource URLs on `e.data.gov.il`, which is behind Google
+    IAP and redirects anonymous clients to an OAuth consent screen. The same
+    path on `data.gov.il` (no `e.` prefix) is publicly downloadable. Rewrite
+    on ingest so any consumer of the Firestore `resources[]` list sees a URL
+    that actually works in a browser."""
+    if not url:
+        return url
+    if url.startswith("https://e.data.gov.il/"):
+        return "https://data.gov.il/" + url[len("https://e.data.gov.il/"):]
+    if url.startswith("http://e.data.gov.il/"):
+        return "https://data.gov.il/" + url[len("http://e.data.gov.il/"):]
+    return url
 
 
 def _parse_datetime(value: Optional[str]) -> Optional[datetime]:

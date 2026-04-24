@@ -242,7 +242,10 @@ sizes you to `max-w-gov` already).
     <h3 class="m-0 mb-3 text-sm font-display text-subtle">משאבים</h3>
     <ul class="list-none m-0 p-0 space-y-2">
       <li>
-        <a class="btn-ghost w-full justify-start" href="..." download>
+        <!-- href MUST use host `data.gov.il` (not `e.data.gov.il`).
+             CKAN's package_show returns resource urls on `e.data.gov.il`,
+             which is behind Google IAP. Rewrite before rendering. -->
+        <a class="btn-ghost w-full justify-start" href="https://data.gov.il/dataset/<pkg>/resource/<rid>/download/<file>.csv" download>
           <img src="/icons/download.svg" alt="" class="w-4 h-4" />
           CSV &nbsp;<span class="badge">1.2 MB</span>
         </a>
