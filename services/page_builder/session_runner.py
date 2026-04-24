@@ -65,20 +65,23 @@ def _build_user_message(
     primary_resource_id: Optional[str],
 ) -> str:
     resource_line = (
-        f"מזהה המשאב הראשי: {primary_resource_id}"
+        f"primary_resource_id: {primary_resource_id}"
         if primary_resource_id
-        else "מזהה המשאב הראשי: לא זוהה מראש — בחר בעצמך מהמטה-דאטה."
+        else "primary_resource_id: (not pre-identified — pick one from package_show)"
     )
     return (
-        f"בנה את דף הנחיתה של המאגר. כתוב את content.html (תוכן הגוף בלבד — "
-        f"ללא <html>/<head>/<body>) ואת data.json ל-/mnt/session/outputs/ "
-        f"לפי ההנחיות וה-Skill govdata-design.\n\n"
+        "Build the landing page for this CKAN dataset. Write content.html "
+        "(body fragment only — no <html>/<head>/<body>) and data.json to "
+        "/mnt/session/outputs/, following the system prompt and the "
+        "govdata-design skill. All user-visible text in content.html must "
+        "be Hebrew; your reasoning and bash commands can (and should) stay "
+        "in English.\n\n"
         f"dataset_id: {dataset_id}\n"
-        f"כותרת: {title}\n"
-        f"ארגון: {org_title or '(לא ידוע)'}\n"
-        f"תיאור: {(notes or '(אין תיאור)')[:1500]}\n"
+        f"title (he): {title}\n"
+        f"organization (he): {org_title or '(unknown)'}\n"
+        f"description (he): {(notes or '(none)')[:1500]}\n"
         f"{resource_line}\n\n"
-        f"התחל בחקירה. כשאתה מסיים וכתבת את שני הקבצים — עצור."
+        "Begin by investigating the dataset. When both files are written, stop."
     )
 
 
