@@ -100,13 +100,40 @@ gcloud scheduler jobs resume govdata-pipeline-6h --location=me-west1
 
 `cloudbuild-publish.yaml` in the repo root contains the full pipeline
 (rsync agent artifacts → build manifest from Firestore → `nuxt generate`
-→ `firebase deploy --only hosting`). The trigger must be registered
-against a connected repo; `infra/bootstrap.sh` prints the exact
-`gcloud builds triggers create manual …` invocation after printing the
-connection options.
++ `firebase deploy --only hosting` in one step). The trigger must be
+registered against a connected repo; `infra/bootstrap.sh` prints the
+exact `gcloud builds triggers create manual …` invocation after printing
+the connection options.
 
 Once registered, the builder fires the trigger at the end of every
 successful run via `services/page_builder/pipeline.py::_trigger_publish`.
+
+### Pre-baked publisher image
+
+Every publish step runs on a pre-baked image built by
+`cloudbuild-publisher-image.yaml` (Dockerfile at `infra/Dockerfile.publisher`).
+The image carries:
+
+- node 22 + a warm npm cache
+- `frontend/node_modules` under `/opt/frontend-deps/` so `npm ci` is skipped
+  on the fast path (falls back to `npm ci --prefer-offline` if
+  `package-lock.json` has drifted from the image)
+- python 3.12 + the `services/page_builder/requirements.txt` deps
+- the Google Cloud SDK (provides `gsutil` for the rsync step)
+- `firebase-tools` globally
+
+Registered as a second Cloud Build trigger path-filtered to
+`infra/Dockerfile.publisher`, `frontend/package-lock.json`, and
+`services/page_builder/requirements.txt` — so the image only rebuilds when
+something it bundles actually changes. `infra/bootstrap.sh` prints the
+exact registration command alongside the publish-trigger command, plus a
+`gcloud builds triggers run` invocation to populate the `:latest` tag the
+first time.
+
+If you change `package-lock.json` or `requirements.txt` and merge before
+the image trigger fires, the publish build detects the drift and falls
+back to running `npm ci` inline — correct but slower; trigger a rebuild
+of the publisher image to restore the fast path.
 
 ## Local development
 
