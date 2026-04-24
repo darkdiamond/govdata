@@ -1,0 +1,60 @@
+{
+  "id": "669b2652-f75b-4de3-8e6b-0dfa17accef5",
+  "slug": "maagar-shamaei-mekarkein",
+  "title": "מאגר שמאי מקרקעין",
+  "organization": "משרד המשפטים",
+  "organization_slug": "ministry_of_justice",
+  "summary_he": "מאגר המכיל 3,102 שמאי מקרקעין בעלי רישיון, 91,848 רשומות בחינות הסמכה, ו-4,729 פטורים אקדמיים — מתעדכן אחת לרבעון.",
+  "tags_he": [
+    "שמאי מקרקעין",
+    "רישוי",
+    "בחינות מקצועיות",
+    "משרד המשפטים",
+    "פטורים אקדמיים"
+  ],
+  "primary_resource_id": "8540534a-eccd-4568-a677-652d589ed172",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-04-24T20:12:32.713659",
+  "dataset_kind": "registry",
+  "related_ids": [
+    "d08d4a17-78f6-43a5-83f9-e6465e64cd24",
+    "176f2727-476e-440e-bc8d-5d3461ea0e76",
+    "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+    "3111ae54-790a-4d02-9750-d51e1134b405",
+    "025c3e07-358d-4892-ac2d-1e28f66ba188"
+  ],
+  "version": 1,
+  "license": null,
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/8540534a-eccd-4568-a677-652d589ed172/download/8540534a-eccd-4568-a677-652d589ed172.csv",
+      "format": "CSV",
+      "name": "רשימת שמאי מקרקעין",
+      "size_bytes": 150130,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/8b7f49b2-8281-460f-bcd1-71c5b367db47/download/8b7f49b2-8281-460f-bcd1-71c5b367db47.csv",
+      "format": "CSV",
+      "name": "ציון בחינות שמאים",
+      "size_bytes": 9224373,
+      "description": "רשימת בחינות שמאים לפי מועד וציון"
+    },
+    {
+      "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/fdb6434a-e046-428f-b8f5-e753f54ffebc/download/fdb6434a-e046-428f-b8f5-e753f54ffebc.csv",
+      "format": "CSV",
+      "name": "פטור ממבחן שמאים",
+      "size_bytes": 544811,
+      "description": "רשימת מבחנים שהתקבל פטור עבורם בגין לימודים אקדמאיים"
+    },
+    {
+      "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/103e4fc5-c871-4d2b-9639-ec3a18f4ecdb/download/open-file-excel.pdf",
+      "format": "PDF",
+      "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+      "size_bytes": 968126,
+      "description": null
+    }
+  ]
+}

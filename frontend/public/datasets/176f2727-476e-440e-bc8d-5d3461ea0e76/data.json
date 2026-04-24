@@ -1,0 +1,87 @@
+{
+  "id": "176f2727-476e-440e-bc8d-5d3461ea0e76",
+  "slug": "pnkas-snigorim-tziboriim",
+  "title": "פנקס הסניגורים הציבוריים — הסנגוריה הציבורית",
+  "organization": "משרד המשפטים",
+  "organization_slug": "ministry_of_justice",
+  "summary_he": "פנקס מינויי הסנגורים הציבוריים לפי חוק הסניגוריה הציבורית, הכולל למעלה מ-2.5 מיליון מינויים ב-6 מחוזות ובדרג הארצי, החל משנת 1998.",
+  "tags_he": [
+    "סנגוריה ציבורית",
+    "מינויים",
+    "בתי משפט",
+    "משפט פלילי",
+    "משרד המשפטים"
+  ],
+  "primary_resource_id": "c0938e1a-259a-41c3-a225-94e477264137",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-04-24T18:22:43.218705",
+  "dataset_kind": "registry",
+  "related_ids": [
+    "3111ae54-790a-4d02-9750-d51e1134b405",
+    "025c3e07-358d-4892-ac2d-1e28f66ba188",
+    "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+    "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
+  ],
+  "version": 1,
+  "license": "Creative Commons Attribution",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/c0938e1a-259a-41c3-a225-94e477264137/download/c0938e1a-259a-41c3-a225-94e477264137.csv",
+      "format": "CSV",
+      "name": "מחוז דרום",
+      "size_bytes": 49883714,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/c4a8e209-c4a4-4482-b094-defc5bf4588e/download/c4a8e209-c4a4-4482-b094-defc5bf4588e.csv",
+      "format": "CSV",
+      "name": "מחוז צפון",
+      "size_bytes": 19850348,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/3d4ea557-de94-4947-9322-676ab8d5bfc0/download/3d4ea557-de94-4947-9322-676ab8d5bfc0.csv",
+      "format": "CSV",
+      "name": "מחוז ירושלים",
+      "size_bytes": 31548714,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/a1a4a862-8d20-42c8-a9d4-12e3e0ba1fe0/download/a1a4a862-8d20-42c8-a9d4-12e3e0ba1fe0.csv",
+      "format": "CSV",
+      "name": "מחוז חיפה",
+      "size_bytes": 32237749,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/05dddadf-6e4a-4c34-9de2-75c1e73b50ed/download/open-file-excel.pdf",
+      "format": "PDF",
+      "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+      "size_bytes": 968126,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/a3c6f2c3-5699-4101-aabc-b72edb962a7c/download/a3c6f2c3-5699-4101-aabc-b72edb962a7c.csv",
+      "format": "CSV",
+      "name": "מחוז ת\"א",
+      "size_bytes": 44387864,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/c8079691-1884-4026-8b5f-b64ce0938807/download/c8079691-1884-4026-8b5f-b64ce0938807.csv",
+      "format": "CSV",
+      "name": "מחוז מרכז",
+      "size_bytes": 25238831,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/cb8c337a-730e-4587-9713-13c990876cf4/download/cb8c337a-730e-4587-9713-13c990876cf4.csv",
+      "format": "CSV",
+      "name": "מחוז ארצי",
+      "size_bytes": 1270390,
+      "description": null
+    }
+  ]
+}

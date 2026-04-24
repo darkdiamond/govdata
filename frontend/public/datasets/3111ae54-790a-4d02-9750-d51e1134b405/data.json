@@ -1,0 +1,40 @@
+{
+  "id": "3111ae54-790a-4d02-9750-d51e1134b405",
+  "slug": "rasham-hamashkonot",
+  "title": "רשם המשכונות",
+  "organization": "משרד המשפטים",
+  "organization_slug": "ministry_of_justice",
+  "summary_he": "מאגר היסטורי של 8.2 מיליון רשומות משכון הרשומות בישראל מאז 1994, כולל סטטוס נוכחי, סיבת ביטול ותאריכי רישום — מתעדכן אוטומטית מדי יום.",
+  "tags_he": [
+    "משכונות",
+    "משרד המשפטים",
+    "בטוחות",
+    "מאגר אשראי",
+    "רשם החברות"
+  ],
+  "primary_resource_id": "e7266a9c-fed6-40e4-a28e-8cddc9f44842",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-04-24T18:14:18.885872",
+  "dataset_kind": "registry",
+  "related_ids": [],
+  "version": 1,
+  "license": "Creative Commons Attribution",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/3111ae54-790a-4d02-9750-d51e1134b405/resource/e7266a9c-fed6-40e4-a28e-8cddc9f44842/download/e7266a9c-fed6-40e4-a28e-8cddc9f44842.csv",
+      "format": "CSV",
+      "name": "תצוגת משכונות",
+      "size_bytes": 762549075,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/3111ae54-790a-4d02-9750-d51e1134b405/resource/5779affe-3204-45c8-b31c-690a4f80b66e/download/open-file-excel.pdf",
+      "format": "PDF",
+      "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+      "size_bytes": 968126,
+      "description": null
+    }
+  ]
+}

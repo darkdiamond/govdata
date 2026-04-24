@@ -1,0 +1,314 @@
+<!-- ╔══════════════════════════════════════════════════════════════════╗
+     ║  פנקס הסניגורים הציבוריים — content.html (body fragment only)   ║
+     ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<style>
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; }
+  .kpi-card { background: #fff; border: 1px solid #c3cfe7; border-radius: 0.5rem;
+              padding: 1.25rem 1.5rem; text-align: center; }
+  .kpi-value { font-size: 2rem; font-weight: 700; color: #0068f5; line-height: 1.1; }
+  .kpi-label { font-size: 0.85rem; color: #6c757d; margin-top: 0.35rem; }
+  .kpi-sub   { font-size: 0.75rem; color: #6c757d; }
+  .chart-wrap { width: 100%; height: 360px; }
+  .chart-wrap-lg { width: 100%; height: 420px; }
+  .insight-list { list-style: none; padding: 0; margin: 0; }
+  .insight-list li { display: flex; gap: 0.6rem; align-items: flex-start;
+                     padding: 0.6rem 0; border-bottom: 1px solid #c3cfe7; }
+  .insight-list li:last-child { border-bottom: none; }
+  .insight-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%;
+                 background: #0068f5; flex-shrink: 0; margin-top: 0.45rem; }
+  .resource-row { display: flex; align-items: center; gap: 0.75rem;
+                  padding: 0.6rem 0; border-bottom: 1px solid #f0f4fa; }
+  .resource-row:last-child { border-bottom: none; }
+  .meta-label { color: #6c757d; font-size: 0.82rem; min-width: 9rem; }
+  .meta-value { color: #0c3058; font-size: 0.9rem; }
+  .badge-format { font-size: 0.72rem; font-weight: 600; padding: 0.1rem 0.55rem;
+                  border-radius: 50rem; background: #dbe8fb; color: #0068f5; }
+  .badge-size   { font-size: 0.72rem; padding: 0.1rem 0.55rem;
+                  border-radius: 50rem; background: #f0f4fa; color: #6c757d; }
+  .two-col-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 640px) { .two-col-meta { grid-template-columns: 1fr; } }
+</style>
+
+<!-- ── כותרת ראשית ─────────────────────────────────────────────────── -->
+<h1 class="text-2xl font-semibold text-ink-deep mb-3">
+  פנקס הסניגורים הציבוריים — הסנגוריה הציבורית
+</h1>
+
+<!-- ── תגיות ──────────────────────────────────────────────────────── -->
+<div class="flex flex-wrap gap-2 mb-5">
+  <span class="tag-chip">סנגוריה ציבורית</span>
+  <span class="tag-chip">מינויים</span>
+  <span class="tag-chip">בתי משפט</span>
+  <span class="tag-chip">משפט פלילי</span>
+  <span class="tag-chip">משרד המשפטים</span>
+</div>
+
+<!-- ── סיכום AI ───────────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <div class="flex items-start gap-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 mt-0.5" style="color:#198754" />
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="font-medium text-ink-deep">סיכום המאגר</span>
+        <span class="badge" style="background:#d1fae5;color:#198754;">רמת ביטחון גבוהה</span>
+      </div>
+      <p class="text-ink text-sm leading-relaxed">
+        מאגר זה כולל את פנקס המינויים הרשמי של הסניגוריה הציבורית בישראל, הפועלת מכוח חוק הסניגוריה הציבורית, התשנ"ו-1995.
+        כל רשומה מתעדת מינוי של סנגור ציבורי לייצוג נאשם בתיק פלילי — כולל שם הסנגור, תאריך המינוי, ומספרי התיק בבית המשפט ובסניגוריה.
+        הנתונים מפוצלים לשבעה משאבים לפי מחוז, ומכסים למעלה מ-2.5 מיליון מינויים שנרשמו בין 1998 ל-2026.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── KPI ────────────────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-4 text-base">נתונים מרכזיים</h2>
+  <div class="kpi-grid">
+    <div class="kpi-card">
+      <div class="kpi-value">2.54M</div>
+      <div class="kpi-label">סך מינויים (כל המחוזות)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">6</div>
+      <div class="kpi-label">מחוזות מיוצגים</div>
+      <div class="kpi-sub">+ רמה ארצית</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">633K</div>
+      <div class="kpi-label">מחוז דרום (הגדול ביותר)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">1998</div>
+      <div class="kpi-label">שנת הרשומה הראשונה</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-value">2026</div>
+      <div class="kpi-label">עדכון אחרון</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── תובנות ─────────────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-3 text-base flex items-center gap-2">
+    <img src="/icons/info.svg" alt="" class="w-4 h-4" />
+    תובנות מרכזיות
+  </h2>
+  <ul class="insight-list">
+    <li>
+      <span class="insight-dot"></span>
+      <span class="text-sm text-ink">
+        <strong>מחוז דרום</strong> הוא הגדול במאגר עם 633,832 מינויים — כ-24.9% מסך כל המינויים הרשומים בפנקס.
+        מחוז ת"א מגיע בסמוך עם 534,312 מינויים (21%).
+      </span>
+    </li>
+    <li>
+      <span class="insight-dot"></span>
+      <span class="text-sm text-ink">
+        <strong>מגמת גידול מתמיד:</strong> על פי מדגם ממחוז דרום (5,000 רשומות), מספר המינויים השנתיים גדל
+        מכמה עשרות בשנות ה-90 לכמה מאות בשנים האחרונות, עם שיא ב-2025 — דבר שעשוי לשקף גידול במערכת המשפטית הפלילית.
+      </span>
+    </li>
+    <li>
+      <span class="insight-dot"></span>
+      <span class="text-sm text-ink">
+        <strong>הסניגוריה הארצית</strong> כוללת 12,747 מינויים בלבד — ערכאת ערעור (עפ"ג, דנ"פ) שמטבעה מייצגת מספר קטן יותר של תיקים בהשוואה לערכאות הראשונות.
+      </span>
+    </li>
+  </ul>
+</section>
+
+<!-- ── ויזואליזציות: גרף עמודות לפי מחוז ────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-1 text-base">מינויים לפי מחוז</h2>
+  <p class="text-subtle text-xs mb-3">סך הרשומות בכל משאב (ספירה מלאה מה-API)</p>
+  <div id="chart-districts" class="chart-wrap"></div>
+</section>
+
+<!-- ── ויזואליזציות: מגמה שנתית ──────────────────────────────────── -->
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-1 text-base">מגמת מינויים לאורך השנים</h2>
+  <p class="text-subtle text-xs mb-3">
+    מבוסס על מדגם של 5,000 רשומות ממחוז דרום (כ-0.8% מסך הרשומות במחוז) — מייצג מגמה, לא ספירה מוחלטת
+  </p>
+  <div id="chart-years" class="chart-wrap-lg"></div>
+</section>
+
+<!-- ── הערות (notes) ──────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <h2 class="font-semibold text-ink-deep mb-2 text-base flex items-center gap-2">
+    <img src="/icons/list.svg" alt="" class="w-4 h-4" />
+    אודות המאגר
+  </h2>
+  <p class="text-sm text-ink leading-relaxed">
+    פנקס הסניגורים הציבוריים בהתאם לסעיף 17 לחוק הסניגוריה הציבורית, התשנ"ו-1995 ולתקנה 11 לתקנות הסנגוריה הציבורית, התשע"ו-1996.
+    הפנקס מתעד מינויים של סנגורים ציבוריים לייצוג נאשמים שאינם יכולים לממן ייצוג פרטי, ומהווה מסמך ציבורי המאפשר שקיפות בפעילות הסנגוריה הציבורית.
+  </p>
+</section>
+
+<!-- ── ציון איכות ─────────────────────────────────────────────────── -->
+<section class="card p-5 mb-4">
+  <div class="flex items-center justify-between mb-2">
+    <h2 class="font-semibold text-ink-deep text-base flex items-center gap-2">
+      <img src="/icons/circle-check.svg" alt="" class="w-4 h-4" />
+      ציון איכות המאגר
+    </h2>
+    <span class="font-bold text-brand text-lg">62 / 100</span>
+  </div>
+  <div class="quality-track mb-3">
+    <div class="quality-fill" style="width: 62%"></div>
+  </div>
+  <div class="grid grid-cols-2 gap-x-6 gap-y-1 text-xs text-subtle">
+    <span class="flex items-center gap-1"><img src="/icons/circle-check.svg" alt="" class="w-3 h-3" style="color:#198754"/> קבצי CSV פעילים ב-Datastore</span>
+    <span class="flex items-center gap-1"><img src="/icons/circle-check.svg" alt="" class="w-3 h-3" style="color:#198754"/> מכסה מחוזות מרובים</span>
+    <span class="flex items-center gap-1"><img src="/icons/circle-check.svg" alt="" class="w-3 h-3" style="color:#198754"/> עדכון שוטף (2026)</span>
+    <span class="flex items-center gap-1"><img src="/icons/triangle-alert.svg" alt="" class="w-3 h-3" style="color:#ffc107"/> אין תגיות מסווגות</span>
+    <span class="flex items-center gap-1"><img src="/icons/triangle-alert.svg" alt="" class="w-3 h-3" style="color:#ffc107"/> תיאור מינימלי</span>
+    <span class="flex items-center gap-1"><img src="/icons/triangle-alert.svg" alt="" class="w-3 h-3" style="color:#ffc107"/> פורמט תאריך לא אחיד בין המחוזות</span>
+  </div>
+</section>
+
+<!-- ── ספריות ──────────────────────────────────────────────────────── -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+
+<!-- ── קוד הגרפים ─────────────────────────────────────────────────── -->
+<script>
+const GOVIL_PALETTE = [
+  '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+  '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+];
+
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true }
+};
+
+/* ─── גרף 1: מינויים לפי מחוז (עמודות אופקיות) ─── */
+(function() {
+  var el = document.getElementById('chart-districts');
+  if (!el) return;
+  var chart = echarts.init(el);
+
+  var districts = ['מחוז ארצי','מחוז צפון','מחוז מרכז','מחוז ירושלים','מחוז חיפה','מחוז ת"א','מחוז דרום'];
+  var values   = [12747,       254186,     319533,     376611,        412571,     534312,    633832];
+
+  var option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function(p) {
+        var v = p[0].value;
+        return '<strong>' + p[0].name + '</strong><br/>מינויים: ' + v.toLocaleString('he-IL');
+      }
+    }),
+    xAxis: {
+      type: 'value',
+      name: 'מספר מינויים',
+      nameTextStyle: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+      axisLabel: {
+        fontFamily: 'Rubik', color: '#6c757d', fontSize: 11,
+        formatter: function(v) { return v >= 1000 ? (v/1000).toFixed(0)+'K' : v; }
+      },
+      splitLine: { lineStyle: { color: '#f0f4fa' } }
+    },
+    yAxis: {
+      type: 'category',
+      data: districts,
+      axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 12 },
+      axisTick: { show: false },
+      axisLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    series: [{
+      type: 'bar',
+      data: values,
+      barMaxWidth: 44,
+      itemStyle: {
+        color: function(p) { return GOVIL_PALETTE[p.dataIndex % GOVIL_PALETTE.length]; },
+        borderRadius: [0, 4, 4, 0]
+      },
+      label: {
+        show: true, position: 'right',
+        fontFamily: 'Rubik', fontSize: 11, color: '#0c3058',
+        formatter: function(p) { return p.value.toLocaleString('he-IL'); }
+      }
+    }]
+  });
+
+  chart.setOption(option);
+  window.addEventListener('resize', function() { chart.resize(); });
+})();
+
+/* ─── גרף 2: מגמת מינויים לאורך השנים ─── */
+(function() {
+  var el = document.getElementById('chart-years');
+  if (!el) return;
+  var chart = echarts.init(el);
+
+  // Source: sample of 5,000 records from South district (sorted by _id asc)
+  var years = [
+    '1998','1999','2000','2001','2002','2003','2004','2005','2006','2007',
+    '2008','2009','2010','2011','2012','2013','2014','2015','2016','2017',
+    '2018','2019','2020','2021','2022','2023','2024','2025'
+  ];
+  var counts = [
+    13,74,75,103,104,109,89,118,136,137,
+    156,182,186,215,201,242,233,224,184,218,
+    230,287,235,219,206,212,243,293
+  ];
+
+  var option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: function(p) {
+        return '<strong>' + p[0].axisValue + '</strong><br/>רשומות במדגם: ' + p[0].value;
+      }
+    }),
+    xAxis: {
+      type: 'category',
+      data: years,
+      name: 'שנה',
+      nameTextStyle: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+      axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 10, rotate: 35 },
+      axisTick: { alignWithLabel: true },
+      axisLine: { lineStyle: { color: '#c3cfe7' } }
+    },
+    yAxis: {
+      type: 'value',
+      name: 'רשומות (מדגם)',
+      nameTextStyle: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+      axisLabel: { fontFamily: 'Rubik', color: '#6c757d', fontSize: 11 },
+      splitLine: { lineStyle: { color: '#f0f4fa' } }
+    },
+    series: [{
+      type: 'line',
+      data: counts,
+      smooth: 0.4,
+      symbol: 'circle',
+      symbolSize: 5,
+      lineStyle: { color: '#0068f5', width: 2.5 },
+      itemStyle: { color: '#0068f5' },
+      areaStyle: {
+        color: {
+          type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(0,104,245,0.22)' },
+            { offset: 1, color: 'rgba(0,104,245,0.01)' }
+          ]
+        }
+      }
+    }]
+  });
+
+  chart.setOption(option);
+  window.addEventListener('resize', function() { chart.resize(); });
+})();
+</script>

@@ -19,5 +19,15 @@
   "metadata_modified": "2026-04-24T08:44:42.134011",
   "dataset_kind": "timeseries",
   "related_ids": [],
-  "version": 1
+  "version": 1,
+  "license": "אחר (פתוח)",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/ebf0005b-f5fe-4c6c-ab6d-28778167d025/resource/823479b4-4771-43d8-9189-6a2a1dcaaf10/download/823479b4-4771-43d8-9189-6a2a1dcaaf10.csv",
+      "format": "CSV",
+      "name": "מפלס ים המלח משנת 1976",
+      "size_bytes": 15132,
+      "description": null
+    }
+  ]
 }

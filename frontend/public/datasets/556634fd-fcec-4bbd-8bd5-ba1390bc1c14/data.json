@@ -1,0 +1,48 @@
+{
+  "id": "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+  "slug": "simanei-mischar-sivugim",
+  "title": "סימני מסחר — סיווגים",
+  "organization": "משרד המשפטים",
+  "organization_slug": "ministry_of_justice",
+  "summary_he": "טבלאות ייחוס רשמיות לסיווג סימני מסחר בישראל: 45 מחלקות ניצה בינלאומיות ו-144 ערכי סיווג וינה לאלמנטים ציוריים.",
+  "tags_he": [
+    "סימני מסחר",
+    "סיווג ניצה",
+    "סיווג וינה",
+    "קניין רוחני",
+    "WIPO"
+  ],
+  "primary_resource_id": "bc9b55dc-a0c6-4b52-a925-5dabc7ef7979",
+  "formats": [
+    "CSV",
+    "PDF"
+  ],
+  "metadata_modified": "2026-04-24T17:13:52.069035",
+  "dataset_kind": "registry",
+  "related_ids": [],
+  "version": 1,
+  "license": "אחר (פתוח)",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/556634fd-fcec-4bbd-8bd5-ba1390bc1c14/resource/bc9b55dc-a0c6-4b52-a925-5dabc7ef7979/download/bc9b55dc-a0c6-4b52-a925-5dabc7ef7979.csv",
+      "format": "CSV",
+      "name": "סיווגי ניצה",
+      "size_bytes": 3014,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/556634fd-fcec-4bbd-8bd5-ba1390bc1c14/resource/820e988c-2740-46ca-8df4-2ed04ec7bf01/download/820e988c-2740-46ca-8df4-2ed04ec7bf01.csv",
+      "format": "CSV",
+      "name": "סיווגי וינה",
+      "size_bytes": 15592,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/556634fd-fcec-4bbd-8bd5-ba1390bc1c14/resource/4f8315d5-2f96-4aaa-8405-0d428040dccd/download/open-file-excel.pdf",
+      "format": "PDF",
+      "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+      "size_bytes": 968126,
+      "description": null
+    }
+  ]
+}

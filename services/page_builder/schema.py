@@ -24,6 +24,17 @@ DatasetKind = Literal[
 ]
 
 
+class ResourceEntry(BaseModel):
+    """A downloadable file on the dataset page's resources card."""
+    model_config = ConfigDict(extra="ignore")
+
+    url: str
+    format: str = ""
+    name: Optional[str] = None
+    size_bytes: Optional[int] = None
+    description: Optional[str] = None
+
+
 class ManifestEntry(BaseModel):
     """What `data.json` looks like after the agent writes it and the controller
     enriches it. Consumed by the home page + category pages + wrapper's related
@@ -41,6 +52,11 @@ class ManifestEntry(BaseModel):
     primary_resource_id: Optional[str] = None
     formats: list[str] = Field(default_factory=list)
     metadata_modified: Optional[datetime] = None
+
+    # Metadata + resources cards (rendered by frontend from data.json)
+    license: Optional[str] = None
+    record_count: Optional[int] = None
+    resources: list[ResourceEntry] = Field(default_factory=list)
 
     # Agent-emitted classification + suggestions
     dataset_kind: Optional[DatasetKind] = None

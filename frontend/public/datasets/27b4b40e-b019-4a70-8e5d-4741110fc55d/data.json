@@ -1,0 +1,33 @@
+{
+  "id": "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+  "slug": "snifit-barzel",
+  "title": "סניפי ברזל",
+  "organization": "משרד הכלכלה והתעשייה",
+  "organization_slug": "moital",
+  "summary_he": "636 סניפי ברזל של רשתות סופרמרקט ב-135 יישובים ברחבי ישראל, שהתחייבו להישאר פתוחים בעת חירום לאומי.",
+  "tags_he": [
+    "חירום",
+    "סופרמרקטים",
+    "ביטחון מזון",
+    "רשתות מזון",
+    "פיקוד העורף"
+  ],
+  "primary_resource_id": "f7d9c47e-3414-4524-a187-a0f0e057b08a",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-04-24T17:59:09.354902",
+  "dataset_kind": "map",
+  "related_ids": [],
+  "version": 1,
+  "license": "אחר (פתוח)",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/27b4b40e-b019-4a70-8e5d-4741110fc55d/resource/f7d9c47e-3414-4524-a187-a0f0e057b08a/download/f7d9c47e-3414-4524-a187-a0f0e057b08a.csv",
+      "format": "CSV",
+      "name": "סניפי ברזל",
+      "size_bytes": 133185,
+      "description": null
+    }
+  ]
+}

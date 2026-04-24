@@ -1,0 +1,47 @@
+{
+  "id": "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+  "slug": "magar-orchei-patentim",
+  "title": "מאגר עורכי פטנטים",
+  "organization": "משרד המשפטים",
+  "organization_slug": "ministry_of_justice",
+  "summary_he": "פנקס עורכי הפטנטים המורשים בישראל — 582 רשומות, מתעדכן חודשית על-ידי רשות הפטנטים, המצאות ועיצובים.",
+  "tags_he": [
+    "קניין רוחני",
+    "עורכי פטנטים",
+    "רשות הפטנטים",
+    "רישוי מקצועי",
+    "משרד המשפטים"
+  ],
+  "primary_resource_id": "0ff306c2-1ad9-4974-a2be-0420acf35685",
+  "formats": [
+    "CSV",
+    "PDF"
+  ],
+  "metadata_modified": "2026-04-24T18:13:05.089531",
+  "dataset_kind": "registry",
+  "related_ids": [
+    "025c3e07-358d-4892-ac2d-1e28f66ba188",
+    "176f2727-476e-440e-bc8d-5d3461ea0e76",
+    "3111ae54-790a-4d02-9750-d51e1134b405",
+    "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+    "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
+  ],
+  "version": 1,
+  "license": null,
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/1806c96c-9cc4-47bf-98b3-80a18f061f98/resource/0ff306c2-1ad9-4974-a2be-0420acf35685/download/0ff306c2-1ad9-4974-a2be-0420acf35685.csv",
+      "format": "CSV",
+      "name": "פנקס עורכי פטנטים",
+      "size_bytes": 108106,
+      "description": null
+    },
+    {
+      "url": "https://data.gov.il/dataset/1806c96c-9cc4-47bf-98b3-80a18f061f98/resource/0b18c999-1627-4b5e-b771-8bc69af5afd3/download/open-file-excel.pdf",
+      "format": "PDF",
+      "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+      "size_bytes": 968126,
+      "description": null
+    }
+  ]
+}

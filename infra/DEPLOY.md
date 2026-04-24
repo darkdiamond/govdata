@@ -151,3 +151,21 @@ python -m services.page_builder.pipeline --dry-run
 # Full pipeline for one source (needs ANTHROPIC_* + GCS_STAGING_BUCKET if running for real)
 python -m services.page_builder.pipeline --source <ckan-id> --no-trigger-publish
 ```
+
+## Archiving agent output into git
+
+The publisher rsyncs `gs://govdata-il-staging/datasets/` into the Cloud
+Build workspace on every deploy, so git never sees the generated
+pages. To keep a reviewable snapshot in the repo, pull the current
+bucket contents into the working tree and commit by hand:
+
+```sh
+./infra/sync-datasets.sh            # dry run — shows what would copy
+./infra/sync-datasets.sh --apply    # copies gs://.../datasets/ -> frontend/public/datasets/
+git status frontend/public/datasets/
+# review, then:
+git add frontend/public/datasets/ && git commit -m "publish: sync agent output"
+```
+
+The script never deletes — pages only ever accumulate, even if
+they're later pruned from the staging bucket.
