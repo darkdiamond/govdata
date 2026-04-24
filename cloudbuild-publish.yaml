@@ -54,9 +54,11 @@ steps:
       - |
         set -euo pipefail
         cd frontend
-        IMAGE_LOCK="/opt/frontend-deps/package-lock.json"
-        if [ -f "$IMAGE_LOCK" ] \
-           && [ "$(md5sum < "$IMAGE_LOCK" | cut -d' ' -f1)" = "$(md5sum < package-lock.json | cut -d' ' -f1)" ]; then
+        # NB: bash-style $VAR references are rejected by Cloud Build's
+        # substitution validator when VAR is ALL_CAPS — keep the path inline.
+        if [ -f /opt/frontend-deps/package-lock.json ] \
+           && [ "$(md5sum < /opt/frontend-deps/package-lock.json | cut -d' ' -f1)" \
+              = "$(md5sum < package-lock.json | cut -d' ' -f1)" ]; then
           echo "package-lock.json matches image; reusing pre-baked node_modules"
           cp -a /opt/frontend-deps/node_modules node_modules
         else
