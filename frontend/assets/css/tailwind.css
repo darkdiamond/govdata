@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: theme('fontFamily.sans');
+    color: theme('colors.ink');
+    background: theme('colors.surface');
+  }
+  body {
+    line-height: 1.7;
+  }
+  h1, h2, h3, h4 {
+    font-family: theme('fontFamily.display');
+    line-height: 1.35;
+    font-weight: 500;
+  }
+  h1 { font-size: 1.875rem; }
+  h2 { font-size: 1.375rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+  h3 { font-size: 1.125rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+  a { color: theme('colors.brand.600'); }
+  a:hover { color: theme('colors.brand.500'); text-decoration: underline; }
+}
+
+@layer components {
+  .card {
+    @apply bg-white border border-rule rounded-xl shadow-card;
+  }
+  .card-hover {
+    @apply hover:shadow-card-hover transition-shadow;
+  }
+  .tag-chip {
+    @apply inline-block px-2 py-0.5 text-xs bg-brand-50 text-brand-700 rounded-full border border-brand-100;
+  }
+  .badge {
+    @apply inline-block px-2 py-0.5 text-xs bg-surface border border-rule rounded-md text-subtle;
+  }
+  .quality-track {
+    @apply h-2 bg-rule rounded-full overflow-hidden;
+  }
+  .quality-fill {
+    @apply h-full bg-accent;
+  }
+}
+
+/* RTL-safe leaflet controls — the plugin injects left/right styles that
+   conflict with dir=rtl. Force them to flip. */
+.leaflet-container { direction: ltr; }
+.leaflet-popup-content { direction: rtl; text-align: right; }

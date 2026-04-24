@@ -1,0 +1,27 @@
+<script setup lang="ts">
+import type { ManifestEntry } from '~/types/manifest'
+
+defineProps<{ entry: ManifestEntry }>()
+</script>
+
+<template>
+  <a
+    :href="`/datasets/${entry.id}/`"
+    class="card card-hover p-4 no-underline hover:no-underline block"
+  >
+    <div class="flex gap-2 flex-wrap mb-2 text-xs">
+      <span v-if="entry.organization" class="badge">{{ entry.organization }}</span>
+      <span v-for="f in entry.formats.slice(0, 3)" :key="f" class="badge">{{ f }}</span>
+    </div>
+    <h3 class="font-display text-ink m-0 mb-2">{{ entry.title }}</h3>
+    <p v-if="entry.summary_he" class="text-sm text-subtle leading-relaxed line-clamp-2 m-0">
+      {{ entry.summary_he }}
+    </p>
+    <div class="flex items-center justify-between mt-2">
+      <div class="text-xs text-subtle">עודכן {{ relativeTimeHe(entry.metadata_modified) }}</div>
+      <div v-if="entry.tags_he.length" class="flex gap-1">
+        <span v-for="t in entry.tags_he.slice(0, 2)" :key="t" class="tag-chip">{{ t }}</span>
+      </div>
+    </div>
+  </a>
+</template>
