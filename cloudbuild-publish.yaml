@@ -38,7 +38,7 @@ steps:
 
   # [3] Install Nuxt deps and run `nuxt generate` (static site → frontend/.output/public/).
   - id: 'nuxt-generate'
-    name: 'node:20'
+    name: 'node:22'
     entrypoint: 'bash'
     dir: 'frontend'
     args:
@@ -57,7 +57,7 @@ steps:
   # [4] Deploy to Firebase Hosting (firebase-tools is installed per build;
   #     keeps the image pinned to node:20 rather than a separate builder).
   - id: 'firebase-deploy'
-    name: 'node:20'
+    name: 'node:22'
     entrypoint: 'bash'
     args:
       - '-c'
