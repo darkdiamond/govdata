@@ -105,6 +105,12 @@ done
 gcloud storage buckets add-iam-policy-binding "gs://$STAGING_BUCKET" \
   --member="serviceAccount:$PUBLISHER_SA" --role=roles/storage.objectViewer --quiet >/dev/null
 
+# Builder must be able to impersonate the publisher SA to fire the Cloud Build
+# trigger (which runs as the publisher).
+gcloud iam service-accounts add-iam-policy-binding "$PUBLISHER_SA" \
+  --member="serviceAccount:$BUILDER_SA" --role=roles/iam.serviceAccountUser \
+  --project "$PROJECT" --quiet >/dev/null
+
 # Scheduler: may invoke the Cloud Run builder.
 # (The run.invoker binding is attached to the service after deploy; see builder.deploy.sh.)
 
