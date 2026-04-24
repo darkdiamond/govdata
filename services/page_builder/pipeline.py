@@ -1,0 +1,214 @@
+"""Builder pipeline — what a single Cloud Run invocation does.
+
+Flow: scan CKAN → select N sources → asyncio.gather N agent sessions →
+mark each source in Firestore → trigger the Cloud Build publisher.
+
+All parallelism is in-process via `asyncio.gather`. Cloud Run is pinned to
+one container (`--max-instances=1 --concurrency=1`), so a scheduler tick
+produces exactly one pipeline run.
+"""
+from __future__ import annotations
+
+import argparse
+import asyncio
+import logging
+import os
+from typing import Optional
+
+from services.scanner.config import ScannerSettings
+from services.scanner.main import Scanner
+from services.scanner.state import StateDB
+from services.shared.firestore import FirestoreStateStore, SourceRecord
+
+from . import selector
+from .session_runner import run_session
+
+log = logging.getLogger("page_builder.pipeline")
+
+
+PRIMARY_FORMAT_PRIORITY = ("CSV", "GEOJSON", "JSON", "XLSX", "XML")
+
+
+def _pick_primary_resource_id(resources: list[dict]) -> Optional[str]:
+    """Pick a reasonable primary resource_id for the agent to anchor on."""
+    for fmt in PRIMARY_FORMAT_PRIORITY:
+        for r in resources:
+            if (r.get("format") or "").upper() == fmt:
+                return r.get("id")
+    return resources[0].get("id") if resources else None
+
+
+async def _build_one(src: SourceRecord, staging_bucket: str, store: FirestoreStateStore) -> dict:
+    """Run one Managed Agents session. Updates Firestore on success or failure."""
+    log.info("building %s — %s", src.id[:8], (src.title or "")[:60])
+    await asyncio.to_thread(store.mark_analysis_pending, src.id)
+
+    primary_id = _pick_primary_resource_id(src.resources)
+    try:
+        result = await asyncio.to_thread(
+            run_session,
+            dataset_id=src.id,
+            title=src.title,
+            notes=src.notes or "",
+            org_title=(src.organization or {}).get("title", "") or "",
+            primary_resource_id=primary_id,
+            gcs_bucket=staging_bucket,
+            store=store,
+        )
+    except Exception as e:
+        log.exception("build failed for %s", src.id)
+        await asyncio.to_thread(store.mark_analysis_failed, src.id, str(e))
+        return {"id": src.id, "status": "failed", "error": str(e)}
+
+    page_path = f"datasets/{src.id}/"
+    entry_dict = (
+        result.entry.model_dump(mode="json", exclude_none=True) if result.entry else None
+    )
+    await asyncio.to_thread(
+        store.mark_analysis_succeeded, src.id, page_path, entry_dict
+    )
+    return {
+        "id": src.id,
+        "status": "succeeded",
+        "session_id": result.session_id,
+        "elapsed_seconds": result.elapsed_seconds,
+        "events": result.events_seen,
+        "usage": result.usage,
+        "written": result.written,
+    }
+
+
+async def _trigger_publish(project_id: str, trigger_id: str, branch: str) -> Optional[str]:
+    """Fire the Cloud Build publisher. Fire-and-forget — don't wait for the build."""
+
+    def _run() -> Optional[str]:
+        from google.cloud.devtools import cloudbuild_v1
+        from google.cloud.devtools.cloudbuild_v1.types import RepoSource
+
+        client = cloudbuild_v1.CloudBuildClient()
+        source = RepoSource(branch_name=branch)
+        operation = client.run_build_trigger(
+            project_id=project_id,
+            trigger_id=trigger_id,
+            source=source,
+        )
+        meta = getattr(operation, "metadata", None)
+        build = getattr(meta, "build", None)
+        return getattr(build, "id", None) if build else None
+
+    try:
+        return await asyncio.to_thread(_run)
+    except Exception as e:
+        log.exception("trigger_publish failed")
+        return None
+
+
+async def run_pipeline(
+    *,
+    mode: str = "scheduled",
+    override_id: Optional[str] = None,
+    dry_run: bool = False,
+    n_per_run: Optional[int] = None,
+) -> dict:
+    """The one entry point the HTTP handler and the CLI both use."""
+    store = FirestoreStateStore()
+    db = StateDB(store=store)
+    config = ScannerSettings()
+
+    n = n_per_run if n_per_run is not None else int(os.environ.get("N_PER_RUN", "1"))
+    scan_limit = int(os.environ.get("SCAN_LIMIT", "500"))
+    staging_bucket = os.environ.get("GCS_STAGING_BUCKET", "")
+    project_id = (
+        os.environ.get("FIREBASE_PROJECT")
+        or os.environ.get("GOOGLE_CLOUD_PROJECT")
+        or "govdata-il"
+    )
+    trigger_id = os.environ.get("PUBLISH_TRIGGER_ID", "govdata-publish")
+    publish_branch = os.environ.get("PUBLISH_BRANCH", "main")
+
+    if not dry_run and not override_id and not staging_bucket:
+        raise RuntimeError(
+            "GCS_STAGING_BUCKET must be set for a real pipeline run"
+        )
+
+    # [1] scan — unless override_id is set (manual single-source invoke)
+    scan_summary = None
+    if not override_id:
+        scanner = Scanner(config=config, db=db)
+        scan_summary = await scanner.scan(limit=scan_limit, mode=mode)
+
+    # [2] select
+    if override_id:
+        src = await asyncio.to_thread(store.get_source, override_id)
+        if src is None:
+            raise RuntimeError(f"override source {override_id} not found in Firestore")
+        to_process = [src]
+    else:
+        to_process = await asyncio.to_thread(selector.pick_next, store, n)
+
+    summary: dict = {
+        "mode": mode,
+        "dry_run": dry_run,
+        "selected": [s.id for s in to_process],
+        "scan": _scan_summary_dict(scan_summary) if scan_summary else None,
+    }
+
+    if dry_run or not to_process:
+        summary["processed"] = []
+        summary["build_id"] = None
+        summary["status"] = "idle" if not to_process else "dry_run"
+        return summary
+
+    # [3] fan-out agent sessions
+    results = await asyncio.gather(
+        *[_build_one(src, staging_bucket, store) for src in to_process]
+    )
+    summary["processed"] = results
+    succeeded_ids = [r["id"] for r in results if r.get("status") == "succeeded"]
+
+    # [4] trigger publisher if any page was written
+    build_id = None
+    if succeeded_ids and trigger_id:
+        build_id = await _trigger_publish(project_id, trigger_id, publish_branch)
+    summary["build_id"] = build_id
+    summary["status"] = "ok" if succeeded_ids else "all_failed"
+    return summary
+
+
+def _scan_summary_dict(s) -> dict:
+    return {
+        "sources_seen": s.datasets_scanned,
+        "new": s.datasets_new,
+        "updated": s.datasets_updated,
+        "unchanged": s.datasets_unchanged,
+        "errors": list(s.errors or []),
+    }
+
+
+def _cli() -> None:
+    p = argparse.ArgumentParser(description="Run the builder pipeline locally.")
+    p.add_argument("--source", help="Specific dataset_id to build (skip scan+select)")
+    p.add_argument("--dry-run", action="store_true", help="Scan + select but don't build")
+    p.add_argument("--n", type=int, default=None, help="Override N_PER_RUN")
+    p.add_argument("--no-trigger-publish", action="store_true",
+                   help="Skip Cloud Build trigger after successful builds")
+    args = p.parse_args()
+
+    if args.no_trigger_publish:
+        os.environ["PUBLISH_TRIGGER_ID"] = ""
+
+    summary = asyncio.run(
+        run_pipeline(
+            mode="manual",
+            override_id=args.source,
+            dry_run=args.dry_run,
+            n_per_run=args.n,
+        )
+    )
+    import json
+    print(json.dumps(summary, indent=2, default=str))
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
+    _cli()

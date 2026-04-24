@@ -12,65 +12,107 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Rubik:wght@500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
+    // Keep these tokens in sync with frontend/tailwind.config.ts.
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            brand:   { DEFAULT: '#0B3D91', 50: '#EDF1FA', 100: '#D6DFF4', 500: '#0B3D91', 600: '#083275', 700: '#062559' },
-            accent:  { DEFAULT: '#EAB308' },
-            surface: '#FAFAF7',
-            ink:     '#111111',
-            subtle:  '#6B7280',
-            rule:    '#E5E7EB',
+            brand: {
+              DEFAULT: '#0068f5',
+              50:  '#f1f7ff', 100: '#dbe8fb', 200: '#b7d2f7',
+              500: '#0068f5', 600: '#0053c4', 700: '#0b3668', 800: '#0c3058',
+            },
+            ink:           '#0c3058',
+            'ink-deep':    '#0b3668',
+            surface:       '#f1f7ff',
+            'surface-alt': '#f0f4fa',
+            rule:          '#c3cfe7',
+            subtle:        '#6c757d',
+            ok:            '#198754',
+            warn:          '#ffc107',
+            danger:        '#dc3545',
+            info:          '#0dcaf0',
           },
           fontFamily: {
-            sans:    ['Heebo', 'Rubik', 'system-ui', 'Arial', 'sans-serif'],
-            display: ['Rubik', 'Heebo', 'system-ui', 'sans-serif'],
+            sans:    ['Rubik', 'system-ui', 'Arial', 'sans-serif'],
+            display: ['Rubik', 'system-ui', 'sans-serif'],
           },
-          borderRadius: { xl: '12px' },
+          borderRadius: {
+            'gov-sm':   '0.2rem',
+            'gov-md':   '0.3rem',
+            gov:        '0.5rem',
+            'gov-pill': '50rem',
+          },
+          maxWidth: { gov: '1400px' },
+          backgroundImage: {
+            'gov-header': 'linear-gradient(90deg, #025fdb 0%, #0b3668 100%)',
+          },
+          boxShadow: {
+            card:         '0 1px 2px rgba(12, 48, 88, 0.06)',
+            'card-hover': '0 6px 24px -8px rgba(0, 104, 245, 0.18)',
+          },
+          spacing: { header: '64px' },
         },
       },
     };
   </script>
   <style>
-    html { font-family: Heebo, Rubik, system-ui, sans-serif; color: #111; background: #FAFAF7; }
-    body { line-height: 1.7; }
-    h1,h2,h3,h4 { font-family: Rubik, Heebo, system-ui, sans-serif; line-height: 1.35; font-weight: 500; }
-    h1 { font-size: 1.875rem; }
-    h2 { font-size: 1.375rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
-    h3 { font-size: 1.125rem; margin-top: 1rem; margin-bottom: 0.5rem; }
-    a { color: #083275; }
-    a:hover { color: #0B3D91; text-decoration: underline; }
-    .card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; box-shadow: 0 1px 2px rgba(17,17,17,0.04); }
+    html { font-family: Rubik, system-ui, Arial, sans-serif; color: #0c3058; background: #f1f7ff; }
+    body { line-height: 1.5; }
+    h1, h2, h3, h4, h5, h6 { font-family: Rubik, system-ui, sans-serif; line-height: 1.2; font-weight: 500; color: #0c3058; }
+    h1 { font-size: clamp(1.625rem, 1.3875rem + 1.65vw, 2.625rem); }
+    h2 { font-size: clamp(1.5rem,   1.3375rem + 1.05vw, 2.125rem); margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    h3 { font-size: clamp(1.3125rem, 1.275rem + 0.3vw,  1.5rem);   margin-top: 1rem;   margin-bottom: 0.5rem;  }
+    h4 { font-size: 1.125rem; }
+    h5 { font-size: 1rem; }
+    h6 { font-size: 0.875rem; }
+    a        { color: #0068f5; }
+    a:hover  { color: #0053c4; text-decoration: underline; }
+    .card { background: #fff; border: 1px solid #c3cfe7; border-radius: 0.5rem; box-shadow: 0 1px 2px rgba(12,48,88,0.06); }
     .card-hover { transition: box-shadow .15s; }
-    .card-hover:hover { box-shadow: 0 6px 24px -8px rgba(11,61,145,0.15); }
-    .tag-chip { display: inline-block; padding: 2px 8px; font-size: .75rem; background: #EDF1FA; color: #062559; border: 1px solid #D6DFF4; border-radius: 999px; }
-    .badge { display: inline-block; padding: 2px 8px; font-size: .75rem; background: #FAFAF7; color: #6B7280; border: 1px solid #E5E7EB; border-radius: 6px; }
+    .card-hover:hover { box-shadow: 0 6px 24px -8px rgba(0,104,245,0.18); }
+    .tag-chip { display: inline-block; padding: 2px 8px; font-size: .75rem; background: #f1f7ff; color: #0c3058; border: 1px solid #dbe8fb; border-radius: 50rem; }
+    .badge { display: inline-block; padding: 2px 8px; font-size: .75rem; background: #fff; color: #6c757d; border: 1px solid #c3cfe7; border-radius: 0.2rem; }
+    .btn-primary { display: inline-flex; align-items: center; gap: .5rem; background: #0068f5; color: #fff; border-radius: 0.5rem; padding: .5rem 1rem; text-decoration: none; transition: background-color .15s; }
+    .btn-primary:hover { background: #0053c4; text-decoration: none; color: #fff; }
+    .btn-ghost { display: inline-flex; align-items: center; gap: .5rem; color: #0068f5; border: 1px solid #0068f5; border-radius: 0.5rem; padding: .5rem 1rem; text-decoration: none; transition: background-color .15s; }
+    .btn-ghost:hover { background: #f1f7ff; text-decoration: none; }
+    .quality-track { height: .5rem; background: #c3cfe7; border-radius: 50rem; overflow: hidden; }
+    .quality-fill  { height: 100%; background: #0068f5; }
+    .gov-header { background-image: linear-gradient(90deg, #025fdb 0%, #0b3668 100%); color: #fff; }
     .leaflet-container { direction: ltr; }
     .leaflet-popup-content { direction: rtl; text-align: right; }
   </style>
 </head>
-<body class="min-h-screen flex flex-col">
-  <header class="bg-white border-b border-rule">
-    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2 no-underline">
-        <span class="w-8 h-8 rounded-md bg-brand grid place-items-center text-white text-sm font-display">GD</span>
-        <span class="font-display text-lg text-ink">GovData.IL</span>
+<body class="min-h-screen flex flex-col bg-surface">
+  <header class="gov-header">
+    <div class="max-w-gov mx-auto px-4 h-header flex items-center justify-between gap-6">
+      <a href="/" class="flex items-center gap-3 no-underline hover:no-underline text-white">
+        <span class="w-9 h-9 rounded-gov bg-white/15 grid place-items-center text-white text-base font-display">GD</span>
+        <span class="font-display text-lg leading-none">GovData.IL</span>
       </a>
-      <nav class="flex items-center gap-6 text-sm">
-        <a href="/" class="text-subtle hover:text-brand-500">ראשי</a>
-        <a href="/ministries/" class="text-subtle hover:text-brand-500">משרדים</a>
-        <a href="/tags/" class="text-subtle hover:text-brand-500">נושאים</a>
+      <nav class="hidden md:flex items-center gap-6 text-sm">
+        <a href="/" class="text-white/85 hover:text-white no-underline hover:no-underline">ראשי</a>
+        <a href="/ministries/" class="text-white/85 hover:text-white no-underline hover:no-underline">משרדים</a>
+        <a href="/tags/" class="text-white/85 hover:text-white no-underline hover:no-underline">נושאים</a>
       </nav>
+      <a
+        href="https://data.gov.il"
+        target="_blank" rel="noopener"
+        class="hidden sm:inline-flex items-center gap-2 text-xs text-white/85 hover:text-white no-underline hover:no-underline"
+      >
+        <img src="/icons/external-link.svg" alt="" class="w-4 h-4 invert opacity-90" />
+        data.gov.il
+      </a>
     </div>
   </header>
 
   <nav aria-label="breadcrumb" class="border-b border-rule bg-white">
-    <div class="max-w-6xl mx-auto px-4 py-2 text-xs text-subtle">
+    <div class="max-w-gov mx-auto px-4 py-2 text-xs text-subtle">
       <a href="/">ראשי</a>
       {% if entry.organization and entry.organization_slug %}
         <span class="mx-1">›</span>
@@ -81,7 +123,7 @@
     </div>
   </nav>
 
-  <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 flex-1">
+  <div class="max-w-gov mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 flex-1">
     <main>
       {{ content | safe }}
     </main>
@@ -93,7 +135,7 @@
         <ul class="list-none m-0 p-0 space-y-2">
           {% for r in related %}
           <li>
-            <a href="/datasets/{{ r.id }}/" class="block card-hover p-2 rounded-md hover:bg-brand-50 no-underline hover:no-underline">
+            <a href="/datasets/{{ r.id }}/" class="block card-hover p-2 rounded-gov-md hover:bg-brand-50 no-underline hover:no-underline">
               <div class="text-sm font-medium text-ink">{{ r.title }}</div>
               {% if r.organization %}<div class="text-xs text-subtle mt-0.5">{{ r.organization }}</div>{% endif %}
               {% if r.summary_he %}<div class="text-xs text-subtle mt-1 line-clamp-2">{{ r.summary_he }}</div>{% endif %}
@@ -124,10 +166,47 @@
     </aside>
   </div>
 
-  <footer class="bg-white border-t border-rule mt-16">
-    <div class="max-w-6xl mx-auto px-4 py-6 text-xs text-subtle flex flex-col sm:flex-row sm:justify-between gap-2">
-      <div>תוכן שנוצר אוטומטית ממידע ציבורי. מקור: <a href="https://data.gov.il" target="_blank" rel="noopener">data.gov.il</a></div>
-      <div>© {{ year }} GovData.IL</div>
+  <footer class="bg-ink-deep text-white mt-16">
+    <div class="max-w-gov mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+      <div>
+        <div class="font-display text-base mb-2">GovData.IL</div>
+        <p class="text-white/75 leading-relaxed m-0">
+          דפי נחיתה אוטומטיים למאגרי המידע הציבוריים של ממשלת ישראל,
+          מבוססים על
+          <a href="https://data.gov.il" target="_blank" rel="noopener" class="text-white underline">data.gov.il</a>.
+        </p>
+      </div>
+      <div>
+        <div class="font-display text-base mb-2">ניווט</div>
+        <ul class="list-none p-0 m-0 space-y-1.5">
+          <li><a href="/" class="text-white/85 hover:text-white no-underline hover:no-underline">ראשי</a></li>
+          <li><a href="/ministries/" class="text-white/85 hover:text-white no-underline hover:no-underline">משרדים</a></li>
+          <li><a href="/tags/" class="text-white/85 hover:text-white no-underline hover:no-underline">נושאים</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-display text-base mb-2">מקור</div>
+        <ul class="list-none p-0 m-0 space-y-1.5 text-white/85">
+          <li>
+            <a href="https://data.gov.il" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 hover:text-white no-underline hover:no-underline">
+              <img src="/icons/external-link.svg" alt="" class="w-4 h-4 invert opacity-90" />
+              data.gov.il
+            </a>
+          </li>
+          <li>
+            <a href="https://www.gov.il" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 hover:text-white no-underline hover:no-underline">
+              <img src="/icons/external-link.svg" alt="" class="w-4 h-4 invert opacity-90" />
+              gov.il
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10">
+      <div class="max-w-gov mx-auto px-4 py-4 text-xs text-white/70 flex flex-col sm:flex-row sm:justify-between gap-2">
+        <div>תוכן שנוצר אוטומטית ממידע ציבורי.</div>
+        <div>© {{ year }} GovData.IL</div>
+      </div>
     </div>
   </footer>
 </body>

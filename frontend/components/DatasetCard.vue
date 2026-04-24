@@ -23,5 +23,9 @@ defineProps<{ entry: ManifestEntry }>()
         <span v-for="t in entry.tags_he.slice(0, 2)" :key="t" class="tag-chip">{{ t }}</span>
       </div>
     </div>
+    <div class="text-[11px] text-subtle mt-2 flex items-center gap-1">
+      <span aria-hidden="true">✨</span>
+      <span>נכתב ע״י סוכן AI</span>
+    </div>
   </a>
 </template>

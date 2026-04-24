@@ -1,0 +1,15 @@
+{
+  "id": "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9",
+  "slug": "amutot-chalatz",
+  "title": "מאגר עמותות וחברות לתועלת הציבור",
+  "organization": "משרד המשפטים",
+  "organization_slug": "ministry_of_justice",
+  "summary_he": "מאגר מרכזי של רשם העמותות ורשם ההקדשות, הכולל 74,976 עמותות, 1,500 חל\"צ, דיווחי תרומות מגורמים מדיניים זרים ואישורי ניהול תקין — מתעדכן מדי שבוע.",
+  "tags_he": ["עמותות", "חברות לתועלת הציבור", "ניהול תקין", "תרומות זרות", "רשות התאגידים"],
+  "primary_resource_id": "be5b7935-3922-45d4-9638-08871b17ec95",
+  "formats": ["CSV"],
+  "metadata_modified": "2026-04-23T18:12:25.328767",
+  "dataset_kind": "registry",
+  "related_ids": [],
+  "version": 1
+}

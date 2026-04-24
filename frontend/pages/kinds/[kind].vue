@@ -23,18 +23,18 @@ if (entries.value.length === 0) {
 }
 
 useHead(() => ({
-  title: `${label.value} — GovData.IL`,
+  title: `${label.value} — gov-il.ai`,
   meta: [{ name: 'description', content: `מאגרים מסוג ${label.value}` }],
 }))
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="max-w-gov mx-auto px-4 py-8">
     <section class="mb-6">
       <div class="text-xs text-subtle mb-2">
         <NuxtLink to="/">ראשי</NuxtLink> › סוג: {{ label }}
       </div>
-      <h1 class="font-display text-3xl">{{ label }}</h1>
+      <h1 class="font-display">{{ label }}</h1>
       <p class="text-subtle mt-2">{{ entries.length }} מאגרים</p>
     </section>
 

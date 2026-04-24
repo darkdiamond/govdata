@@ -1,113 +1,126 @@
 # Deployment
 
-Three one-time setups, then the runtime flow is: scanner webhook → Cloud Function
-controller → Managed Agents session → CDN publish.
+Four one-time setups, then the runtime flow is: Cloud Scheduler → Cloud Run
+builder (scan CKAN → one Managed Agents session → stage to GCS) → Cloud Build
+publisher (generate Nuxt site → deploy to Firebase Hosting).
 
-## 1. Managed Agent + Environment (one-time, via `ant` CLI)
+Container count is pinned to **one** (`--max-instances=1 --concurrency=1`).
+Per-source parallelism lives inside that container via `asyncio.gather`;
+scale by bumping `N_PER_RUN`, not instance count.
+
+## 1. Project bootstrap — `infra/bootstrap.sh`
+
+Creates the Firebase project (GCP project with the same ID is created
+automatically), enables APIs, provisions Firestore + the GCS staging bucket,
+creates the three service accounts, and reserves the Secret Manager secret.
 
 Prereqs:
 
-- `ANTHROPIC_API_KEY` exported in your shell
+- `firebase login` (interactive, one-time)
+- `gcloud auth login` (interactive, one-time)
+
+```sh
+bash infra/bootstrap.sh
+# populate the Anthropic API key secret
+printf '%s' "$ANTHROPIC_API_KEY" \
+  | gcloud secrets versions add anthropic-api-key --data-file=- --project=govdata-il
+```
+
+The script prints the service account emails it created and ends with
+instructions for registering the Cloud Build trigger (needs a connected
+repo — either a GitHub 2nd-gen connection or a Cloud Source Repositories
+mirror).
+
+## 2. Managed Agent — `infra/setup-agent.sh`
+
+Unchanged from the previous architecture.
+
+Prereqs:
+
+- `ANTHROPIC_API_KEY` exported
 - [`ant` CLI](https://platform.claude.com/docs/en/api/sdks/cli.md) on `$PATH`
 
 ```sh
 bash infra/setup-agent.sh
 ```
 
-It prints `ANTHROPIC_AGENT_ID` and `ANTHROPIC_ENV_ID`. Copy both into your
-deployment env (Secret Manager, Cloud Function env vars, or local `.env`).
+Writes `ANTHROPIC_AGENT_ID` + `ANTHROPIC_ENV_ID` to stdout; export them
+before running `builder.deploy.sh`.
 
-**Updating the agent later** (e.g., system prompt tweaks):
-```sh
-ant beta:agents update --agent-id "$ANTHROPIC_AGENT_ID" --version <N> < agent/govdata-agent.yaml
-```
-Each update creates a new version. Sessions pin to the latest unless you pass
-`{type: "agent", id, version: N}` explicitly.
+## 3. Cloud Run builder — `infra/builder.deploy.sh`
 
-## 2. Cloud Function — `services/page_builder`
-
-The controller: one HTTP invocation per dataset, creates a Managed Agents
-session, streams until idle, downloads outputs to GCS, fires the build hook.
-
-Prereqs:
-
-- GCP project selected (`gcloud config set project …`)
-- APIs enabled: `cloudfunctions`, `secretmanager`, `storage`
-- Secret created: `gcloud secrets create anthropic-api-key --data-file=- <<< "$ANTHROPIC_API_KEY"`
-- GCS bucket: `gsutil mb -l me-west1 gs://govdata-content`
-
-Edit `infra/cloudfunction.deploy.sh` (bucket name + agent/env IDs), then:
+Builds the Docker image from the repo root and deploys the service.
 
 ```sh
-bash infra/cloudfunction.deploy.sh
+export ANTHROPIC_AGENT_ID=... ANTHROPIC_ENV_ID=...
+bash infra/builder.deploy.sh
 ```
 
-Runtime env vars the function needs:
+Notable flags (see script for the full list):
 
-| Var                    | Value                                    |
-| ---------------------- | ---------------------------------------- |
-| `ANTHROPIC_AGENT_ID`   | From step 1                              |
-| `ANTHROPIC_ENV_ID`     | From step 1                              |
-| `GCS_CONTENT_BUCKET`   | `govdata-content`                        |
-| `CLOUDFLARE_BUILD_HOOK`| From step 3                              |
-| `ANTHROPIC_API_KEY`    | From Secret Manager (bound at deploy)    |
+| Flag                | Value                                    |
+| ------------------- | ---------------------------------------- |
+| `--max-instances`   | 1 (never more than one container)        |
+| `--concurrency`     | 1 (one request in flight; no queueing)   |
+| `--cpu / --memory`  | 2 / 1Gi (bump memory if `N_PER_RUN > 20`)|
+| `--timeout`         | 3600 s (Managed Agents decide when done) |
+| `--no-allow-unauthenticated` | Scheduler SA + your own ID token only |
 
-**Timeout:** set the function timeout to the maximum your deploy target
-permits (Cloud Functions Gen 2 allows 3600 s). Agents decide when they're
-done; the controller does not impose a wall clock. For datasets that genuinely
-exceed 60 minutes, migrate the controller to Cloud Run Jobs.
-
-## 3. Static site — `frontend/` + CDN for agent outputs
-
-**Home page — Cloudflare Pages** (or Firebase Hosting / Netlify):
-
-- Build command: `npm install && npm run generate`
-- Output directory: `frontend/.output/public`
-- Root directory (advanced): `frontend`
-- Prebuild step (sync the manifest from GCS so the home page sees the current dataset list):
-  ```sh
-  gsutil cp gs://govdata-content/manifest.json frontend/public/data/manifest.json
-  ```
-
-After the project is created, copy its **Deploy Hook URL** to:
-- `infra/pages.build-hook.txt` (gitignored, for local use), and
-- the Cloud Function env var `CLOUDFLARE_BUILD_HOOK` (redeploy the function).
-
-**Dataset pages — direct from GCS** (the agent writes `index.html` per dataset):
-
-- Make `gs://govdata-content/datasets/` publicly readable:
-  ```sh
-  gsutil iam ch allUsers:objectViewer gs://govdata-content
-  ```
-- Expose `/datasets/{id}/` on the same origin as the Nuxt site. Two options:
-  1. **Cloudflare Pages with an origin rule** routing `/datasets/*` to
-     `https://storage.googleapis.com/govdata-content/datasets/*`.
-  2. **GCS as a second Pages project** (simpler) with a `datasets.` subdomain.
-
-## 4. Manifest refresh
-
-`manifest.json` is the list of datasets the home page shows. It gets
-rebuilt after any agent run:
+Manual smoke after deploy:
 
 ```sh
-# Batch refresh — reads every per-dataset data.json from the bucket
-python -m services.page_builder.manifest --bucket govdata-content
-# or local dev
-python -m services.page_builder.manifest --local frontend/public/data
+URL=$(gcloud run services describe govdata-builder --region=me-west1 --format='value(status.url)')
+TOKEN=$(gcloud auth print-identity-token)
+
+# Dry run: scan + select but don't fire the agent.
+curl -X POST "$URL" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dry_run": true}'
+
+# Full run on a specific dataset (bypass selector).
+curl -X POST "$URL" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"dataset_id": "<ckan-id>"}'
 ```
 
-Wire it into the end of each Cloud Function invocation (easiest) or run it
-as a scheduled job (Cloud Scheduler → Cloud Function).
+## 4. Cloud Scheduler — `infra/scheduler.setup.sh`
 
-## 5. End-to-end smoke
+Creates the scheduler job **PAUSED**. Enable it only after the manual
+invokes have produced real pages.
 
 ```sh
-# Set env vars, then:
-python -m services.page_builder.main c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9 \
-    --out /tmp/gd-test
-ls /tmp/gd-test/datasets/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/
-# Expected: index.html, data.json
+bash infra/scheduler.setup.sh
+# ... when ready to flip on:
+gcloud scheduler jobs resume govdata-pipeline-6h --location=me-west1
 ```
 
-If the agent output is sound, deploy: push the Cloud Function, seed a
-couple of datasets from the scanner, and check the CDN.
+## Cloud Build publisher trigger
+
+`cloudbuild-publish.yaml` in the repo root contains the full pipeline
+(rsync agent artifacts → build manifest from Firestore → `nuxt generate`
+→ `firebase deploy --only hosting`). The trigger must be registered
+against a connected repo; `infra/bootstrap.sh` prints the exact
+`gcloud builds triggers create manual …` invocation after printing the
+connection options.
+
+Once registered, the builder fires the trigger at the end of every
+successful run via `services/page_builder/pipeline.py::_trigger_publish`.
+
+## Local development
+
+```sh
+# Firestore emulator
+gcloud emulators firestore start --host-port=localhost:8080 &
+export FIRESTORE_EMULATOR_HOST=localhost:8080 FIRESTORE_PROJECT_ID=local-dev
+
+# Seed a few sources
+python -m services.scanner.main scan --limit 5
+
+# Dry run the pipeline against the emulator
+python -m services.page_builder.pipeline --dry-run
+
+# Full pipeline for one source (needs ANTHROPIC_* + GCS_STAGING_BUCKET if running for real)
+python -m services.page_builder.pipeline --source <ckan-id> --no-trigger-publish
+```

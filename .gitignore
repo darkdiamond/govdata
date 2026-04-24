@@ -74,5 +74,15 @@ infra/service-account*.json
 home.png
 antennas.png
 deadsea.png
---- frontend/dist
+
+# Nuxt build output + stray dirs
 frontend/dist/
+frontend/3000/
+
+# Local Claude Code settings
+.claude/
+
+# Firebase local artifacts
+firebase-debug.log
+firestore-debug.log
+.firebase/

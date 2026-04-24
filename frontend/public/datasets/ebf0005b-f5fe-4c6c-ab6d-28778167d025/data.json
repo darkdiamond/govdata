@@ -1,0 +1,23 @@
+{
+  "id": "ebf0005b-f5fe-4c6c-ab6d-28778167d025",
+  "slug": "dead-sea-level",
+  "title": "מפלס ים המלח",
+  "organization": "הרשות הממשלתית למים ולביוב",
+  "organization_slug": "water_authority",
+  "summary_he": "נתונים חודשיים של מפלס ים המלח משנת 1976 ועד היום — מציגים ירידה מצטברת של כ-41.8 מטר בקצב של כ-0.84 מ' לשנה.",
+  "tags_he": [
+    "ים המלח",
+    "מפלס מים",
+    "הידרולוגיה",
+    "סביבה",
+    "סדרת זמן"
+  ],
+  "primary_resource_id": "823479b4-4771-43d8-9189-6a2a1dcaaf10",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-04-24T08:44:42.134011",
+  "dataset_kind": "timeseries",
+  "related_ids": [],
+  "version": 1
+}

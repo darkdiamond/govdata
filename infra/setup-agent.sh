@@ -20,11 +20,11 @@ command -v ant >/dev/null || {
 cd "$(dirname "$0")/.."
 
 echo "==> creating environment from agent/govdata-env.yaml"
-ENV_ID=$(ant beta:environments create < agent/govdata-env.yaml --transform id -r)
+ENV_ID=$(ant beta:environments create < agent/govdata-env.yaml --transform id --format yaml)
 echo "ENV_ID=$ENV_ID"
 
 echo "==> creating agent from agent/govdata-agent.yaml"
-AGENT_ID=$(ant beta:agents create < agent/govdata-agent.yaml --transform id -r)
+AGENT_ID=$(ant beta:agents create < agent/govdata-agent.yaml --transform id --format yaml)
 echo "AGENT_ID=$AGENT_ID"
 
 echo

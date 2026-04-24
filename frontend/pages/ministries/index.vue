@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useManifest } from '~/composables/useManifest'
 
-useHead({ title: 'משרדים — GovData.IL' })
+useHead({ title: 'משרדים — gov-il.ai' })
 
 const manifest = useManifest()
 
@@ -26,12 +26,12 @@ const ministries = computed<MinistryRow[]>(() => {
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="max-w-gov mx-auto px-4 py-8">
     <section class="mb-6">
       <div class="text-xs text-subtle mb-2">
         <NuxtLink to="/">ראשי</NuxtLink> › משרדים
       </div>
-      <h1 class="font-display text-3xl">משרדים ממשלתיים</h1>
+      <h1 class="font-display">משרדים ממשלתיים</h1>
       <p class="text-subtle mt-2 max-w-2xl">{{ ministries.length }} ארגונים מפרסמים מאגרי מידע ציבורי.</p>
     </section>
 
@@ -40,10 +40,13 @@ const ministries = computed<MinistryRow[]>(() => {
         v-for="m in ministries"
         :key="m.slug"
         :to="`/ministries/${m.slug}/`"
-        class="card card-hover p-4 no-underline hover:no-underline block"
+        class="card card-hover p-4 no-underline hover:no-underline block flex items-start gap-3"
       >
-        <div class="font-display text-ink">{{ m.title }}</div>
-        <div class="text-xs text-subtle mt-1">{{ m.count }} מאגרים</div>
+        <img src="/icons/building-2.svg" alt="" class="w-5 h-5 mt-0.5 text-brand opacity-80" />
+        <div>
+          <div class="font-display text-ink">{{ m.title }}</div>
+          <div class="text-xs text-subtle mt-1">{{ m.count }} מאגרים</div>
+        </div>
       </NuxtLink>
     </section>
   </div>
