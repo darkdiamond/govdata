@@ -100,9 +100,10 @@ done
 gcloud storage buckets add-iam-policy-binding "gs://$STAGING_BUCKET" \
   --member="serviceAccount:$BUILDER_SA" --role=roles/storage.objectAdmin --quiet >/dev/null
 
-# Publisher: read Firestore + staging, deploy Firebase Hosting, pull the
-# pre-baked publisher image from Artifact Registry.
-for role in roles/datastore.viewer roles/logging.logWriter roles/firebasehosting.admin roles/artifactregistry.reader; do
+# Publisher: read Firestore + staging, deploy Firebase Hosting.
+# AR access is granted on the publisher repo below (writer covers the
+# image-build trigger's push + the publish trigger's pull).
+for role in roles/datastore.viewer roles/logging.logWriter roles/firebasehosting.admin; do
   gcloud projects add-iam-policy-binding "$PROJECT" \
     --member="serviceAccount:$PUBLISHER_SA" --role="$role" --condition=None --quiet >/dev/null
 done
@@ -131,7 +132,7 @@ fi
 gcloud artifacts repositories add-iam-policy-binding "$AR_REPO" \
   --location="$AR_LOCATION" --project "$PROJECT" \
   --member="serviceAccount:$PUBLISHER_SA" \
-  --role=roles/artifactregistry.reader --quiet >/dev/null
+  --role=roles/artifactregistry.writer --quiet >/dev/null
 
 # ---- 6. Secret Manager -----------------------------------------------------
 if ! gcloud secrets describe anthropic-api-key --project "$PROJECT" >/dev/null 2>&1; then
