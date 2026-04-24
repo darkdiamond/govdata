@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ entry.title }} — GovData.IL</title>
+  <meta name="description" content="{{ description }}">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ entry.title }}">
+  <meta property="og:description" content="{{ description }}">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&family=Rubik:wght@500&display=swap">
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand:   { DEFAULT: '#0B3D91', 50: '#EDF1FA', 100: '#D6DFF4', 500: '#0B3D91', 600: '#083275', 700: '#062559' },
+            accent:  { DEFAULT: '#EAB308' },
+            surface: '#FAFAF7',
+            ink:     '#111111',
+            subtle:  '#6B7280',
+            rule:    '#E5E7EB',
+          },
+          fontFamily: {
+            sans:    ['Heebo', 'Rubik', 'system-ui', 'Arial', 'sans-serif'],
+            display: ['Rubik', 'Heebo', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: { xl: '12px' },
+        },
+      },
+    };
+  </script>
+  <style>
+    html { font-family: Heebo, Rubik, system-ui, sans-serif; color: #111; background: #FAFAF7; }
+    body { line-height: 1.7; }
+    h1,h2,h3,h4 { font-family: Rubik, Heebo, system-ui, sans-serif; line-height: 1.35; font-weight: 500; }
+    h1 { font-size: 1.875rem; }
+    h2 { font-size: 1.375rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+    h3 { font-size: 1.125rem; margin-top: 1rem; margin-bottom: 0.5rem; }
+    a { color: #083275; }
+    a:hover { color: #0B3D91; text-decoration: underline; }
+    .card { background: #fff; border: 1px solid #E5E7EB; border-radius: 12px; box-shadow: 0 1px 2px rgba(17,17,17,0.04); }
+    .card-hover { transition: box-shadow .15s; }
+    .card-hover:hover { box-shadow: 0 6px 24px -8px rgba(11,61,145,0.15); }
+    .tag-chip { display: inline-block; padding: 2px 8px; font-size: .75rem; background: #EDF1FA; color: #062559; border: 1px solid #D6DFF4; border-radius: 999px; }
+    .badge { display: inline-block; padding: 2px 8px; font-size: .75rem; background: #FAFAF7; color: #6B7280; border: 1px solid #E5E7EB; border-radius: 6px; }
+    .leaflet-container { direction: ltr; }
+    .leaflet-popup-content { direction: rtl; text-align: right; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+  <header class="bg-white border-b border-rule">
+    <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-2 no-underline">
+        <span class="w-8 h-8 rounded-md bg-brand grid place-items-center text-white text-sm font-display">GD</span>
+        <span class="font-display text-lg text-ink">GovData.IL</span>
+      </a>
+      <nav class="flex items-center gap-6 text-sm">
+        <a href="/" class="text-subtle hover:text-brand-500">ראשי</a>
+        <a href="/ministries/" class="text-subtle hover:text-brand-500">משרדים</a>
+        <a href="/tags/" class="text-subtle hover:text-brand-500">נושאים</a>
+      </nav>
+    </div>
+  </header>
+
+  <nav aria-label="breadcrumb" class="border-b border-rule bg-white">
+    <div class="max-w-6xl mx-auto px-4 py-2 text-xs text-subtle">
+      <a href="/">ראשי</a>
+      {% if entry.organization and entry.organization_slug %}
+        <span class="mx-1">›</span>
+        <a href="/ministries/{{ entry.organization_slug }}/">{{ entry.organization }}</a>
+      {% endif %}
+      <span class="mx-1">›</span>
+      <span>{{ entry.title }}</span>
+    </div>
+  </nav>
+
+  <div class="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8 flex-1">
+    <main>
+      {{ content | safe }}
+    </main>
+
+    <aside class="space-y-4">
+      {% if related %}
+      <section class="card p-4">
+        <h3 class="m-0 mb-3 text-sm text-subtle font-display">מאגרים קשורים</h3>
+        <ul class="list-none m-0 p-0 space-y-2">
+          {% for r in related %}
+          <li>
+            <a href="/datasets/{{ r.id }}/" class="block card-hover p-2 rounded-md hover:bg-brand-50 no-underline hover:no-underline">
+              <div class="text-sm font-medium text-ink">{{ r.title }}</div>
+              {% if r.organization %}<div class="text-xs text-subtle mt-0.5">{{ r.organization }}</div>{% endif %}
+              {% if r.summary_he %}<div class="text-xs text-subtle mt-1 line-clamp-2">{{ r.summary_he }}</div>{% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endif %}
+
+      {% if entry.tags_he %}
+      <section class="card p-4">
+        <h3 class="m-0 mb-2 text-sm text-subtle font-display">תגיות</h3>
+        <div class="flex flex-wrap gap-1">
+          {% for t in entry.tags_he %}
+          <a href="/tags/{{ t }}/" class="tag-chip hover:bg-brand-100">{{ t }}</a>
+          {% endfor %}
+        </div>
+      </section>
+      {% endif %}
+
+      {% if entry.dataset_kind %}
+      <section class="card p-4 text-xs text-subtle">
+        סוג מאגר:
+        <a href="/kinds/{{ entry.dataset_kind }}/" class="badge hover:bg-brand-50">{{ kind_label }}</a>
+      </section>
+      {% endif %}
+    </aside>
+  </div>
+
+  <footer class="bg-white border-t border-rule mt-16">
+    <div class="max-w-6xl mx-auto px-4 py-6 text-xs text-subtle flex flex-col sm:flex-row sm:justify-between gap-2">
+      <div>תוכן שנוצר אוטומטית ממידע ציבורי. מקור: <a href="https://data.gov.il" target="_blank" rel="noopener">data.gov.il</a></div>
+      <div>© {{ year }} GovData.IL</div>
+    </div>
+  </footer>
+</body>
+</html>

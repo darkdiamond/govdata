@@ -1,0 +1,9 @@
+name: govdata-env
+description: |
+  Sandbox for the GovData page-author agent. Networking is unrestricted so the
+  agent can fetch the CKAN API, OSM tiles, and chart/map/typography CDNs for
+  the HTML pages it writes.
+config:
+  type: cloud
+  networking:
+    type: unrestricted
