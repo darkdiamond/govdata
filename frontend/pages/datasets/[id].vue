@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useManifest } from '~/composables/useManifest'
+import { formatBytes, formatNumber } from '~/composables/useRelativeTime'
 import type { ManifestEntry } from '~/types/manifest'
 
 const route = useRoute()
@@ -48,10 +49,106 @@ const kindLabel = computed(() =>
   entry.value.dataset_kind ? KIND_LABELS_HE[entry.value.dataset_kind] ?? 'אחר' : '',
 )
 
+const hasMeta = computed(() =>
+  Boolean(
+    entry.value.organization ||
+      entry.value.license ||
+      entry.value.metadata_modified ||
+      entry.value.record_count != null,
+  ),
+)
+
+const HE_DATE = new Intl.DateTimeFormat('he-IL', { dateStyle: 'long' })
+function formatDateHe(iso?: string | null): string {
+  if (!iso) return ''
+  const d = new Date(iso)
+  return Number.isNaN(d.getTime()) ? '' : HE_DATE.format(d)
+}
+function publicResourceUrl(url: string): string {
+  return url.replace('https://e.data.gov.il', 'https://data.gov.il')
+}
+
 useSeo({
   title: entry.value.title,
   description: (entry.value.summary_he ?? entry.value.title).slice(0, 160),
   path: `/datasets/${entry.value.id}/`,
+})
+
+// Agent-generated content.html has inline <script> tags (ECharts, Leaflet).
+// On SSR/refresh they execute natively as the browser parses the document,
+// but v-html sets innerHTML, and innerHTML-inserted scripts never run — so
+// on client-side navigation the charts silently fail to initialize. Rebuild
+// each <script> as a real element so the browser executes it, awaiting
+// external src= loads so inline init scripts see their globals. Inline
+// classic scripts get wrapped in an IIFE because top-level `const`/`let`
+// bind into the page's shared script-level scope, which persists across
+// SPA navs and would SyntaxError on re-entry to a previously-visited page.
+const bodyEl = ref<HTMLElement | null>(null)
+const nuxtApp = useNuxtApp()
+
+async function executeBodyScripts(container: HTMLElement): Promise<void> {
+  const scripts = Array.from(container.querySelectorAll('script'))
+  // content.html often gates init on DOMContentLoaded / window load, but those
+  // events fired once on the original page load and never fire again. Intercept
+  // addEventListener while our scripts run, collect handlers registered for
+  // those events, and invoke them immediately after — without touching
+  // listeners registered earlier (which would double-init prior visits).
+  type Deferred = [EventTarget, string, EventListenerOrEventListenerObject]
+  const deferred: Deferred[] = []
+  const origDocAdd = document.addEventListener
+  const origWinAdd = window.addEventListener
+  const docReady = () => document.readyState !== 'loading'
+  const winLoaded = () => document.readyState === 'complete'
+  document.addEventListener = function (type: string, listener: EventListenerOrEventListenerObject, opts?: unknown) {
+    if (listener && (type === 'DOMContentLoaded' || type === 'readystatechange') && docReady()) {
+      deferred.push([document, type, listener])
+      return
+    }
+    return origDocAdd.call(document, type as keyof DocumentEventMap, listener as EventListener, opts as AddEventListenerOptions)
+  } as typeof document.addEventListener
+  window.addEventListener = function (type: string, listener: EventListenerOrEventListenerObject, opts?: unknown) {
+    if (listener && type === 'load' && winLoaded()) {
+      deferred.push([window, type, listener])
+      return
+    }
+    return origWinAdd.call(window, type as keyof WindowEventMap, listener as EventListener, opts as AddEventListenerOptions)
+  } as typeof window.addEventListener
+  try {
+    for (const old of scripts) {
+      const parent = old.parentNode
+      if (!parent) continue
+      const s = document.createElement('script')
+      for (const { name, value } of Array.from(old.attributes)) s.setAttribute(name, value)
+      if (s.src) {
+        await new Promise<void>((resolve) => {
+          s.onload = () => resolve()
+          s.onerror = () => resolve()
+          parent.replaceChild(s, old)
+        })
+      } else {
+        const source = old.textContent ?? ''
+        s.text = s.type === 'module' ? source : `(()=>{\n${source}\n})();`
+        parent.replaceChild(s, old)
+      }
+    }
+  } finally {
+    document.addEventListener = origDocAdd
+    window.addEventListener = origWinAdd
+  }
+  for (const [target, type, listener] of deferred) {
+    try {
+      const ev = new Event(type)
+      if (typeof listener === 'function') listener.call(target, ev)
+      else listener.handleEvent(ev)
+    } catch (err) {
+      console.error('[dataset body] deferred listener failed', err)
+    }
+  }
+}
+
+onMounted(() => {
+  if (nuxtApp.isHydrating) return
+  if (bodyEl.value) void executeBodyScripts(bodyEl.value)
 })
 </script>
 
@@ -69,8 +166,60 @@ useSeo({
       </div>
     </nav>
 
+    <div
+      v-if="hasMeta || entry.resources?.length"
+      class="max-w-gov mx-auto px-4 pt-6"
+    >
+      <div class="grid md:grid-cols-2 gap-4">
+        <section v-if="hasMeta" class="card p-5">
+          <h3 class="m-0 mb-3 text-sm font-display text-subtle">פרטים</h3>
+          <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm m-0">
+            <template v-if="entry.organization">
+              <dt class="text-subtle">משרד</dt>
+              <dd class="m-0">
+                <NuxtLink
+                  v-if="entry.organization_slug"
+                  :to="`/ministries/${entry.organization_slug}/`"
+                >{{ entry.organization }}</NuxtLink>
+                <template v-else>{{ entry.organization }}</template>
+              </dd>
+            </template>
+            <template v-if="entry.license">
+              <dt class="text-subtle">רישיון</dt>
+              <dd class="m-0">{{ entry.license }}</dd>
+            </template>
+            <template v-if="entry.metadata_modified">
+              <dt class="text-subtle">עודכן</dt>
+              <dd class="m-0">{{ formatDateHe(entry.metadata_modified) }}</dd>
+            </template>
+            <template v-if="entry.record_count != null">
+              <dt class="text-subtle">רשומות</dt>
+              <dd class="m-0">{{ formatNumber(entry.record_count) }}</dd>
+            </template>
+          </dl>
+        </section>
+
+        <section v-if="entry.resources?.length" class="card p-5">
+          <h3 class="m-0 mb-3 text-sm font-display text-subtle">משאבים</h3>
+          <ul class="list-none m-0 p-0 space-y-2">
+            <li v-for="r in entry.resources" :key="r.url">
+              <a
+                class="btn-ghost w-full justify-start"
+                :href="publicResourceUrl(r.url)"
+                download
+              >
+                <img src="/icons/download.svg" alt="" class="w-4 h-4" />
+                <span>{{ r.format || 'קובץ' }}</span>
+                <span v-if="r.size_bytes" class="badge">{{ formatBytes(r.size_bytes) }}</span>
+              </a>
+            </li>
+          </ul>
+        </section>
+      </div>
+    </div>
+
     <div class="max-w-gov mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
-      <article class="dataset-body" v-html="body" />
+      <article ref="bodyEl" class="dataset-body" v-html="body" />
 
       <aside class="space-y-4">
         <section v-if="related.length" class="card p-4">
