@@ -54,8 +54,8 @@ steps:
       - |
         set -euo pipefail
         cd frontend
-        # NB: bash-style $VAR references are rejected by Cloud Build's
-        # substitution validator when VAR is ALL_CAPS — keep the path inline.
+        # NB: bash ALL_CAPS dollar-references get parsed as Cloud Build
+        # substitutions (and rejected) — keep the path inline, no bash var.
         if [ -f /opt/frontend-deps/package-lock.json ] \
            && [ "$(md5sum < /opt/frontend-deps/package-lock.json | cut -d' ' -f1)" \
               = "$(md5sum < package-lock.json | cut -d' ' -f1)" ]; then
