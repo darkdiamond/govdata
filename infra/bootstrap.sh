@@ -166,19 +166,21 @@ else
 fi
 
 echo "==> Cloud Build trigger '$IMAGE_TRIGGER_ID' (publisher image — cloudbuild-publisher-image.yaml)"
-if ! gcloud builds triggers describe "$IMAGE_TRIGGER_ID" --region=global --project "$PROJECT" >/dev/null 2>&1; then
+if ! gcloud builds triggers describe "$IMAGE_TRIGGER_ID" --region="$REGION" --project "$PROJECT" >/dev/null 2>&1; then
   echo "    Register a push trigger path-filtered to the files that invalidate"
   echo "    the pre-baked publisher image:"
   echo "      - infra/Dockerfile.publisher"
   echo "      - frontend/package-lock.json"
   echo "      - services/page_builder/requirements.txt"
+  echo "      - .dockerignore"
   echo
-  echo "    With a GitHub 2nd-gen connection:"
+  echo "    With a GitHub 2nd-gen connection (replace <CONN>/<REPO>):"
   echo "      gcloud builds triggers create github \\"
   echo "        --name=$IMAGE_TRIGGER_ID \\"
-  echo "        --repo-owner=<OWNER> --repo-name=<REPO> \\"
-  echo "        --branch-pattern='^${PUBLISH_BRANCH}$' \\"
-  echo "        --included-files='infra/Dockerfile.publisher,frontend/package-lock.json,services/page_builder/requirements.txt' \\"
+  echo "        --region=$REGION \\"
+  echo "        --repository=projects/$PROJECT/locations/$REGION/connections/<CONN>/repositories/<REPO> \\"
+  echo "        --branch-pattern='^${PUBLISH_BRANCH}\$' \\"
+  echo "        --included-files='infra/Dockerfile.publisher,frontend/package-lock.json,services/page_builder/requirements.txt,.dockerignore' \\"
   echo "        --build-config=cloudbuild-publisher-image.yaml \\"
   echo "        --service-account=projects/$PROJECT/serviceAccounts/$PUBLISHER_SA \\"
   echo "        --project=$PROJECT"
