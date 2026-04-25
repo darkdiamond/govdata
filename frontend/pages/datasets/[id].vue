@@ -67,6 +67,16 @@ function formatDateHe(iso?: string | null): string {
 function publicResourceUrl(url: string): string {
   return url.replace('https://e.data.gov.il', 'https://data.gov.il')
 }
+function formatClass(fmt?: string | null): string {
+  switch ((fmt || '').toUpperCase()) {
+    case 'CSV':  return 'fmt-csv'
+    case 'PDF':  return 'fmt-pdf'
+    case 'XLSX':
+    case 'XLS':  return 'fmt-xlsx'
+    case 'JSON': return 'fmt-json'
+    default:     return 'fmt-default'
+  }
+}
 
 useSeo({
   title: entry.value.title,
@@ -200,20 +210,23 @@ onMounted(() => {
         </section>
 
         <section v-if="entry.resources?.length" class="card p-5">
-          <h3 class="m-0 mb-3 text-sm font-display text-subtle">משאבים</h3>
-          <ul class="list-none m-0 p-0 space-y-2">
-            <li v-for="r in entry.resources" :key="r.url">
+          <h3 class="m-0 mb-3 text-sm font-display text-subtle">קבצים להורדה</h3>
+          <div>
+            <div v-for="r in entry.resources" :key="r.url" class="res-row">
+              <span :class="['fmt-badge', formatClass(r.format)]">{{ (r.format || 'FILE').toUpperCase() }}</span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm text-ink truncate">{{ r.name || r.format || 'קובץ' }}</div>
+                <div v-if="r.size_bytes" class="text-xs text-subtle">{{ formatBytes(r.size_bytes) }}</div>
+              </div>
               <a
-                class="btn-ghost w-full justify-start"
                 :href="publicResourceUrl(r.url)"
+                class="btn-ghost text-xs px-3 py-1.5"
+                target="_blank"
+                rel="noopener"
                 download
-              >
-                <img src="/icons/download.svg" alt="" class="w-4 h-4" />
-                <span>{{ r.format || 'קובץ' }}</span>
-                <span v-if="r.size_bytes" class="badge">{{ formatBytes(r.size_bytes) }}</span>
-              </a>
-            </li>
-          </ul>
+              >הורדה</a>
+            </div>
+          </div>
         </section>
       </div>
     </div>
