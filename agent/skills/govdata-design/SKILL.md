@@ -38,8 +38,10 @@ breadcrumb, or footer. The wrapper owns those.
 but in practice the wrapper's Tailwind-first approach means you rarely
 need custom CSS beyond viz-library defaults.
 
-**`<script>` tags** inside content.html — also fine. The wrapper will
-inject them at the end of `<body>` so libraries load after the DOM.
+**`<script>` tags** inside content.html — inline only, no `src=`.
+The shell pre-loads ECharts / Leaflet / MarkerCluster in `<head>` so
+the globals are available to your inline init code by the time the
+body parses.
 
 ## Design tokens (already loaded by the wrapper)
 
@@ -119,19 +121,25 @@ Pick libraries per dataset; there is no fixed taxonomy. Common fits:
 
 | `dataset_kind` | Libraries to reach for                              |
 | -------------- | --------------------------------------------------- |
-| map            | Leaflet + OSM tiles; MarkerCluster if >200 points    |
-| timeseries     | ECharts (RTL friendly) or Chart.js                   |
-| registry       | Custom table + ECharts bar for a column breakdown    |
-| rankings       | ECharts horizontal bar                               |
-| misc           | Pick what the data shape suggests                    |
+| map            | Leaflet + OSM tiles; MarkerCluster if >200 points   |
+| timeseries     | ECharts line / area (RTL-friendly)                  |
+| registry       | Custom table + ECharts bar for a column breakdown   |
+| rankings       | ECharts horizontal bar                              |
+| misc           | Pick what the data shape suggests (ECharts covers   |
+|                | sunburst, treemap, graph/force-directed, heatmap)   |
 
-CDN sources (use HTTPS):
-- Tailwind (already loaded; just use classes)
-- Rubik (already loaded)
-- Leaflet: `https://unpkg.com/leaflet@1.9.4/dist/leaflet.css` + `.js`
-- ECharts: `https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js`
-- Chart.js: `https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js`
-- D3: `https://cdn.jsdelivr.net/npm/d3@7`
+Available globals (pre-loaded by the shell — these are the tools,
+use them):
+
+| Global | Library | Use for |
+|--------|---------|---------|
+| `echarts` | ECharts | every chart kind: bar / line / pie / sunburst / treemap / heatmap / radar |
+| `L` | Leaflet | maps + tiles |
+| `L.markerClusterGroup` | Leaflet.markercluster | clustering when >200 points |
+
+Do NOT write `<script src=…>` or `<link rel="stylesheet" href=…>` to
+load anything. Tailwind, Rubik, and the viz libs above are already
+loaded by the shell; your `content.html` only needs inline init code.
 
 ### Categorical palette — use on every chart
 
@@ -173,16 +181,6 @@ const baseECharts = {
 const option = Object.assign({}, baseECharts, {
   xAxis: { ... }, yAxis: { ... }, series: [ ... ],
 });
-```
-
-### Chart.js RTL + Rubik defaults
-
-```js
-Chart.defaults.font.family = 'Rubik, sans-serif';
-Chart.defaults.color = '#0c3058';
-Chart.defaults.borderColor = '#c3cfe7';
-// On each chart's options:
-//   plugins: { legend: { rtl: true, textDirection: 'rtl' } }
 ```
 
 ### Leaflet RTL caveats
@@ -251,7 +249,6 @@ sizes you to `max-w-gov` already).
   <p class="m-0 text-sm text-subtle whitespace-pre-line">…</p>
 </section>
 
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
 <script>
   const GOVIL_PALETTE = [ /* ...copy from above... */ ];
   const baseECharts  = { /* ...copy from above... */ };

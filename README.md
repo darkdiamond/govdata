@@ -120,6 +120,30 @@ npx serve .output/public
 - **GCP Cloud Functions Gen 2** runs the controller (60-minute timeout — no
   client-side time cap on the session).
 
+## Publishing
+
+The site can be published two ways — both run identical steps (rsync agent
+output from GCS → rebuild `manifest.json` from Firestore → `nuxt generate`
+→ `firebase deploy --only hosting`):
+
+- **Cloud Build** (default; runs on every merge to `main`) — see
+  `cloudbuild-publish.yaml` and the runbook in `infra/DEPLOY.md`.
+- **Local** — `./infra/publish-local.sh` runs the same four steps from
+  your machine. Useful when you want to push a fix without waiting on the
+  trigger, or to preview the *exact* static output before it goes live.
+
+```sh
+./infra/publish-local.sh --serve   # build, then serve at http://localhost:3000
+./infra/publish-local.sh --dry-run # build only, skip firebase deploy
+./infra/publish-local.sh           # full publish to Firebase Hosting
+```
+
+Prereqs for the local path: `gcloud auth application-default login`,
+`firebase login`, and an active project venv. Other flags
+(`--skip-sync`, `--skip-manifest`, `--skip-generate`) and env overrides
+(`FIREBASE_PROJECT`, `GCS_STAGING_BUCKET`, `PORT`) are documented in
+`./infra/publish-local.sh --help`.
+
 See [`infra/DEPLOY.md`](infra/DEPLOY.md) for the full deployment runbook and
 [`CLAUDE.md`](CLAUDE.md) for repository conventions.
 
