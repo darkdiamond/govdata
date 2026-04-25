@@ -116,8 +116,6 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   those layers — defense in depth.
 - **Don't set client-side wall-clock timeouts** on the agent session.
   Only the Cloud Run timeout (3600 s) bounds it.
-- **Don't push to `main` without asking.** Commits yes; pushes require
-  explicit branch confirmation.
 - **Don't bring back Cloudflare or GCS-as-CDN.** Firebase Hosting is the
   sole deploy target. GCS is an internal staging bucket only.
 

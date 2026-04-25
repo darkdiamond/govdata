@@ -60,6 +60,17 @@
   .quality-fill {
     @apply h-full bg-brand;
   }
+  .res-row {
+    @apply flex items-center gap-3 py-2.5 border-b border-surface-alt last:border-b-0;
+  }
+  .fmt-badge {
+    @apply inline-block text-[0.7rem] font-bold rounded-gov-sm px-2 py-0.5 text-white uppercase tracking-wide;
+  }
+  .fmt-csv     { @apply bg-brand; }
+  .fmt-pdf     { @apply bg-danger; }
+  .fmt-xlsx    { @apply bg-ok; }
+  .fmt-json    { @apply bg-info text-ink-deep; }
+  .fmt-default { @apply bg-subtle; }
 }
 
 /* RTL-safe leaflet controls — the plugin injects left/right styles that
