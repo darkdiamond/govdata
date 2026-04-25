@@ -1,25 +1,539 @@
 {
   "version": 1,
-  "generated_at": "2026-04-24T11:24:56.181814Z",
+  "generated_at": "2026-04-25T12:38:52.000942Z",
   "datasets": [
     {
+      "id": "2fe07949-9538-4891-9de7-50a352bcbd80",
+      "slug": "atarei-biniya-shenigru",
+      "title": "אתרי בניה שנסגרו",
+      "organization": "משרד העבודה",
+      "organization_slug": "labor",
+      "summary_he": "רשימת אתרי בנייה שנסגרו על-ידי משרד העבודה בין 2016 ל-2026, כולל שם האתר, שם המבצע ותאריך הסגירה.",
+      "tags_he": [
+        "אתרי בנייה",
+        "סגירות אתרים",
+        "בטיחות בבנייה",
+        "משרד העבודה",
+        "אכיפה"
+      ],
+      "primary_resource_id": "b9257d8f-f93a-4c7d-84dd-e4b0838eadaa",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T21:15:25.017763",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [],
+      "version": 1
+    },
+    {
+      "id": "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
+      "slug": "cpc-patent-classifications",
+      "title": "סיווגי CPC לבקשות פטנט",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "732,186 רשומות סיווג CPC המשויכות ל-78,651 בקשות לרישום פטנט בישראל, כולל שם האמצאה בעברית ובאנגלית וסימון סיווג ראשי.",
+      "tags_he": [
+        "פטנטים",
+        "CPC",
+        "קניין רוחני",
+        "רשות הפטנטים",
+        "חדשנות"
+      ],
+      "primary_resource_id": "b2c59e21-c345-4b02-b071-2890a3d431d6",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T20:13:09.958663",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "3111ae54-790a-4d02-9750-d51e1134b405"
+      ],
+      "version": 1
+    },
+    {
+      "id": "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+      "slug": "mematziim-levakshot-patent",
+      "title": "ממציאים לבקשות פטנטים",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "שמות ממציאים לבקשות להגנה ישראלית על פטנט — 150,808 רשומות ל-47,267 בקשות ייחודיות ו-87,632 ממציאים שונים.",
+      "tags_he": [
+        "פטנטים",
+        "ממציאים",
+        "קניין רוחני",
+        "רשות הפטנטים",
+        "בקשות להגנה"
+      ],
+      "primary_resource_id": "abd0e8c3-0b0d-4581-9166-923a3b21bdda",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T20:12:55.057589",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+        "176f2727-476e-440e-bc8d-5d3461ea0e76"
+      ],
+      "version": 1
+    },
+    {
+      "id": "8687fefe-51af-4e0b-af54-701929c40102",
+      "slug": "cpc-patent-classifications",
+      "title": "סיווגי CPC",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "252,001 סיווגי Cooperative Patent Classification (CPC) — תקן בינלאומי לסיווג בקשות פטנט ב-9 חלקים ראשיים ו-672 קבוצות-משנה, כולל מקביל IPC לרוב הרשומות.",
+      "tags_he": [
+        "פטנטים",
+        "סיווג CPC",
+        "קניין רוחני",
+        "IPC",
+        "משרד המשפטים"
+      ],
+      "primary_resource_id": "cf8ed236-6bb2-4df4-91b9-4881102daec0",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T20:12:48.091405",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "176f2727-476e-440e-bc8d-5d3461ea0e76"
+      ],
+      "version": 1
+    },
+    {
+      "id": "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+      "slug": "chevrot-piruk-meratzon-mazuraz",
+      "title": "חברות בפרוק מרצון בהליך מזורז",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "רשימת 1,455 חברות פרטיות ישראליות שהגישו בקשה לפירוק מרצון בהליך מזורז לפי חוק החברות — ניתן להגיש התנגדות בתוך 90 יום ממועד אישור הרשם.",
+      "tags_he": [
+        "פירוק חברות",
+        "רשם החברות",
+        "תאגידים",
+        "פירוק מרצון",
+        "מרשם חברות"
+      ],
+      "primary_resource_id": "6f3f0df3-5968-4135-81c5-8dd76bf89410",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T20:12:41.949575",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783"
+      ],
+      "version": 1
+    },
+    {
+      "id": "d08d4a17-78f6-43a5-83f9-e6465e64cd24",
+      "slug": "magar-hanotarionim",
+      "title": "מאגר הנוטריונים",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "רשימת 7,609 הנוטריונים הפעילים בישראל הכוללת שם, מספר רישיון, ישוב ושפות שירות.",
+      "tags_he": [
+        "נוטריונים",
+        "רישוי",
+        "משרד המשפטים",
+        "שירותים משפטיים",
+        "ישובים"
+      ],
+      "primary_resource_id": "3ead5fae-3513-46f8-a458-959ea3e035ae",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T20:12:39.207908",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783"
+      ],
+      "version": 1
+    },
+    {
+      "id": "669b2652-f75b-4de3-8e6b-0dfa17accef5",
+      "slug": "maagar-shamaei-mekarkein",
+      "title": "מאגר שמאי מקרקעין",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "מאגר המכיל 3,102 שמאי מקרקעין בעלי רישיון, 91,848 רשומות בחינות הסמכה, ו-4,729 פטורים אקדמיים — מתעדכן אחת לרבעון.",
+      "tags_he": [
+        "שמאי מקרקעין",
+        "רישוי",
+        "בחינות מקצועיות",
+        "משרד המשפטים",
+        "פטורים אקדמיים"
+      ],
+      "primary_resource_id": "8540534a-eccd-4568-a677-652d589ed172",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T20:12:32.713659",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "d08d4a17-78f6-43a5-83f9-e6465e64cd24",
+        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188"
+      ],
+      "version": 1
+    },
+    {
+      "id": "025c3e07-358d-4892-ac2d-1e28f66ba188",
+      "slug": "minhel-hatovin",
+      "title": "מנהל הטובין",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "מאגר ייחוס רשמי לבחירת רשימת סחורות ושירותים לפי סיווג ניצה הבין-לאומי (45 מחלקות) בהגשת בקשה לרישום סימן מסחר בישראל — 144,215 מונחים בעברית ואנגלית.",
+      "tags_he": [
+        "סימני מסחר",
+        "מיון ניצה",
+        "קניין רוחני",
+        "סחורות ושירותים",
+        "בקשות רישום"
+      ],
+      "primary_resource_id": "b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T18:22:51.221962",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "176f2727-476e-440e-bc8d-5d3461ea0e76",
+      "slug": "pnkas-snigorim-tziboriim",
+      "title": "פנקס הסניגורים הציבוריים — הסנגוריה הציבורית",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "פנקס מינויי הסנגורים הציבוריים לפי חוק הסניגוריה הציבורית, הכולל למעלה מ-2.5 מיליון מינויים ב-6 מחוזות ובדרג הארצי, החל משנת 1998.",
+      "tags_he": [
+        "סנגוריה ציבורית",
+        "מינויים",
+        "בתי משפט",
+        "משפט פלילי",
+        "משרד המשפטים"
+      ],
+      "primary_resource_id": "c0938e1a-259a-41c3-a225-94e477264137",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T18:22:43.218705",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+        "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "3111ae54-790a-4d02-9750-d51e1134b405",
+      "slug": "rasham-hamashkonot",
+      "title": "רשם המשכונות",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "מאגר היסטורי של 8.2 מיליון רשומות משכון הרשומות בישראל מאז 1994, כולל סטטוס נוכחי, סיבת ביטול ותאריכי רישום — מתעדכן אוטומטית מדי יום.",
+      "tags_he": [
+        "משכונות",
+        "משרד המשפטים",
+        "בטוחות",
+        "מאגר אשראי",
+        "רשם החברות"
+      ],
+      "primary_resource_id": "e7266a9c-fed6-40e4-a28e-8cddc9f44842",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T18:14:18.885872",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [],
+      "version": 1
+    },
+    {
+      "id": "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+      "slug": "magar-orchei-patentim",
+      "title": "מאגר עורכי פטנטים",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "פנקס עורכי הפטנטים המורשים בישראל — 582 רשומות, מתעדכן חודשית על-ידי רשות הפטנטים, המצאות ועיצובים.",
+      "tags_he": [
+        "קניין רוחני",
+        "עורכי פטנטים",
+        "רשות הפטנטים",
+        "רישוי מקצועי",
+        "משרד המשפטים"
+      ],
+      "primary_resource_id": "0ff306c2-1ad9-4974-a2be-0420acf35685",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T18:13:05.089531",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+        "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+      "slug": "snifit-barzel",
+      "title": "סניפי ברזל",
+      "organization": "משרד הכלכלה והתעשייה",
+      "organization_slug": "moital",
+      "summary_he": "636 סניפי ברזל של רשתות סופרמרקט ב-135 יישובים ברחבי ישראל, שהתחייבו להישאר פתוחים בעת חירום לאומי.",
+      "tags_he": [
+        "חירום",
+        "סופרמרקטים",
+        "ביטחון מזון",
+        "רשתות מזון",
+        "פיקוד העורף"
+      ],
+      "primary_resource_id": "f7d9c47e-3414-4524-a187-a0f0e057b08a",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T17:59:09.354902",
+      "resources": [],
+      "dataset_kind": "map",
+      "related_ids": [],
+      "version": 1
+    },
+    {
+      "id": "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
+      "slug": "azore-adifut-leumit-ve-pituah",
+      "title": "אזורי עדיפות לאומית ואזורי פיתוח",
+      "organization": "משרד הכלכלה והתעשייה",
+      "organization_slug": "moital",
+      "summary_he": "סיווג ישובים ואזורי תעשייה בישראל לפי אזורי פיתוח (א׳ וב׳) ועדיפות לאומית, הקובע את היקף ההטבות לעסקים — כולל היסטוריה מ-2003 ועד היום.",
+      "tags_he": [
+        "אזורי פיתוח",
+        "עדיפות לאומית",
+        "תמריצים עסקיים",
+        "פיתוח אזורי",
+        "ישובים"
+      ],
+      "primary_resource_id": "d0cfa550-51a5-438c-9336-7b117ed174f6",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T17:59:08.781698",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+        "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "ed8ce28e-ae7f-4588-b3f9-59485960d521",
+        "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
+        "d08d4a17-78f6-43a5-83f9-e6465e64cd24"
+      ],
+      "version": 1
+    },
+    {
+      "id": "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
+      "slug": "agudat-shitufit",
+      "title": "רשימת האגודות השיתופיות",
+      "organization": "משרד הכלכלה והתעשייה",
+      "organization_slug": "moital",
+      "summary_he": "מאגר 7,157 אגודות שיתופיות הרשומות בישראל, כולל סטטוס פעילות, סוג, כתובת ותאריך רישום.",
+      "tags_he": [
+        "אגודות שיתופיות",
+        "רישום",
+        "כלכלה",
+        "התאגדות",
+        "ישראל"
+      ],
+      "primary_resource_id": "cad6bb66-5560-4cf4-a39c-92518f3f18ef",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T17:59:07.704391",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "27b4b40e-b019-4a70-8e5d-4741110fc55d"
+      ],
+      "version": 1
+    },
+    {
+      "id": "dda8f0aa-8901-473d-a4d6-8b361aa51417",
+      "slug": "maagar-takenim-rasmiim",
+      "title": "מאגר תקנים רשמיים",
+      "organization": "משרד הכלכלה והתעשייה",
+      "organization_slug": "moital",
+      "summary_he": "565 תקנים ישראליים רשמיים בתוקף — כולל נתוני מסלולי ייבוא, מקוריות התקן, מחויבות חוקית והתאמה לאסדרה אירופית ובינלאומית.",
+      "tags_he": [
+        "תקנים רשמיים",
+        "כלכלה ותעשייה",
+        "ייבוא",
+        "בטיחות מוצרים",
+        "תקינה בינלאומית"
+      ],
+      "primary_resource_id": "1a4d94e2-369a-488d-a223-eb1020612fbd",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T17:59:06.185542",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+        "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
+        "ed8ce28e-ae7f-4588-b3f9-59485960d521",
+        "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
+      ],
+      "version": 1
+    },
+    {
+      "id": "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+      "slug": "minahel-yahalomim",
+      "title": "מינהל יהלומים",
+      "organization": "משרד הכלכלה והתעשייה",
+      "organization_slug": "moital",
+      "summary_he": "רשימת יהלומנים הרשומים אצל מינהל יהלומים, כולל סטטוס הרישיון (פעיל/לא פעיל/בהליך רישום) וסוג הרישיון (סחר, יצרן, צורף) — סה\"כ 7,496 עוסקים, מתוכם 2,183 פעילים.",
+      "tags_he": [
+        "יהלומנים",
+        "רישוי עסקים",
+        "כלכלה",
+        "תעשייה",
+        "סחר יהלומים"
+      ],
+      "primary_resource_id": "7a0727d5-17cf-4457-a5e2-ff6e07234347",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T17:59:04.808804",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
+        "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "ed8ce28e-ae7f-4588-b3f9-59485960d521"
+      ],
+      "version": 1
+    },
+    {
+      "id": "ed8ce28e-ae7f-4588-b3f9-59485960d521",
+      "slug": "mishkalos-umidot",
+      "title": "משקלות ומידות – דגמים מאושרים של מכשירי מדידה",
+      "organization": "משרד הכלכלה והתעשייה",
+      "organization_slug": "moital",
+      "summary_he": "מאגר 2,542 דגמים מאושרים של מכשירי מדידה בישראל, כולל סטטוס תוקף, קטגוריה, יצרן ומספר אישור – לשירות המשקלות ומידות.",
+      "tags_he": [
+        "מכשירי מדידה",
+        "מאזניים",
+        "אכיפה מסחרית",
+        "תקינה",
+        "רגולציה"
+      ],
+      "primary_resource_id": "5cc7cc5b-9e38-42bd-bc77-f70297c10a1f",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-24T17:59:04.015666",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [
+        "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
+      ],
+      "version": 1
+    },
+    {
+      "id": "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+      "slug": "simanei-mischar-sivugim",
+      "title": "סימני מסחר — סיווגים",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "טבלאות ייחוס רשמיות לסיווג סימני מסחר בישראל: 45 מחלקות ניצה בינלאומיות ו-144 ערכי סיווג וינה לאלמנטים ציוריים.",
+      "tags_he": [
+        "סימני מסחר",
+        "סיווג ניצה",
+        "סיווג וינה",
+        "קניין רוחני",
+        "WIPO"
+      ],
+      "primary_resource_id": "bc9b55dc-a0c6-4b52-a925-5dabc7ef7979",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T17:13:52.069035",
+      "resources": [],
+      "dataset_kind": "registry",
+      "related_ids": [],
+      "version": 1
+    },
+    {
       "id": "ebf0005b-f5fe-4c6c-ab6d-28778167d025",
-      "slug": "miflas-yam-hamelach",
+      "slug": "dead-sea-level",
       "title": "מפלס ים המלח",
       "organization": "הרשות הממשלתית למים ולביוב",
-      "summary_he": "נתונים חודשיים של מפלס ים המלח מ-1976 עד 2026 (687 מדידות), המתעדים ירידה רציפה של 41.84 מטר בממוצע 0.84 מ' לשנה.",
+      "organization_slug": "water_authority",
+      "summary_he": "נתונים חודשיים של מפלס ים המלח משנת 1976 ועד היום — מציגים ירידה מצטברת של כ-41.8 מטר בקצב של כ-0.84 מ' לשנה.",
       "tags_he": [
         "ים המלח",
-        "הידרומטריה",
-        "נתוני זמן",
-        "משבר אקולוגי",
-        "נתונים פתוחים"
+        "מפלס מים",
+        "הידרולוגיה",
+        "סביבה",
+        "סדרת זמן"
       ],
       "primary_resource_id": "823479b4-4771-43d8-9189-6a2a1dcaaf10",
       "formats": [
         "CSV"
       ],
       "metadata_modified": "2026-04-24T08:44:42.134011",
+      "resources": [],
+      "dataset_kind": "timeseries",
       "related_ids": [],
       "version": 1
     },
@@ -41,6 +555,7 @@
         "CSV"
       ],
       "metadata_modified": "2026-04-23T19:01:06.011598",
+      "resources": [],
       "related_ids": [],
       "version": 1
     },
@@ -49,20 +564,22 @@
       "slug": "amutot-chalatz",
       "title": "מאגר עמותות וחברות לתועלת הציבור",
       "organization": "משרד המשפטים",
-      "summary_he": "מאגר רשמי של רשות התאגידים הכולל 74,976 עמותות ו-1,500 חל\"צ הרשומות בישראל, לצד דיווחי תרומות מישויות מדיניות זרות ואישורי ניהול תקין — מתעדכן מדי שבוע.",
+      "organization_slug": "ministry_of_justice",
+      "summary_he": "מאגר מרכזי של רשם העמותות ורשם ההקדשות, הכולל 74,976 עמותות, 1,500 חל\"צ, דיווחי תרומות מגורמים מדיניים זרים ואישורי ניהול תקין — מתעדכן מדי שבוע.",
       "tags_he": [
         "עמותות",
         "חברות לתועלת הציבור",
-        "מגזר שלישי",
+        "ניהול תקין",
         "תרומות זרות",
-        "ניהול תקין"
+        "רשות התאגידים"
       ],
       "primary_resource_id": "be5b7935-3922-45d4-9638-08871b17ec95",
       "formats": [
-        "CSV",
-        "PDF"
+        "CSV"
       ],
       "metadata_modified": "2026-04-23T18:12:25.328767",
+      "resources": [],
+      "dataset_kind": "registry",
       "related_ids": [],
       "version": 1
     }

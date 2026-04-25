@@ -27,6 +27,60 @@
   </div>
 </section>
 
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+  <section class="card p-5">
+    <h2 class="font-semibold text-ink-deep mb-3 flex items-center gap-2">
+      <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+      פרטי המאגר
+    </h2>
+    <dl class="text-sm space-y-2">
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">גוף מפרסם</dt>
+        <dd class="font-medium text-ink">משרד הכלכלה והתעשייה</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">מספר רשומות</dt>
+        <dd class="font-medium text-ink">636 סניפים</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">רשתות שיווק</dt>
+        <dd class="font-medium text-ink">32 רשתות</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">יישובים</dt>
+        <dd class="font-medium text-ink">135 יישובים</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-1">
+        <dt class="text-subtle">עודכן לאחרונה</dt>
+        <dd class="font-medium text-ink">24 באפריל 2026</dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-subtle">פורמט</dt>
+        <dd><span class="badge bg-surface-alt text-ink-deep">CSV</span></dd>
+      </div>
+    </dl>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="font-semibold text-ink-deep mb-3 flex items-center gap-2">
+      <img src="/icons/download.svg" alt="" class="w-5 h-5" />
+      הורדת הנתונים
+    </h2>
+    <p class="text-sm text-subtle mb-4">קובץ CSV הכולל פרטי כל סניפי הברזל: כתובת, שם רשת, שם סניף ומיקום גאוגרפי.</p>
+    <a href="https://data.gov.il/dataset/27b4b40e-b019-4a70-8e5d-4741110fc55d/resource/f7d9c47e-3414-4524-a187-a0f0e057b08a/download"
+       class="btn-primary inline-flex items-center gap-2 text-sm"
+       target="_blank" rel="noopener">
+      <img src="/icons/download.svg" alt="" class="w-4 h-4" style="filter:brightness(10);" />
+      הורד CSV
+      <span class="badge" style="background:rgba(255,255,255,.25);color:#fff;">636 שורות</span>
+    </a>
+    <div class="mt-4 p-3 rounded-gov bg-surface-alt text-xs text-subtle">
+      <strong class="text-ink-deep">שדות עיקריים:</strong>
+      store (שם רשת), branch (שם סניף), city (עיר), address (כתובת מלאה), X/Y (קואורדינטות ITM), report_date
+    </div>
+  </section>
+</div>
+
 <div class="grid grid-cols-3 gap-4 mb-5">
   <div class="card p-4 text-center">
     <div class="text-4xl font-bold text-brand mb-1">636</div>
@@ -116,12 +170,12 @@
     <li class="flex items-center gap-2"><span style="color:#ffc107;">&#9888;</span> אין תגיות מיון (tags) מוגדרות</li>
   </ul>
 </section>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" crossorigin="" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" crossorigin="" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV/XN/WLs=" crossorigin=""><\/script>
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js" crossorigin=""><\/script>
-<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"><\/script>
+
+
+
+
+
+
 <script>
 (function(){
   const GOVIL_PALETTE=["#0068f5","#0b3668","#6c9fd8","#0053c4","#0c3058","#3d70b0","#b7d2f7","#2658a0","#dbe8fb","#0c1f3d"];
@@ -183,4 +237,4 @@
 
   window.addEventListener("resize",()=>{cChains.resize();cCities.resize();});
 })();
-<\/script>
+</script>

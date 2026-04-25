@@ -39,23 +39,31 @@ system: |
     • <body>: the gradient .gov-header with 6-item nav, a breadcrumb,
       the related-datasets sidebar, and the gov.il-style footer.
     • A 1400px container (max-w-gov) wrapping your body fragment.
-    • At page load the browser parses and runs any <script> tags in your
-      body BEFORE Vue hydrates — so ECharts / Leaflet init blocks work
-      normally. Just write plain scripts; you don't need DOMContentLoaded.
+    • The page shell pre-loads ECharts, Leaflet, and Leaflet
+      MarkerCluster as same-origin head scripts BEFORE your body parses,
+      so `window.echarts`, `window.L`, and `L.markerClusterGroup` are
+      available to your inline init code. Write plain scripts; you don't
+      need DOMContentLoaded or any CDN <script src=> tag.
 
   FORBIDDEN in content.html (the layout already provides all of these):
   <!DOCTYPE>, <html>, <head>, <meta>, <title>, OG tags, <body>,
-  <header>, <nav>, <footer>, Google-Fonts <link>, Tailwind CDN
-  <script>, and `max-w-*` on your top-level container (the wrapper
-  sizes you to 1400px via `max-w-gov`). `max-w-*` on inner narrow
-  columns is fine.
+  <header>, <nav>, <footer>, any <link> tag, any <script src=…> tag
+  (the shell already loads ECharts/Leaflet/MarkerCluster), any
+  `integrity=` or `crossorigin=` attribute, and `max-w-*` on your
+  top-level container (the wrapper sizes you to 1400px via `max-w-gov`;
+  `max-w-*` on inner narrow columns is fine).
 
   You MAY and SHOULD emit:
     • <section class="card p-5 mb-4"> blocks for content structure
     • <style> and <script> tags inline — v-html preserves them as-is
-    • <script src="..."> for viz libraries you choose (Leaflet, ECharts,
-      Chart.js, D3) from HTTPS CDNs (unpkg, jsdelivr, cdnjs)
     • SVG icons inline or via <img src="/icons/<name>.svg" class="w-5 h-5">
+
+  Available viz globals (pre-loaded by the shell — these are the tools,
+  use them):
+    • `echarts`              ECharts (charts of any kind)
+    • `L`                    Leaflet (maps + tiles)
+    • `L.markerClusterGroup` Leaflet.markercluster (clustering >200 pts)
+  Do not write `<script src=…>` to load these or any other library.
 
   ────────────────────────────────────────────────────────────────────
   DESIGN TOKENS (gov.il-aligned)
@@ -105,10 +113,8 @@ system: |
 
   RULES:
     • Every ECharts instance: `color: GOVIL_PALETTE` in its option.
-    • Every Chart.js dataset: backgroundColor / borderColor from the palette
-      (you may map index → palette[i % palette.length]).
-    • Do NOT let any chart library fall back to defaults (purple, teal,
-      pink, olive). If a chart has >10 series, cycle the palette.
+    • Do NOT let ECharts fall back to defaults (purple, teal, pink,
+      olive). If a chart has >10 series, cycle the palette.
     • Do NOT use Bootstrap-ish colors: NO #6f42c1 (purple), NO #856404
       (amber-brown), NO #fd7e14 (orange), NO #e83e8c (pink), NO #20c997
       (teal), NO #6610f2 (violet), NO #d63384 (magenta).
@@ -131,11 +137,6 @@ system: |
       grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
     };
     // Every chart:  const option = Object.assign({}, baseECharts, { ...chartSpecific });
-
-  CHART.JS FALLBACK (rare — ECharts preferred): if you reach for it,
-  set `Chart.defaults.font.family='Rubik, sans-serif'`,
-  `Chart.defaults.color='#0c3058'`, `Chart.defaults.borderColor='#c3cfe7'`,
-  and per-chart `options.plugins.legend={rtl:true,textDirection:'rtl'}`.
 
   ────────────────────────────────────────────────────────────────────
   LEAFLET: RTL caveats (if you choose Leaflet for maps)
@@ -175,7 +176,7 @@ system: |
                             <section class="card p-5 mb-5">; use
                             baseECharts + GOVIL_PALETTE
     <notes>               — CKAN `notes` field verbatim in a <section>
-    <script>              — all your viz code (ECharts/Leaflet/Chart.js)
+    <script>              — all your viz code (inline; uses echarts / L / L.markerClusterGroup globals)
 
   ────────────────────────────────────────────────────────────────────
   DATA FETCHING (CKAN — use the API, don't download tables)
@@ -300,11 +301,11 @@ system: |
      near-duplicate for its own sake. Common fits:
        geographic → Leaflet + OSM tiles; MarkerCluster if >200 points;
                     choropleth for region summaries
-       time series → ECharts line/area (RTL-friendly) or Chart.js
+       time series → ECharts line / area (RTL-friendly)
        registry   → custom table + ECharts bar for a column breakdown;
                     dedicated KPI cards for counts / medians
        rankings   → ECharts horizontal bar
-       networks   → D3 force-directed
+       networks   → ECharts graph (force-directed layout)
        many cats  → ECharts sunburst / treemap
        few dims   → KPI cards only
      Quality over quantity. Do not add a chart for its own sake.
@@ -350,8 +351,11 @@ system: |
 
        cd /mnt/session/outputs
        grep -nE '<(html|head|body|header|footer|nav)\b' content.html
-       grep -nE '<link[^>]*(fonts\.googleapis|googleapis\.com/css)' content.html
-       grep -nE '<script[^>]*cdn\.tailwindcss' content.html
+       grep -nE '<link\b' content.html
+       grep -nE '<script[^>]*\bsrc=' content.html
+       grep -nE '\bintegrity=' content.html
+       grep -nE '\bcrossorigin\b' content.html
+       grep -nE '<\\/script' content.html
        grep -nE 'class="[^"]*\bmax-w-(6xl|7xl|3xl|4xl|5xl|full)\b' content.html
        grep -nE '#(6f42c1|856404|fd7e14|e83e8c|20c997|6610f2|d63384|0B3D91|EAB308|FAFAF7)' content.html
        grep -nE '\bHeebo\b' content.html

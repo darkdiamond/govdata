@@ -2,9 +2,19 @@
 import { useManifest } from '~/composables/useManifest'
 import { formatBytes, formatNumber } from '~/composables/useRelativeTime'
 import type { ManifestEntry } from '~/types/manifest'
+import { DATASET_LIB_TAGS } from '~/utils/dataset-libs'
 
 const route = useRoute()
 const id = String(route.params.id)
+
+// Pre-load the curated viz libraries (Leaflet, MarkerCluster, ECharts) from
+// public/lib/ on the same origin. Agent-emitted content.html may NOT include
+// <script src=> or <link rel=stylesheet>; these head tags are the only
+// external resources a dataset page loads. On SSR/refresh the browser parses
+// these synchronously before the body, so the body's inline init scripts see
+// window.L / window.echarts. On SPA nav useHead appends them dynamically;
+// executeBodyScripts() below waits for the globals before running body scripts.
+useHead(DATASET_LIB_TAGS)
 
 const { data } = await useAsyncData(`dataset-${id}`, async () => {
   const fs = await import('node:fs/promises')
@@ -156,8 +166,28 @@ async function executeBodyScripts(container: HTMLElement): Promise<void> {
   }
 }
 
-onMounted(() => {
+// On SPA nav, useHead inserts the lib <script> tags into <head> at mount —
+// they load asynchronously, so the body's inline init must wait for the
+// globals before executeBodyScripts runs. On SSR/refresh the libs are
+// parsed synchronously in <head>, so they're already on window by the
+// time the (hydrating) page mounts and we skip this path entirely.
+async function awaitDatasetLibs(timeoutMs = 5000): Promise<void> {
+  const start = Date.now()
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const w = window as unknown as { L?: { markerClusterGroup?: unknown }; echarts?: unknown }
+    if (typeof w.echarts !== 'undefined' && w.L && typeof w.L.markerClusterGroup === 'function') return
+    if (Date.now() - start > timeoutMs) {
+      console.warn('[dataset libs] timed out waiting for window.{L,echarts} after SPA nav')
+      return
+    }
+    await new Promise((r) => setTimeout(r, 30))
+  }
+}
+
+onMounted(async () => {
   if (nuxtApp.isHydrating) return
+  await awaitDatasetLibs()
   if (bodyEl.value) void executeBodyScripts(bodyEl.value)
 })
 </script>

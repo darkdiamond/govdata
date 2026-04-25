@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 import time
 from dataclasses import dataclass, field
 from typing import Optional
@@ -40,6 +41,71 @@ FILES_BETA = "files-api-2025-04-14"
 
 CONTENT_FILENAME = "content.html"
 DATA_FILENAME = "data.json"
+
+# Belt-and-braces cleanup for agent-emitted body fragments. The agent
+# prompt forbids `<script src=>` / `<link>` / `integrity=` / `<\/script>`,
+# but LLM hallucinations recur (one dataset shipped with both a fabricated
+# SRI hash on Leaflet AND `<\/script>` JSON-escape in every script-end tag,
+# silently breaking all viz). These regexes catch the same classes of bug
+# at the staging boundary so a regression on the prompt side never reaches
+# production. Each rule logs a WARNING when it fires.
+_SCRIPT_END_ESCAPED = re.compile(r"<\\/script(\s*)>", re.IGNORECASE)
+_INTEGRITY_ATTR = re.compile(r'\s+integrity\s*=\s*"[^"]*"', re.IGNORECASE)
+_CROSSORIGIN_ATTR = re.compile(r'\s+crossorigin(?:\s*=\s*"[^"]*")?', re.IGNORECASE)
+_CDN_HOSTS = r"(?:[\w-]+\.)*(?:unpkg\.com|cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com)"
+_SCRIPT_CDN_TAG = re.compile(
+    rf'<script\b[^>]*\bsrc\s*=\s*"https?://{_CDN_HOSTS}[^"]*"[^>]*>\s*(?:</script>)?',
+    re.IGNORECASE,
+)
+_LINK_CDN_TAG = re.compile(
+    rf'<link\b[^>]*\bhref\s*=\s*"https?://{_CDN_HOSTS}[^"]*"[^>]*/?>',
+    re.IGNORECASE,
+)
+
+
+def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
+    """Strip agent-output failure modes that recur as LLM hallucinations.
+
+    Drops `<script src=>` / `<link href=>` to known CDNs (unpkg, jsdelivr,
+    cdnjs) — the Nuxt shell pre-loads ECharts/Leaflet/MarkerCluster
+    same-origin and the agent contract forbids external resource refs.
+    Strips `integrity=` / `crossorigin=` attributes (any SRI hash the
+    agent emits is fabricated; same-origin loads don't need either).
+    Replaces `<\\/script>` (JSON string-escape) with `</script>` so the
+    HTML parser actually closes the tag.
+
+    Each transform logs a WARNING with a count and the dataset id so we
+    can trace prompt regressions even when the sanitizer silently fixes
+    them.
+    """
+    tag = f"[{dataset_id}] " if dataset_id else ""
+
+    new_body, n = _SCRIPT_END_ESCAPED.subn(r"</script\1>", body)
+    if n:
+        log.warning("%ssanitizer: replaced %d <\\/script> -> </script>", tag, n)
+    body = new_body
+
+    new_body, n = _INTEGRITY_ATTR.subn("", body)
+    if n:
+        log.warning("%ssanitizer: stripped %d integrity= attribute(s)", tag, n)
+    body = new_body
+
+    new_body, n = _CROSSORIGIN_ATTR.subn("", body)
+    if n:
+        log.warning("%ssanitizer: stripped %d crossorigin attribute(s)", tag, n)
+    body = new_body
+
+    new_body, n = _SCRIPT_CDN_TAG.subn("", body)
+    if n:
+        log.warning("%ssanitizer: dropped %d <script src=CDN> tag(s)", tag, n)
+    body = new_body
+
+    new_body, n = _LINK_CDN_TAG.subn("", body)
+    if n:
+        log.warning("%ssanitizer: dropped %d <link href=CDN> tag(s)", tag, n)
+    body = new_body
+
+    return body
 
 
 @dataclass
@@ -281,6 +347,8 @@ def run_session(
     related_scored = top_related(entry, candidates, k=5)
     entry.related_ids = [c.id for c, _, _ in related_scored]
     result.note(f"related: {[rid[:8] for rid in entry.related_ids]}")
+
+    content_html = _sanitize_content_html(content_html, dataset_id=entry.id)
 
     prefix = f"datasets/{entry.id}"
     enriched_json = entry.model_dump_json(exclude_none=True, indent=2).encode("utf-8")
