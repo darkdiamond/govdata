@@ -1,10 +1,13 @@
 // Nuxt generates every page on the site, including dataset landing pages.
-// For each dataset under public/datasets/<id>/{content.html,data.json}
-// (rsynced from GCS by the publisher), pages/datasets/[id].vue reads the
-// body + data at build time and renders them inside the default layout —
-// so header/footer live in one place (layouts/default.vue) and can never
-// drift from dataset pages. Category routes (ministries/tags/kinds) are
-// enumerated from manifest.json the same way.
+// For each dataset under public/datasets/<id>/, pages/datasets/[id].vue
+// reads three artifacts at build time and renders them inside the default
+// layout — so header/footer live in one place (layouts/default.vue) and
+// can never drift from dataset pages:
+//   content.html      — agent body, synced from GCS
+//   data.json         — DatasetMeta (scanner facts), written by the publisher
+//   agent_data.json   — AgentData (agent judgments), written by the publisher
+// Category routes (ministries/tags/kinds) are enumerated from manifest.json
+// (the merged view) the same way.
 
 import { readdirSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'

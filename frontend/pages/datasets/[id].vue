@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useManifest } from '~/composables/useManifest'
 import { formatBytes, formatNumber } from '~/composables/useRelativeTime'
-import type { ManifestEntry } from '~/types/manifest'
+import type { AgentData, DatasetMeta, ManifestEntry } from '~/types/manifest'
 import { DATASET_LIB_TAGS } from '~/utils/dataset-libs'
+import { normalizeAgentBody } from '~/utils/normalize-agent-body'
 
 const route = useRoute()
 const id = String(route.params.id)
@@ -21,12 +22,31 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
   const path = await import('node:path')
   const dir = path.resolve(process.cwd(), 'public/datasets', id)
 
-  const rawBody = await fs.readFile(path.join(dir, 'content.html'), 'utf-8')
-  const body = rawBody.replace(/https:\/\/e\.data\.gov\.il/g, 'https://data.gov.il')
+  // Three artifacts, two writers:
+  //   - content.html      : agent body, synced from GCS staging
+  //   - data.json         : DatasetMeta, written by the publisher from Firestore
+  //   - agent_data.json   : AgentData,   written by the publisher from Firestore.
+  //                         Optional — a scanned-but-never-analyzed source has none.
+  const [rawBody, metaRaw, agentRaw] = await Promise.all([
+    fs.readFile(path.join(dir, 'content.html'), 'utf-8'),
+    fs.readFile(path.join(dir, 'data.json'), 'utf-8'),
+    fs.readFile(path.join(dir, 'agent_data.json'), 'utf-8').catch(() => null),
+  ])
 
-  const entry = JSON.parse(
-    await fs.readFile(path.join(dir, 'data.json'), 'utf-8'),
-  ) as ManifestEntry
+  // Single ingress point for every agent body — see normalizeAgentBody().
+  const body = normalizeAgentBody(rawBody)
+
+  const meta = JSON.parse(metaRaw) as DatasetMeta
+  const agent = (agentRaw ? JSON.parse(agentRaw) : null) as AgentData | null
+
+  // Merge into a ManifestEntry-shaped object so existing template paths
+  // (entry.summary_he, entry.dataset_kind, entry.related_ids, …) keep working.
+  const entry: ManifestEntry = {
+    ...meta,
+    summary_he: agent?.summary_he,
+    dataset_kind: agent?.dataset_kind,
+    related_ids: agent?.related_ids ?? [],
+  }
 
   return { entry, body }
 })

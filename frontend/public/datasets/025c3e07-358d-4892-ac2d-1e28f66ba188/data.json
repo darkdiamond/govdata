@@ -1,45 +1,35 @@
 {
   "id": "025c3e07-358d-4892-ac2d-1e28f66ba188",
-  "slug": "minhel-hatovin",
+  "slug": "mnhl-htvbyn",
   "title": "מנהל הטובין",
   "organization": "משרד המשפטים",
   "organization_slug": "ministry_of_justice",
-  "summary_he": "מאגר ייחוס רשמי לבחירת רשימת סחורות ושירותים לפי סיווג ניצה הבין-לאומי (45 מחלקות) בהגשת בקשה לרישום סימן מסחר בישראל — 144,215 מונחים בעברית ואנגלית.",
   "tags_he": [
-    "סימני מסחר",
-    "מיון ניצה",
-    "קניין רוחני",
-    "סחורות ושירותים",
-    "בקשות רישום"
+    "מנהל הטובין",
+    "משרד המשפטים",
+    "סימני מסחר"
   ],
   "primary_resource_id": "b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e",
   "formats": [
     "CSV",
     "PDF"
   ],
-  "metadata_modified": "2026-04-24T18:22:51.221962",
-  "dataset_kind": "registry",
-  "related_ids": [
-    "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
-    "3111ae54-790a-4d02-9750-d51e1134b405",
-    "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
-  ],
-  "version": 1,
+  "metadata_modified": "2026-04-24T18:22:51.221962Z",
   "license": "Creative Commons Attribution",
+  "record_count": 144215,
   "resources": [
     {
       "url": "https://data.gov.il/dataset/025c3e07-358d-4892-ac2d-1e28f66ba188/resource/b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e/download/b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e.csv",
       "format": "CSV",
       "name": "מנהל הטובין",
-      "size_bytes": 23273175,
-      "description": null
+      "size_bytes": 23273175
     },
     {
       "url": "https://data.gov.il/dataset/025c3e07-358d-4892-ac2d-1e28f66ba188/resource/639b680c-232f-48fa-84d8-3f9b8758af9e/download/open-file-excel.pdf",
       "format": "PDF",
       "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
-      "size_bytes": 968126,
-      "description": null
+      "size_bytes": 968126
     }
-  ]
+  ],
+  "version": 1
 }

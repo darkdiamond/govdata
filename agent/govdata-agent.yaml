@@ -314,38 +314,31 @@ system: |
      WRAPPER CONTRACT above and the BODY SKELETON. All user-visible text
      is Hebrew.
 
-  5. WRITE data.json to /mnt/session/outputs/data.json. Required shape:
+  5. WRITE agent_data.json to /mnt/session/outputs/agent_data.json.
+     This file holds ONLY your interpretive output — id, title,
+     organization, license, resources, formats, record_count, slug,
+     metadata_modified are all owned by the scanner and joined in by the
+     publisher; do NOT emit them.
+
+     Required shape:
        {
-         "id": "<dataset_id>",
-         "slug": "<url-slug-he-or-translit>",
-         "title": "<hebrew title>",
-         "organization": "<hebrew org name>",
-         "organization_slug": "<CKAN pkg.organization.name, e.g. ministry-of-justice>",
          "summary_he": "<one-line hebrew summary>",
-         "tags_he": ["...", "..."],
-         "primary_resource_id": "<resource uuid>",
-         "formats": ["CSV", ...],
-         "metadata_modified": "<iso timestamp>",
-         "record_count": 12345,
          "dataset_kind": "map" | "timeseries" | "registry" | "rankings" | "misc",
          "related_ids": ["<id>", ...],
          "version": 1
        }
-     `dataset_kind` and `organization_slug` are REQUIRED. Without them
-     the /ministries/<slug>/ and /kinds/<kind>/ routes silently drop
-     this dataset.
 
-     `record_count` is REQUIRED whenever you ran datastore_search with
-     `include_total=true` (which the WORKFLOW mandates for CSV/datastore
-     resources). Use the `total` field from the first response. Omit it
-     only for datasets where no datastore resource exists (PDF / ZIP
-     only). The frontend renders it in the פרטים card.
+     `summary_he` and `dataset_kind` are REQUIRED. Without `dataset_kind`
+     the /kinds/<kind>/ route silently drops this dataset.
 
-     The controller hoists `license` and the full `resources` list onto
-     data.json from the scanner's Firestore record before staging to
-     GCS, so you do NOT write those two fields. Do not emit metadata
-     or resources cards in content.html — the Nuxt shell renders them
-     from data.json.
+     `related_ids` is optional (up to 5). Return [] if you don't have
+     enough context about other datasets — the publisher's deterministic
+     scoring (ministry + tags + embedding similarity) merges your
+     suggestions with its own signals.
+
+     Do not emit metadata or resources cards in content.html — the Nuxt
+     shell renders them from data.json (which the publisher writes from
+     the scanner's Firestore record).
 
   6. SELF-CHECK. Run these in bash — ALL must return zero hits:
 
@@ -365,10 +358,11 @@ system: |
      Also:
        python3 -c "
        import json
-       d = json.load(open('data.json'))
-       assert d.get('dataset_kind'), 'dataset_kind missing'
-       assert d.get('organization_slug'), 'organization_slug missing'
-       print('data.json ok:', d['dataset_kind'], '/', d['organization_slug'])
+       d = json.load(open('agent_data.json'))
+       assert d.get('summary_he'), 'summary_he missing'
+       assert d.get('dataset_kind') in {'map','timeseries','registry','rankings','misc'}, \
+           f'dataset_kind invalid: {d.get(\"dataset_kind\")!r}'
+       print('agent_data.json ok:', d['dataset_kind'])
        "
 
      If ANY check fails, fix the file and re-run the full check before

@@ -19,6 +19,7 @@ from services.scanner.config import ScannerSettings
 from services.scanner.main import Scanner
 from services.scanner.state import StateDB
 from services.shared.firestore import FirestoreStateStore, SourceRecord
+from services.shared.resources import pick_primary_resource_id
 
 from . import selector
 from .session_runner import run_session
@@ -26,24 +27,12 @@ from .session_runner import run_session
 log = logging.getLogger("page_builder.pipeline")
 
 
-PRIMARY_FORMAT_PRIORITY = ("CSV", "GEOJSON", "JSON", "XLSX", "XML")
-
-
-def _pick_primary_resource_id(resources: list[dict]) -> Optional[str]:
-    """Pick a reasonable primary resource_id for the agent to anchor on."""
-    for fmt in PRIMARY_FORMAT_PRIORITY:
-        for r in resources:
-            if (r.get("format") or "").upper() == fmt:
-                return r.get("id")
-    return resources[0].get("id") if resources else None
-
-
 async def _build_one(src: SourceRecord, staging_bucket: str, store: FirestoreStateStore) -> dict:
     """Run one Managed Agents session. Updates Firestore on success or failure."""
     log.info("building %s — %s", src.id[:8], (src.title or "")[:60])
     await asyncio.to_thread(store.mark_analysis_pending, src.id)
 
-    primary_id = _pick_primary_resource_id(src.resources)
+    primary_id = pick_primary_resource_id(src.resources)
     try:
         result = await asyncio.to_thread(
             run_session,
@@ -60,13 +49,9 @@ async def _build_one(src: SourceRecord, staging_bucket: str, store: FirestoreSta
         await asyncio.to_thread(store.mark_analysis_failed, src.id, str(e))
         return {"id": src.id, "status": "failed", "error": str(e)}
 
+    # session_runner already wrote `sources/<id>.agent_data` via store.set_agent_data().
     page_path = f"datasets/{src.id}/"
-    entry_dict = (
-        result.entry.model_dump(mode="json", exclude_none=True) if result.entry else None
-    )
-    await asyncio.to_thread(
-        store.mark_analysis_succeeded, src.id, page_path, entry_dict
-    )
+    await asyncio.to_thread(store.mark_analysis_succeeded, src.id, page_path)
     return {
         "id": src.id,
         "status": "succeeded",

@@ -1,585 +1,897 @@
 {
   "version": 1,
-  "generated_at": "2026-04-25T12:38:52.000942Z",
+  "generated_at": "2026-04-25T14:39:35.916012Z",
   "datasets": [
     {
+      "id": "176f2727-476e-440e-bc8d-5d3461ea0e76",
+      "slug": "pnks-hsnygvrym-htzybvryym-hsngvryh-htzybvryt",
+      "title": "פנקס הסניגורים הציבוריים - הסנגוריה הציבורית",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "tags_he": [],
+      "primary_resource_id": "c0938e1a-259a-41c3-a225-94e477264137",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-25T11:13:32.454383Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 633832,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/c0938e1a-259a-41c3-a225-94e477264137/download/c0938e1a-259a-41c3-a225-94e477264137.csv",
+          "format": "CSV",
+          "name": "מחוז דרום",
+          "size_bytes": 49883714
+        },
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/c4a8e209-c4a4-4482-b094-defc5bf4588e/download/c4a8e209-c4a4-4482-b094-defc5bf4588e.csv",
+          "format": "CSV",
+          "name": "מחוז צפון",
+          "size_bytes": 19850348
+        },
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/3d4ea557-de94-4947-9322-676ab8d5bfc0/download/3d4ea557-de94-4947-9322-676ab8d5bfc0.csv",
+          "format": "CSV",
+          "name": "מחוז ירושלים",
+          "size_bytes": 31548714
+        },
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/a1a4a862-8d20-42c8-a9d4-12e3e0ba1fe0/download/a1a4a862-8d20-42c8-a9d4-12e3e0ba1fe0.csv",
+          "format": "CSV",
+          "name": "מחוז חיפה",
+          "size_bytes": 32237749
+        },
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/05dddadf-6e4a-4c34-9de2-75c1e73b50ed/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        },
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/a3c6f2c3-5699-4101-aabc-b72edb962a7c/download/a3c6f2c3-5699-4101-aabc-b72edb962a7c.csv",
+          "format": "CSV",
+          "name": "מחוז ת\"א",
+          "size_bytes": 44390797
+        },
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/c8079691-1884-4026-8b5f-b64ce0938807/download/c8079691-1884-4026-8b5f-b64ce0938807.csv",
+          "format": "CSV",
+          "name": "מחוז מרכז",
+          "size_bytes": 25240099
+        },
+        {
+          "url": "https://data.gov.il/dataset/176f2727-476e-440e-bc8d-5d3461ea0e76/resource/cb8c337a-730e-4587-9713-13c990876cf4/download/cb8c337a-730e-4587-9713-13c990876cf4.csv",
+          "format": "CSV",
+          "name": "מחוז ארצי",
+          "size_bytes": 1270390
+        }
+      ],
+      "related_ids": [
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "3111ae54-790a-4d02-9750-d51e1134b405"
+      ],
+      "version": 1
+    },
+    {
+      "id": "ebf0005b-f5fe-4c6c-ab6d-28778167d025",
+      "slug": "mpls-ym-hmlch",
+      "title": "מפלס ים המלח",
+      "organization": "הרשות הממשלתית למים ולביוב",
+      "organization_slug": "water_authority",
+      "tags_he": [
+        "dead sea",
+        "level",
+        "water",
+        "הידרומטריה",
+        "ים המלח",
+        "מים",
+        "מפלס",
+        "רשות המים"
+      ],
+      "primary_resource_id": "823479b4-4771-43d8-9189-6a2a1dcaaf10",
+      "formats": [
+        "CSV"
+      ],
+      "metadata_modified": "2026-04-25T08:44:45.786061Z",
+      "license": "אחר (פתוח)",
+      "record_count": 687,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/ebf0005b-f5fe-4c6c-ab6d-28778167d025/resource/823479b4-4771-43d8-9189-6a2a1dcaaf10/download/823479b4-4771-43d8-9189-6a2a1dcaaf10.csv",
+          "format": "CSV",
+          "name": "מפלס ים המלח משנת 1976",
+          "size_bytes": 15132
+        }
+      ],
+      "summary_he": "מדידות חודשיות של מפלס ים המלח מ־1976 עד 2026: המפלס ירד ב־41.8 מטרים לשפל היסטורי של 440.79− מ', בקצב מואץ של כ־1.1 מ'/שנה בעשורים האחרונים.",
+      "dataset_kind": "timeseries",
+      "related_ids": [],
+      "version": 1
+    },
+    {
+      "id": "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+      "slug": "symny-mschr-syvvgym",
+      "title": "סימני מסחר - סיווגים",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "tags_he": [],
+      "primary_resource_id": "bc9b55dc-a0c6-4b52-a925-5dabc7ef7979",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-25T02:14:27.686611Z",
+      "license": "אחר (פתוח)",
+      "record_count": 45,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/556634fd-fcec-4bbd-8bd5-ba1390bc1c14/resource/bc9b55dc-a0c6-4b52-a925-5dabc7ef7979/download/bc9b55dc-a0c6-4b52-a925-5dabc7ef7979.csv",
+          "format": "CSV",
+          "name": "סיווגי ניצה",
+          "size_bytes": 3014
+        },
+        {
+          "url": "https://data.gov.il/dataset/556634fd-fcec-4bbd-8bd5-ba1390bc1c14/resource/820e988c-2740-46ca-8df4-2ed04ec7bf01/download/820e988c-2740-46ca-8df4-2ed04ec7bf01.csv",
+          "format": "CSV",
+          "name": "סיווגי וינה",
+          "size_bytes": 15592
+        },
+        {
+          "url": "https://data.gov.il/dataset/556634fd-fcec-4bbd-8bd5-ba1390bc1c14/resource/4f8315d5-2f96-4aaa-8405-0d428040dccd/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
+      "related_ids": [
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783"
+      ],
+      "version": 1
+    },
+    {
       "id": "2fe07949-9538-4891-9de7-50a352bcbd80",
-      "slug": "atarei-biniya-shenigru",
+      "slug": "atry-bnyh-shnsgrv",
       "title": "אתרי בניה שנסגרו",
       "organization": "משרד העבודה",
       "organization_slug": "labor",
-      "summary_he": "רשימת אתרי בנייה שנסגרו על-ידי משרד העבודה בין 2016 ל-2026, כולל שם האתר, שם המבצע ותאריך הסגירה.",
       "tags_he": [
         "אתרי בנייה",
-        "סגירות אתרים",
-        "בטיחות בבנייה",
-        "משרד העבודה",
-        "אכיפה"
+        "אתרי בנייה שנסגרו",
+        "משרד העבודה"
       ],
       "primary_resource_id": "b9257d8f-f93a-4c7d-84dd-e4b0838eadaa",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-24T21:15:25.017763",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T21:15:25.017763Z",
+      "license": "אחר (פתוח)",
+      "record_count": 757,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/2fe07949-9538-4891-9de7-50a352bcbd80/resource/b9257d8f-f93a-4c7d-84dd-e4b0838eadaa/download/b9257d8f-f93a-4c7d-84dd-e4b0838eadaa.csv",
+          "format": "CSV",
+          "name": "אתרי בניה שנסגרו",
+          "size_bytes": 90151
+        }
+      ],
       "related_ids": [],
       "version": 1
     },
     {
       "id": "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
-      "slug": "cpc-patent-classifications",
+      "slug": "syvvgy-cpc-lbkshvt-ptnt",
       "title": "סיווגי CPC לבקשות פטנט",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "732,186 רשומות סיווג CPC המשויכות ל-78,651 בקשות לרישום פטנט בישראל, כולל שם האמצאה בעברית ובאנגלית וסימון סיווג ראשי.",
       "tags_he": [
-        "פטנטים",
-        "CPC",
-        "קניין רוחני",
-        "רשות הפטנטים",
-        "חדשנות"
+        "בקשות פטנטים",
+        "משרד המשפטים"
       ],
       "primary_resource_id": "b2c59e21-c345-4b02-b071-2890a3d431d6",
       "formats": [
         "CSV",
         "PDF"
       ],
-      "metadata_modified": "2026-04-24T20:13:09.958663",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T20:13:09.958663Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 732186,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/6e207fff-abef-4f4d-aac7-61e669ba9ad5/resource/b2c59e21-c345-4b02-b071-2890a3d431d6/download/b2c59e21-c345-4b02-b071-2890a3d431d6.csv",
+          "format": "CSV",
+          "name": "סיווגי CPC לבקשות פטנט",
+          "size_bytes": 133895357
+        },
+        {
+          "url": "https://data.gov.il/dataset/6e207fff-abef-4f4d-aac7-61e669ba9ad5/resource/a06821f5-874c-4483-92f3-5ff61d75014f/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
       "related_ids": [
-        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
         "025c3e07-358d-4892-ac2d-1e28f66ba188",
-        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
-        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
         "3111ae54-790a-4d02-9750-d51e1134b405"
       ],
       "version": 1
     },
     {
       "id": "247efc75-31f2-4b19-bd4e-e670b1bf2783",
-      "slug": "mematziim-levakshot-patent",
+      "slug": "mmtzyaym-lbkshvt-ptntym",
       "title": "ממציאים לבקשות פטנטים",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "שמות ממציאים לבקשות להגנה ישראלית על פטנט — 150,808 רשומות ל-47,267 בקשות ייחודיות ו-87,632 ממציאים שונים.",
       "tags_he": [
-        "פטנטים",
-        "ממציאים",
-        "קניין רוחני",
-        "רשות הפטנטים",
-        "בקשות להגנה"
+        "ממציאים לבקשות פטנט",
+        "משרד המשפטים",
+        "פטנטים"
       ],
       "primary_resource_id": "abd0e8c3-0b0d-4581-9166-923a3b21bdda",
       "formats": [
         "CSV",
         "PDF"
       ],
-      "metadata_modified": "2026-04-24T20:12:55.057589",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T20:12:55.057589Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 150808,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/247efc75-31f2-4b19-bd4e-e670b1bf2783/resource/abd0e8c3-0b0d-4581-9166-923a3b21bdda/download/abd0e8c3-0b0d-4581-9166-923a3b21bdda.csv",
+          "format": "CSV",
+          "name": "ממציאים לבקשות פטנטים",
+          "size_bytes": 32984369
+        },
+        {
+          "url": "https://data.gov.il/dataset/247efc75-31f2-4b19-bd4e-e670b1bf2783/resource/87c60529-e17e-41bf-ba0b-031b0d977d3a/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
       "related_ids": [
-        "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
-        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
         "025c3e07-358d-4892-ac2d-1e28f66ba188",
-        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
-        "176f2727-476e-440e-bc8d-5d3461ea0e76"
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "669b2652-f75b-4de3-8e6b-0dfa17accef5"
       ],
       "version": 1
     },
     {
       "id": "8687fefe-51af-4e0b-af54-701929c40102",
-      "slug": "cpc-patent-classifications",
+      "slug": "syvvgy-cpc",
       "title": "סיווגי CPC",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "252,001 סיווגי Cooperative Patent Classification (CPC) — תקן בינלאומי לסיווג בקשות פטנט ב-9 חלקים ראשיים ו-672 קבוצות-משנה, כולל מקביל IPC לרוב הרשומות.",
       "tags_he": [
-        "פטנטים",
-        "סיווג CPC",
-        "קניין רוחני",
-        "IPC",
-        "משרד המשפטים"
+        "משרד המשפטים",
+        "סיווגי CPC"
       ],
       "primary_resource_id": "cf8ed236-6bb2-4df4-91b9-4881102daec0",
       "formats": [
         "CSV",
         "PDF"
       ],
-      "metadata_modified": "2026-04-24T20:12:48.091405",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T20:12:48.091405Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 252001,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/8687fefe-51af-4e0b-af54-701929c40102/resource/cf8ed236-6bb2-4df4-91b9-4881102daec0/download/cf8ed236-6bb2-4df4-91b9-4881102daec0.csv",
+          "format": "CSV",
+          "name": "סיווגי CPC",
+          "size_bytes": 25123214
+        },
+        {
+          "url": "https://data.gov.il/dataset/8687fefe-51af-4e0b-af54-701929c40102/resource/cd7e1865-0d09-455f-b353-457c1b9f1e2a/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
       "related_ids": [
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
         "1806c96c-9cc4-47bf-98b3-80a18f061f98",
         "247efc75-31f2-4b19-bd4e-e670b1bf2783",
-        "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
-        "025c3e07-358d-4892-ac2d-1e28f66ba188",
-        "176f2727-476e-440e-bc8d-5d3461ea0e76"
+        "3111ae54-790a-4d02-9750-d51e1134b405"
       ],
       "version": 1
     },
     {
       "id": "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
-      "slug": "chevrot-piruk-meratzon-mazuraz",
+      "slug": "chbrvt-bprvk-mrtzvn-bhlykh-mzvrz",
       "title": "חברות בפרוק מרצון בהליך מזורז",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "רשימת 1,455 חברות פרטיות ישראליות שהגישו בקשה לפירוק מרצון בהליך מזורז לפי חוק החברות — ניתן להגיש התנגדות בתוך 90 יום ממועד אישור הרשם.",
       "tags_he": [
-        "פירוק חברות",
-        "רשם החברות",
-        "תאגידים",
-        "פירוק מרצון",
-        "מרשם חברות"
+        "משרד המשפטים"
       ],
       "primary_resource_id": "6f3f0df3-5968-4135-81c5-8dd76bf89410",
       "formats": [
         "CSV",
         "PDF"
       ],
-      "metadata_modified": "2026-04-24T20:12:41.949575",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T20:12:41.949575Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 1455,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/01aeaf5c-59a2-4ddc-a616-31b85621bfe2/resource/6f3f0df3-5968-4135-81c5-8dd76bf89410/download/6f3f0df3-5968-4135-81c5-8dd76bf89410.csv",
+          "format": "CSV",
+          "name": "חברות בפרוק מרצון בהליך מזורז",
+          "size_bytes": 413511
+        },
+        {
+          "url": "https://data.gov.il/dataset/01aeaf5c-59a2-4ddc-a616-31b85621bfe2/resource/48fe32c3-6404-4aaa-8f16-4cd7c04e91b6/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
       "related_ids": [
-        "3111ae54-790a-4d02-9750-d51e1134b405",
         "025c3e07-358d-4892-ac2d-1e28f66ba188",
-        "176f2727-476e-440e-bc8d-5d3461ea0e76",
         "1806c96c-9cc4-47bf-98b3-80a18f061f98",
-        "247efc75-31f2-4b19-bd4e-e670b1bf2783"
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "669b2652-f75b-4de3-8e6b-0dfa17accef5"
       ],
       "version": 1
     },
     {
       "id": "d08d4a17-78f6-43a5-83f9-e6465e64cd24",
-      "slug": "magar-hanotarionim",
+      "slug": "magr-hnvtryvnym",
       "title": "מאגר הנוטריונים",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "רשימת 7,609 הנוטריונים הפעילים בישראל הכוללת שם, מספר רישיון, ישוב ושפות שירות.",
       "tags_he": [
-        "נוטריונים",
-        "רישוי",
         "משרד המשפטים",
-        "שירותים משפטיים",
-        "ישובים"
+        "נוטריונים",
+        "רשימת הנוטריונים"
       ],
       "primary_resource_id": "3ead5fae-3513-46f8-a458-959ea3e035ae",
       "formats": [
-        "CSV"
+        "CSV",
+        "PDF"
       ],
-      "metadata_modified": "2026-04-24T20:12:39.207908",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T20:12:39.207908Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 7609,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/d08d4a17-78f6-43a5-83f9-e6465e64cd24/resource/3ead5fae-3513-46f8-a458-959ea3e035ae/download/3ead5fae-3513-46f8-a458-959ea3e035ae.csv",
+          "format": "CSV",
+          "name": "רשימת הנוטריונים",
+          "size_bytes": 472533
+        },
+        {
+          "url": "https://data.gov.il/dataset/d08d4a17-78f6-43a5-83f9-e6465e64cd24/resource/9f34c18d-ef5d-4544-9175-07b16f3f7b56/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
       "related_ids": [
-        "176f2727-476e-440e-bc8d-5d3461ea0e76",
-        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
-        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
         "025c3e07-358d-4892-ac2d-1e28f66ba188",
-        "247efc75-31f2-4b19-bd4e-e670b1bf2783"
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "3111ae54-790a-4d02-9750-d51e1134b405"
       ],
       "version": 1
     },
     {
       "id": "669b2652-f75b-4de3-8e6b-0dfa17accef5",
-      "slug": "maagar-shamaei-mekarkein",
+      "slug": "magr-shmay-mkrkayn",
       "title": "מאגר שמאי מקרקעין",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "מאגר המכיל 3,102 שמאי מקרקעין בעלי רישיון, 91,848 רשומות בחינות הסמכה, ו-4,729 פטורים אקדמיים — מתעדכן אחת לרבעון.",
       "tags_he": [
-        "שמאי מקרקעין",
-        "רישוי",
-        "בחינות מקצועיות",
         "משרד המשפטים",
-        "פטורים אקדמיים"
+        "שמאי מקרקעין"
       ],
       "primary_resource_id": "8540534a-eccd-4568-a677-652d589ed172",
       "formats": [
-        "CSV"
+        "CSV",
+        "PDF"
       ],
-      "metadata_modified": "2026-04-24T20:12:32.713659",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T20:12:32.713659Z",
+      "license": "",
+      "record_count": 3102,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/8540534a-eccd-4568-a677-652d589ed172/download/8540534a-eccd-4568-a677-652d589ed172.csv",
+          "format": "CSV",
+          "name": "רשימת שמאי מקרקעין",
+          "size_bytes": 150130
+        },
+        {
+          "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/8b7f49b2-8281-460f-bcd1-71c5b367db47/download/8b7f49b2-8281-460f-bcd1-71c5b367db47.csv",
+          "format": "CSV",
+          "name": "ציון בחינות שמאים",
+          "size_bytes": 9224373,
+          "description": "רשימת בחינות שמאים לפי מועד וציון"
+        },
+        {
+          "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/fdb6434a-e046-428f-b8f5-e753f54ffebc/download/fdb6434a-e046-428f-b8f5-e753f54ffebc.csv",
+          "format": "CSV",
+          "name": "פטור ממבחן שמאים",
+          "size_bytes": 544811,
+          "description": "רשימת מבחנים שהתקבל פטור עבורם בגין לימודים אקדמאיים"
+        },
+        {
+          "url": "https://data.gov.il/dataset/669b2652-f75b-4de3-8e6b-0dfa17accef5/resource/103e4fc5-c871-4d2b-9639-ec3a18f4ecdb/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
       "related_ids": [
-        "d08d4a17-78f6-43a5-83f9-e6465e64cd24",
-        "176f2727-476e-440e-bc8d-5d3461ea0e76",
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
         "1806c96c-9cc4-47bf-98b3-80a18f061f98",
-        "3111ae54-790a-4d02-9750-d51e1134b405",
-        "025c3e07-358d-4892-ac2d-1e28f66ba188"
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "3111ae54-790a-4d02-9750-d51e1134b405"
       ],
       "version": 1
     },
     {
       "id": "025c3e07-358d-4892-ac2d-1e28f66ba188",
-      "slug": "minhel-hatovin",
+      "slug": "mnhl-htvbyn",
       "title": "מנהל הטובין",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "מאגר ייחוס רשמי לבחירת רשימת סחורות ושירותים לפי סיווג ניצה הבין-לאומי (45 מחלקות) בהגשת בקשה לרישום סימן מסחר בישראל — 144,215 מונחים בעברית ואנגלית.",
       "tags_he": [
-        "סימני מסחר",
-        "מיון ניצה",
-        "קניין רוחני",
-        "סחורות ושירותים",
-        "בקשות רישום"
+        "מנהל הטובין",
+        "משרד המשפטים",
+        "סימני מסחר"
       ],
       "primary_resource_id": "b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e",
       "formats": [
         "CSV",
         "PDF"
       ],
-      "metadata_modified": "2026-04-24T18:22:51.221962",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T18:22:51.221962Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 144215,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/025c3e07-358d-4892-ac2d-1e28f66ba188/resource/b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e/download/b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e.csv",
+          "format": "CSV",
+          "name": "מנהל הטובין",
+          "size_bytes": 23273175
+        },
+        {
+          "url": "https://data.gov.il/dataset/025c3e07-358d-4892-ac2d-1e28f66ba188/resource/639b680c-232f-48fa-84d8-3f9b8758af9e/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
       "related_ids": [
-        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
         "3111ae54-790a-4d02-9750-d51e1134b405",
-        "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "176f2727-476e-440e-bc8d-5d3461ea0e76",
-      "slug": "pnkas-snigorim-tziboriim",
-      "title": "פנקס הסניגורים הציבוריים — הסנגוריה הציבורית",
-      "organization": "משרד המשפטים",
-      "organization_slug": "ministry_of_justice",
-      "summary_he": "פנקס מינויי הסנגורים הציבוריים לפי חוק הסניגוריה הציבורית, הכולל למעלה מ-2.5 מיליון מינויים ב-6 מחוזות ובדרג הארצי, החל משנת 1998.",
-      "tags_he": [
-        "סנגוריה ציבורית",
-        "מינויים",
-        "בתי משפט",
-        "משפט פלילי",
-        "משרד המשפטים"
-      ],
-      "primary_resource_id": "c0938e1a-259a-41c3-a225-94e477264137",
-      "formats": [
-        "CSV"
-      ],
-      "metadata_modified": "2026-04-24T18:22:43.218705",
-      "resources": [],
-      "dataset_kind": "registry",
-      "related_ids": [
-        "3111ae54-790a-4d02-9750-d51e1134b405",
-        "025c3e07-358d-4892-ac2d-1e28f66ba188",
-        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
-        "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
+        "669b2652-f75b-4de3-8e6b-0dfa17accef5"
       ],
       "version": 1
     },
     {
       "id": "3111ae54-790a-4d02-9750-d51e1134b405",
-      "slug": "rasham-hamashkonot",
+      "slug": "rshm-hmshkvnvt",
       "title": "רשם המשכונות",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "מאגר היסטורי של 8.2 מיליון רשומות משכון הרשומות בישראל מאז 1994, כולל סטטוס נוכחי, סיבת ביטול ותאריכי רישום — מתעדכן אוטומטית מדי יום.",
       "tags_he": [
         "משכונות",
         "משרד המשפטים",
-        "בטוחות",
-        "מאגר אשראי",
         "רשם החברות"
       ],
       "primary_resource_id": "e7266a9c-fed6-40e4-a28e-8cddc9f44842",
       "formats": [
-        "CSV"
+        "CSV",
+        "PDF"
       ],
-      "metadata_modified": "2026-04-24T18:14:18.885872",
-      "resources": [],
-      "dataset_kind": "registry",
-      "related_ids": [],
+      "metadata_modified": "2026-04-24T18:14:18.885872Z",
+      "license": "Creative Commons Attribution",
+      "record_count": 8218339,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/3111ae54-790a-4d02-9750-d51e1134b405/resource/e7266a9c-fed6-40e4-a28e-8cddc9f44842/download/e7266a9c-fed6-40e4-a28e-8cddc9f44842.csv",
+          "format": "CSV",
+          "name": "תצוגת משכונות",
+          "size_bytes": 762549075
+        },
+        {
+          "url": "https://data.gov.il/dataset/3111ae54-790a-4d02-9750-d51e1134b405/resource/5779affe-3204-45c8-b31c-690a4f80b66e/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
+      "related_ids": [
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "669b2652-f75b-4de3-8e6b-0dfa17accef5"
+      ],
       "version": 1
     },
     {
       "id": "1806c96c-9cc4-47bf-98b3-80a18f061f98",
-      "slug": "magar-orchei-patentim",
+      "slug": "magr-avrky-ptntym",
       "title": "מאגר עורכי פטנטים",
       "organization": "משרד המשפטים",
       "organization_slug": "ministry_of_justice",
-      "summary_he": "פנקס עורכי הפטנטים המורשים בישראל — 582 רשומות, מתעדכן חודשית על-ידי רשות הפטנטים, המצאות ועיצובים.",
       "tags_he": [
-        "קניין רוחני",
-        "עורכי פטנטים",
-        "רשות הפטנטים",
-        "רישוי מקצועי",
-        "משרד המשפטים"
+        "משרד המשפטים",
+        "עורכי פטנטים"
       ],
       "primary_resource_id": "0ff306c2-1ad9-4974-a2be-0420acf35685",
       "formats": [
         "CSV",
         "PDF"
       ],
-      "metadata_modified": "2026-04-24T18:13:05.089531",
-      "resources": [],
+      "metadata_modified": "2026-04-24T18:13:05.089531Z",
+      "license": "",
+      "record_count": 582,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/1806c96c-9cc4-47bf-98b3-80a18f061f98/resource/0ff306c2-1ad9-4974-a2be-0420acf35685/download/0ff306c2-1ad9-4974-a2be-0420acf35685.csv",
+          "format": "CSV",
+          "name": "פנקס עורכי פטנטים",
+          "size_bytes": 108106
+        },
+        {
+          "url": "https://data.gov.il/dataset/1806c96c-9cc4-47bf-98b3-80a18f061f98/resource/0b18c999-1627-4b5e-b771-8bc69af5afd3/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
+      "related_ids": [
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
+        "025c3e07-358d-4892-ac2d-1e28f66ba188",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "3111ae54-790a-4d02-9750-d51e1134b405",
+        "669b2652-f75b-4de3-8e6b-0dfa17accef5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9",
+      "slug": "magr-amvtvt-vchbrvt-ltvalt-htzybvr",
+      "title": "מאגר עמותות וחברות לתועלת הציבור",
+      "organization": "משרד המשפטים",
+      "organization_slug": "ministry_of_justice",
+      "tags_he": [
+        "משרד המשפטים"
+      ],
+      "primary_resource_id": "be5b7935-3922-45d4-9638-08871b17ec95",
+      "formats": [
+        "CSV",
+        "PDF"
+      ],
+      "metadata_modified": "2026-04-24T18:12:39.768177Z",
+      "license": "אחר (פתוח)",
+      "record_count": 74977,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/be5b7935-3922-45d4-9638-08871b17ec95/download/be5b7935-3922-45d4-9638-08871b17ec95.csv",
+          "format": "CSV",
+          "name": "עמותות רשומות",
+          "size_bytes": 47589031
+        },
+        {
+          "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/35cb40b5-3f13-4bca-9ce2-488085913107/download/35cb40b5-3f13-4bca-9ce2-488085913107.csv",
+          "format": "CSV",
+          "name": "תרומות מישות מדינית זרה",
+          "size_bytes": 4951695
+        },
+        {
+          "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/cb12ac14-7429-4268-bc03-460f48157858/download/cb12ac14-7429-4268-bc03-460f48157858.csv",
+          "format": "CSV",
+          "name": "אישור ניהול תקין",
+          "size_bytes": 38862783
+        },
+        {
+          "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/85e40960-5426-4f4c-874f-2d1ec1b94609/download/85e40960-5426-4f4c-874f-2d1ec1b94609.csv",
+          "format": "CSV",
+          "name": "חברות רשומות לתועלת הציבור",
+          "size_bytes": 695193
+        },
+        {
+          "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/da3741a8-c65e-4bc1-93b9-5e08b4aaa6fc/download/open-file-excel.pdf",
+          "format": "PDF",
+          "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
+          "size_bytes": 968126
+        }
+      ],
+      "summary_he": "מאגר רשמי של 74,977 עמותות ו-1,500 חברות לתועלת הציבור בישראל, כולל נתוני סטטוס, תחומי פעילות, כתובות, דיווחי תרומות מישויות מדיניות זרות (13,454 רשומות מ-2012) ואישורי ניהול תקין — מתעדכן שבועית על ידי רשות התאגידים, משרד המשפטים.",
       "dataset_kind": "registry",
       "related_ids": [
+        "01aeaf5c-59a2-4ddc-a616-31b85621bfe2",
         "025c3e07-358d-4892-ac2d-1e28f66ba188",
-        "176f2727-476e-440e-bc8d-5d3461ea0e76",
-        "3111ae54-790a-4d02-9750-d51e1134b405",
-        "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
-        "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9"
+        "1806c96c-9cc4-47bf-98b3-80a18f061f98",
+        "247efc75-31f2-4b19-bd4e-e670b1bf2783",
+        "3111ae54-790a-4d02-9750-d51e1134b405"
       ],
       "version": 1
     },
     {
       "id": "27b4b40e-b019-4a70-8e5d-4741110fc55d",
-      "slug": "snifit-barzel",
+      "slug": "snypy-brzl",
       "title": "סניפי ברזל",
       "organization": "משרד הכלכלה והתעשייה",
       "organization_slug": "moital",
-      "summary_he": "636 סניפי ברזל של רשתות סופרמרקט ב-135 יישובים ברחבי ישראל, שהתחייבו להישאר פתוחים בעת חירום לאומי.",
-      "tags_he": [
-        "חירום",
-        "סופרמרקטים",
-        "ביטחון מזון",
-        "רשתות מזון",
-        "פיקוד העורף"
-      ],
+      "tags_he": [],
       "primary_resource_id": "f7d9c47e-3414-4524-a187-a0f0e057b08a",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-24T17:59:09.354902",
-      "resources": [],
-      "dataset_kind": "map",
-      "related_ids": [],
+      "metadata_modified": "2026-04-24T17:59:09.354902Z",
+      "license": "אחר (פתוח)",
+      "record_count": 636,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/27b4b40e-b019-4a70-8e5d-4741110fc55d/resource/f7d9c47e-3414-4524-a187-a0f0e057b08a/download/f7d9c47e-3414-4524-a187-a0f0e057b08a.csv",
+          "format": "CSV",
+          "name": "סניפי ברזל",
+          "size_bytes": 133185
+        }
+      ],
+      "related_ids": [
+        "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+        "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
+        "dda8f0aa-8901-473d-a4d6-8b361aa51417",
+        "ed8ce28e-ae7f-4588-b3f9-59485960d521",
+        "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
+      ],
       "version": 1
     },
     {
       "id": "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
-      "slug": "azore-adifut-leumit-ve-pituah",
+      "slug": "azvry-adypvt-lavmyt-vazvry-pytvch",
       "title": "אזורי עדיפות לאומית ואזורי פיתוח",
       "organization": "משרד הכלכלה והתעשייה",
       "organization_slug": "moital",
-      "summary_he": "סיווג ישובים ואזורי תעשייה בישראל לפי אזורי פיתוח (א׳ וב׳) ועדיפות לאומית, הקובע את היקף ההטבות לעסקים — כולל היסטוריה מ-2003 ועד היום.",
-      "tags_he": [
-        "אזורי פיתוח",
-        "עדיפות לאומית",
-        "תמריצים עסקיים",
-        "פיתוח אזורי",
-        "ישובים"
-      ],
+      "tags_he": [],
       "primary_resource_id": "d0cfa550-51a5-438c-9336-7b117ed174f6",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-24T17:59:08.781698",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T17:59:08.781698Z",
+      "license": "אחר (פתוח)",
+      "record_count": 9632,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/bd731d1b-aab6-4a13-a4a3-e3102a320fd4/resource/d0cfa550-51a5-438c-9336-7b117ed174f6/download/d0cfa550-51a5-438c-9336-7b117ed174f6.csv",
+          "format": "CSV",
+          "name": "אזורי פיתוח כולל היסטוריה",
+          "size_bytes": 1144603
+        },
+        {
+          "url": "https://data.gov.il/dataset/bd731d1b-aab6-4a13-a4a3-e3102a320fd4/resource/1277353c-25aa-43ac-86b7-08dc1dfe9d71/download/1277353c-25aa-43ac-86b7-08dc1dfe9d71.csv",
+          "format": "CSV",
+          "name": "אזורי פיתוח א",
+          "size_bytes": 82065
+        },
+        {
+          "url": "https://data.gov.il/dataset/bd731d1b-aab6-4a13-a4a3-e3102a320fd4/resource/a118ea44-f5a4-4f1b-92e5-e37359983274/download/a118ea44-f5a4-4f1b-92e5-e37359983274.csv",
+          "format": "CSV",
+          "name": "אזורי עדיפות לאומית",
+          "size_bytes": 102531
+        }
+      ],
       "related_ids": [
         "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
         "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "dda8f0aa-8901-473d-a4d6-8b361aa51417",
         "ed8ce28e-ae7f-4588-b3f9-59485960d521",
-        "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
-        "d08d4a17-78f6-43a5-83f9-e6465e64cd24"
+        "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
       ],
       "version": 1
     },
     {
       "id": "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
-      "slug": "agudat-shitufit",
+      "slug": "rshymt-hagvdvt-hshytvpyvt",
       "title": "רשימת האגודות השיתופיות",
       "organization": "משרד הכלכלה והתעשייה",
       "organization_slug": "moital",
-      "summary_he": "מאגר 7,157 אגודות שיתופיות הרשומות בישראל, כולל סטטוס פעילות, סוג, כתובת ותאריך רישום.",
-      "tags_he": [
-        "אגודות שיתופיות",
-        "רישום",
-        "כלכלה",
-        "התאגדות",
-        "ישראל"
-      ],
+      "tags_he": [],
       "primary_resource_id": "cad6bb66-5560-4cf4-a39c-92518f3f18ef",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-24T17:59:07.704391",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T17:59:07.704391Z",
+      "license": "אחר (פתוח)",
+      "record_count": 7157,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/ed98fd7a-0e62-4691-b733-1960a6ea2c73/resource/cad6bb66-5560-4cf4-a39c-92518f3f18ef/download/cad6bb66-5560-4cf4-a39c-92518f3f18ef.csv",
+          "format": "CSV",
+          "name": "רשימת האגודות השיתופיות",
+          "size_bytes": 1837754
+        }
+      ],
       "related_ids": [
-        "27b4b40e-b019-4a70-8e5d-4741110fc55d"
+        "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+        "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
+        "dda8f0aa-8901-473d-a4d6-8b361aa51417",
+        "ed8ce28e-ae7f-4588-b3f9-59485960d521"
       ],
       "version": 1
     },
     {
       "id": "dda8f0aa-8901-473d-a4d6-8b361aa51417",
-      "slug": "maagar-takenim-rasmiim",
+      "slug": "magr-tknym-rshmyym",
       "title": "מאגר תקנים רשמיים",
       "organization": "משרד הכלכלה והתעשייה",
       "organization_slug": "moital",
-      "summary_he": "565 תקנים ישראליים רשמיים בתוקף — כולל נתוני מסלולי ייבוא, מקוריות התקן, מחויבות חוקית והתאמה לאסדרה אירופית ובינלאומית.",
       "tags_he": [
-        "תקנים רשמיים",
-        "כלכלה ותעשייה",
-        "ייבוא",
-        "בטיחות מוצרים",
-        "תקינה בינלאומית"
+        "כלכלה",
+        "תקנים רשמיים"
       ],
       "primary_resource_id": "1a4d94e2-369a-488d-a223-eb1020612fbd",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-24T17:59:06.185542",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T17:59:06.185542Z",
+      "license": "אחר (פתוח)",
+      "record_count": 565,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/dda8f0aa-8901-473d-a4d6-8b361aa51417/resource/1a4d94e2-369a-488d-a223-eb1020612fbd/download/1a4d94e2-369a-488d-a223-eb1020612fbd.csv",
+          "format": "CSV",
+          "name": "מאגר תקנים רשמיים",
+          "size_bytes": 1864810
+        },
+        {
+          "url": "https://data.gov.il/dataset/dda8f0aa-8901-473d-a4d6-8b361aa51417/resource/bb8b098e-40dd-47e6-927b-42c8a6339cce/download/bb8b098e-40dd-47e6-927b-42c8a6339cce.csv",
+          "format": "CSV",
+          "name": "תקנים המאושרים ליבוא תחת מסלול תקינה בינלאומית",
+          "size_bytes": 161992
+        },
+        {
+          "url": "https://data.gov.il/dataset/dda8f0aa-8901-473d-a4d6-8b361aa51417/resource/d8611d0e-f5c8-4552-8615-da37e920f07b/download/d8611d0e-f5c8-4552-8615-da37e920f07b.csv",
+          "format": "CSV",
+          "name": "אכרזת תקנים ברשומות",
+          "size_bytes": 544954
+        },
+        {
+          "url": "https://data.gov.il/dataset/dda8f0aa-8901-473d-a4d6-8b361aa51417/resource/8efcc32a-a1b0-41ef-a056-8becc2619f95/download/8efcc32a-a1b0-41ef-a056-8becc2619f95.csv",
+          "format": "CSV",
+          "name": "מאגר תקנים מעודכן לרפורמת מה שטוב לאירופה",
+          "size_bytes": 967344
+        },
+        {
+          "url": "https://data.gov.il/dataset/dda8f0aa-8901-473d-a4d6-8b361aa51417/resource/8612ebae-0e11-48b9-a9a5-331ddfed8d94/download/8612ebae-0e11-48b9-a9a5-331ddfed8d94.csv",
+          "format": "CSV",
+          "name": "רשימת אסדרות אירופיות",
+          "size_bytes": 75615
+        }
+      ],
       "related_ids": [
         "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+        "ed8ce28e-ae7f-4588-b3f9-59485960d521",
         "27b4b40e-b019-4a70-8e5d-4741110fc55d",
         "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
-        "ed8ce28e-ae7f-4588-b3f9-59485960d521",
         "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
       ],
       "version": 1
     },
     {
       "id": "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
-      "slug": "minahel-yahalomim",
+      "slug": "mynhl-yhlvmym",
       "title": "מינהל יהלומים",
       "organization": "משרד הכלכלה והתעשייה",
       "organization_slug": "moital",
-      "summary_he": "רשימת יהלומנים הרשומים אצל מינהל יהלומים, כולל סטטוס הרישיון (פעיל/לא פעיל/בהליך רישום) וסוג הרישיון (סחר, יצרן, צורף) — סה\"כ 7,496 עוסקים, מתוכם 2,183 פעילים.",
       "tags_he": [
         "יהלומנים",
-        "רישוי עסקים",
-        "כלכלה",
-        "תעשייה",
-        "סחר יהלומים"
+        "כלכלה"
       ],
       "primary_resource_id": "7a0727d5-17cf-4457-a5e2-ff6e07234347",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-24T17:59:04.808804",
-      "resources": [],
-      "dataset_kind": "registry",
+      "metadata_modified": "2026-04-24T17:59:04.808804Z",
+      "license": "אחר (פתוח)",
+      "record_count": 7496,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b/resource/7a0727d5-17cf-4457-a5e2-ff6e07234347/download/7a0727d5-17cf-4457-a5e2-ff6e07234347.csv",
+          "format": "CSV",
+          "name": "רשימת יהלומנים וסטטוס הרישיון",
+          "size_bytes": 431687
+        }
+      ],
       "related_ids": [
-        "ed98fd7a-0e62-4691-b733-1960a6ea2c73",
+        "dda8f0aa-8901-473d-a4d6-8b361aa51417",
+        "ed8ce28e-ae7f-4588-b3f9-59485960d521",
         "27b4b40e-b019-4a70-8e5d-4741110fc55d",
-        "ed8ce28e-ae7f-4588-b3f9-59485960d521"
-      ],
-      "version": 1
-    },
-    {
-      "id": "ed8ce28e-ae7f-4588-b3f9-59485960d521",
-      "slug": "mishkalos-umidot",
-      "title": "משקלות ומידות – דגמים מאושרים של מכשירי מדידה",
-      "organization": "משרד הכלכלה והתעשייה",
-      "organization_slug": "moital",
-      "summary_he": "מאגר 2,542 דגמים מאושרים של מכשירי מדידה בישראל, כולל סטטוס תוקף, קטגוריה, יצרן ומספר אישור – לשירות המשקלות ומידות.",
-      "tags_he": [
-        "מכשירי מדידה",
-        "מאזניים",
-        "אכיפה מסחרית",
-        "תקינה",
-        "רגולציה"
-      ],
-      "primary_resource_id": "5cc7cc5b-9e38-42bd-bc77-f70297c10a1f",
-      "formats": [
-        "CSV"
-      ],
-      "metadata_modified": "2026-04-24T17:59:04.015666",
-      "resources": [],
-      "dataset_kind": "registry",
-      "related_ids": [
-        "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
         "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
       ],
       "version": 1
     },
     {
-      "id": "556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
-      "slug": "simanei-mischar-sivugim",
-      "title": "סימני מסחר — סיווגים",
-      "organization": "משרד המשפטים",
-      "organization_slug": "ministry_of_justice",
-      "summary_he": "טבלאות ייחוס רשמיות לסיווג סימני מסחר בישראל: 45 מחלקות ניצה בינלאומיות ו-144 ערכי סיווג וינה לאלמנטים ציוריים.",
+      "id": "ed8ce28e-ae7f-4588-b3f9-59485960d521",
+      "slug": "mshklvt-vmydvt",
+      "title": "משקלות ומידות",
+      "organization": "משרד הכלכלה והתעשייה",
+      "organization_slug": "moital",
       "tags_he": [
-        "סימני מסחר",
-        "סיווג ניצה",
-        "סיווג וינה",
-        "קניין רוחני",
-        "WIPO"
+        "כלכלה"
       ],
-      "primary_resource_id": "bc9b55dc-a0c6-4b52-a925-5dabc7ef7979",
-      "formats": [
-        "CSV",
-        "PDF"
-      ],
-      "metadata_modified": "2026-04-24T17:13:52.069035",
-      "resources": [],
-      "dataset_kind": "registry",
-      "related_ids": [],
-      "version": 1
-    },
-    {
-      "id": "ebf0005b-f5fe-4c6c-ab6d-28778167d025",
-      "slug": "dead-sea-level",
-      "title": "מפלס ים המלח",
-      "organization": "הרשות הממשלתית למים ולביוב",
-      "organization_slug": "water_authority",
-      "summary_he": "נתונים חודשיים של מפלס ים המלח משנת 1976 ועד היום — מציגים ירידה מצטברת של כ-41.8 מטר בקצב של כ-0.84 מ' לשנה.",
-      "tags_he": [
-        "ים המלח",
-        "מפלס מים",
-        "הידרולוגיה",
-        "סביבה",
-        "סדרת זמן"
-      ],
-      "primary_resource_id": "823479b4-4771-43d8-9189-6a2a1dcaaf10",
+      "primary_resource_id": "5cc7cc5b-9e38-42bd-bc77-f70297c10a1f",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-24T08:44:42.134011",
-      "resources": [],
-      "dataset_kind": "timeseries",
-      "related_ids": [],
+      "metadata_modified": "2026-04-24T17:59:04.015666Z",
+      "license": "אחר (פתוח)",
+      "record_count": 2542,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/ed8ce28e-ae7f-4588-b3f9-59485960d521/resource/5cc7cc5b-9e38-42bd-bc77-f70297c10a1f/download/5cc7cc5b-9e38-42bd-bc77-f70297c10a1f.csv",
+          "format": "CSV",
+          "name": "דגמים מאושרים של מכשירי מדידה בישראל",
+          "size_bytes": 416936
+        }
+      ],
+      "related_ids": [
+        "1a1e70b4-4ae9-4cf2-ade7-e1bdac1b343b",
+        "dda8f0aa-8901-473d-a4d6-8b361aa51417",
+        "27b4b40e-b019-4a70-8e5d-4741110fc55d",
+        "bd731d1b-aab6-4a13-a4a3-e3102a320fd4",
+        "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
+      ],
       "version": 1
     },
     {
       "id": "995eb826-c471-4572-8fd3-39d92a3a9603",
-      "slug": "antenot-selulaiot-peylot",
+      "slug": "antnvt-slvlryvt-paylvt",
       "title": "אנטנות סלולריות פעילות",
       "organization": "המשרד להגנת הסביבה",
-      "summary_he": "8,411 מוקדי שידור סלולרי פעילים ברחבי ישראל (PHI/הוט/פרטנר, פלאפון, סלקום) עם מיקום, סוג אתר, טכנולוגיית שידור ומדידות קרינה — כולן מתחת לסף הבריאות.",
+      "organization_slug": "ministry_of_the_environment",
       "tags_he": [
-        "קרינה סלולרית",
-        "תשתיות תקשורת",
-        "בריאות הציבור",
-        "מידע גיאוגרפי",
-        "סביבה"
+        "אנטנות",
+        "טלפון",
+        "סביבה",
+        "סלולריות",
+        "קרינה",
+        "תקשורת"
       ],
       "primary_resource_id": "8935c8e5-ec77-421f-af86-d970583195f8",
       "formats": [
         "CSV"
       ],
-      "metadata_modified": "2026-04-23T19:01:06.011598",
-      "resources": [],
-      "related_ids": [],
-      "version": 1
-    },
-    {
-      "id": "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9",
-      "slug": "amutot-chalatz",
-      "title": "מאגר עמותות וחברות לתועלת הציבור",
-      "organization": "משרד המשפטים",
-      "organization_slug": "ministry_of_justice",
-      "summary_he": "מאגר מרכזי של רשם העמותות ורשם ההקדשות, הכולל 74,976 עמותות, 1,500 חל\"צ, דיווחי תרומות מגורמים מדיניים זרים ואישורי ניהול תקין — מתעדכן מדי שבוע.",
-      "tags_he": [
-        "עמותות",
-        "חברות לתועלת הציבור",
-        "ניהול תקין",
-        "תרומות זרות",
-        "רשות התאגידים"
+      "metadata_modified": "2026-04-23T19:01:06.011598Z",
+      "license": "",
+      "record_count": 8411,
+      "resources": [
+        {
+          "url": "https://data.gov.il/dataset/995eb826-c471-4572-8fd3-39d92a3a9603/resource/8935c8e5-ec77-421f-af86-d970583195f8/download/8935c8e5-ec77-421f-af86-d970583195f8.csv",
+          "format": "CSV",
+          "name": "אנטנות סלולריות פעילות",
+          "size_bytes": 2586205
+        }
       ],
-      "primary_resource_id": "be5b7935-3922-45d4-9638-08871b17ec95",
-      "formats": [
-        "CSV"
-      ],
-      "metadata_modified": "2026-04-23T18:12:25.328767",
-      "resources": [],
-      "dataset_kind": "registry",
+      "summary_he": "מאגר 8,411 אנטנות סלולריות פעילות בישראל — פלאפון, סלקום ו-PHI (הוט + פרטנר) — כולל מיקום גיאוגרפי, סוג מתקן, טכנולוגיית שידור ותוצאות קרינה כאחוז מסף הבריאות.",
+      "dataset_kind": "map",
       "related_ids": [],
       "version": 1
     }

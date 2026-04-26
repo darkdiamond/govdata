@@ -2,10 +2,10 @@
 name: govdata-design
 description: |
   Design system + body-content contract for GovData.IL dataset pages. Load
-  when authoring a per-dataset content.html + data.json. The page chrome
-  (header, nav, breadcrumb, related sidebar, footer) is injected by a
-  Python wrapper — this skill describes ONLY what you write, and the design
-  tokens available to you inside the wrapper's shell. Tokens mirror
+  when authoring a per-dataset content.html + agent_data.json. The page
+  chrome (header, nav, breadcrumb, related sidebar, footer) is injected by
+  a Python wrapper — this skill describes ONLY what you write, and the
+  design tokens available to you inside the wrapper's shell. Tokens mirror
   www.gov.il so the output looks native.
 ---
 
@@ -224,9 +224,9 @@ sizes you to `max-w-gov` already).
 </section>
 
 <!-- metadata + resources: rendered by the Nuxt shell (frontend/pages/datasets/[id].vue)
-     from data.json. Do NOT emit these two sections in content.html — the frontend owns
-     their markup as the single source of truth. Populate `record_count` in data.json
-     instead; `license` and `resources` are hoisted from the scanner by the controller. -->
+     from data.json (organization, license, last-updated, record_count, downloads).
+     The publisher writes data.json from the scanner's Firestore record — you do NOT
+     emit any of those fields in agent_data.json or in content.html. -->
 
 <!-- insights -->
 <section class="card p-5 mb-4">
@@ -262,33 +262,34 @@ sizes you to `max-w-gov` already).
 </script>
 ```
 
-## `data.json` contract
+## `agent_data.json` contract
+
+The agent writes ONLY interpretive fields. Everything factual (id, title,
+slug, organization, license, resources, formats, record_count,
+metadata_modified) is owned by the scanner and merged in by the
+publisher — do not emit those.
 
 ```json
 {
-  "id": "<dataset_id>",
-  "slug": "<url-slug>",
-  "title": "<title>",
-  "organization": "<ministry title>",
-  "organization_slug": "<pkg.organization.name from CKAN>",
   "summary_he": "<one-line hebrew summary>",
-  "tags_he": ["tag1", "tag2", "tag3"],
-  "primary_resource_id": "<rid>",
-  "formats": ["CSV", "XLSX"],
-  "metadata_modified": "<iso>",
   "dataset_kind": "map" | "timeseries" | "registry" | "rankings" | "misc",
   "related_ids": ["<id>", "<id>", "<id>"],
   "version": 1
 }
 ```
 
-`related_ids` — up to 3 dataset IDs you think are topically related.
-Return `[]` if you don't have enough context about other datasets. The
-controller merges your suggestions with deterministic scoring (shared
-ministry + tags) and embedding similarity.
+`summary_he` — required. One concise Hebrew sentence (or two if the
+domain genuinely needs it). Same content as the AI summary card in
+content.html, but as plain text — the frontend uses this for SEO meta
+tags and home-page cards.
 
-`organization_slug` — take directly from CKAN's `pkg.organization.name`
-(Latin slug like `ministry-of-justice`). Becomes `/ministries/<slug>/`.
+`dataset_kind` — required. Drives the `/kinds/<kind>/` route and a few
+icon/label choices on cards.
+
+`related_ids` — up to 5 dataset IDs you think are topically related.
+Return `[]` if you don't have enough context. The publisher merges your
+suggestions with deterministic scoring (ministry + shared tags +
+embedding similarity).
 
 ## Accessibility + SEO
 
@@ -296,7 +297,7 @@ ministry + tags) and embedding similarity.
 - Interactive viz controls keyboard-reachable.
 - `<h1>` exactly once per page (yours).
 - Do not include `<title>`, `<meta name="description">`, or OG tags —
-  the wrapper generates those from `data.json`.
+  the wrapper generates those from `data.json` + `agent_data.json`.
 
 ## Do not
 

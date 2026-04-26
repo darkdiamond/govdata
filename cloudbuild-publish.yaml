@@ -14,8 +14,10 @@
 #   _PUBLISHER_IMAGE   Pre-baked image (see cloudbuild-publisher-image.yaml)
 
 steps:
-  # [1] Pull staged agent artifacts into the Nuxt public dir so they ship
-  #     alongside Nuxt's generated category pages.
+  # [1] Pull only the agent's content.html (and any extras) from staging.
+  #     The structured JSON files (data.json, agent_data.json) are written
+  #     in step [2] from Firestore — never synced from GCS — so the two
+  #     artifact paths can't drift.
   - id: 'fetch-pages'
     name: '${_PUBLISHER_IMAGE}'
     entrypoint: 'bash'
@@ -25,9 +27,15 @@ steps:
         set -euo pipefail
         mkdir -p frontend/public/datasets
         gsutil -m rsync -r "gs://${_STAGING_BUCKET}/datasets/" frontend/public/datasets/
+        # Defense-in-depth: even if a stray data.json sneaks into staging,
+        # the publisher overwrites it in step [2]; this keeps that contract
+        # explicit and visible in the build log.
+        find frontend/public/datasets \
+          \( -name 'data.json' -o -name 'agent_data.json' \) -delete
 
-  # [2] Build manifest.json from Firestore sources (analysis_status=succeeded).
-  - id: 'build-manifest'
+  # [2] Emit per-dataset data.json + agent_data.json + aggregated manifest.json
+  #     from Firestore — single source of truth.
+  - id: 'publish-artifacts'
     name: '${_PUBLISHER_IMAGE}'
     entrypoint: 'bash'
     env:
@@ -37,10 +45,10 @@ steps:
       - '-c'
       - |
         set -euo pipefail
-        mkdir -p frontend/public/data
-        python3 -m services.page_builder.manifest \
+        mkdir -p frontend/public/data frontend/public/datasets
+        python3 -m services.page_builder.publish \
           --from-firestore \
-          --out frontend/public/data/manifest.json
+          --out frontend/public/
 
   # [3] nuxt generate + firebase deploy, in one step on the pre-baked image.
   #     Reuses /opt/frontend-deps/node_modules when package-lock matches the

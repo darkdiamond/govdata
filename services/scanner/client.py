@@ -39,6 +39,15 @@ class CKANClient:
         self._client = httpx.AsyncClient(
             timeout=httpx.Timeout(self.config.ckan_timeout),
             follow_redirects=True,
+            headers={
+                # data.gov.il's WAF 403s requests without a browser User-Agent.
+                "User-Agent": (
+                    "Mozilla/5.0 (X11; Linux x86_64) "
+                    "AppleWebKit/537.36 (KHTML, like Gecko) "
+                    "Chrome/124.0.0.0 Safari/537.36"
+                ),
+                "Accept": "application/json, text/plain, */*",
+            },
         )
         return self
     
@@ -180,6 +189,44 @@ class CKANClient:
         
         return datasets
     
+    async def datastore_total(self, resource_id: str) -> Optional[int]:
+        """Return the total row count of a datastore-backed resource.
+
+        Calls `/datastore_search?resource_id=<rid>&limit=0&include_total=true`
+        and returns `result.total`. Returns `None` for resources that aren't
+        in the datastore (PDF, ZIP, …), 4xx responses, or transport errors —
+        the caller treats `None` as "unknown" and moves on.
+        """
+        if not self._client:
+            raise RuntimeError("Client not initialized. Use 'async with' context.")
+
+        await self._rate_limit()
+        try:
+            response = await self._client.get(
+                self.config.datastore_search_url,
+                params={
+                    "resource_id": resource_id,
+                    "limit": 0,
+                    "include_total": "true",
+                },
+            )
+        except (httpx.HTTPError, httpx.TimeoutException):
+            return None
+
+        if response.status_code >= 400:
+            return None
+        try:
+            data = response.json()
+        except ValueError:
+            return None
+        if not data.get("success"):
+            return None
+        total = (data.get("result") or {}).get("total")
+        try:
+            return int(total) if total is not None else None
+        except (TypeError, ValueError):
+            return None
+
     async def get_package_count(self) -> int:
         """
         Get the total number of datasets available.

@@ -1,8 +1,10 @@
 name: govdata-env
 description: |
-  Sandbox for the GovData page-author agent. Networking is unrestricted so the
-  agent can fetch the CKAN API, OSM tiles, and chart/map/typography CDNs for
-  the HTML pages it writes.
+  Sandbox for the GovData page-author agent. Networking is unrestricted so
+  the agent can hit the CKAN API on data.gov.il, OSM tiles for Leaflet
+  maps, and arbitrary sites via web_fetch/web_search for regulatory and
+  news context. Chart/map JS libraries are pre-loaded by the Nuxt shell
+  and consumed via globals — the agent does not fetch CDNs.
 config:
   type: cloud
   networking:
