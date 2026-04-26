@@ -32,6 +32,82 @@
   </div>
 </section>
 
+<!-- מטאדטה + משאבים -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
+
+  <!-- פרטי המאגר -->
+  <section class="card p-5">
+    <h2 class="text-sm font-semibold text-ink-deep mb-3 flex items-center gap-2">
+      <img src="/icons/database.svg" alt="" class="w-4 h-4"> פרטי המאגר
+    </h2>
+    <dl class="space-y-2 text-sm">
+      <div class="flex justify-between border-b border-rule pb-2">
+        <dt class="text-subtle">ארגון</dt>
+        <dd class="text-ink font-medium">משרד המשפטים</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-2">
+        <dt class="text-subtle">רישיון</dt>
+        <dd class="text-ink">Creative Commons Attribution (CC-BY)</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-2">
+        <dt class="text-subtle">עדכון אחרון</dt>
+        <dd class="text-ink">24 באפריל 2026</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-2">
+        <dt class="text-subtle">תדירות עדכון</dt>
+        <dd class="text-ink">יומי (אוטומטי)</dd>
+      </div>
+      <div class="flex justify-between border-b border-rule pb-2">
+        <dt class="text-subtle">מספר רשומות</dt>
+        <dd class="font-bold" style="color:#0068f5">144,215</dd>
+      </div>
+      <div class="flex justify-between">
+        <dt class="text-subtle">שדות</dt>
+        <dd class="text-ink">מספר מונח, תיאור, שפה, סיווג ניצה, קבילות, מקור</dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- הורדות -->
+  <section class="card p-5">
+    <h2 class="text-sm font-semibold text-ink-deep mb-3 flex items-center gap-2">
+      <img src="/icons/download.svg" alt="" class="w-4 h-4"> קבצים והגדרות
+    </h2>
+    <div class="space-y-3">
+      <a href="https://data.gov.il/dataset/025c3e07-358d-4892-ac2d-1e28f66ba188/resource/b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e/download/b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e.csv"
+         class="flex items-center justify-between p-3 rounded-gov border border-rule bg-surface-alt hover:border-brand transition-colors"
+         style="text-decoration:none" target="_blank" rel="noopener">
+        <span class="flex items-center gap-2">
+          <span class="badge" style="background:#0068f5;color:#fff;font-size:0.7rem">CSV</span>
+          <span class="text-ink text-sm font-medium">מנהל הטובין</span>
+        </span>
+        <span class="flex items-center gap-2 text-subtle text-xs">
+          22.2 MB
+          <img src="/icons/download.svg" alt="" class="w-4 h-4">
+        </span>
+      </a>
+      <a href="https://data.gov.il/dataset/025c3e07-358d-4892-ac2d-1e28f66ba188/resource/639b680c-232f-48fa-84d8-3f9b8758af9e/download/open-file-excel.pdf"
+         class="flex items-center justify-between p-3 rounded-gov border border-rule bg-surface-alt hover:border-brand transition-colors"
+         style="text-decoration:none" target="_blank" rel="noopener">
+        <span class="flex items-center gap-2">
+          <span class="badge" style="background:#dc3545;color:#fff;font-size:0.7rem">PDF</span>
+          <span class="text-ink text-sm font-medium">הוראות פתיחת קובץ ב-Excel</span>
+        </span>
+        <img src="/icons/download.svg" alt="" class="w-4 h-4 text-subtle">
+      </a>
+      <a href="https://data.gov.il/api/3/action/datastore_search?resource_id=b7c4b1fb-6e3c-4d6a-92a9-4546dfa0112e&limit=10"
+         class="flex items-center justify-between p-3 rounded-gov border border-rule bg-surface-alt hover:border-brand transition-colors"
+         style="text-decoration:none" target="_blank" rel="noopener">
+        <span class="flex items-center gap-2">
+          <span class="badge" style="background:#198754;color:#fff;font-size:0.7rem">API</span>
+          <span class="text-ink text-sm font-medium">CKAN Datastore API</span>
+        </span>
+        <img src="/icons/external-link.svg" alt="" class="w-4 h-4 text-subtle">
+      </a>
+    </div>
+  </section>
+</div>
+
 <!-- כרטיסי KPI -->
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
   <div class="card p-5 text-center">

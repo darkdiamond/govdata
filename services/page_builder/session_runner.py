@@ -4,18 +4,17 @@ Flow:
     1. Create session (agent + env).
     2. Stream events until terminal idle or `session.status_terminated`.
        No client-side time cap — the agent decides when it's done.
-    3. Download the session's outputs (expect `content.html` + `data.json`).
-    4. Parse data.json → ManifestEntry; enrich with a Voyage embedding.
-    5. Load existing ManifestEntry records from Firestore and compute the
-       top-5 related datasets — persist the result into `entry.related_ids`
-       so the Nuxt dataset page can render the sidebar at generate time.
-    6. Upload `content.html` (the agent's body) + `data.json` (enriched) to
-       `gs://<staging>/datasets/<id>/`. The full page is assembled later by
-       `frontend/pages/datasets/[id].vue` during `nuxt generate`.
+    3. Download the session's outputs (expect `content.html` + `agent_data.json`).
+    4. Validate agent_data.json against the AgentData schema and persist it
+       under `sources/<id>.agent_data` in Firestore.
+    5. Upload `content.html` to `gs://<staging>/datasets/<id>/`. (Scanner
+       facts and the agent_data field are already on the Firestore source
+       doc; the publisher writes per-dataset `data.json` + `agent_data.json`
+       from there at deploy time.)
 
-The manifest is NOT rebuilt here — that's the publisher's job (it reads
-Firestore and writes `frontend/public/data/manifest.json` during the
-Cloud Build run).
+The publisher (`services.page_builder.publish`) owns embedding, related-
+dataset scoring, and all per-dataset JSON file emission — kept in one
+place so manifest.json and per-dataset files always agree.
 """
 from __future__ import annotations
 
@@ -30,9 +29,7 @@ from anthropic import Anthropic
 
 from services.shared.firestore import FirestoreStateStore
 
-from .embeddings import embed, embedding_input
-from .related import top_related
-from .schema import ManifestEntry, ResourceEntry
+from .schema import AgentData
 
 log = logging.getLogger(__name__)
 
@@ -40,7 +37,7 @@ MA_BETA = "managed-agents-2026-04-01"
 FILES_BETA = "files-api-2025-04-14"
 
 CONTENT_FILENAME = "content.html"
-DATA_FILENAME = "data.json"
+AGENT_DATA_FILENAME = "agent_data.json"
 
 # Belt-and-braces cleanup for agent-emitted body fragments. The agent
 # prompt forbids `<script src=>` / `<link>` / `integrity=` / `<\/script>`,
@@ -112,7 +109,8 @@ def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
 class SessionResult:
     session_id: str
     title: str
-    entry: Optional[ManifestEntry] = None
+    dataset_id: str = ""
+    agent_data: Optional[AgentData] = None
     written: list[str] = field(default_factory=list)
     events_seen: int = 0
     usage: dict[str, int] = field(default_factory=dict)
@@ -137,8 +135,8 @@ def _build_user_message(
     )
     return (
         "Build the landing page for this CKAN dataset. Write content.html "
-        "(body fragment only — no <html>/<head>/<body>) and data.json to "
-        "/mnt/session/outputs/, following the system prompt and the "
+        "(body fragment only — no <html>/<head>/<body>) and agent_data.json "
+        "to /mnt/session/outputs/, following the system prompt and the "
         "govdata-design skill. All user-visible text in content.html must "
         "be Hebrew; your reasoning and bash commands can (and should) stay "
         "in English.\n\n"
@@ -197,20 +195,6 @@ def _write_gcs(data: bytes, bucket: str, relpath: str) -> str:
     return f"gs://{bucket}/{relpath}"
 
 
-def _load_existing_manifest_entries(store: FirestoreStateStore) -> list[ManifestEntry]:
-    """Load enriched ManifestEntry records from Firestore for related-scoring."""
-    entries: list[ManifestEntry] = []
-    try:
-        for raw in store.iter_manifest_entries():
-            try:
-                entries.append(ManifestEntry.model_validate(raw))
-            except Exception as e:
-                log.warning("skipping malformed manifest_entry: %s", e)
-    except Exception as e:
-        log.warning("couldn't list succeeded sources: %s", e)
-    return entries
-
-
 def run_session(
     *,
     dataset_id: str,
@@ -224,7 +208,12 @@ def run_session(
     gcs_bucket: str,
     store: Optional[FirestoreStateStore] = None,
 ) -> SessionResult:
-    """Run one Managed Agents session end-to-end and upload body-only artifacts to GCS staging."""
+    """Run one Managed Agents session end-to-end.
+
+    Side effects on success:
+      - `gs://<gcs_bucket>/datasets/<id>/content.html` written (plus any agent extras).
+      - `sources/<id>.agent_data` set on the Firestore source doc.
+    """
     if not gcs_bucket:
         raise ValueError("gcs_bucket is required")
 
@@ -244,7 +233,7 @@ def run_session(
     session = client.beta.sessions.create(
         agent=agent_id, environment_id=environment_id, title=session_title,
     )
-    result = SessionResult(session_id=session.id, title=session_title)
+    result = SessionResult(session_id=session.id, title=session_title, dataset_id=dataset_id)
     result.note("created")
 
     user_msg = _build_user_message(
@@ -289,7 +278,7 @@ def run_session(
     result.note(f"{len(files_list)} output file(s)")
 
     content_html: Optional[str] = None
-    data_json_bytes: Optional[bytes] = None
+    agent_data_bytes: Optional[bytes] = None
     extras: list[tuple[str, bytes]] = []
     for f in files_list:
         fname = (f.filename or f.id).lstrip("/")
@@ -299,61 +288,24 @@ def run_session(
         body = client.beta.files.download(f.id).read()
         if fname == CONTENT_FILENAME or fname.endswith("/" + CONTENT_FILENAME):
             content_html = body.decode("utf-8", errors="replace")
-        elif fname == DATA_FILENAME or fname.endswith("/" + DATA_FILENAME):
-            data_json_bytes = body
+        elif fname == AGENT_DATA_FILENAME or fname.endswith("/" + AGENT_DATA_FILENAME):
+            agent_data_bytes = body
         else:
             extras.append((fname, body))
 
-    if content_html is None or data_json_bytes is None:
+    if content_html is None or agent_data_bytes is None:
         raise RuntimeError(
             f"session {session.id} missing required outputs: "
             f"content.html={content_html is not None}, "
-            f"data.json={data_json_bytes is not None}"
+            f"agent_data.json={agent_data_bytes is not None}"
         )
 
-    entry = ManifestEntry.model_validate_json(data_json_bytes)
+    agent_data = AgentData.model_validate_json(agent_data_bytes)
 
-    # Hoist structured metadata + resources from the scanner's Firestore record
-    # so the frontend can render those two cards itself (single source of truth,
-    # no per-session drift in content.html). Agent still owns `record_count`
-    # because the scanner doesn't hit datastore_search.
-    src = store.get_source(entry.id)
-    if src:
-        if not entry.resources:
-            entry.resources = [
-                ResourceEntry(
-                    url=r["url"],
-                    format=r.get("format") or "",
-                    name=r.get("name"),
-                    size_bytes=r.get("size"),
-                    description=r.get("description"),
-                )
-                for r in src.resources
-                if r.get("url")
-            ]
-        entry.license = entry.license or src.license_title
+    content_html = _sanitize_content_html(content_html, dataset_id=dataset_id)
 
-    if entry.embedding is None:
-        text = embedding_input(
-            entry.title, entry.summary_he, entry.organization, entry.tags_he
-        )
-        entry.embedding = embed(text)
-
-    # Compute related from Firestore-known succeeded sources and persist the
-    # top-5 onto the entry. The agent's own related_ids suggestion gets
-    # folded in via AGENT_SUGGESTED_WEIGHT inside top_related().
-    candidates = _load_existing_manifest_entries(store)
-    candidates = [e for e in candidates if e.id != entry.id]
-    related_scored = top_related(entry, candidates, k=5)
-    entry.related_ids = [c.id for c, _, _ in related_scored]
-    result.note(f"related: {[rid[:8] for rid in entry.related_ids]}")
-
-    content_html = _sanitize_content_html(content_html, dataset_id=entry.id)
-
-    prefix = f"datasets/{entry.id}"
-    enriched_json = entry.model_dump_json(exclude_none=True, indent=2).encode("utf-8")
+    prefix = f"datasets/{dataset_id}"
     writes: list[tuple[str, bytes]] = [
-        (f"{prefix}/{DATA_FILENAME}", enriched_json),
         (f"{prefix}/{CONTENT_FILENAME}", content_html.encode("utf-8")),
     ]
     for name, body in extras:
@@ -362,7 +314,13 @@ def run_session(
     for relpath, body in writes:
         result.written.append(_write_gcs(body, gcs_bucket, relpath))
 
-    result.entry = entry
+    # Persist agent's judgments to Firestore so the publisher can write
+    # `agent_data.json` and merge into manifest.json on the next deploy.
+    store.set_agent_data(
+        dataset_id, agent_data.model_dump(mode="json", exclude_none=True)
+    )
+
+    result.agent_data = agent_data
     result.elapsed_seconds = round(time.monotonic() - started, 2)
     result.note(
         f"done in {result.elapsed_seconds}s "

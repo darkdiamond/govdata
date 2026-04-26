@@ -1,23 +1,28 @@
 {
   "id": "2fe07949-9538-4891-9de7-50a352bcbd80",
-  "slug": "atarei-biniya-shenigru",
+  "slug": "atry-bnyh-shnsgrv",
   "title": "אתרי בניה שנסגרו",
   "organization": "משרד העבודה",
   "organization_slug": "labor",
-  "summary_he": "רשימת אתרי בנייה שנסגרו על-ידי משרד העבודה בין 2016 ל-2026, כולל שם האתר, שם המבצע ותאריך הסגירה.",
   "tags_he": [
     "אתרי בנייה",
-    "סגירות אתרים",
-    "בטיחות בבנייה",
-    "משרד העבודה",
-    "אכיפה"
+    "אתרי בנייה שנסגרו",
+    "משרד העבודה"
   ],
   "primary_resource_id": "b9257d8f-f93a-4c7d-84dd-e4b0838eadaa",
   "formats": [
     "CSV"
   ],
-  "metadata_modified": "2026-04-24T21:15:25.017763",
-  "dataset_kind": "registry",
-  "related_ids": [],
+  "metadata_modified": "2026-04-24T21:15:25.017763Z",
+  "license": "אחר (פתוח)",
+  "record_count": 757,
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/2fe07949-9538-4891-9de7-50a352bcbd80/resource/b9257d8f-f93a-4c7d-84dd-e4b0838eadaa/download/b9257d8f-f93a-4c7d-84dd-e4b0838eadaa.csv",
+      "format": "CSV",
+      "name": "אתרי בניה שנסגרו",
+      "size_bytes": 90151
+    }
+  ],
   "version": 1
 }

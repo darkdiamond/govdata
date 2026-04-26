@@ -1,12 +1,17 @@
-"""Pydantic models for the artifacts the agent + controller produce.
+"""Pydantic models for the artifacts the pipeline produces.
 
-Per session the agent writes:
-    /mnt/session/outputs/content.html  — body content (injected into <main>)
-    /mnt/session/outputs/data.json     — ManifestEntry (agent-authored fields)
+Per dataset, three artifacts land in `frontend/public/datasets/<id>/`:
 
-The controller then enriches `data.json` with computed fields (`embedding`,
-`related_ids` if not set, etc.) and uploads both files plus a wrapped
-`index.html` to `gs://<bucket>/datasets/<id>/`.
+    data.json         — DatasetMeta. Scanner-derived facts from CKAN
+                        (license, resources, formats, …). Owned by the
+                        publisher, sourced from Firestore `sources/<id>`.
+    agent_data.json   — AgentData. Agent-derived judgments
+                        (summary_he, dataset_kind, related_ids).
+                        Sourced from Firestore `sources/<id>.agent_data`.
+    content.html      — Body markup written by the agent. Synced via GCS.
+
+`manifest.json` (consumed by home + category pages) is a merged view
+(DatasetMeta + AgentData + computed `embedding` + `related_ids`).
 """
 from __future__ import annotations
 
@@ -35,35 +40,75 @@ class ResourceEntry(BaseModel):
     description: Optional[str] = None
 
 
-class ManifestEntry(BaseModel):
-    """What `data.json` looks like after the agent writes it and the controller
-    enriches it. Consumed by the home page + category pages + wrapper's related
-    sidebar.
+class DatasetMeta(BaseModel):
+    """Scanner-derived per-dataset metadata. Written to `data.json` by the
+    publisher from the Firestore `sources/<id>` document.
     """
     model_config = ConfigDict(extra="ignore")
 
     id: str
-    slug: str                                    # URL slug for the dataset itself
+    slug: str                                    # deterministic Hebrew→Latin slug
     title: str
     organization: Optional[str] = None           # human-readable ministry title
     organization_slug: Optional[str] = None      # stable key for /ministries/<slug>/
-    summary_he: Optional[str] = None
     tags_he: list[str] = Field(default_factory=list)
     primary_resource_id: Optional[str] = None
     formats: list[str] = Field(default_factory=list)
     metadata_modified: Optional[datetime] = None
 
-    # Metadata + resources cards (rendered by frontend from data.json)
     license: Optional[str] = None
     record_count: Optional[int] = None
     resources: list[ResourceEntry] = Field(default_factory=list)
 
-    # Agent-emitted classification + suggestions
-    dataset_kind: Optional[DatasetKind] = None
+    version: int = 1
+
+
+class AgentData(BaseModel):
+    """Agent-derived per-dataset judgments. Written to `agent_data.json`
+    by the publisher from the Firestore `sources/<id>.agent_data` field.
+
+    `extra='allow'` so future agent fields can be added without breaking
+    existing pages (e.g. `key_findings`, `quality_notes`).
+    """
+    model_config = ConfigDict(extra="allow")
+
+    summary_he: str
+    dataset_kind: DatasetKind
     related_ids: list[str] = Field(default_factory=list, max_length=5)
 
-    # Controller-computed (post-session)
-    embedding: Optional[list[float]] = None      # Voyage vector, for similarity
+    version: int = 1
+
+
+class ManifestEntry(BaseModel):
+    """Merged per-dataset entry in `manifest.json` (home + category pages).
+
+    Built by the publisher by merging `DatasetMeta` (scanner) + `AgentData`
+    (agent) + controller-computed `embedding` + `related_ids`. Not stored —
+    rebuilt on every publish.
+    """
+    model_config = ConfigDict(extra="ignore")
+
+    # DatasetMeta fields
+    id: str
+    slug: str
+    title: str
+    organization: Optional[str] = None
+    organization_slug: Optional[str] = None
+    tags_he: list[str] = Field(default_factory=list)
+    primary_resource_id: Optional[str] = None
+    formats: list[str] = Field(default_factory=list)
+    metadata_modified: Optional[datetime] = None
+    license: Optional[str] = None
+    record_count: Optional[int] = None
+    resources: list[ResourceEntry] = Field(default_factory=list)
+
+    # AgentData fields (optional — a scanned-but-never-analyzed source has none)
+    summary_he: Optional[str] = None
+    dataset_kind: Optional[DatasetKind] = None
+
+    # Publisher-computed
+    related_ids: list[str] = Field(default_factory=list, max_length=5)
+    embedding: Optional[list[float]] = None
 
     version: int = 1
 

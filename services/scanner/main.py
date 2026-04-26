@@ -12,6 +12,8 @@ import logging
 from datetime import datetime, timezone
 from typing import Optional
 
+from services.shared.resources import pick_primary_resource_id
+
 from .client import CKANClient
 from .config import ScannerSettings, settings
 from .detector import ChangeDetector
@@ -77,6 +79,9 @@ class Scanner:
                     summary.datasets_unchanged += 1
 
                 if status in (DatasetStatus.NEW, DatasetStatus.UPDATED):
+                    primary_id = pick_primary_resource_id(dataset.resources)
+                    if primary_id:
+                        dataset.record_count = await client.datastore_total(primary_id)
                     self.db.save_dataset(dataset, status)
 
                 summary.results.append(ScanResult(dataset=dataset, status=status))

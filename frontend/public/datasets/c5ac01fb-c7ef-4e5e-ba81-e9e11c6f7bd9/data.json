@@ -1,61 +1,51 @@
 {
   "id": "c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9",
-  "slug": "amutot-chalatz",
+  "slug": "magr-amvtvt-vchbrvt-ltvalt-htzybvr",
   "title": "מאגר עמותות וחברות לתועלת הציבור",
   "organization": "משרד המשפטים",
   "organization_slug": "ministry_of_justice",
-  "summary_he": "מאגר מרכזי של רשם העמותות ורשם ההקדשות, הכולל 74,976 עמותות, 1,500 חל\"צ, דיווחי תרומות מגורמים מדיניים זרים ואישורי ניהול תקין — מתעדכן מדי שבוע.",
   "tags_he": [
-    "עמותות",
-    "חברות לתועלת הציבור",
-    "ניהול תקין",
-    "תרומות זרות",
-    "רשות התאגידים"
+    "משרד המשפטים"
   ],
   "primary_resource_id": "be5b7935-3922-45d4-9638-08871b17ec95",
   "formats": [
-    "CSV"
+    "CSV",
+    "PDF"
   ],
-  "metadata_modified": "2026-04-23T18:12:25.328767",
-  "dataset_kind": "registry",
-  "related_ids": [],
-  "version": 1,
+  "metadata_modified": "2026-04-24T18:12:39.768177Z",
   "license": "אחר (פתוח)",
+  "record_count": 74977,
   "resources": [
     {
       "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/be5b7935-3922-45d4-9638-08871b17ec95/download/be5b7935-3922-45d4-9638-08871b17ec95.csv",
       "format": "CSV",
       "name": "עמותות רשומות",
-      "size_bytes": 47589031,
-      "description": null
+      "size_bytes": 47589031
     },
     {
       "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/35cb40b5-3f13-4bca-9ce2-488085913107/download/35cb40b5-3f13-4bca-9ce2-488085913107.csv",
       "format": "CSV",
       "name": "תרומות מישות מדינית זרה",
-      "size_bytes": 4951695,
-      "description": null
+      "size_bytes": 4951695
     },
     {
       "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/cb12ac14-7429-4268-bc03-460f48157858/download/cb12ac14-7429-4268-bc03-460f48157858.csv",
       "format": "CSV",
       "name": "אישור ניהול תקין",
-      "size_bytes": 38862783,
-      "description": null
+      "size_bytes": 38862783
     },
     {
       "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/85e40960-5426-4f4c-874f-2d1ec1b94609/download/85e40960-5426-4f4c-874f-2d1ec1b94609.csv",
       "format": "CSV",
       "name": "חברות רשומות לתועלת הציבור",
-      "size_bytes": 695193,
-      "description": null
+      "size_bytes": 695193
     },
     {
       "url": "https://data.gov.il/dataset/c5ac01fb-c7ef-4e5e-ba81-e9e11c6f7bd9/resource/da3741a8-c65e-4bc1-93b9-5e08b4aaa6fc/download/open-file-excel.pdf",
       "format": "PDF",
       "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
-      "size_bytes": 968126,
-      "description": null
+      "size_bytes": 968126
     }
-  ]
+  ],
+  "version": 1
 }

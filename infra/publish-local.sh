@@ -3,7 +3,12 @@
 # cloudbuild-publish.yaml, just running here instead of in Cloud Build.
 #
 #   1. rsync  gs://${GCS_STAGING_BUCKET}/datasets/  ->  frontend/public/datasets/
-#   2. rebuild frontend/public/data/manifest.json from Firestore
+#      (only content.html survives — data.json + agent_data.json are
+#      regenerated from Firestore in step 2 to keep the two paths in sync)
+#   2. publish from Firestore: write
+#        frontend/public/data/manifest.json
+#        frontend/public/datasets/<id>/data.json
+#        frontend/public/datasets/<id>/agent_data.json
 #   3. nuxt generate (+ sitemap)
 #   4. firebase deploy --only hosting
 #
@@ -112,8 +117,8 @@ if ! firebase projects:list 2>/dev/null | grep -qw "$PROJECT"; then
   exit 1
 fi
 
-if ! python3 -c 'import services.page_builder.manifest' >/dev/null 2>&1; then
-  echo "python can't import services.page_builder.manifest;" >&2
+if ! python3 -c 'import services.page_builder.publish' >/dev/null 2>&1; then
+  echo "python can't import services.page_builder.publish;" >&2
   echo "activate the project venv first:" >&2
   echo "  source venv/bin/activate" >&2
   exit 1
@@ -136,17 +141,21 @@ else
   step_end
 fi
 
-# ---------------------------------------------- step 2: rebuild manifest
+# ---------------------------------------------- step 2: publish from Firestore
 if (( SKIP_MANIFEST )); then
   echo
-  echo "==> [$(date +%H:%M:%S)] skipping manifest rebuild (--skip-manifest)"
+  echo "==> [$(date +%H:%M:%S)] skipping publish step (--skip-manifest)"
 else
-  step_begin "rebuilding manifest from Firestore (project=$PROJECT)"
+  step_begin "publishing per-dataset + manifest artifacts from Firestore (project=$PROJECT)"
+  # publish writes:
+  #   frontend/public/data/manifest.json
+  #   frontend/public/datasets/<id>/data.json
+  #   frontend/public/datasets/<id>/agent_data.json
   FIRESTORE_PROJECT_ID="$PROJECT" \
   GOOGLE_CLOUD_PROJECT="$PROJECT" \
-    python3 -m services.page_builder.manifest \
+    python3 -m services.page_builder.publish \
       --from-firestore \
-      --out frontend/public/data/manifest.json
+      --out frontend/public/
   echo "wrote $(wc -c < frontend/public/data/manifest.json) bytes to frontend/public/data/manifest.json"
   step_end
 fi

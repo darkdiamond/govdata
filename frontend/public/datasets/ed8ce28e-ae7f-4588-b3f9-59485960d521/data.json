@@ -1,36 +1,26 @@
 {
   "id": "ed8ce28e-ae7f-4588-b3f9-59485960d521",
-  "slug": "mishkalos-umidot",
-  "title": "משקלות ומידות – דגמים מאושרים של מכשירי מדידה",
+  "slug": "mshklvt-vmydvt",
+  "title": "משקלות ומידות",
   "organization": "משרד הכלכלה והתעשייה",
   "organization_slug": "moital",
-  "summary_he": "מאגר 2,542 דגמים מאושרים של מכשירי מדידה בישראל, כולל סטטוס תוקף, קטגוריה, יצרן ומספר אישור – לשירות המשקלות ומידות.",
   "tags_he": [
-    "מכשירי מדידה",
-    "מאזניים",
-    "אכיפה מסחרית",
-    "תקינה",
-    "רגולציה"
+    "כלכלה"
   ],
   "primary_resource_id": "5cc7cc5b-9e38-42bd-bc77-f70297c10a1f",
   "formats": [
     "CSV"
   ],
-  "metadata_modified": "2026-04-24T17:59:04.015666",
-  "dataset_kind": "registry",
-  "related_ids": [
-    "27b4b40e-b019-4a70-8e5d-4741110fc55d",
-    "ed98fd7a-0e62-4691-b733-1960a6ea2c73"
-  ],
-  "version": 1,
+  "metadata_modified": "2026-04-24T17:59:04.015666Z",
   "license": "אחר (פתוח)",
+  "record_count": 2542,
   "resources": [
     {
       "url": "https://data.gov.il/dataset/ed8ce28e-ae7f-4588-b3f9-59485960d521/resource/5cc7cc5b-9e38-42bd-bc77-f70297c10a1f/download/5cc7cc5b-9e38-42bd-bc77-f70297c10a1f.csv",
       "format": "CSV",
       "name": "דגמים מאושרים של מכשירי מדידה בישראל",
-      "size_bytes": 416936,
-      "description": null
+      "size_bytes": 416936
     }
-  ]
+  ],
+  "version": 1
 }

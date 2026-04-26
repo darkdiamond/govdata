@@ -1,0 +1,142 @@
+"""Tests for services.page_builder.publish.
+
+Mocks FirestoreStateStore so we never touch the network. Verifies the
+three artifact contracts:
+  - data.json holds DatasetMeta-shaped fields (license/resources etc.)
+  - agent_data.json holds AgentData-shaped fields when agent_data exists
+  - agent_data.json is *absent* for sources with no agent_data
+  - manifest.json is the merged shape and includes both
+"""
+from __future__ import annotations
+
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from unittest.mock import MagicMock
+
+from services.shared.firestore import SourceRecord
+
+from services.page_builder import publish
+
+
+def _src(*, dataset_id: str, with_agent: bool, **overrides) -> SourceRecord:
+    base = SourceRecord(
+        id=dataset_id,
+        title=overrides.get("title", "מאגר לדוגמה"),
+        slug=overrides.get("slug", "magar-dugma"),
+        organization={"name": "ministry-of-justice", "title": "משרד המשפטים"},
+        license_title="Creative Commons Attribution",
+        tags=["א", "ב"],
+        resources=[
+            {
+                "id": "rid-1",
+                "name": "main",
+                "format": "CSV",
+                "url": "https://data.gov.il/dataset/x/resource/rid-1/download/x.csv",
+                "size": 1024,
+                "description": None,
+            }
+        ],
+        record_count=42,
+        metadata_modified=datetime(2026, 4, 24, 12, 0, tzinfo=timezone.utc),
+        analysis_status="succeeded",
+    )
+    if with_agent:
+        base.agent_data = {
+            "summary_he": "סיכום של המאגר",
+            "dataset_kind": "registry",
+            "related_ids": [],
+            "version": 1,
+        }
+    return base
+
+
+def _store_mock(records: list[SourceRecord]) -> MagicMock:
+    store = MagicMock()
+    store.iter_succeeded_sources.return_value = iter(records)
+
+    def _set_embedding(_id, vec):
+        for r in records:
+            if r.id == _id:
+                r.embedding = list(vec)
+    store.set_embedding.side_effect = _set_embedding
+    return store
+
+
+def test_publish_writes_data_json_for_every_source(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    records = [
+        _src(dataset_id="aaa-with-agent", with_agent=True),
+        _src(dataset_id="bbb-no-agent",   with_agent=False),
+    ]
+    store = _store_mock(records)
+
+    summary = publish.publish(tmp_path, store=store)
+
+    assert summary["wrote_data_json"] == 2
+    assert summary["wrote_agent_data_json"] == 1
+
+    a_data = json.loads((tmp_path / "datasets/aaa-with-agent/data.json").read_text())
+    assert a_data["id"] == "aaa-with-agent"
+    assert a_data["license"] == "Creative Commons Attribution"
+    assert a_data["record_count"] == 42
+    assert len(a_data["resources"]) == 1
+    assert a_data["primary_resource_id"] == "rid-1"
+    assert a_data["formats"] == ["CSV"]
+    assert "summary_he" not in a_data, "scanner data.json must not carry agent fields"
+    assert "dataset_kind" not in a_data
+
+    b_data = json.loads((tmp_path / "datasets/bbb-no-agent/data.json").read_text())
+    assert b_data["id"] == "bbb-no-agent"
+    assert b_data["license"] == "Creative Commons Attribution"
+
+
+def test_publish_skips_agent_data_when_missing(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    records = [_src(dataset_id="bbb", with_agent=False)]
+    store = _store_mock(records)
+
+    publish.publish(tmp_path, store=store)
+
+    agent_path = tmp_path / "datasets/bbb/agent_data.json"
+    assert not agent_path.exists(), "agent_data.json must not be written when no agent_data"
+
+
+def test_publish_writes_agent_data_when_present(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    records = [_src(dataset_id="aaa", with_agent=True)]
+    store = _store_mock(records)
+
+    publish.publish(tmp_path, store=store)
+
+    agent = json.loads((tmp_path / "datasets/aaa/agent_data.json").read_text())
+    assert agent["summary_he"] == "סיכום של המאגר"
+    assert agent["dataset_kind"] == "registry"
+    # Agent file must NOT carry scanner fields.
+    assert "license" not in agent
+    assert "resources" not in agent
+
+
+def test_manifest_merges_scanner_and_agent_fields(tmp_path: Path, monkeypatch):
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    records = [
+        _src(dataset_id="aaa", with_agent=True),
+        _src(dataset_id="bbb", with_agent=False),
+    ]
+    store = _store_mock(records)
+
+    publish.publish(tmp_path, store=store)
+
+    manifest = json.loads((tmp_path / "data/manifest.json").read_text())
+    by_id = {d["id"]: d for d in manifest["datasets"]}
+
+    a = by_id["aaa"]
+    assert a["license"] == "Creative Commons Attribution"
+    assert a["summary_he"] == "סיכום של המאגר"
+    assert a["dataset_kind"] == "registry"
+    assert a["resources"], "manifest entry should keep resources"
+
+    b = by_id["bbb"]
+    assert b["license"] == "Creative Commons Attribution"
+    assert "summary_he" not in b or b.get("summary_he") is None
+    assert "dataset_kind" not in b or b.get("dataset_kind") is None

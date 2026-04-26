@@ -11,6 +11,8 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
+from services.shared.slug import slugify
+
 
 class DatasetStatus(str, Enum):
     """Status of a dataset after change detection."""
@@ -59,15 +61,17 @@ class Dataset(BaseModel):
     id: str
     name: str
     title: str
+    slug: str = ""                                # deterministic Hebrew→Latin slug from title
     notes: Optional[str] = Field(default=None, description="Dataset description")
     organization: Optional[Organization] = None
     license_title: Optional[str] = None
     update_frequency: Optional[str] = None
     tags: list[str] = Field(default_factory=list)
     resources: list[Resource] = Field(default_factory=list)
+    record_count: Optional[int] = None             # populated by Scanner.scan via datastore_search
     metadata_created: Optional[datetime] = None
     metadata_modified: Optional[datetime] = None
-    
+
     # Local tracking fields
     last_scanned_at: Optional[datetime] = None
     status: str = "active"
@@ -103,10 +107,13 @@ class Dataset(BaseModel):
             )
             resources.append(resource)
         
+        dataset_id = data.get("id", "")
+        title = data.get("title", "")
         return cls(
-            id=data.get("id", ""),
+            id=dataset_id,
             name=data.get("name", ""),
-            title=data.get("title", ""),
+            title=title,
+            slug=slugify(title, fallback=dataset_id),
             notes=data.get("notes"),
             organization=organization,
             license_title=data.get("license_title"),

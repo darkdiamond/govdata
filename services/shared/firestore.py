@@ -30,12 +30,14 @@ class SourceRecord:
     id: str
     name: str = ""
     title: str = ""
+    slug: str = ""
     notes: Optional[str] = None
     organization: dict = field(default_factory=dict)
     license_title: Optional[str] = None
     update_frequency: Optional[str] = None
     tags: list[str] = field(default_factory=list)
     resources: list[dict] = field(default_factory=list)
+    record_count: Optional[int] = None
     metadata_created: Optional[datetime] = None
     metadata_modified: Optional[datetime] = None
 
@@ -49,6 +51,15 @@ class SourceRecord:
     last_error: Optional[str] = None
     page_path: Optional[str] = None
 
+    # Agent's per-dataset judgments (summary_he, dataset_kind, related_ids, …).
+    # Set by the builder after a successful Managed Agents session; consumed
+    # by the publisher to write `agent_data.json`.
+    agent_data: Optional[dict] = None
+
+    # Voyage embedding for related-dataset scoring. Cached here so the
+    # publisher doesn't recompute on every run.
+    embedding: Optional[list[float]] = None
+
     @classmethod
     def from_doc(cls, doc) -> "SourceRecord":
         data: dict[str, Any] = doc.to_dict() or {}
@@ -56,12 +67,14 @@ class SourceRecord:
             id=doc.id,
             name=data.get("name", "") or "",
             title=data.get("title", "") or "",
+            slug=data.get("slug", "") or "",
             notes=data.get("notes"),
             organization=data.get("organization") or {},
             license_title=data.get("license_title"),
             update_frequency=data.get("update_frequency"),
             tags=data.get("tags") or [],
             resources=data.get("resources") or [],
+            record_count=data.get("record_count"),
             metadata_created=data.get("metadata_created"),
             metadata_modified=data.get("metadata_modified"),
             first_seen_at=data.get("first_seen_at"),
@@ -72,6 +85,8 @@ class SourceRecord:
             analysis_status=data.get("analysis_status", "never"),
             last_error=data.get("last_error"),
             page_path=data.get("page_path"),
+            agent_data=data.get("agent_data"),
+            embedding=data.get("embedding"),
         )
 
 
@@ -136,12 +151,14 @@ class FirestoreStateStore:
             "id": dataset.id,
             "name": dataset.name,
             "title": dataset.title,
+            "slug": getattr(dataset, "slug", "") or "",
             "notes": dataset.notes,
             "organization": org,
             "license_title": dataset.license_title,
             "update_frequency": dataset.update_frequency,
             "tags": dataset.tags,
             "resources": resources,
+            "record_count": getattr(dataset, "record_count", None),
             "metadata_created": dataset.metadata_created,
             "metadata_modified": dataset.metadata_modified,
             "last_scanned_at": now,
@@ -265,33 +282,38 @@ class FirestoreStateStore:
         self,
         dataset_id: str,
         page_path: str,
-        manifest_entry: Optional[dict] = None,
     ) -> None:
         now = datetime.now(timezone.utc)
         ref = self.client.collection(SOURCES_COLL).document(dataset_id)
         snap = ref.get()
         prev_version = int((snap.to_dict() or {}).get("last_analyzed_version") or 0)
-        payload: dict[str, Any] = {
-            "analysis_status": "succeeded",
-            "last_analyzed_at": now,
-            "last_analyzed_version": prev_version + 1,
-            "page_path": page_path,
-            "last_error": None,
-        }
-        if manifest_entry is not None:
-            payload["manifest_entry"] = manifest_entry
-        ref.set(payload, merge=True)
-
-    def iter_manifest_entries(self) -> Iterator[dict]:
-        """Yield each successful source's `manifest_entry` dict."""
-        query = self.client.collection(SOURCES_COLL).where(
-            filter=FieldFilter("analysis_status", "==", "succeeded")
+        ref.set(
+            {
+                "analysis_status": "succeeded",
+                "last_analyzed_at": now,
+                "last_analyzed_version": prev_version + 1,
+                "page_path": page_path,
+                "last_error": None,
+            },
+            merge=True,
         )
-        for d in query.stream():
-            data = d.to_dict() or {}
-            entry = data.get("manifest_entry")
-            if entry:
-                yield entry
+
+    def set_agent_data(self, dataset_id: str, agent_data: dict) -> None:
+        """Persist the agent's per-dataset judgments under `sources/<id>.agent_data`.
+
+        Called by the builder after a successful Managed Agents session.
+        Replaces the prior `manifest_entry` field entirely — scanner facts
+        live alongside on the same doc, so there's no need to merge them.
+        """
+        self.client.collection(SOURCES_COLL).document(dataset_id).set(
+            {"agent_data": agent_data}, merge=True
+        )
+
+    def set_embedding(self, dataset_id: str, embedding: list[float]) -> None:
+        """Cache the Voyage embedding so the publisher doesn't recompute it."""
+        self.client.collection(SOURCES_COLL).document(dataset_id).set(
+            {"embedding": embedding}, merge=True
+        )
 
     def mark_analysis_failed(self, dataset_id: str, error: str) -> None:
         self.client.collection(SOURCES_COLL).document(dataset_id).set(

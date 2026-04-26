@@ -54,12 +54,23 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 - **Agent outputs** are a contract:
   - `/mnt/session/outputs/content.html` — body content only. No
     `<html>`/`<head>`/`<body>`. Inline `<style>` and `<script>` tags OK.
-  - `/mnt/session/outputs/data.json` — a `ManifestEntry`
-    (`services/page_builder/schema.py`).
-- **Source of truth** for what the home/category pages show is Firestore
-  `sources` where `analysis_status == "succeeded"`. The builder stores
-  the enriched `ManifestEntry` inline on each successful source doc; the
-  publisher rematerializes `manifest.json` from that on every deploy.
+  - `/mnt/session/outputs/agent_data.json` — an `AgentData`
+    (`services/page_builder/schema.py`). Holds ONLY interpretive fields
+    (`summary_he`, `dataset_kind`, optional `related_ids`). Scanner
+    facts (id, title, slug, license, resources, formats, record_count,
+    metadata_modified) are not the agent's responsibility — `data.json`
+    is owned by the publisher and rebuilt from Firestore.
+- **Source of truth** for everything the frontend renders is the
+  Firestore `sources/<id>` document. Two writers feed it:
+  scanner (CKAN facts: title, slug, license, resources, record_count,
+  formats, organization, metadata_modified) and builder (agent's
+  `agent_data` field). On every deploy, `services.page_builder.publish`
+  rematerializes from that single doc:
+    `frontend/public/data/manifest.json`        — merged ManifestEntry list
+    `frontend/public/datasets/<id>/data.json`   — DatasetMeta (scanner)
+    `frontend/public/datasets/<id>/agent_data.json` — AgentData (agent)
+  GCS staging carries only `content.html`. Don't reintroduce a path that
+  rsyncs `data.json` from GCS — single writer per file is the whole point.
 - **Selection priority** (`services/page_builder/selector.py`):
   1. `change_status in {new, updated}` AND (`last_analyzed_at` null or
      older than 7 days) — ordered by `metadata_modified` DESC.
@@ -77,13 +88,15 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 | Pipeline orchestration | `services/page_builder/pipeline.py` | scan → select → asyncio.gather → mark → trigger publish |
 | Source selection | `services/page_builder/selector.py` | Cooldown + priority query |
 | Firestore layer | `services/shared/firestore.py` | `FirestoreStateStore`, schema, queries |
-| Session orchestration | `services/page_builder/session_runner.py` | Stream-first terminal-idle gate, GCS staging (body + data.json only) |
+| Session orchestration | `services/page_builder/session_runner.py` | Stream agent until idle; download agent_data.json + content.html; persist agent_data on the source doc; stage content.html to GCS |
+| Publisher | `services/page_builder/publish.py` | Reads each succeeded `sources/<id>` and writes data.json, agent_data.json, manifest.json (single source of truth) |
 | Agent behavior | `agent/govdata-agent.yaml` | Agent's system prompt. Skill content is inlined because the skill file is not sent to the runtime. |
 | Agent design | `agent/skills/govdata-design/SKILL.md` | Design tokens + output contract + chart palette + RTL snippets |
-| Dataset page shell | `frontend/pages/datasets/[id].vue` | Breadcrumb + v-html body + related/tags/kind sidebar; wraps into default layout at `nuxt generate` time |
+| Dataset page shell | `frontend/pages/datasets/[id].vue` | Reads data.json + agent_data.json + content.html, merges into one entry, wraps in default layout |
 | Page chrome | `frontend/layouts/default.vue` | Header/footer — sole source of truth, inherited by every page including datasets |
-| Schema | `services/page_builder/schema.py` | `ManifestEntry` — boundary between agent + builder + frontend |
-| Publisher | `cloudbuild-publish.yaml` | rsync GCS → public/, build manifest, `nuxt generate` (assembles dataset pages), Firebase deploy |
+| Schema | `services/page_builder/schema.py` | `DatasetMeta` (scanner) + `AgentData` (agent) + merged `ManifestEntry` — split contract |
+| Slug helper | `services/shared/slug.py` | Deterministic Hebrew→Latin slug used by the scanner |
+| Cloud Build pipeline | `cloudbuild-publish.yaml` | rsync content.html only → run publisher (writes data.json + agent_data.json + manifest.json from Firestore) → `nuxt generate` → Firebase deploy |
 | Hosting config | `firebase.json`, `.firebaserc` | Firebase Hosting target + project binding |
 
 ## Conventions you will be tempted to violate (don't)
@@ -98,15 +111,24 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   Managed Agents (the user explicitly asked to remove these earlier).
 - **Don't resurrect the viz taxonomy.** The agent picks libraries per
   dataset. Any code that hardcodes `VizType` / `VizSpec` is obsolete.
-- **Agent output is body-only.** The agent writes
-  `content.html` (no `<html>/<head>/<body>/<header>/<footer>`) + `data.json`
-  to GCS. The publisher rsyncs those into `frontend/public/datasets/<id>/`,
-  and `frontend/pages/datasets/[id].vue` reads them at `nuxt generate`
-  time and wraps them in the default layout via `v-html`. In SSG the
-  `<script>` tags inside the body land in the static HTML and execute on
-  browser load before Vue hydrates, so ECharts/Leaflet still work.
-  **Don't restore a Jinja wrapper** or hand-roll chrome in agent output —
-  `layouts/default.vue` is the single source of truth.
+- **Agent output is body-only.** The agent writes `content.html` (no
+  `<html>/<head>/<body>/<header>/<footer>`) and `agent_data.json`
+  (interpretive fields only). `content.html` is staged to GCS and
+  rsynced into `frontend/public/datasets/<id>/`; `agent_data.json` is
+  not — its content goes through Firestore (`sources/<id>.agent_data`)
+  and the publisher writes the per-dataset `agent_data.json` from there.
+  `frontend/pages/datasets/[id].vue` reads all three artifacts at
+  `nuxt generate` time and wraps them in the default layout via
+  `v-html`. In SSG the `<script>` tags inside the body land in the
+  static HTML and execute on browser load before Vue hydrates, so
+  ECharts/Leaflet still work. **Don't restore a Jinja wrapper** or
+  hand-roll chrome in agent output — `layouts/default.vue` is the
+  single source of truth.
+- **Don't reintroduce GCS-as-data.json.** Per-dataset `data.json` and
+  `agent_data.json` are *only* written by `services.page_builder.publish`
+  from Firestore. If they show up in `gs://<staging>/datasets/<id>/`,
+  the rsync step in `cloudbuild-publish.yaml` deletes them after sync —
+  by design, so the two-writer drift class can't recur.
 - **Resource URLs use `data.gov.il` (no `e.`).** CKAN publishes resource
   URLs on `e.data.gov.il`, which sits behind Google IAP and redirects
   anonymous visitors to an OAuth consent screen. The scanner normalizes

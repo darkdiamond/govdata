@@ -1,47 +1,34 @@
 {
   "id": "8687fefe-51af-4e0b-af54-701929c40102",
-  "slug": "cpc-patent-classifications",
+  "slug": "syvvgy-cpc",
   "title": "סיווגי CPC",
   "organization": "משרד המשפטים",
   "organization_slug": "ministry_of_justice",
-  "summary_he": "252,001 סיווגי Cooperative Patent Classification (CPC) — תקן בינלאומי לסיווג בקשות פטנט ב-9 חלקים ראשיים ו-672 קבוצות-משנה, כולל מקביל IPC לרוב הרשומות.",
   "tags_he": [
-    "פטנטים",
-    "סיווג CPC",
-    "קניין רוחני",
-    "IPC",
-    "משרד המשפטים"
+    "משרד המשפטים",
+    "סיווגי CPC"
   ],
   "primary_resource_id": "cf8ed236-6bb2-4df4-91b9-4881102daec0",
   "formats": [
     "CSV",
     "PDF"
   ],
-  "metadata_modified": "2026-04-24T20:12:48.091405",
-  "dataset_kind": "registry",
-  "related_ids": [
-    "1806c96c-9cc4-47bf-98b3-80a18f061f98",
-    "247efc75-31f2-4b19-bd4e-e670b1bf2783",
-    "6e207fff-abef-4f4d-aac7-61e669ba9ad5",
-    "025c3e07-358d-4892-ac2d-1e28f66ba188",
-    "176f2727-476e-440e-bc8d-5d3461ea0e76"
-  ],
-  "version": 1,
+  "metadata_modified": "2026-04-24T20:12:48.091405Z",
   "license": "Creative Commons Attribution",
+  "record_count": 252001,
   "resources": [
     {
       "url": "https://data.gov.il/dataset/8687fefe-51af-4e0b-af54-701929c40102/resource/cf8ed236-6bb2-4df4-91b9-4881102daec0/download/cf8ed236-6bb2-4df4-91b9-4881102daec0.csv",
       "format": "CSV",
       "name": "סיווגי CPC",
-      "size_bytes": 25123214,
-      "description": null
+      "size_bytes": 25123214
     },
     {
       "url": "https://data.gov.il/dataset/8687fefe-51af-4e0b-af54-701929c40102/resource/cd7e1865-0d09-455f-b353-457c1b9f1e2a/download/open-file-excel.pdf",
       "format": "PDF",
       "name": "הוראות לפתיחת קובץ מאגר באמצעות תוכנת excel",
-      "size_bytes": 968126,
-      "description": null
+      "size_bytes": 968126
     }
-  ]
+  ],
+  "version": 1
 }
