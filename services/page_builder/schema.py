@@ -60,6 +60,12 @@ class DatasetMeta(BaseModel):
     record_count: Optional[int] = None
     resources: list[ResourceEntry] = Field(default_factory=list)
 
+    # When the agent last (re)built the page for this dataset. Used by the
+    # frontend as the user-facing "עודכן" timestamp — `metadata_modified`
+    # from CKAN gets bumped daily for auto-refreshed datasets and is too
+    # noisy to surface directly.
+    last_analyzed_at: Optional[datetime] = None
+
     version: int = 1
 
 
@@ -101,6 +107,7 @@ class ManifestEntry(BaseModel):
     license: Optional[str] = None
     record_count: Optional[int] = None
     resources: list[ResourceEntry] = Field(default_factory=list)
+    last_analyzed_at: Optional[datetime] = None
 
     # AgentData fields (optional — a scanned-but-never-analyzed source has none)
     summary_he: Optional[str] = None

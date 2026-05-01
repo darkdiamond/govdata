@@ -34,6 +34,7 @@ export interface DatasetMeta {
   license?: string
   record_count?: number
   resources?: ResourceEntry[]
+  last_analyzed_at?: string
   version: number
 }
 
@@ -62,6 +63,7 @@ export interface ManifestEntry {
   license?: string
   record_count?: number
   resources?: ResourceEntry[]
+  last_analyzed_at?: string
 
   // AgentData fields (optional — a scanned-but-never-analyzed source has none)
   summary_he?: string

@@ -86,6 +86,7 @@ def dataset_meta_from_source(src: SourceRecord) -> DatasetMeta:
         license=src.license_title,
         record_count=src.record_count,
         resources=resources,
+        last_analyzed_at=src.last_analyzed_at,
     )
 
 
