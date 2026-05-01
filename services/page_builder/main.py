@@ -7,6 +7,8 @@ Request body:
     {}                           → scheduled run (scan + select N)
     {"dataset_id": "<id>"}       → manual override (skip scan, build one)
     {"dry_run": true}            → scan + select only, no agent run
+    {"skip_publish": true}       → run agent + write to Firestore/GCS, but
+                                   don't fire the Cloud Build publisher
 """
 from __future__ import annotations
 
@@ -31,6 +33,7 @@ def http_entry(request):
     mode = body.get("mode") or ("manual" if body.get("dataset_id") else "scheduled")
     override_id = body.get("dataset_id") or request.args.get("dataset_id")
     dry_run = bool(body.get("dry_run"))
+    skip_publish = bool(body.get("skip_publish"))
 
     try:
         summary = asyncio.run(
@@ -38,6 +41,7 @@ def http_entry(request):
                 mode=mode,
                 override_id=override_id,
                 dry_run=dry_run,
+                skip_publish=skip_publish,
             )
         )
         return (json.dumps(summary, default=str), 200, {"Content-Type": "application/json"})

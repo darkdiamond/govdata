@@ -51,7 +51,11 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-01-01',
   devtools: { enabled: true },
 
-  modules: ['@nuxtjs/tailwindcss'],
+  modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag'],
+
+  gtag: {
+    id: 'G-1P3DPS2M2Q',
+  },
 
   components: [
     { path: '~/components', pathPrefix: false },
@@ -102,5 +106,17 @@ export default defineNuxtConfig({
   tailwindcss: {
     exposeConfig: false,
     viewer: false,
+  },
+
+  // Repo lives on /mnt/d (WSL DrvFs) — inotify is unreliable across the
+  // Windows↔Linux boundary, so Vite's default watcher misses saves. Use
+  // chokidar polling so HMR fires reliably in dev.
+  vite: {
+    server: {
+      watch: {
+        usePolling: true,
+        interval: 300,
+      },
+    },
   },
 })

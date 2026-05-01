@@ -107,6 +107,7 @@ async def run_pipeline(
     override_id: Optional[str] = None,
     dry_run: bool = False,
     n_per_run: Optional[int] = None,
+    skip_publish: bool = False,
 ) -> dict:
     """The one entry point the HTTP handler and the CLI both use."""
     store = FirestoreStateStore()
@@ -167,7 +168,7 @@ async def run_pipeline(
 
     # [4] trigger publisher if any page was written
     build_id = None
-    if succeeded_ids and trigger_id:
+    if succeeded_ids and trigger_id and not skip_publish:
         build_id = await _trigger_publish(
             project_id, trigger_id, publish_branch, region=publish_region
         )
@@ -195,15 +196,13 @@ def _cli() -> None:
                    help="Skip Cloud Build trigger after successful builds")
     args = p.parse_args()
 
-    if args.no_trigger_publish:
-        os.environ["PUBLISH_TRIGGER_ID"] = ""
-
     summary = asyncio.run(
         run_pipeline(
             mode="manual",
             override_id=args.source,
             dry_run=args.dry_run,
             n_per_run=args.n,
+            skip_publish=args.no_trigger_publish,
         )
     )
     import json
