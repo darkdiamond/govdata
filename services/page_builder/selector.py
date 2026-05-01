@@ -7,8 +7,18 @@ Priority (first non-empty track wins):
     2. `analysis_status == "never"`.
        Ordered by `metadata_modified` DESC.
 
-The 7-day cooldown ONLY applies to Track 1 — a never-analyzed source is
-always eligible via Track 2 regardless of how recent it was last touched.
+The 14-day cooldown applies ONLY to sources that have already been
+analyzed at least once AND have just been updated upstream on data.gov.il
+(Track 1). For those, we skip a rebuild if their last analysis happened
+less than 14 days ago — even if CKAN flagged the source as `updated`.
+This prevents re-burning agent budget on a source that just got a fresh
+page.
+
+The cooldown does NOT apply to:
+  - Never-analyzed sources (Track 2): always eligible, no matter how
+    recently their CKAN row changed.
+  - Sources whose `last_analyzed_at` is null: treated as never-analyzed
+    for cooldown purposes.
 """
 from __future__ import annotations
 
@@ -16,7 +26,7 @@ from datetime import datetime, timedelta, timezone
 
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 
-DEFAULT_COOLDOWN_DAYS = 7
+DEFAULT_COOLDOWN_DAYS = 14
 
 
 def pick_next(
