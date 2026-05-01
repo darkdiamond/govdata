@@ -78,14 +78,16 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   GCS staging carries only `content.html`. Don't reintroduce a path that
   rsyncs `data.json` from GCS — single writer per file is the whole point.
 - **Selection priority** (`services/page_builder/selector.py`):
-  1. `change_status in {new, updated}` AND (`last_analyzed_at` null or
+  1. `analysis_status == "never"` — ordered by `metadata_modified` DESC.
+  2. `change_status in {new, updated}` AND (`last_analyzed_at` null or
      older than 14 days) — ordered by `metadata_modified` DESC.
-  2. `analysis_status == "never"` — ordered by `metadata_modified` DESC.
-  The 14-day cooldown is the rule for already-analyzed sources that
-  CKAN re-flagged as `updated`: skip the rebuild if the source was
-  analyzed less than 14 days ago (don't burn agent budget on a page
-  that's still fresh). Never-analyzed sources go via Track 2 and are
-  always eligible regardless of their CKAN modification time.
+  The never-analyzed backlog is drained first; re-analysis of already-
+  published pages waits until every source has at least one page. The
+  14-day cooldown applies only to Track 2 (already-analyzed sources
+  that CKAN re-flagged as `updated`): skip the rebuild if the source
+  was analyzed less than 14 days ago (don't burn agent budget on a page
+  that's still fresh). Never-analyzed sources are always eligible
+  regardless of their CKAN modification time.
 - **Related-datasets scoring** (unchanged, deterministic):
   `5·same_ministry + 2·min(shared_tag_count, 6) + 3·cosine(embedding) + 4·agent_suggested`.
   Top 5 per page. Defined in `services/page_builder/related.py`.
