@@ -51,6 +51,12 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   `rounded-gov-sm` = 0.2rem (badges), `rounded-gov-pill` = 50rem
   (chips). Container `max-w-gov` = 1400px. Icons: Lucide SVGs committed
   to `frontend/public/icons/`.
+- **Pre-loaded dataset-page globals** (head scripts; see
+  `frontend/utils/dataset-libs.ts` and `awaitDatasetLibs()` in
+  `frontend/pages/datasets/[id].vue`): `echarts`, `L`,
+  `L.markerClusterGroup`, and `GovExplorer` (in-house;
+  `frontend/public/lib/gov-explorer.js`). Agent bodies use them as
+  globals and must NOT include `<script src=>` for any of them.
 - **Agent outputs** are a contract:
   - `/mnt/session/outputs/content.html` — body content only. No
     `<html>`/`<head>`/`<body>`. Inline `<style>` and `<script>` tags OK.

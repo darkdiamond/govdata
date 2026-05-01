@@ -136,10 +136,100 @@ use them):
 | `echarts` | ECharts | every chart kind: bar / line / pie / sunburst / treemap / heatmap / radar |
 | `L` | Leaflet | maps + tiles |
 | `L.markerClusterGroup` | Leaflet.markercluster | clustering when >200 points |
+| `GovExplorer` | (in-house) | live `datastore_search`-backed search + paginated table — see "Live Data Explorer" below |
 
 Do NOT write `<script src=…>` or `<link rel="stylesheet" href=…>` to
 load anything. Tailwind, Rubik, and the viz libs above are already
 loaded by the shell; your `content.html` only needs inline init code.
+
+## Live Data Explorer
+
+For registry-shaped datasets where users would plausibly look up a
+specific row (a company, doctor, school, business, permit, place, …),
+add a search + paginated table card that fetches live from the CKAN
+`datastore_search` API in the browser. This turns a static "report"
+page into a "look up your record" tool.
+
+**When to use** — registry datasets with >100 rows AND distinct named
+entities the public might search for.
+
+**When to skip** — pure timeseries, aggregate / summary datasets, very
+small registries (<100 rows where charts already say everything), and
+datasets without a CSV / `datastore_active=true` resource.
+
+**Globals**: `window.GovExplorer.create({...})` is pre-loaded
+alongside `echarts` / `L`. Do NOT add a `<script src=>` for it.
+
+**Canonical config snippet** (copy + adapt; place at the bottom of
+your `<data-explorer>` section, after charts):
+
+```html
+<section class="card p-5 mb-5">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <h2 class="font-semibold text-ink-deep">עיון ברשימה</h2>
+    <input
+      id="explorer-search"
+      class="gov-explorer-search"
+      type="search"
+      placeholder="חיפוש..."
+      aria-label="חיפוש בטבלה"
+    />
+  </div>
+  <div id="explorer"></div>
+</section>
+<script>
+  GovExplorer.create({
+    container: '#explorer',
+    searchInput: '#explorer-search',
+    resourceId: '<resource-uuid>',
+    fields: ['<col1>', '<col2>', '<col3>', '<col4>'],
+    headers: ['<header1>', '<header2>', '<header3>', '<header4>'],
+    searchFields: ['<col1>', '<col2>'],
+    pageSize: 50,
+    sort: '_id asc',
+    renderRow: function (r) {
+      return [
+        { text: r['<col1>'], dir: 'ltr' },
+        { text: r['<col2>'] },
+        { text: r['<col3>'] },
+        { text: r['<col4>'], badge: r['<col4>'] === '<active>' ? 'ok' : 'mut' },
+      ];
+    },
+  });
+</script>
+```
+
+**`renderRow`** must return an array of cell descriptors, one per
+column. The lib renders cells with `textContent` only — there is no
+HTML-string path, so values are always XSS-safe. Each descriptor is:
+
+| Field | Type | Use |
+|-------|------|-----|
+| `text` | string\|number | cell content (rendered via `textContent`) |
+| `dir` | `'ltr'` \| `'rtl'` | per-cell direction (numeric IDs use `'ltr'`) |
+| `align` | `'right'` \| `'left'` \| `'center'` | text alignment |
+| `class` | string | extra `<td>` class names |
+| `badge` | `'ok'` \| `'warn'` \| `'mut'` \| `'info'` \| `'danger'` | wraps `text` in a styled pill (matches gov.il-aligned semantic palette) |
+
+**Field selection**: 4-6 columns max. Lead with the primary identifier
+(numeric → `dir: 'ltr'`), then human name, then location/scope, then
+status (use `badge`), then a key date.
+
+**Search field selection**: free-text columns (name, address) and the
+numeric ID. Skip status enums and dates — partial-match on those is
+useless. `searchFields` defaults to all of `fields` if omitted.
+
+**`pageSize`** controls how many rows render per "show more" click;
+default 50. **`totalCap`** caps total rows fetched at 5000 — if a
+registry is larger, the hint tells the user to use the CSV link.
+
+**Error states are built-in**: loading skeleton, network failure
+fallback (Hebrew copy pointing to the CSV download), empty-after-search
+message. Don't emit your own.
+
+**Avoid duplicating data fetching**: the Explorer fetches at runtime in
+the browser. Keep your build-time bash queries focused on aggregates
+and chart inputs — let the Explorer handle the row-level browsing.
 
 ### Categorical palette — use on every chart
 

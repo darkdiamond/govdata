@@ -63,6 +63,14 @@ system: |
     • `echarts`              ECharts (charts of any kind)
     • `L`                    Leaflet (maps + tiles)
     • `L.markerClusterGroup` Leaflet.markercluster (clustering >200 pts)
+    • `GovExplorer`          live datastore_search-backed search +
+                             paginated table for registry pages.
+                             Use `GovExplorer.create({container,
+                             resourceId, fields, searchFields,
+                             pageSize, renderRow})` — `renderRow`
+                             returns an array of cell descriptors
+                             ({text, dir, badge, ...}). The skill
+                             documents the full pattern.
   Do not write `<script src=…>` to load these or any other library.
 
   ────────────────────────────────────────────────────────────────────
@@ -303,7 +311,12 @@ system: |
                     choropleth for region summaries
        time series → ECharts line / area (RTL-friendly)
        registry   → custom table + ECharts bar for a column breakdown;
-                    dedicated KPI cards for counts / medians
+                    dedicated KPI cards for counts / medians; for
+                    registries with >100 distinct named entities
+                    (companies / doctors / schools / places), add a
+                    `GovExplorer` card so users can search for a
+                    specific row at runtime — see the skill's
+                    "Live Data Explorer" section
        rankings   → ECharts horizontal bar
        networks   → ECharts graph (force-directed layout)
        many cats  → ECharts sunburst / treemap

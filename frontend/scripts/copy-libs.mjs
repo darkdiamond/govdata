@@ -3,6 +3,9 @@
 // list mirrors utils/dataset-libs.ts (which references the public/lib/
 // URLs from useHead) — keep them in sync. Wired into npm's predev /
 // prebuild / pregenerate lifecycle scripts so it runs every build.
+//
+// Hand-written browser libs (in this scripts/ dir) are copied alongside
+// the node_modules-sourced ones — see HANDWRITTEN_FILES below.
 import { copyFile, mkdir, readdir, stat } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -17,6 +20,12 @@ const FILES = [
   ['leaflet.markercluster/dist/MarkerCluster.css', 'MarkerCluster.css'],
   ['leaflet.markercluster/dist/MarkerCluster.Default.css', 'MarkerCluster.Default.css'],
   ['echarts/dist/echarts.min.js', 'echarts.min.js'],
+]
+
+// Hand-written, tracked in git. Copied verbatim from this scripts/ dir
+// into public/lib/. Reference path is relative to scripts/.
+const HANDWRITTEN_FILES = [
+  ['gov-explorer.js', 'gov-explorer.js'],
 ]
 
 // Leaflet's CSS references images at `images/marker-icon.png` etc. relative to
@@ -49,4 +58,11 @@ for (const [from, to] of FILES) {
 for (const [from, to] of IMAGE_DIRS) {
   await copyDir(resolve(root, 'node_modules', from), resolve(libDir, to))
   console.log(`  ${from}/* -> public/lib/${to}/`)
+}
+
+for (const [from, to] of HANDWRITTEN_FILES) {
+  const src = resolve(here, from)
+  const dst = resolve(libDir, to)
+  await copyFile(src, dst)
+  console.log(`  scripts/${from} -> public/lib/${to}`)
 }
