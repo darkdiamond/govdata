@@ -22,10 +22,34 @@ if (entries.value.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Kind not found', fatal: true })
 }
 
-useHead(() => ({
-  title: `${label.value} — gov-il.ai`,
-  meta: [{ name: 'description', content: `מאגרים מסוג ${label.value}` }],
-}))
+const SITE_URL = 'https://gov-il.ai'
+const kindDescription = computed(
+  () => `${entries.value.length} מאגרי מידע ציבוריים מסוג ${label.value} — נגישים בעברית עם ויזואליזציות מתאימות.`,
+)
+
+useSeo({
+  title: `מאגרים: ${label.value}`,
+  description: kindDescription.value,
+  path: `/kinds/${kind.value}/`,
+  keywords: [label.value],
+  breadcrumbs: [
+    { name: 'ראשי', url: `${SITE_URL}/` },
+    { name: 'מאגרים', url: `${SITE_URL}/datasets/` },
+    { name: label.value, url: `${SITE_URL}/kinds/${kind.value}/` },
+  ],
+  extraJsonLd: {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `מאגרים מסוג ${label.value}`,
+    inLanguage: 'he-IL',
+    url: `${SITE_URL}/kinds/${kind.value}/`,
+    hasPart: entries.value.slice(0, 25).map((e) => ({
+      '@type': 'Dataset',
+      name: e.title,
+      url: `${SITE_URL}/datasets/${e.id}/`,
+    })),
+  },
+})
 </script>
 
 <template>

@@ -1,11 +1,4 @@
 <script setup lang="ts">
-useSeo({
-  title: 'שאלות ותשובות',
-  description: 'שאלות נפוצות על gov-il.ai — האם זה אתר רשמי, עד כמה התוכן שנוצר ב-AI מדויק, מתי הדפים מתעדכנים, ואיך מדווחים על שגיאה.',
-  path: '/faq/',
-  keywords: ['FAQ', 'שאלות נפוצות', 'AI מדויק', 'איך לדווח שגיאה'],
-})
-
 const faqs = [
   {
     q: 'האם gov-il.ai הוא אתר ממשלתי רשמי?',
@@ -36,6 +29,26 @@ const faqs = [
     a: 'כן, וזו בדיוק המטרה. כל דף מעוצב לשיתוף — קישור בודד מספיק כדי להעביר את המידע לעמית, עיתונאי או קרוב משפחה שלא היו פותחים קובץ CSV בחיים.',
   },
 ]
+
+useSeo({
+  title: 'שאלות ותשובות',
+  description: 'שאלות נפוצות על gov-il.ai — האם זה אתר רשמי, עד כמה התוכן שנוצר ב-AI מדויק, מתי הדפים מתעדכנים, ואיך מדווחים על שגיאה.',
+  path: '/faq/',
+  keywords: ['FAQ', 'שאלות נפוצות', 'AI מדויק', 'איך לדווח שגיאה'],
+  breadcrumbs: [
+    { name: 'ראשי', url: 'https://gov-il.ai/' },
+    { name: 'שאלות ותשובות', url: 'https://gov-il.ai/faq/' },
+  ],
+  extraJsonLd: {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((f) => ({
+      '@type': 'Question',
+      name: f.q,
+      acceptedAnswer: { '@type': 'Answer', text: f.a },
+    })),
+  },
+})
 </script>
 
 <template>

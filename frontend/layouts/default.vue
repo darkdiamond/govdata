@@ -7,13 +7,16 @@ const year = new Date().getFullYear()
 <template>
   <div class="min-h-screen flex flex-col bg-surface">
     <header class="gov-header">
-      <div class="max-w-gov mx-auto px-4 h-header flex items-center justify-between gap-6">
-        <NuxtLink to="/" class="flex items-center gap-3 no-underline hover:no-underline text-white">
-          <span class="w-9 h-9 rounded-gov bg-white/15 grid place-items-center text-white text-base font-display">
-            .ai
-          </span>
-          <span class="font-display text-lg leading-none">gov-il.ai</span>
-        </NuxtLink>
+      <div class="max-w-gov mx-auto px-4 h-header flex items-center justify-between gap-3 sm:gap-6">
+        <div class="flex items-center gap-2">
+          <MobileNavDrawer />
+          <NuxtLink to="/" class="flex items-center gap-3 no-underline hover:no-underline text-white">
+            <span class="w-9 h-9 rounded-gov bg-white/15 grid place-items-center text-white text-base font-display">
+              .ai
+            </span>
+            <span class="font-display text-lg leading-none">gov-il.ai</span>
+          </NuxtLink>
+        </div>
 
         <nav class="hidden md:flex items-center gap-6 text-sm">
           <NuxtLink
@@ -29,22 +32,7 @@ const year = new Date().getFullYear()
         </nav>
 
         <div class="flex items-center gap-3">
-          <a
-            href="https://data.gov.il"
-            target="_blank"
-            rel="noopener"
-            class="hidden sm:inline-flex items-center gap-2 text-xs text-white/85 hover:text-white no-underline hover:no-underline"
-          >
-            <img src="/icons/external-link.svg" alt="" class="w-4 h-4" />
-            data.gov.il
-          </a>
-          <button
-            type="button"
-            aria-label="חיפוש"
-            class="w-9 h-9 grid place-items-center rounded-gov-pill hover:bg-white/10 transition-colors"
-          >
-            <img src="/icons/search.svg" alt="" class="w-5 h-5 invert opacity-90" />
-          </button>
+          <HeaderSearch />
         </div>
       </div>
     </header>
@@ -94,7 +82,7 @@ const year = new Date().getFullYear()
       </div>
       <div class="border-t border-white/10">
         <div class="max-w-gov mx-auto px-4 py-4 text-xs text-white/70 flex flex-col sm:flex-row sm:justify-between gap-2">
-          <div>תוכן שנוצר אוטומטית על ידי AI ממידע ציבורי.</div>
+          <div>פרויקט עצמאי — אינו אתר ממשלתי רשמי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.</div>
           <div>© {{ year }} gov-il.ai</div>
         </div>
       </div>
