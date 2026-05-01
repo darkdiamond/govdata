@@ -237,7 +237,55 @@ onMounted(async () => {
     <div class="max-w-gov mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
       <article ref="bodyEl" class="dataset-body" v-html="body" />
 
-      <aside class="space-y-4">
+      <aside class="space-y-4 lg:pt-20">
+        <section v-if="hasMeta" class="card p-4">
+          <h3 class="m-0 mb-3 text-sm font-display text-subtle">פרטים</h3>
+          <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm m-0">
+            <template v-if="entry.organization">
+              <dt class="text-subtle">משרד</dt>
+              <dd class="m-0">
+                <NuxtLink
+                  v-if="entry.organization_slug"
+                  :to="`/ministries/${entry.organization_slug}/`"
+                >{{ entry.organization }}</NuxtLink>
+                <template v-else>{{ entry.organization }}</template>
+              </dd>
+            </template>
+            <template v-if="entry.license">
+              <dt class="text-subtle">רישיון</dt>
+              <dd class="m-0">{{ entry.license }}</dd>
+            </template>
+            <template v-if="entry.metadata_modified">
+              <dt class="text-subtle">עודכן</dt>
+              <dd class="m-0">{{ formatDateHe(entry.metadata_modified) }}</dd>
+            </template>
+            <template v-if="entry.record_count != null">
+              <dt class="text-subtle">רשומות</dt>
+              <dd class="m-0">{{ formatNumber(entry.record_count) }}</dd>
+            </template>
+          </dl>
+        </section>
+
+        <section v-if="entry.resources?.length" class="card p-4">
+          <h3 class="m-0 mb-3 text-sm font-display text-subtle">קבצים להורדה</h3>
+          <div>
+            <div v-for="r in entry.resources" :key="r.url" class="res-row">
+              <span :class="['fmt-badge', formatClass(r.format)]">{{ (r.format || 'FILE').toUpperCase() }}</span>
+              <div class="flex-1 min-w-0">
+                <div class="text-sm text-ink truncate">{{ r.name || r.format || 'קובץ' }}</div>
+                <div v-if="r.size_bytes" class="text-xs text-subtle">{{ formatBytes(r.size_bytes) }}</div>
+              </div>
+              <a
+                :href="publicResourceUrl(r.url)"
+                class="btn-ghost text-xs px-3 py-1.5"
+                target="_blank"
+                rel="noopener"
+                download
+              >הורדה</a>
+            </div>
+          </div>
+        </section>
+
         <section v-if="related.length" class="card p-4">
           <h3 class="m-0 mb-3 text-sm text-subtle font-display">מאגרים קשורים</h3>
           <ul class="list-none m-0 p-0 space-y-2">
@@ -271,61 +319,6 @@ onMounted(async () => {
           <NuxtLink :to="`/kinds/${entry.dataset_kind}/`" class="badge hover:bg-brand-50">{{ kindLabel }}</NuxtLink>
         </section>
       </aside>
-    </div>
-
-    <div
-      v-if="hasMeta || entry.resources?.length"
-      class="max-w-gov mx-auto px-4 pb-8"
-    >
-      <div class="grid md:grid-cols-2 gap-4">
-        <section v-if="hasMeta" class="card p-5">
-          <h3 class="m-0 mb-3 text-sm font-display text-subtle">פרטים</h3>
-          <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm m-0">
-            <template v-if="entry.organization">
-              <dt class="text-subtle">משרד</dt>
-              <dd class="m-0">
-                <NuxtLink
-                  v-if="entry.organization_slug"
-                  :to="`/ministries/${entry.organization_slug}/`"
-                >{{ entry.organization }}</NuxtLink>
-                <template v-else>{{ entry.organization }}</template>
-              </dd>
-            </template>
-            <template v-if="entry.license">
-              <dt class="text-subtle">רישיון</dt>
-              <dd class="m-0">{{ entry.license }}</dd>
-            </template>
-            <template v-if="entry.metadata_modified">
-              <dt class="text-subtle">עודכן</dt>
-              <dd class="m-0">{{ formatDateHe(entry.metadata_modified) }}</dd>
-            </template>
-            <template v-if="entry.record_count != null">
-              <dt class="text-subtle">רשומות</dt>
-              <dd class="m-0">{{ formatNumber(entry.record_count) }}</dd>
-            </template>
-          </dl>
-        </section>
-
-        <section v-if="entry.resources?.length" class="card p-5">
-          <h3 class="m-0 mb-3 text-sm font-display text-subtle">קבצים להורדה</h3>
-          <div>
-            <div v-for="r in entry.resources" :key="r.url" class="res-row">
-              <span :class="['fmt-badge', formatClass(r.format)]">{{ (r.format || 'FILE').toUpperCase() }}</span>
-              <div class="flex-1 min-w-0">
-                <div class="text-sm text-ink truncate">{{ r.name || r.format || 'קובץ' }}</div>
-                <div v-if="r.size_bytes" class="text-xs text-subtle">{{ formatBytes(r.size_bytes) }}</div>
-              </div>
-              <a
-                :href="publicResourceUrl(r.url)"
-                class="btn-ghost text-xs px-3 py-1.5"
-                target="_blank"
-                rel="noopener"
-                download
-              >הורדה</a>
-            </div>
-          </div>
-        </section>
-      </div>
     </div>
   </div>
 </template>
