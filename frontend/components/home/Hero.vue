@@ -38,7 +38,7 @@
         </NuxtLink>
       </div>
 
-      <ul class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 list-none p-0 m-0 text-sm">
+      <ul class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-3 list-none p-0 m-0 text-xs sm:text-sm">
         <li class="flex items-center gap-2 text-ink/80">
           <img src="/icons/circle-check.svg" alt="" class="w-4 h-4 opacity-80" />
           ויזואליזציות אוטומטיות

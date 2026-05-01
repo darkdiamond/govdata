@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { useManifest } from '~/composables/useManifest'
 
-useHead({ title: 'משרדים — gov-il.ai' })
+useSeo({
+  title: 'משרדים',
+  description: 'משרדי הממשלה והרשויות שמפרסמים מאגרי מידע ציבוריים. לחצו על משרד כדי לראות את כל המאגרים שלו עם תקצירים בעברית.',
+  path: '/ministries/',
+  breadcrumbs: [
+    { name: 'ראשי', url: 'https://gov-il.ai/' },
+    { name: 'משרדים', url: 'https://gov-il.ai/ministries/' },
+  ],
+})
 
 const manifest = useManifest()
 

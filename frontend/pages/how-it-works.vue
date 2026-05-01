@@ -4,6 +4,10 @@ useSeo({
   description: 'כל דף ב-gov-il.ai נכתב אוטומטית על ידי סוכן AI — ללא עורך אנושי. הכירו את התהליך: זיהוי מאגר חדש, מחקר, כתיבה, ופרסום לעברית נגישה.',
   path: '/how-it-works/',
   keywords: ['agentic AI', 'סוכן AI אוטונומי', 'pipeline', 'איך עובד AI'],
+  breadcrumbs: [
+    { name: 'ראשי', url: 'https://gov-il.ai/' },
+    { name: 'איך זה עובד', url: 'https://gov-il.ai/how-it-works/' },
+  ],
 })
 
 const pipeline = [

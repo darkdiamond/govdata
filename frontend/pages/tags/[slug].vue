@@ -13,10 +13,34 @@ if (entries.value.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Tag not found', fatal: true })
 }
 
-useHead(() => ({
-  title: `${slug.value} — gov-il.ai`,
-  meta: [{ name: 'description', content: `מאגרי מידע עם התגית "${slug.value}"` }],
-}))
+const SITE_URL = 'https://gov-il.ai'
+const tagDescription = computed(
+  () => `${entries.value.length} מאגרי מידע ציבוריים מ-data.gov.il עם התגית "${slug.value}".`,
+)
+
+useSeo({
+  title: `תגית: ${slug.value}`,
+  description: tagDescription.value,
+  path: `/tags/${encodeURIComponent(slug.value)}/`,
+  keywords: [slug.value],
+  breadcrumbs: [
+    { name: 'ראשי', url: `${SITE_URL}/` },
+    { name: 'נושאים', url: `${SITE_URL}/tags/` },
+    { name: slug.value, url: `${SITE_URL}/tags/${encodeURIComponent(slug.value)}/` },
+  ],
+  extraJsonLd: {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: `מאגרים עם התגית "${slug.value}"`,
+    inLanguage: 'he-IL',
+    url: `${SITE_URL}/tags/${encodeURIComponent(slug.value)}/`,
+    hasPart: entries.value.slice(0, 25).map((e) => ({
+      '@type': 'Dataset',
+      name: e.title,
+      url: `${SITE_URL}/datasets/${e.id}/`,
+    })),
+  },
+})
 </script>
 
 <template>

@@ -14,10 +14,43 @@ if (entries.value.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Ministry not found', fatal: true })
 }
 
-useHead(() => ({
-  title: `${ministryTitle.value} — gov-il.ai`,
-  meta: [{ name: 'description', content: `מאגרי המידע של ${ministryTitle.value}` }],
-}))
+const SITE_URL = 'https://gov-il.ai'
+const ministryDescription = computed(
+  () => `${entries.value.length} מאגרי מידע ציבוריים שמפרסם ${ministryTitle.value}, נגישים בעברית עם תקצירים ותובנות שנכתבו על ידי AI.`,
+)
+
+useSeo({
+  title: ministryTitle.value,
+  description: ministryDescription.value,
+  path: `/ministries/${slug.value}/`,
+  keywords: [ministryTitle.value],
+  breadcrumbs: [
+    { name: 'ראשי', url: `${SITE_URL}/` },
+    { name: 'משרדים', url: `${SITE_URL}/ministries/` },
+    { name: ministryTitle.value, url: `${SITE_URL}/ministries/${slug.value}/` },
+  ],
+  extraJsonLd: [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'GovernmentOrganization',
+      name: ministryTitle.value,
+      url: `${SITE_URL}/ministries/${slug.value}/`,
+      sameAs: 'https://www.gov.il',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: `מאגרי מידע של ${ministryTitle.value}`,
+      inLanguage: 'he-IL',
+      url: `${SITE_URL}/ministries/${slug.value}/`,
+      hasPart: entries.value.slice(0, 25).map((e) => ({
+        '@type': 'Dataset',
+        name: e.title,
+        url: `${SITE_URL}/datasets/${e.id}/`,
+      })),
+    },
+  ],
+})
 </script>
 
 <template>

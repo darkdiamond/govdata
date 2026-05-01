@@ -83,6 +83,7 @@ const hasMeta = computed(() =>
   Boolean(
     entry.value.organization ||
       entry.value.license ||
+      entry.value.last_analyzed_at ||
       entry.value.metadata_modified ||
       entry.value.record_count != null,
   ),
@@ -108,10 +109,59 @@ function formatClass(fmt?: string | null): string {
   }
 }
 
+const SITE_URL = 'https://gov-il.ai'
+const datasetUrl = `${SITE_URL}/datasets/${entry.value.id}/`
+const datasetDescription = (entry.value.summary_he ?? entry.value.title).slice(0, 160)
+
+const breadcrumbs = [
+  { name: 'ראשי', url: `${SITE_URL}/` },
+  { name: 'מאגרים', url: `${SITE_URL}/datasets/` },
+  ...(entry.value.organization && entry.value.organization_slug
+    ? [{ name: entry.value.organization, url: `${SITE_URL}/ministries/${entry.value.organization_slug}/` }]
+    : []),
+  { name: entry.value.title, url: datasetUrl },
+]
+
+const datasetLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'Dataset',
+  name: entry.value.title,
+  description: entry.value.summary_he ?? entry.value.title,
+  identifier: entry.value.id,
+  url: datasetUrl,
+  inLanguage: 'he',
+  isAccessibleForFree: true,
+  isBasedOn: 'https://data.gov.il',
+}
+if (entry.value.license) datasetLd.license = entry.value.license
+if (entry.value.tags_he?.length) datasetLd.keywords = entry.value.tags_he
+if (entry.value.metadata_modified) datasetLd.dateModified = entry.value.metadata_modified
+if (entry.value.organization) {
+  datasetLd.creator = {
+    '@type': 'GovernmentOrganization',
+    name: entry.value.organization,
+    url: 'https://www.gov.il',
+  }
+}
+if (entry.value.resources?.length) {
+  datasetLd.distribution = entry.value.resources.map((r) => {
+    const dist: Record<string, unknown> = {
+      '@type': 'DataDownload',
+      contentUrl: publicResourceUrl(r.url),
+    }
+    if (r.format) dist.encodingFormat = r.format
+    if (r.name) dist.name = r.name
+    if (r.size_bytes) dist.contentSize = String(r.size_bytes)
+    return dist
+  })
+}
+
 useSeo({
   title: entry.value.title,
-  description: (entry.value.summary_he ?? entry.value.title).slice(0, 160),
+  description: datasetDescription,
   path: `/datasets/${entry.value.id}/`,
+  breadcrumbs,
+  extraJsonLd: datasetLd,
 })
 
 // Agent-generated content.html has inline <script> tags (ECharts, Leaflet).
@@ -255,9 +305,9 @@ onMounted(async () => {
               <dt class="text-subtle">רישיון</dt>
               <dd class="m-0">{{ entry.license }}</dd>
             </template>
-            <template v-if="entry.metadata_modified">
+            <template v-if="entry.last_analyzed_at || entry.metadata_modified">
               <dt class="text-subtle">עודכן</dt>
-              <dd class="m-0">{{ formatDateHe(entry.metadata_modified) }}</dd>
+              <dd class="m-0">{{ formatDateHe(entry.last_analyzed_at ?? entry.metadata_modified) }}</dd>
             </template>
             <template v-if="entry.record_count != null">
               <dt class="text-subtle">רשומות</dt>
@@ -322,3 +372,30 @@ onMounted(async () => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Guard against agent-emitted bodies with wide tables, fixed-pixel images,
+   or full-width charts pushing horizontal overflow on mobile. ECharts and
+   Leaflet self-size to their container, so capping the container is enough. */
+.dataset-body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+.dataset-body :deep(table) {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+.dataset-body :deep(img),
+.dataset-body :deep(svg),
+.dataset-body :deep(canvas),
+.dataset-body :deep(iframe),
+.dataset-body :deep(video) {
+  max-width: 100%;
+  height: auto;
+}
+.dataset-body :deep(pre) {
+  overflow-x: auto;
+  max-width: 100%;
+}
+</style>

@@ -28,7 +28,7 @@ const benefits = [
 <template>
   <section>
     <div class="mb-8 max-w-3xl">
-      <h2 class="font-display m-0">הנגשה, לא רק פרסום</h2>
+      <h2 class="font-display m-0">מידע מובן, לא רק זמין</h2>
       <p class="mt-2 text-ink/75 leading-relaxed">
         מידע ממשלתי רשמי כבר זמין — אבל עד היום הוא נגיש רק למי שיודע לפתוח CSV ולקרוא טבלאות באנגלית. gov-il.ai סוגר את הפער.
       </p>

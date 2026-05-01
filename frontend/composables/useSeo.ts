@@ -1,6 +1,6 @@
 // Shared SEO helper. Emits title, description, canonical, OG, Twitter,
-// and a small JSON-LD block describing the site. Keywords seeded with the
-// AI/agentic terms the site ranks on (Hebrew + English).
+// and JSON-LD blocks (WebSite always; BreadcrumbList + extras when given).
+// Keywords seeded with the AI/agentic terms the site ranks on (Hebrew + English).
 
 const SITE_URL = 'https://gov-il.ai'
 const SITE_NAME = 'gov-il.ai'
@@ -20,12 +20,19 @@ const BASE_KEYWORDS = [
   'government data',
 ]
 
+export interface BreadcrumbItem {
+  name: string
+  url: string
+}
+
 export interface SeoInput {
   title: string
   description: string
   path: string
   ogImage?: string
   keywords?: string[]
+  breadcrumbs?: BreadcrumbItem[]
+  extraJsonLd?: object | object[]
 }
 
 export function useSeo(input: SeoInput) {
@@ -34,13 +41,33 @@ export function useSeo(input: SeoInput) {
   const image = input.ogImage ? `${SITE_URL}${input.ogImage}` : `${SITE_URL}${DEFAULT_OG}`
   const keywords = [...BASE_KEYWORDS, ...(input.keywords ?? [])].join(', ')
 
-  const jsonLd = {
+  const websiteLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: SITE_NAME,
     url: SITE_URL,
     inLanguage: 'he-IL',
     description: input.description,
+  }
+
+  const ldBlocks: object[] = [websiteLd]
+
+  if (input.breadcrumbs && input.breadcrumbs.length > 0) {
+    ldBlocks.push({
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: input.breadcrumbs.map((b, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        name: b.name,
+        item: b.url,
+      })),
+    })
+  }
+
+  if (input.extraJsonLd) {
+    if (Array.isArray(input.extraJsonLd)) ldBlocks.push(...input.extraJsonLd)
+    else ldBlocks.push(input.extraJsonLd)
   }
 
   useHead({
@@ -61,11 +88,10 @@ export function useSeo(input: SeoInput) {
       { name: 'twitter:description', content: input.description },
       { name: 'twitter:image', content: image },
     ],
-    script: [
-      {
-        type: 'application/ld+json',
-        innerHTML: JSON.stringify(jsonLd),
-      },
-    ],
+    script: ldBlocks.map((ld, i) => ({
+      key: `ld-${i}`,
+      type: 'application/ld+json',
+      innerHTML: JSON.stringify(ld),
+    })),
   })
 }

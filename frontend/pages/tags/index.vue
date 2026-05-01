@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { useManifest } from '~/composables/useManifest'
 
-useHead({ title: 'נושאים — gov-il.ai' })
+useSeo({
+  title: 'נושאים',
+  description: 'כל התגיות והנושאים שמופיעים במאגרי המידע של ממשלת ישראל. דפדפו לפי נושא לאיתור מאגרים רלוונטיים בעברית.',
+  path: '/tags/',
+  breadcrumbs: [
+    { name: 'ראשי', url: 'https://gov-il.ai/' },
+    { name: 'נושאים', url: 'https://gov-il.ai/tags/' },
+  ],
+})
 
 const manifest = useManifest()
 
