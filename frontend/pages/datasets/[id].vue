@@ -195,10 +195,18 @@ async function awaitDatasetLibs(timeoutMs = 5000): Promise<void> {
   const start = Date.now()
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    const w = window as unknown as { L?: { markerClusterGroup?: unknown }; echarts?: unknown }
-    if (typeof w.echarts !== 'undefined' && w.L && typeof w.L.markerClusterGroup === 'function') return
+    const w = window as unknown as {
+      L?: { markerClusterGroup?: unknown }
+      echarts?: unknown
+      GovExplorer?: { create?: unknown }
+    }
+    const ready =
+      typeof w.echarts !== 'undefined' &&
+      w.L && typeof w.L.markerClusterGroup === 'function' &&
+      w.GovExplorer && typeof w.GovExplorer.create === 'function'
+    if (ready) return
     if (Date.now() - start > timeoutMs) {
-      console.warn('[dataset libs] timed out waiting for window.{L,echarts} after SPA nav')
+      console.warn('[dataset libs] timed out waiting for window.{L,echarts,GovExplorer} after SPA nav')
       return
     }
     await new Promise((r) => setTimeout(r, 30))
@@ -226,9 +234,48 @@ onMounted(async () => {
       </div>
     </nav>
 
+    <div class="max-w-gov mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
+      <article ref="bodyEl" class="dataset-body" v-html="body" />
+
+      <aside class="space-y-4">
+        <section v-if="related.length" class="card p-4">
+          <h3 class="m-0 mb-3 text-sm text-subtle font-display">מאגרים קשורים</h3>
+          <ul class="list-none m-0 p-0 space-y-2">
+            <li v-for="r in related" :key="r.id">
+              <NuxtLink
+                :to="`/datasets/${r.id}/`"
+                class="block card-hover p-2 rounded-gov-md hover:bg-brand-50 no-underline hover:no-underline"
+              >
+                <div class="text-sm font-medium text-ink">{{ r.title }}</div>
+                <div v-if="r.organization" class="text-xs text-subtle mt-0.5">{{ r.organization }}</div>
+                <div v-if="r.summary_he" class="text-xs text-subtle mt-1 line-clamp-2">{{ r.summary_he }}</div>
+              </NuxtLink>
+            </li>
+          </ul>
+        </section>
+
+        <section v-if="entry.tags_he?.length" class="card p-4">
+          <h3 class="m-0 mb-2 text-sm text-subtle font-display">תגיות</h3>
+          <div class="flex flex-wrap gap-1">
+            <NuxtLink
+              v-for="t in entry.tags_he"
+              :key="t"
+              :to="`/tags/${encodeURIComponent(t)}/`"
+              class="tag-chip hover:bg-brand-100"
+            >{{ t }}</NuxtLink>
+          </div>
+        </section>
+
+        <section v-if="entry.dataset_kind" class="card p-4 text-xs text-subtle">
+          סוג מאגר:
+          <NuxtLink :to="`/kinds/${entry.dataset_kind}/`" class="badge hover:bg-brand-50">{{ kindLabel }}</NuxtLink>
+        </section>
+      </aside>
+    </div>
+
     <div
       v-if="hasMeta || entry.resources?.length"
-      class="max-w-gov mx-auto px-4 pt-6"
+      class="max-w-gov mx-auto px-4 pb-8"
     >
       <div class="grid md:grid-cols-2 gap-4">
         <section v-if="hasMeta" class="card p-5">
@@ -279,45 +326,6 @@ onMounted(async () => {
           </div>
         </section>
       </div>
-    </div>
-
-    <div class="max-w-gov mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
-      <article ref="bodyEl" class="dataset-body" v-html="body" />
-
-      <aside class="space-y-4">
-        <section v-if="related.length" class="card p-4">
-          <h3 class="m-0 mb-3 text-sm text-subtle font-display">מאגרים קשורים</h3>
-          <ul class="list-none m-0 p-0 space-y-2">
-            <li v-for="r in related" :key="r.id">
-              <NuxtLink
-                :to="`/datasets/${r.id}/`"
-                class="block card-hover p-2 rounded-gov-md hover:bg-brand-50 no-underline hover:no-underline"
-              >
-                <div class="text-sm font-medium text-ink">{{ r.title }}</div>
-                <div v-if="r.organization" class="text-xs text-subtle mt-0.5">{{ r.organization }}</div>
-                <div v-if="r.summary_he" class="text-xs text-subtle mt-1 line-clamp-2">{{ r.summary_he }}</div>
-              </NuxtLink>
-            </li>
-          </ul>
-        </section>
-
-        <section v-if="entry.tags_he?.length" class="card p-4">
-          <h3 class="m-0 mb-2 text-sm text-subtle font-display">תגיות</h3>
-          <div class="flex flex-wrap gap-1">
-            <NuxtLink
-              v-for="t in entry.tags_he"
-              :key="t"
-              :to="`/tags/${encodeURIComponent(t)}/`"
-              class="tag-chip hover:bg-brand-100"
-            >{{ t }}</NuxtLink>
-          </div>
-        </section>
-
-        <section v-if="entry.dataset_kind" class="card p-4 text-xs text-subtle">
-          סוג מאגר:
-          <NuxtLink :to="`/kinds/${entry.dataset_kind}/`" class="badge hover:bg-brand-50">{{ kindLabel }}</NuxtLink>
-        </section>
-      </aside>
     </div>
   </div>
 </template>

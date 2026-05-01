@@ -12,12 +12,16 @@ export const DATASET_LIB_TAGS = {
   script: [
     // Order matters: Leaflet -> MarkerCluster (mutates L) -> ECharts.
     // Plain <script> tags (no defer/async): head-blocking so window.L /
-    // window.echarts exist before the body's inline init runs during
-    // initial parse. On SPA nav useHead appends the same tags to <head>;
-    // executeBodyScripts() in pages/datasets/[id].vue waits on globals
-    // before re-running body scripts.
+    // window.echarts / window.GovExplorer exist before the body's inline
+    // init runs during initial parse. On SPA nav useHead appends the same
+    // tags to <head>; executeBodyScripts() in pages/datasets/[id].vue
+    // waits on globals before re-running body scripts.
     { src: '/lib/leaflet.js' },
     { src: '/lib/leaflet.markercluster.js' },
     { src: '/lib/echarts.min.js' },
+    // gov-explorer.js is hand-written (committed directly to public/lib/)
+    // — not copied from node_modules. Provides window.GovExplorer.create
+    // for live datastore_search-backed search/paginate cards.
+    { src: '/lib/gov-explorer.js' },
   ],
 }

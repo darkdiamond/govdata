@@ -63,7 +63,8 @@ frontend/node_modules/
 frontend/.output/
 frontend/.nuxt/
 frontend/.data/
-# Curated viz libs copied from node_modules at build time; see
+# Curated viz libs copied from node_modules at build time + the
+# hand-written gov-explorer.js copied from frontend/scripts/. See
 # frontend/scripts/copy-libs.mjs.
 frontend/public/lib/
 # Publisher-generated artifacts. Materialized at build time from Firestore
