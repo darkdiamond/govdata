@@ -81,7 +81,7 @@ const year = new Date().getFullYear()
           </ul>
         </div>
         <div>
-          <div class="font-display text-base mb-2">מקור</div>
+          <div class="font-display text-base mb-2">מקורות</div>
           <ul class="list-none p-0 m-0 space-y-1.5 text-white/85">
             <li>
               <a href="https://data.gov.il" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 hover:text-white no-underline hover:no-underline">
