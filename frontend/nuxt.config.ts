@@ -64,8 +64,11 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'he', dir: 'rtl' },
-      title: 'GovData.IL',
+      title: 'govil.ai',
       link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+        { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32.png' },
+        { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' },
         { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
@@ -78,11 +81,19 @@ export default defineNuxtConfig({
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'theme-color', content: '#0068f5' },
         { name: 'generator', content: 'Nuxt + agentic AI pipeline' },
-        { name: 'author', content: 'GovData.IL' },
+        { name: 'author', content: 'govil.ai' },
         // Per-page useSeo() overrides these; they exist as fallbacks for
         // any page that forgets to call useSeo().
-        { name: 'description', content: 'דפי נחיתה אוטומטיים בעברית למאגרי data.gov.il — נכתבים על ידי סוכן בינה מלאכותית (agentic AI).' },
+        { name: 'description', content: 'דפי נחיתה אוטומטיים למאגרי data.gov.il — נכתבים על ידי סוכן בינה מלאכותית (agentic AI).' },
         { name: 'keywords', content: 'מידע ממשלתי, data.gov.il, בינה מלאכותית, AI, סוכן AI, agentic, אג׳נטי, open data Israel' },
+        { name: 'google-adsense-account', content: 'ca-pub-9066544714340882' },
+      ],
+      script: [
+        {
+          async: true,
+          src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9066544714340882',
+          crossorigin: 'anonymous',
+        },
       ],
     },
   },

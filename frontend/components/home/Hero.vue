@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Hero. AI-forward brand (gov-il.ai), benefit-led headline + subtitle.
+// Hero. AI-forward brand (govil.ai), benefit-led headline + subtitle.
 // No tech-stack names visible — just value.
 </script>
 
@@ -14,7 +14,7 @@
     <div class="py-14 md:py-24">
       <span class="inline-flex items-center gap-2 px-3 py-1 rounded-gov-pill bg-white border border-rule text-xs text-brand-700 shadow-card">
         <span aria-hidden="true">✨</span>
-        gov-il.ai · מופעל על ידי סוכני AI
+        govil.ai · מופעל על ידי סוכני AI
       </span>
 
       <h1 class="font-display mt-5 max-w-4xl text-[clamp(2rem,1.4rem+3vw,3.25rem)] leading-[1.15]">
@@ -23,7 +23,8 @@
       </h1>
 
       <p class="mt-5 max-w-2xl text-lg md:text-xl text-ink/80 leading-relaxed">
-        כל מאגר שפרסמה הממשלה הופך לעמוד אחד בעברית: תקציר, ויזואליזציות, תובנות וקישורים.
+        כל מאגר שפרסמה ממשלת ישראל נסרק על ידי סוכן בינה מלאכותית מתקדם, שמנתח אותו לעומק
+        ומפיק תקציר, ויזואליזציות, גרפים, תובנות וקישורים.
         בלי להוריד קבצים, בלי לפתוח CSV, בלי ידע טכני — רק להבין את המידע ולשתף אותו עם כל אחד.
       </p>
 

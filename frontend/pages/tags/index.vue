@@ -3,11 +3,11 @@ import { useManifest } from '~/composables/useManifest'
 
 useSeo({
   title: 'נושאים',
-  description: 'כל התגיות והנושאים שמופיעים במאגרי המידע של ממשלת ישראל. דפדפו לפי נושא לאיתור מאגרים רלוונטיים בעברית.',
+  description: 'כל התגיות והנושאים שמופיעים במאגרי המידע של ממשלת ישראל. דפדפו לפי נושא לאיתור מאגרים רלוונטיים.',
   path: '/tags/',
   breadcrumbs: [
-    { name: 'ראשי', url: 'https://gov-il.ai/' },
-    { name: 'נושאים', url: 'https://gov-il.ai/tags/' },
+    { name: 'ראשי', url: 'https://govil.ai/' },
+    { name: 'נושאים', url: 'https://govil.ai/tags/' },
   ],
 })
 

@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(__dirname, '..')
-const SITE = 'https://gov-il.ai'
+const SITE = 'https://govil.ai'
 
 const manifestPath = resolve(ROOT, 'public/data/manifest.json')
 const outPath = resolve(ROOT, '.output/public/sitemap.xml')

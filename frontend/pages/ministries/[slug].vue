@@ -14,9 +14,9 @@ if (entries.value.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Ministry not found', fatal: true })
 }
 
-const SITE_URL = 'https://gov-il.ai'
+const SITE_URL = 'https://govil.ai'
 const ministryDescription = computed(
-  () => `${entries.value.length} מאגרי מידע ציבוריים שמפרסם ${ministryTitle.value}, נגישים בעברית עם תקצירים ותובנות שנכתבו על ידי AI.`,
+  () => `${entries.value.length} מאגרי מידע ציבוריים שמפרסם ${ministryTitle.value}, עם תקצירים ותובנות שנכתבו על ידי AI.`,
 )
 
 useSeo({

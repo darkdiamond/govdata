@@ -10,11 +10,19 @@ const year = new Date().getFullYear()
       <div class="max-w-gov mx-auto px-4 h-header flex items-center justify-between gap-3 sm:gap-6">
         <div class="flex items-center gap-2">
           <MobileNavDrawer />
-          <NuxtLink to="/" class="flex items-center gap-3 no-underline hover:no-underline text-white">
-            <span class="w-9 h-9 rounded-gov bg-white/15 grid place-items-center text-white text-base font-display">
-              .ai
+          <NuxtLink to="/" class="flex items-center gap-2.5 no-underline hover:no-underline text-white" aria-label="govil.ai — דף הבית">
+            <svg class="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+              <rect x="2.5" y="20.5" width="18" height="1.5" rx="0.5"/>
+              <rect x="4" y="14" width="3" height="6.5" rx="0.5"/>
+              <rect x="8" y="11" width="3" height="9.5" rx="0.5"/>
+              <rect x="12" y="8" width="3" height="12.5" rx="0.5"/>
+              <rect x="16" y="13" width="3" height="7.5" rx="0.5"/>
+              <path d="M13.5 2 L14.2 3.8 L16 4.5 L14.2 5.2 L13.5 7 L12.8 5.2 L11 4.5 L12.8 3.8 Z"/>
+            </svg>
+            <span class="flex flex-col leading-none">
+              <span class="font-display text-lg leading-none">govil.ai</span>
+              <span class="hidden sm:inline text-[11px] text-white/75 mt-1 leading-none">מידע ממשלתי. בעזרת AI.</span>
             </span>
-            <span class="font-display text-lg leading-none">gov-il.ai</span>
           </NuxtLink>
         </div>
 
@@ -44,9 +52,19 @@ const year = new Date().getFullYear()
     <footer class="bg-ink-deep text-white mt-16">
       <div class="max-w-gov mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
         <div>
-          <div class="font-display text-base mb-2">gov-il.ai</div>
+          <div class="font-display text-base mb-2 flex items-center gap-2">
+            <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+              <rect x="2.5" y="20.5" width="18" height="1.5" rx="0.5"/>
+              <rect x="4" y="14" width="3" height="6.5" rx="0.5"/>
+              <rect x="8" y="11" width="3" height="9.5" rx="0.5"/>
+              <rect x="12" y="8" width="3" height="12.5" rx="0.5"/>
+              <rect x="16" y="13" width="3" height="7.5" rx="0.5"/>
+              <path d="M13.5 2 L14.2 3.8 L16 4.5 L14.2 5.2 L13.5 7 L12.8 5.2 L11 4.5 L12.8 3.8 Z"/>
+            </svg>
+            govil.ai
+          </div>
           <p class="text-white/75 leading-relaxed m-0">
-            מאגרי המידע הציבוריים של ממשלת ישראל — נגישים בעברית, מוסברים על ידי AI,
+            מאגרי המידע הציבוריים של ממשלת ישראל — מוסברים על ידי AI,
             פתוחים לכל אחד.
           </p>
         </div>
@@ -83,7 +101,7 @@ const year = new Date().getFullYear()
       <div class="border-t border-white/10">
         <div class="max-w-gov mx-auto px-4 py-4 text-xs text-white/70 flex flex-col sm:flex-row sm:justify-between gap-2">
           <div>פרויקט עצמאי — אינו אתר ממשלתי רשמי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.</div>
-          <div>© {{ year }} gov-il.ai</div>
+          <div>© {{ year }} govil.ai</div>
         </div>
       </div>
     </footer>

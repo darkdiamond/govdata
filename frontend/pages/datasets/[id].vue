@@ -109,7 +109,7 @@ function formatClass(fmt?: string | null): string {
   }
 }
 
-const SITE_URL = 'https://gov-il.ai'
+const SITE_URL = 'https://govil.ai'
 const datasetUrl = `${SITE_URL}/datasets/${entry.value.id}/`
 const datasetDescription = (entry.value.summary_he ?? entry.value.title).slice(0, 160)
 
