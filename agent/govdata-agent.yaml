@@ -157,6 +157,82 @@ system: |
   (EPSG:2039) to WGS84 (EPSG:4326), use pyproj inside the container and
   embed the converted [lat, lng] array inline in JS.
 
+  ────────────────────────────────────────────────────────────────────
+  LIVE DATA EXPLORER (GovExplorer)
+  ────────────────────────────────────────────────────────────────────
+  For registry-shaped datasets (companies / doctors / schools / places /
+  permits / businesses) with >100 distinct named entities, add a
+  searchable + paginated table card that fetches rows live from the CKAN
+  `datastore_search` API in the browser. Skip for pure timeseries,
+  aggregate / summary datasets, registries <100 rows, and resources
+  without `datastore_active=true`.
+
+  Globals (pre-loaded by the Nuxt shell): `window.GovExplorer.create({...})`.
+  Do NOT add a `<script src=>` to load it.
+
+  Canonical snippet — place at the bottom of your data-explorer section,
+  after the charts (copy-paste, fill in the placeholders):
+
+    <section class="card p-5 mb-5">
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+        <h2 class="font-semibold text-ink-deep">עיון ברשימה</h2>
+        <input id="explorer-search" class="gov-explorer-search"
+               type="search" placeholder="חיפוש..."
+               aria-label="חיפוש בטבלה" />
+      </div>
+      <div id="explorer"></div>
+    </section>
+    <script>
+      GovExplorer.create({
+        container:    '#explorer',
+        searchInput:  '#explorer-search',
+        resourceId:   '<resource-uuid>',
+        fields:       ['<col1>', '<col2>', '<col3>', '<col4>'],
+        headers:      ['<header1>', '<header2>', '<header3>', '<header4>'],
+        searchFields: ['<col1>', '<col2>'],
+        pageSize:     50,
+        sort:         '_id asc',
+        renderRow: function (r) {
+          return [
+            { text: r['<col1>'], dir: 'ltr' },
+            { text: r['<col2>'] },
+            { text: r['<col3>'] },
+            { text: r['<col4>'], badge: r['<col4>'] === '<active>' ? 'ok' : 'mut' },
+          ];
+        },
+      });
+    </script>
+
+  `renderRow` returns ONE array of cell descriptors per record (one per
+  column). Cells render via textContent (so untrusted CKAN values can
+  never inject markup). Descriptor fields:
+    text   string|number — cell content
+    dir    'ltr' | 'rtl' — per-cell direction; numeric IDs use 'ltr'
+    align  'right' | 'left' | 'center' — text alignment
+    class  string — extra <td> class names
+    badge  'ok' | 'warn' | 'mut' | 'info' | 'danger' — wraps text in a
+           styled pill (semantic palette: success / warning / muted /
+           info / danger)
+
+  Field selection (4-6 columns max):
+    1. Primary identifier first (numeric → dir: 'ltr')
+    2. Human name
+    3. Location / scope
+    4. Status (use badge)
+    5. Key date
+  Search fields = free-text columns (name, address) + numeric ID. Skip
+  status enums and dates (partial-match useless).
+
+  pageSize controls "show more" chunk size (default 50). totalCap caps
+  total rows fetched at 5000 — the lib hints the user to use the CSV
+  link if the registry is larger.
+
+  Loading skeleton, network-error fallback (Hebrew, points to CSV), and
+  empty-after-search messages are built-in. Don't emit your own.
+
+  Keep your build-time bash queries focused on aggregates and chart
+  inputs — the Explorer handles row-level browsing at runtime.
+
   ICONS: Lucide SVGs committed at `/icons/*.svg` (15 available — e.g.
   database, map-pin, tag, download, circle-check, triangle-alert).
   Use `<img src="/icons/<name>.svg" alt="" class="w-5 h-5" />`;
