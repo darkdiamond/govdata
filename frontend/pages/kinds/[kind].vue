@@ -22,9 +22,9 @@ if (entries.value.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Kind not found', fatal: true })
 }
 
-const SITE_URL = 'https://gov-il.ai'
+const SITE_URL = 'https://govil.ai'
 const kindDescription = computed(
-  () => `${entries.value.length} מאגרי מידע ציבוריים מסוג ${label.value} — נגישים בעברית עם ויזואליזציות מתאימות.`,
+  () => `${entries.value.length} מאגרי מידע ציבוריים מסוג ${label.value} — עם ויזואליזציות מתאימות.`,
 )
 
 useSeo({

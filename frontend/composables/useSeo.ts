@@ -2,8 +2,8 @@
 // and JSON-LD blocks (WebSite always; BreadcrumbList + extras when given).
 // Keywords seeded with the AI/agentic terms the site ranks on (Hebrew + English).
 
-const SITE_URL = 'https://gov-il.ai'
-const SITE_NAME = 'gov-il.ai'
+const SITE_URL = 'https://govil.ai'
+const SITE_NAME = 'govil.ai'
 const DEFAULT_OG = '/og-default.png'
 
 const BASE_KEYWORDS = [

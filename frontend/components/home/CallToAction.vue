@@ -11,7 +11,7 @@
       <div class="text-xs text-brand-700 mb-2">אודות</div>
       <div class="font-display text-lg text-ink mb-1">על הפרויקט</div>
       <p class="text-sm text-subtle leading-relaxed m-0">
-        למי זה מתאים, מה הופך את gov-il.ai לשונה, וכיצד אנו מנגישים את המידע הממשלתי לכל אחד.
+        למי זה מתאים, מה הופך את govil.ai לשונה, וכיצד אנו מנגישים את המידע הממשלתי לכל אחד.
       </p>
     </NuxtLink>
 

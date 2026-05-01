@@ -13,7 +13,7 @@ if (entries.value.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Tag not found', fatal: true })
 }
 
-const SITE_URL = 'https://gov-il.ai'
+const SITE_URL = 'https://govil.ai'
 const tagDescription = computed(
   () => `${entries.value.length} מאגרי מידע ציבוריים מ-data.gov.il עם התגית "${slug.value}".`,
 )

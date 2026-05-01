@@ -7,8 +7,8 @@ useSeo({
   description: 'סיור, חיפוש וסינון של כל מאגרי המידע הציבוריים של ממשלת ישראל — לפי משרד, פורמט ותגיות.',
   path: '/datasets/',
   breadcrumbs: [
-    { name: 'ראשי', url: 'https://gov-il.ai/' },
-    { name: 'מאגרים', url: 'https://gov-il.ai/datasets/' },
+    { name: 'ראשי', url: 'https://govil.ai/' },
+    { name: 'מאגרים', url: 'https://govil.ai/datasets/' },
   ],
 })
 

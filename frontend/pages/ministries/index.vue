@@ -3,11 +3,11 @@ import { useManifest } from '~/composables/useManifest'
 
 useSeo({
   title: 'משרדים',
-  description: 'משרדי הממשלה והרשויות שמפרסמים מאגרי מידע ציבוריים. לחצו על משרד כדי לראות את כל המאגרים שלו עם תקצירים בעברית.',
+  description: 'משרדי הממשלה והרשויות שמפרסמים מאגרי מידע ציבוריים. לחצו על משרד כדי לראות את כל המאגרים שלו עם תקצירים ותובנות.',
   path: '/ministries/',
   breadcrumbs: [
-    { name: 'ראשי', url: 'https://gov-il.ai/' },
-    { name: 'משרדים', url: 'https://gov-il.ai/ministries/' },
+    { name: 'ראשי', url: 'https://govil.ai/' },
+    { name: 'משרדים', url: 'https://govil.ai/ministries/' },
   ],
 })
 
