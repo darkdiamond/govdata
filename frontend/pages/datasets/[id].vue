@@ -343,7 +343,7 @@ onMounted(async () => {
               <dd class="m-0">{{ entry.license }}</dd>
             </template>
             <template v-if="entry.metadata_modified">
-              <dt class="text-subtle">עודכן בממשלה</dt>
+              <dt class="text-subtle">עודכן במקור</dt>
               <dd class="m-0">{{ formatDateHe(entry.metadata_modified) }}</dd>
             </template>
             <template v-if="entry.last_analyzed_at">
