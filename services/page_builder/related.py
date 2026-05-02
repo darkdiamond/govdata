@@ -1,10 +1,10 @@
 """Compute related datasets for a target entry given the manifest.
 
 Scoring (deterministic, explainable):
-    score = 5 * same_ministry
-          + 2 * shared_tag_count      # capped at 6 so a very tagged dataset can't dominate
-          + 3 * cosine_similarity     # only if both have an embedding
-          + 4 * in_agent_suggested
+    score = 1.5 * same_ministry          # tiebreaker only
+          + 2   * shared_tag_count       # capped at 6 so a very tagged dataset can't dominate
+          + 8   * cosine_similarity      # dominant content signal; only if both have an embedding
+          + 6   * in_agent_suggested     # agent has read both pages
 
 We return the top K (default 5), skipping the target itself.
 """
@@ -18,9 +18,9 @@ from .schema import ManifestEntry
 TOP_K = 5
 TAG_WEIGHT = 2.0
 TAG_CAP = 6
-MINISTRY_WEIGHT = 5.0
-EMBEDDING_WEIGHT = 3.0
-AGENT_SUGGESTED_WEIGHT = 4.0
+MINISTRY_WEIGHT = 1.5
+EMBEDDING_WEIGHT = 8.0
+AGENT_SUGGESTED_WEIGHT = 6.0
 
 
 def _norm(v: list[float]) -> float:
