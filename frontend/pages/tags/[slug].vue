@@ -2,38 +2,54 @@
 import { useManifest } from '~/composables/useManifest'
 
 const route = useRoute()
-const slug = computed(() => decodeURIComponent(String(route.params.slug)))
+const slug = computed(() => String(route.params.slug))
 const manifest = useManifest()
 
-const entries = computed(() =>
-  (manifest.value?.datasets ?? []).filter((d) => d.tags_he.includes(slug.value)),
-)
+// Resolve the URL slug back to its Hebrew tag via the publisher-built map.
+// The map lives at the manifest top level; reverse-iterate to find the
+// Hebrew key whose value matches our URL slug. Both directions are O(N) in
+// the number of tags, which is small (low hundreds) so a precomputed
+// reverse Map would be premature here.
+const hebrewTag = computed<string | null>(() => {
+  const map = manifest.value?.tag_slugs ?? {}
+  for (const [he, latin] of Object.entries(map)) {
+    if (latin === slug.value) return he
+  }
+  return null
+})
 
-if (entries.value.length === 0) {
+const entries = computed(() => {
+  const tag = hebrewTag.value
+  if (!tag) return []
+  return (manifest.value?.datasets ?? []).filter((d) => d.tags_he.includes(tag))
+})
+
+if (!hebrewTag.value || entries.value.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Tag not found', fatal: true })
 }
 
 const SITE_URL = 'https://govil.ai'
 const tagDescription = computed(
-  () => `${entries.value.length} מאגרי מידע ציבוריים מ-data.gov.il עם התגית "${slug.value}".`,
+  () => `${entries.value.length} מאגרי מידע ציבוריים מ-data.gov.il עם התגית "${hebrewTag.value}".`,
 )
+const canonicalUrl = computed(() => `${SITE_URL}/tags/${slug.value}/`)
 
 useSeo({
-  title: `תגית: ${slug.value}`,
+  title: `תגית: ${hebrewTag.value}`,
   description: tagDescription.value,
-  path: `/tags/${encodeURIComponent(slug.value)}/`,
-  keywords: [slug.value],
+  path: `/tags/${slug.value}/`,
+  keywords: hebrewTag.value ? [hebrewTag.value] : [],
   breadcrumbs: [
     { name: 'ראשי', url: `${SITE_URL}/` },
     { name: 'נושאים', url: `${SITE_URL}/tags/` },
-    { name: slug.value, url: `${SITE_URL}/tags/${encodeURIComponent(slug.value)}/` },
+    { name: hebrewTag.value!, url: canonicalUrl.value },
   ],
   extraJsonLd: {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: `מאגרים עם התגית "${slug.value}"`,
+    name: `מאגרים עם התגית "${hebrewTag.value}"`,
     inLanguage: 'he-IL',
-    url: `${SITE_URL}/tags/${encodeURIComponent(slug.value)}/`,
+    url: canonicalUrl.value,
     hasPart: entries.value.slice(0, 25).map((e) => ({
       '@type': 'Dataset',
       name: e.title,
@@ -49,9 +65,9 @@ useSeo({
       <div class="text-xs text-subtle mb-2">
         <NuxtLink to="/">ראשי</NuxtLink> ›
         <NuxtLink to="/tags/">נושאים</NuxtLink> ›
-        {{ slug }}
+        {{ hebrewTag }}
       </div>
-      <h1 class="font-display">תגית: {{ slug }}</h1>
+      <h1 class="font-display">תגית: {{ hebrewTag }}</h1>
       <p class="text-subtle mt-2">{{ entries.length }} מאגרים</p>
     </section>
 

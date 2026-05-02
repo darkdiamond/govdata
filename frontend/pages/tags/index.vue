@@ -20,6 +20,13 @@ const tags = computed(() => {
   }
   return [...counts.entries()].sort((a, b) => b[1] - a[1])
 })
+
+const tagSlugs = computed(() => manifest.value?.tag_slugs ?? {})
+
+function tagHref(t: string): string {
+  const slug = tagSlugs.value[t]
+  return slug ? `/tags/${slug}/` : `/tags/${encodeURIComponent(t)}/`
+}
 </script>
 
 <template>
@@ -36,7 +43,7 @@ const tags = computed(() => {
       <NuxtLink
         v-for="[t, n] in tags"
         :key="t"
-        :to="`/tags/${encodeURIComponent(t)}/`"
+        :to="tagHref(t)"
         class="tag-chip hover:bg-brand-100 no-underline hover:no-underline inline-flex items-center gap-1.5"
       >
         <img src="/icons/tag.svg" alt="" class="w-3.5 h-3.5 opacity-80" />

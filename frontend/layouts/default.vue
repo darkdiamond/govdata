@@ -103,7 +103,13 @@ const year = new Date().getFullYear()
       <div class="border-t border-white/10">
         <div class="max-w-gov mx-auto px-4 py-4 text-xs text-white/70 flex flex-col sm:flex-row sm:justify-between gap-2">
           <div>האתר אינו אתר ממשלתי רשמי אלא פרויקט פרטי להנגשת המידע הממשלתי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.</div>
-          <div>© {{ year }} govil.ai</div>
+          <div class="flex items-center gap-3">
+            <NuxtLink to="/privacy/" class="text-white/85 hover:text-white no-underline hover:no-underline">מדיניות פרטיות</NuxtLink>
+            <span aria-hidden="true" class="text-white/40">·</span>
+            <NuxtLink to="/terms/" class="text-white/85 hover:text-white no-underline hover:no-underline">תנאי שימוש</NuxtLink>
+            <span aria-hidden="true" class="text-white/40">·</span>
+            <span>© {{ year }} govil.ai</span>
+          </div>
         </div>
       </div>
     </footer>
