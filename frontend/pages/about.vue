@@ -81,9 +81,9 @@ useSeo({
         מצאתם שגיאה? רוצים להציע מאגר? יש לכם רעיון לשיפור?
       </p>
       <div class="flex flex-wrap gap-3 mt-4">
-        <a href="mailto:hello@govil.ai" class="btn-primary">
-          hello@govil.ai
-        </a>
+        <NuxtLink to="/contact/" class="btn-primary">
+          לטופס יצירת קשר
+        </NuxtLink>
       </div>
 
       <h2 class="font-display mt-10">תודות</h2>

@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     q: 'איך מציעים מאגר חדש או מדווחים על שגיאה?',
-    a: 'שלחו לנו דוא״ל לכתובת hello@govil.ai עם קישור למאגר ותיאור קצר של הבעיה או ההצעה. אנחנו עונים תוך ימים ספורים.',
+    a: 'השאירו לנו פנייה דרך טופס יצירת הקשר שבעמוד "צור קשר" עם קישור למאגר ותיאור קצר של הבעיה או ההצעה. אנחנו עונים תוך ימים ספורים.',
   },
   {
     q: 'האם אפשר לשתף ולהטמיע את הדפים?',
@@ -82,7 +82,7 @@ useSeo({
       <div class="mt-10 card p-5 bg-brand-50/50 border-brand-100">
         <div class="font-display text-ink mb-1">לא מצאתם תשובה?</div>
         <p class="text-sm text-ink/85 leading-relaxed m-0">
-          כתבו לנו ב-<a href="mailto:hello@govil.ai" class="text-brand-700 underline">hello@govil.ai</a>.
+          <NuxtLink to="/contact/" class="text-brand-700 underline">השאירו לנו פנייה בטופס יצירת קשר</NuxtLink>.
         </p>
       </div>
     </article>

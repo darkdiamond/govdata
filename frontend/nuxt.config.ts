@@ -10,7 +10,10 @@
 // (the merged view) the same way.
 
 import { readdirSync, readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 interface ManifestEntry {
   id: string
@@ -61,6 +64,17 @@ export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2025-01-01',
   devtools: { enabled: true },
+
+  // The generated `.nuxt/tsconfig.json` sets `types: []` and includes
+  // `webworker` in `lib`. Build-time helpers in this file (and prerender
+  // hooks like `categoryRoutes`) need Node globals, so inject `node`.
+  typescript: {
+    tsConfig: {
+      compilerOptions: {
+        types: ['node'],
+      },
+    },
+  },
 
   modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag'],
 

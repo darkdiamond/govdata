@@ -28,8 +28,8 @@ useSeo({
         govil.ai הוא פרויקט עצמאי שמנגיש את מאגרי המידע הציבוריים של ממשלת ישראל
         (data.gov.il) באמצעות תקצירים, תובנות וויזואליזציות שנכתבו על ידי בינה
         מלאכותית. <strong>האתר אינו אתר ממשלתי רשמי</strong>, ואינו פועל מטעם ממשלת ישראל,
-        משרדיה או רשויותיה. בכל שאלה הנוגעת למדיניות זו ניתן לפנות אלינו בדוא״ל
-        <a href="mailto:hello@govil.ai" class="text-brand-700 underline">hello@govil.ai</a>.
+        משרדיה או רשויותיה. בכל שאלה הנוגעת למדיניות זו ניתן לפנות אלינו דרך
+        <NuxtLink to="/contact/" class="text-brand-700 underline">טופס יצירת הקשר</NuxtLink>.
       </p>
 
       <h2 class="font-display mt-8">2. אילו נתונים אנו אוספים</h2>
@@ -116,8 +116,8 @@ useSeo({
         <li>זכות הגשת תלונה לרשות להגנת הפרטיות (israel.gov.il/he/departments/the_privacy_protection_authority).</li>
       </ul>
       <p class="text-ink/85 leading-relaxed">
-        למימוש זכות כלשהי שלחו לנו דוא״ל לכתובת
-        <a href="mailto:hello@govil.ai" class="text-brand-700 underline">hello@govil.ai</a>.
+        למימוש זכות כלשהי השאירו לנו פנייה דרך
+        <NuxtLink to="/contact/" class="text-brand-700 underline">טופס יצירת הקשר</NuxtLink>.
         אנו נשיב תוך 30 יום.
       </p>
 
@@ -136,8 +136,8 @@ useSeo({
 
       <h2 class="font-display mt-8">9. יצירת קשר</h2>
       <p class="text-ink/85 leading-relaxed">
-        בכל שאלה, בקשה או תלונה הקשורה למדיניות זו ניתן לפנות אלינו בדוא״ל
-        <a href="mailto:hello@govil.ai" class="text-brand-700 underline">hello@govil.ai</a>.
+        בכל שאלה, בקשה או תלונה הקשורה למדיניות זו ניתן לפנות אלינו דרך
+        <NuxtLink to="/contact/" class="text-brand-700 underline">טופס יצירת הקשר</NuxtLink>.
       </p>
     </article>
   </div>

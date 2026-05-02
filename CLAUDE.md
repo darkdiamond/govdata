@@ -161,9 +161,16 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   full generate. Next fix: Latin slug map (`tag_slugs`) stored in
   `data.json`, or hash each tag into a stable short ID. Do NOT remove
   tag pages — the user explicitly asked for them.
-- **Voyage embeddings are optional.** If `VOYAGE_API_KEY` is unset,
-  `embeddings.embed()` returns `None` and `related.py` degrades to
-  ministry + shared-tag + agent-suggested scoring. Keep that behavior.
+- **Voyage embeddings are wired in production.** The Cloud Run builder
+  reads `VOYAGE_API_KEY` from Secret Manager (`voyage-api-key:latest`,
+  see `infra/builder.deploy.sh`). The publisher embeds new sources
+  on demand and caches the vector on `sources/<id>.embedding`. Model
+  defaults to `voyage-4` (1024-dim) and is overridable via the
+  `VOYAGE_MODEL` env var. If the secret is missing, `embed()` returns
+  `None` and `related.py` falls back to ministry + shared-tag +
+  agent-suggested scoring — keep that fallback. To retro-fill embeddings
+  on already-published sources, run
+  `python -m services.page_builder.backfill_embeddings`.
 - **Cloud Build trigger connection** is a manual step in `bootstrap.sh`.
   Cloud Build can't check out arbitrary filesystems — it needs either a
   GitHub 2nd-gen connection or a Cloud Source Repositories mirror.

@@ -40,12 +40,15 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
   const agent = (agentRaw ? JSON.parse(agentRaw) : null) as AgentData | null
 
   // Merge into a ManifestEntry-shaped object so existing template paths
-  // (entry.summary_he, entry.dataset_kind, entry.related_ids, …) keep working.
+  // (entry.summary_he, entry.dataset_kind, …) keep working. related_ids is
+  // sourced from the manifest in the `related` computed below — that's the
+  // publisher's deterministic top-K (ministry + tags + cosine + agent),
+  // not the agent's raw suggestions.
   const entry: ManifestEntry = {
     ...meta,
     summary_he: agent?.summary_he,
     dataset_kind: agent?.dataset_kind,
-    related_ids: agent?.related_ids ?? [],
+    related_ids: [],
   }
 
   return { entry, body }
@@ -60,8 +63,10 @@ const body = computed(() => data.value!.body)
 
 const manifest = useManifest()
 const related = computed<ManifestEntry[]>(() => {
-  const ids = entry.value.related_ids ?? []
-  const byId = new Map((manifest.value?.datasets ?? []).map((d) => [d.id, d]))
+  const datasets = manifest.value?.datasets ?? []
+  const me = datasets.find((d) => d.id === entry.value.id)
+  const ids = me?.related_ids ?? []
+  const byId = new Map(datasets.map((d) => [d.id, d]))
   return ids
     .map((rid) => byId.get(rid))
     .filter((d): d is ManifestEntry => Boolean(d))
@@ -191,8 +196,13 @@ async function executeBodyScripts(container: HTMLElement): Promise<void> {
   // listeners registered earlier (which would double-init prior visits).
   type Deferred = [EventTarget, string, EventListenerOrEventListenerObject]
   const deferred: Deferred[] = []
-  const origDocAdd = document.addEventListener
-  const origWinAdd = window.addEventListener
+  // Capture pre-bound to dodge a Window/WorkerGlobalScope overload clash:
+  // the Nuxt-generated tsconfig has `lib: [..., "webworker"]`, which makes
+  // unbound `addEventListener.call(window, …)` ambiguous between
+  // WindowEventMap and DedicatedWorkerGlobalScopeEventMap. `.bind()` resolves
+  // to a plain `(…args) => …` and side-steps the ambiguity.
+  const origDocAdd = document.addEventListener.bind(document)
+  const origWinAdd = window.addEventListener.bind(window)
   const docReady = () => document.readyState !== 'loading'
   const winLoaded = () => document.readyState === 'complete'
   document.addEventListener = function (type: string, listener: EventListenerOrEventListenerObject, opts?: unknown) {
@@ -200,14 +210,14 @@ async function executeBodyScripts(container: HTMLElement): Promise<void> {
       deferred.push([document, type, listener])
       return
     }
-    return origDocAdd.call(document, type as keyof DocumentEventMap, listener as EventListener, opts as AddEventListenerOptions)
+    return origDocAdd(type, listener as EventListener, opts as AddEventListenerOptions)
   } as typeof document.addEventListener
   window.addEventListener = function (type: string, listener: EventListenerOrEventListenerObject, opts?: unknown) {
     if (listener && type === 'load' && winLoaded()) {
       deferred.push([window, type, listener])
       return
     }
-    return origWinAdd.call(window, type as keyof WindowEventMap, listener as EventListener, opts as AddEventListenerOptions)
+    return origWinAdd(type, listener as EventListener, opts as AddEventListenerOptions)
   } as typeof window.addEventListener
   try {
     for (const old of scripts) {

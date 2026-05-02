@@ -152,6 +152,14 @@ fi
 gcloud secrets add-iam-policy-binding anthropic-api-key \
   --member="serviceAccount:$BUILDER_SA" --role=roles/secretmanager.secretAccessor --quiet >/dev/null || true
 
+if ! gcloud secrets describe voyage-api-key --project "$PROJECT" >/dev/null 2>&1; then
+  echo "==> creating Secret Manager secret 'voyage-api-key' (empty; populate via: "
+  echo "    printf '%s' \"\$VOYAGE_API_KEY\" | gcloud secrets versions add voyage-api-key --data-file=-)"
+  gcloud secrets create voyage-api-key --replication-policy=automatic --project "$PROJECT" >/dev/null
+fi
+gcloud secrets add-iam-policy-binding voyage-api-key \
+  --member="serviceAccount:$BUILDER_SA" --role=roles/secretmanager.secretAccessor --quiet >/dev/null || true
+
 # ---- 7. Cloud Build triggers (publisher + publisher image) -----------------
 echo "==> Cloud Build trigger '$TRIGGER_ID' (publisher — cloudbuild-publish.yaml)"
 if ! gcloud builds triggers describe "$TRIGGER_ID" --region=global --project "$PROJECT" >/dev/null 2>&1; then
@@ -207,7 +215,7 @@ echo "    Publisher SA:  $PUBLISHER_SA"
 echo "    Scheduler SA:  $SCHEDULER_SA"
 echo "    Staging bucket: gs://$STAGING_BUCKET"
 echo
-echo "Next: populate the anthropic-api-key secret, then:"
+echo "Next: populate the anthropic-api-key + voyage-api-key secrets, then:"
 echo "  bash infra/setup-agent.sh     # create the Managed Agent + Env"
 echo "  bash infra/builder.deploy.sh  # deploy the Cloud Run builder"
 echo "  bash infra/scheduler.setup.sh # create the (paused) scheduler"
