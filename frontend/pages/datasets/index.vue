@@ -23,14 +23,26 @@ const orgFilter = ref<string | null>(null)
 const formatFilter = ref<string | null>(null)
 const initialQ = typeof route.query.q === 'string' ? route.query.q : ''
 const query = ref(initialQ)
+const debouncedQuery = ref(initialQ)
 
+let debounceTimer: ReturnType<typeof setTimeout> | null = null
 watch(query, (q) => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(() => {
+    debouncedQuery.value = q
+  }, 150)
+})
+onBeforeUnmount(() => {
+  if (debounceTimer) clearTimeout(debounceTimer)
+})
+
+watch(debouncedQuery, (q) => {
   const next = q.trim() ? { ...route.query, q: q.trim() } : { ...route.query, q: undefined }
   router.replace({ query: next })
 })
 
 const filtered = computed<ManifestEntry[]>(() => {
-  const q = query.value.trim().toLowerCase()
+  const q = debouncedQuery.value.trim().toLowerCase()
   return datasets.value.filter((d) => {
     if (orgFilter.value && d.organization !== orgFilter.value) return false
     if (formatFilter.value && !d.formats.includes(formatFilter.value)) return false
@@ -46,13 +58,17 @@ function clear() {
   orgFilter.value = null
   formatFilter.value = null
   query.value = ''
+  debouncedQuery.value = ''
 }
 
 watch(
   () => route.query.q,
   (q) => {
     const v = typeof q === 'string' ? q : ''
-    if (v !== query.value) query.value = v
+    if (v !== query.value) {
+      query.value = v
+      debouncedQuery.value = v
+    }
   },
 )
 </script>
