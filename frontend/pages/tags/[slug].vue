@@ -35,7 +35,7 @@ const tagDescription = computed(
 const canonicalUrl = computed(() => `${SITE_URL}/tags/${slug.value}/`)
 
 useSeo({
-  title: `תגית: ${hebrewTag.value}`,
+  title: `מאגרי מידע ממשלתיים בנושא ${hebrewTag.value}`,
   description: tagDescription.value,
   path: `/tags/${slug.value}/`,
   keywords: hebrewTag.value ? [hebrewTag.value] : [],

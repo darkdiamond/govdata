@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useSeo({
-  title: 'יצירת קשר',
+  title: 'יצירת קשר עם צוות govil.ai',
   description: 'יצירת קשר עם צוות govil.ai — שאלות, פידבק, דיווח על באגים ובקשות למאגרים נוספים.',
   path: '/contact/',
   keywords: ['יצירת קשר', 'פידבק', 'דיווח באגים', 'govil.ai'],
