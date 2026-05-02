@@ -18,7 +18,10 @@ interface ManifestEntry {
   tags_he?: string[]
   dataset_kind?: string
 }
-interface Manifest { datasets?: ManifestEntry[] }
+interface Manifest {
+  datasets?: ManifestEntry[]
+  tag_slugs?: Record<string, string>
+}
 
 function categoryRoutes(): string[] {
   const path = resolve(__dirname, 'public/data/manifest.json')
@@ -26,10 +29,18 @@ function categoryRoutes(): string[] {
   try { data = JSON.parse(readFileSync(path, 'utf-8')) }
   catch { return [] }
 
+  const tagSlugs = data.tag_slugs ?? {}
   const routes = new Set<string>(['/ministries/', '/tags/'])
   for (const d of data.datasets ?? []) {
     if (d.organization_slug) routes.add(`/ministries/${d.organization_slug}/`)
-    for (const t of d.tags_he ?? []) routes.add(`/tags/${encodeURIComponent(t)}/`)
+    // Use the publisher-built Hebrew→Latin map. Falls back to a defensive
+    // skip for any tag that's somehow missing from the map (shouldn't
+    // happen — publisher unions every tags_he), avoiding a non-ASCII
+    // directory creation that would break prerender on Windows/WSL.
+    for (const t of d.tags_he ?? []) {
+      const slug = tagSlugs[t]
+      if (slug) routes.add(`/tags/${slug}/`)
+    }
     if (d.dataset_kind) routes.add(`/kinds/${d.dataset_kind}/`)
   }
   return [...routes]
@@ -108,6 +119,8 @@ export default defineNuxtConfig({
         '/how-it-works/',
         '/faq/',
         '/contact/',
+        '/privacy/',
+        '/terms/',
         ...categoryRoutes(),
         ...datasetRoutes(),
       ],
