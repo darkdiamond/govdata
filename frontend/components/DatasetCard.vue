@@ -18,7 +18,7 @@ defineProps<{ entry: ManifestEntry }>()
       {{ entry.summary_he }}
     </p>
     <div class="flex items-center justify-between mt-2">
-      <div class="text-xs text-subtle">עודכן {{ relativeTimeHe(entry.last_analyzed_at ?? entry.metadata_modified) }}</div>
+      <div v-if="entry.metadata_modified" class="text-xs text-subtle">עודכן {{ relativeTimeHe(entry.metadata_modified) }}</div>
       <div v-if="entry.tags_he.length" class="flex gap-1">
         <span v-for="t in entry.tags_he.slice(0, 2)" :key="t" class="tag-chip">{{ t }}</span>
       </div>
