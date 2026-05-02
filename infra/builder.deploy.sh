@@ -40,7 +40,7 @@ gcloud run deploy "$SERVICE" \
   --timeout=3600 \
   --no-allow-unauthenticated \
   --set-env-vars="FIRESTORE_PROJECT_ID=${PROJECT},GOOGLE_CLOUD_PROJECT=${PROJECT},FIREBASE_PROJECT=${PROJECT},GCS_STAGING_BUCKET=${STAGING_BUCKET},PUBLISH_TRIGGER_ID=${TRIGGER_ID},PUBLISH_BRANCH=${PUBLISH_BRANCH},N_PER_RUN=${N_PER_RUN},SCAN_LIMIT=${SCAN_LIMIT},ANTHROPIC_AGENT_ID=${ANTHROPIC_AGENT_ID},ANTHROPIC_ENV_ID=${ANTHROPIC_ENV_ID}" \
-  --set-secrets="ANTHROPIC_API_KEY=anthropic-api-key:latest" \
+  --set-secrets="ANTHROPIC_API_KEY=anthropic-api-key:latest,VOYAGE_API_KEY=voyage-api-key:latest" \
   --project="$PROJECT"
 
 echo "==> granting Cloud Scheduler SA permission to invoke this service"
