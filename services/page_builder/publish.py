@@ -62,12 +62,12 @@ def _resources_from_source(src: SourceRecord) -> list[ResourceEntry]:
 
 
 def _formats_from_resources(resources: Iterable[ResourceEntry]) -> list[str]:
-    seen: list[str] = []
+    seen: set[str] = set()
     for r in resources:
         f = (r.format or "").upper()
-        if f and f not in seen:
-            seen.append(f)
-    return seen
+        if f:
+            seen.add(f)
+    return sorted(seen)
 
 
 def dataset_meta_from_source(src: SourceRecord) -> DatasetMeta:
@@ -191,7 +191,7 @@ def publish(
     related_by_id: dict[str, list[str]] = {}
     interim_list = list(interim.values())
     for sid, target in interim.items():
-        scored = top_related(target, [e for e in interim_list if e.id != sid], k=5)
+        scored = top_related(target, interim_list, k=5)
         related_by_id[sid] = [c.id for c, _, _ in scored]
 
     # Final pass: write per-dataset files + assemble manifest.
