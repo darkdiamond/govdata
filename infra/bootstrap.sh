@@ -109,10 +109,11 @@ done
 gcloud storage buckets add-iam-policy-binding "gs://$STAGING_BUCKET" \
   --member="serviceAccount:$BUILDER_SA" --role=roles/storage.objectAdmin --quiet >/dev/null
 
-# Publisher: read Firestore + staging, deploy Firebase Hosting.
+# Publisher: read+write Firestore (writes back voyage embedding cache on
+# sources/<id>.embedding), read staging GCS, deploy Firebase Hosting.
 # AR access is granted on the publisher repo below (writer covers the
 # image-build trigger's push + the publish trigger's pull).
-for role in roles/datastore.viewer roles/logging.logWriter roles/firebasehosting.admin; do
+for role in roles/datastore.user roles/logging.logWriter roles/firebasehosting.admin; do
   gcloud projects add-iam-policy-binding "$PROJECT" \
     --member="serviceAccount:$PUBLISHER_SA" --role="$role" --condition=None --quiet >/dev/null
 done
