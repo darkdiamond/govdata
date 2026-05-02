@@ -13,6 +13,7 @@ import argparse
 import asyncio
 import logging
 import os
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 from services.scanner.config import ScannerSettings
@@ -160,6 +161,13 @@ async def run_pipeline(
         return summary
 
     # [3] fan-out agent sessions
+    # `_build_one` calls the sync Anthropic SDK via `asyncio.to_thread`, which
+    # uses the event loop's default ThreadPoolExecutor. That executor's default
+    # cap is `min(32, os.cpu_count() + 4)` — on a 2-CPU Cloud Run container it
+    # comes out to ~8, which silently bottlenecks N_PER_RUN above 8. Widen it
+    # so all N sessions actually start streaming in parallel.
+    loop = asyncio.get_running_loop()
+    loop.set_default_executor(ThreadPoolExecutor(max_workers=max(len(to_process), 50)))
     results = await asyncio.gather(
         *[_build_one(src, staging_bucket, store) for src in to_process]
     )
