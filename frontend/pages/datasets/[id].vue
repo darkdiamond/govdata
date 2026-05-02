@@ -68,6 +68,12 @@ const related = computed<ManifestEntry[]>(() => {
     .slice(0, 5)
 })
 
+const tagSlugs = computed(() => manifest.value?.tag_slugs ?? {})
+function tagHref(t: string): string {
+  const slug = tagSlugs.value[t]
+  return slug ? `/tags/${slug}/` : `/tags/${encodeURIComponent(t)}/`
+}
+
 const KIND_LABELS_HE: Record<string, string> = {
   map: 'גיאוגרפי',
   timeseries: 'סדרת זמן',
@@ -369,7 +375,7 @@ onMounted(async () => {
             <NuxtLink
               v-for="t in entry.tags_he"
               :key="t"
-              :to="`/tags/${encodeURIComponent(t)}/`"
+              :to="tagHref(t)"
               class="tag-chip hover:bg-brand-100"
             >{{ t }}</NuxtLink>
           </div>

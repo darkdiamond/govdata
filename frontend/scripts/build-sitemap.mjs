@@ -41,8 +41,11 @@ add('/tags/', '0.7', 'weekly', manifestLastmod)
 add('/about/', '0.5', 'monthly')
 add('/how-it-works/', '0.5', 'monthly')
 add('/faq/', '0.5', 'monthly')
+add('/privacy/', '0.3', 'monthly')
+add('/terms/', '0.3', 'monthly')
 
 // Dynamic dataset + category routes
+const tagSlugs = manifest.tag_slugs ?? {}
 for (const d of manifest.datasets ?? []) {
   if (d.id) {
     const lastmod = (d.last_analyzed_at ?? d.metadata_modified ?? '').slice(0, 10) || undefined
@@ -52,7 +55,8 @@ for (const d of manifest.datasets ?? []) {
     add(`/ministries/${d.organization_slug}/`, '0.6', 'weekly', manifestLastmod)
   }
   for (const t of d.tags_he ?? []) {
-    add(`/tags/${encodeURIComponent(t)}/`, '0.5', 'weekly', manifestLastmod)
+    const slug = tagSlugs[t]
+    if (slug) add(`/tags/${slug}/`, '0.5', 'weekly', manifestLastmod)
   }
   if (d.dataset_kind) {
     add(`/kinds/${d.dataset_kind}/`, '0.5', 'weekly', manifestLastmod)

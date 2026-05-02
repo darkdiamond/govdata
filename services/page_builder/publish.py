@@ -24,6 +24,7 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
@@ -31,6 +32,7 @@ from typing import Iterable, Optional
 
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 from services.shared.resources import pick_primary_resource_id
+from services.shared.slug import slugify
 
 from .embeddings import embed, embedding_input
 from .related import top_related
@@ -99,6 +101,28 @@ def agent_data_from_source(src: SourceRecord) -> Optional[AgentData]:
     except Exception as e:
         log.warning("malformed agent_data for %s: %s", src.id, e)
         return None
+
+
+def _build_tag_slugs(entries: Iterable[ManifestEntry]) -> dict[str, str]:
+    """Map each Hebrew tag in any entry's `tags_he` to an ASCII URL slug.
+
+    Frontend builds `/tags/<slug>/` from this map so that prerendered
+    directories never contain non-ASCII (Nitro `mkdir` fails on Windows/WSL
+    when the URL has been `%`-encoded). Iterates in sorted order so the
+    output is stable across runs; on slug collision (rare) appends a short
+    sha1 suffix to disambiguate deterministically.
+    """
+    all_tags = sorted({t for e in entries for t in (e.tags_he or [])})
+    seen: dict[str, str] = {}      # latin slug -> the Hebrew tag that owns it
+    out: dict[str, str] = {}
+    for tag in all_tags:
+        latin = slugify(tag, fallback="tag")
+        if latin in seen and seen[latin] != tag:
+            digest = hashlib.sha1(tag.encode("utf-8")).hexdigest()[:6]
+            latin = f"{latin}-{digest}"
+        seen[latin] = tag
+        out[tag] = latin
+    return out
 
 
 def _merged_entry(
@@ -220,6 +244,7 @@ def publish(
     manifest = Manifest(
         generated_at=datetime.now(timezone.utc),
         datasets=final_entries,
+        tag_slugs=_build_tag_slugs(final_entries),
     )
     manifest_path = _write_manifest(out_root, manifest)
     log.info(

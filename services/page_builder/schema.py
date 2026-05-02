@@ -125,3 +125,9 @@ class Manifest(BaseModel):
     version: int = 1
     generated_at: datetime
     datasets: list[ManifestEntry] = Field(default_factory=list)
+
+    # Hebrew tag → ASCII slug. Used by the frontend to build /tags/<slug>/
+    # URLs that survive `nuxt generate` on Windows/WSL (literal `%`-encoded
+    # directories cannot be created on those filesystems). Built by the
+    # publisher from the union of every entry's `tags_he`.
+    tag_slugs: dict[str, str] = Field(default_factory=dict)
