@@ -88,8 +88,9 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   was analyzed less than 14 days ago (don't burn agent budget on a page
   that's still fresh). Never-analyzed sources are always eligible
   regardless of their CKAN modification time.
-- **Related-datasets scoring** (unchanged, deterministic):
-  `5·same_ministry + 2·min(shared_tag_count, 6) + 3·cosine(embedding) + 4·agent_suggested`.
+- **Related-datasets scoring** (deterministic, content-first):
+  `1.5·same_ministry + 2·min(shared_tag_count, 6) + 8·cosine(embedding) + 6·agent_suggested`.
+  Embedding similarity dominates; same-ministry is a tiebreaker only.
   Top 5 per page. Defined in `services/page_builder/related.py`.
 
 ## Key files to read before editing
