@@ -19,11 +19,17 @@ const { organizations, formats } = useFacets(datasets.value)
 const route = useRoute()
 const router = useRouter()
 
+type SortKey = 'gov' | 'site' | 'alpha'
+const SORT_KEYS = ['gov', 'site', 'alpha'] as const
+const isSortKey = (v: unknown): v is SortKey =>
+  typeof v === 'string' && (SORT_KEYS as readonly string[]).includes(v)
+
 const orgFilter = ref<string | null>(null)
 const formatFilter = ref<string | null>(null)
 const initialQ = typeof route.query.q === 'string' ? route.query.q : ''
 const query = ref(initialQ)
 const debouncedQuery = ref(initialQ)
+const sortKey = ref<SortKey>(isSortKey(route.query.sort) ? route.query.sort : 'gov')
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 watch(query, (q) => {
@@ -54,6 +60,21 @@ const filtered = computed<ManifestEntry[]>(() => {
   })
 })
 
+const tsDesc = (a?: string, b?: string) =>
+  (b ? Date.parse(b) : 0) - (a ? Date.parse(a) : 0)
+
+const sortedFiltered = computed<ManifestEntry[]>(() => {
+  const list = [...filtered.value]
+  if (sortKey.value === 'site') {
+    list.sort((a, b) => tsDesc(a.last_analyzed_at, b.last_analyzed_at))
+  } else if (sortKey.value === 'alpha') {
+    list.sort((a, b) => a.title.localeCompare(b.title, 'he'))
+  } else {
+    list.sort((a, b) => tsDesc(a.metadata_modified, b.metadata_modified))
+  }
+  return list
+})
+
 function clear() {
   orgFilter.value = null
   formatFilter.value = null
@@ -69,6 +90,19 @@ watch(
       query.value = v
       debouncedQuery.value = v
     }
+  },
+)
+
+watch(sortKey, (s) => {
+  const next = { ...route.query, sort: s === 'gov' ? undefined : s }
+  router.replace({ query: next })
+})
+
+watch(
+  () => route.query.sort,
+  (s) => {
+    const v = isSortKey(s) ? s : 'gov'
+    if (v !== sortKey.value) sortKey.value = v
   },
 )
 </script>
@@ -96,15 +130,28 @@ watch(
 
     <section class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-8">
       <div>
-        <div class="flex items-center justify-between mb-3 text-sm">
+        <div class="flex items-center justify-between gap-3 mb-3 text-sm">
           <span class="text-subtle">{{ filtered.length }} מאגרים זמינים</span>
-          <button
-            v-if="orgFilter || formatFilter || query"
-            @click="clear"
-            class="text-brand hover:underline"
-          >
-            איפוס פילטרים
-          </button>
+          <div class="flex items-center gap-3">
+            <button
+              v-if="orgFilter || formatFilter || query"
+              @click="clear"
+              class="text-brand hover:underline"
+            >
+              איפוס פילטרים
+            </button>
+            <label class="flex items-center gap-2">
+              <span class="text-subtle">מיון:</span>
+              <select
+                v-model="sortKey"
+                class="bg-white border border-rule rounded-gov px-2 py-1 text-ink focus:border-brand outline-none"
+              >
+                <option value="gov">חדש בממשלה</option>
+                <option value="site">חדש באתר</option>
+                <option value="alpha">א–ת</option>
+              </select>
+            </label>
+          </div>
         </div>
 
         <div v-if="datasets.length === 0" class="card p-6 text-center text-subtle">
@@ -112,7 +159,7 @@ watch(
         </div>
 
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <DatasetCard v-for="d in filtered" :key="d.id" :entry="d" />
+          <DatasetCard v-for="d in sortedFiltered" :key="d.id" :entry="d" />
         </div>
       </div>
 
