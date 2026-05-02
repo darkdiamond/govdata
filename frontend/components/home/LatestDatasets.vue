@@ -7,8 +7,8 @@ const manifest = useManifest()
 const latest = computed<ManifestEntry[]>(() => {
   const list = [...(manifest.value?.datasets ?? [])]
   list.sort((a, b) => {
-    const ta = a.metadata_modified ? Date.parse(a.metadata_modified) : 0
-    const tb = b.metadata_modified ? Date.parse(b.metadata_modified) : 0
+    const ta = a.last_analyzed_at ? Date.parse(a.last_analyzed_at) : 0
+    const tb = b.last_analyzed_at ? Date.parse(b.last_analyzed_at) : 0
     return tb - ta
   })
   return list.slice(0, 6)
