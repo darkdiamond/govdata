@@ -8,7 +8,10 @@ const lastUpdatedMs = computed(() => {
   return generated ? Date.parse(generated) : null
 })
 
-const relativeAgo = computed(() => formatRelativeHe(lastUpdatedMs.value))
+// Computed against `Date.now()` in SSR/SSG would bake the build-time delta into
+// the static HTML and mismatch the client clock at hydration. Keep it empty for
+// SSR, fill in onMounted, and refresh each minute while the page is open.
+const relativeAgo = ref('')
 
 function formatRelativeHe(ts: number | null): string {
   if (!ts) return ''
@@ -26,6 +29,13 @@ function formatRelativeHe(ts: number | null): string {
   const months = Math.round(days / 30)
   return `לפני ${months} חודשים`
 }
+
+onMounted(() => {
+  const refresh = () => { relativeAgo.value = formatRelativeHe(lastUpdatedMs.value) }
+  refresh()
+  const interval = window.setInterval(refresh, 60_000)
+  onBeforeUnmount(() => window.clearInterval(interval))
+})
 
 const heroFeatures = [
   'ויזואליזציות אוטומטיות',

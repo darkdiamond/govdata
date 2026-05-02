@@ -2,7 +2,7 @@
 import { useManifest } from '~/composables/useManifest'
 
 useSeo({
-  title: 'נושאים',
+  title: 'מאגרי מידע ממשלתיים לפי נושא',
   description: 'כל התגיות והנושאים שמופיעים במאגרי המידע של ממשלת ישראל. דפדפו לפי נושא לאיתור מאגרים רלוונטיים.',
   path: '/tags/',
   breadcrumbs: [

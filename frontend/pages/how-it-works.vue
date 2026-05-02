@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useSeo({
-  title: 'איך זה עובד',
+  title: 'איך זה עובד — סוכן AI שקורא את data.gov.il',
   description: 'כל דף ב-govil.ai נכתב אוטומטית על ידי סוכן AI — ללא עורך אנושי. הכירו את התהליך: זיהוי מאגר חדש, מחקר, כתיבה, ופרסום לעברית נגישה.',
   path: '/how-it-works/',
   keywords: ['agentic AI', 'סוכן AI אוטונומי', 'pipeline', 'איך עובד AI'],
