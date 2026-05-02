@@ -44,6 +44,7 @@ class StateDB:
         updated: int,
         unchanged: int,
         errors: Optional[list[str]] = None,
+        started_at: Optional[datetime] = None,
     ) -> None:
         self.store.complete_scan(
             scan_id,
@@ -52,6 +53,7 @@ class StateDB:
             updated=updated,
             unchanged=unchanged,
             errors=errors,
+            started_at=started_at,
         )
 
     def get_stats(self) -> dict:

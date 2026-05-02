@@ -96,6 +96,7 @@ class Scanner:
             updated=summary.datasets_updated,
             unchanged=summary.datasets_unchanged,
             errors=summary.errors,
+            started_at=summary.started_at,
         )
         log.info(
             "scan done — scanned=%d new=%d updated=%d unchanged=%d",

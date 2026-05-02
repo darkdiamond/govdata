@@ -73,6 +73,15 @@ else
   echo "==> staging bucket gs://$STAGING_BUCKET already exists"
 fi
 
+# Lifecycle: prune content.html older than 30 days. Active datasets are
+# re-staged on every successful publish (default 14-day rebuild cooldown), so
+# anything past 30 days is orphaned by a dataset that was removed upstream
+# from CKAN or by failed/retried agent sessions.
+echo "==> applying lifecycle policy to gs://$STAGING_BUCKET"
+gcloud storage buckets update "gs://$STAGING_BUCKET" \
+  --lifecycle-file="$(dirname "$0")/staging-lifecycle.json" \
+  --project "$PROJECT" >/dev/null
+
 # ---- 5. Service accounts ---------------------------------------------------
 create_sa() {
   local name=$1 display=$2
