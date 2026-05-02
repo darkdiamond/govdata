@@ -245,8 +245,6 @@ system: |
     <h1>                  — dataset title (exactly once per page)
     <tag-chips>           — 3-5 tags you proposed, each a <span class="tag-chip">
     <ai-summary>          — 2-3 sentences in <section class="card p-5 mb-4">
-                            with a confidence badge (use circle-check or
-                            triangle-alert icons + the ok/warn colors)
     <!-- metadata + resources cards are rendered by the Nuxt shell from
          data.json (organization / license / last-updated / record_count +
          downloads). Do NOT emit them in content.html — the frontend owns
