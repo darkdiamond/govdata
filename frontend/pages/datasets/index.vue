@@ -3,7 +3,7 @@ import { useFacets, useManifest } from '~/composables/useManifest'
 import type { ManifestEntry } from '~/types/manifest'
 
 useSeo({
-  title: 'כל המאגרים',
+  title: 'כל מאגרי המידע הממשלתיים — חיפוש, סינון ותקצירי AI',
   description: 'סיור, חיפוש וסינון של כל מאגרי המידע הציבוריים של ממשלת ישראל — לפי משרד, פורמט ותגיות.',
   path: '/datasets/',
   breadcrumbs: [

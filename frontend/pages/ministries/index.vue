@@ -2,7 +2,7 @@
 import { useManifest } from '~/composables/useManifest'
 
 useSeo({
-  title: 'משרדים',
+  title: 'מאגרי מידע לפי משרד ממשלתי — סקירה מלאה',
   description: 'משרדי הממשלה והרשויות שמפרסמים מאגרי מידע ציבוריים. לחצו על משרד כדי לראות את כל המאגרים שלו עם תקצירים ותובנות.',
   path: '/ministries/',
   breadcrumbs: [

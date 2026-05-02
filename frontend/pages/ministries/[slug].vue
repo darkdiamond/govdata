@@ -20,7 +20,7 @@ const ministryDescription = computed(
 )
 
 useSeo({
-  title: ministryTitle.value,
+  title: `מאגרי המידע של ${ministryTitle.value} — תקצירי AI`,
   description: ministryDescription.value,
   path: `/ministries/${slug.value}/`,
   keywords: [ministryTitle.value],

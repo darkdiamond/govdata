@@ -167,8 +167,18 @@ if (entry.value.resources?.length) {
   })
 }
 
+// Google truncates titles around 60 chars. The auto-suffix " — govil.ai"
+// adds ~11; leave a 50-char budget for the page title and only append the
+// ministry when the result still fits — long CKAN titles stand on their own.
+const seoTitle = (() => {
+  const t = entry.value.title
+  const org = entry.value.organization
+  const withOrg = org ? `${t} | ${org}` : t
+  return withOrg.length <= 50 ? withOrg : t
+})()
+
 useSeo({
-  title: entry.value.title,
+  title: seoTitle,
   description: datasetDescription,
   path: `/datasets/${entry.value.id}/`,
   breadcrumbs,

@@ -2,7 +2,7 @@
 const lastUpdated = '2026-05-02'
 
 useSeo({
-  title: 'מדיניות פרטיות',
+  title: 'מדיניות פרטיות באתר govil.ai',
   description: 'מדיניות הפרטיות של govil.ai — אילו נתונים אנו אוספים, באילו שירותי צד שלישי אנו משתמשים (Google Analytics, Google AdSense), ואילו זכויות עומדות לכם.',
   path: '/privacy/',
   keywords: ['מדיניות פרטיות', 'cookies', 'Google Analytics', 'Google AdSense', 'חוק הגנת הפרטיות'],

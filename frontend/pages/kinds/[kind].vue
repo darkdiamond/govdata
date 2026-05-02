@@ -28,7 +28,7 @@ const kindDescription = computed(
 )
 
 useSeo({
-  title: `מאגרים: ${label.value}`,
+  title: `מאגרי ${label.value} — מידע ממשלתי פתוח עם תקציר AI`,
   description: kindDescription.value,
   path: `/kinds/${kind.value}/`,
   keywords: [label.value],
