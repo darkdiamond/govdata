@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// Benefit-led audience strip. Not a step-by-step — a "what changes for you"
-// pitch, separate from the HowItWorks pipeline story.
 const benefits = [
   {
     icon: '/icons/info.svg',
@@ -28,24 +26,28 @@ const benefits = [
 <template>
   <section>
     <div class="mb-8 max-w-3xl">
-      <h2 class="font-display m-0">מידע מובן, לא רק זמין</h2>
-      <p class="mt-2 text-ink/75 leading-relaxed">
-        מידע ממשלתי רשמי כבר זמין — אבל עד היום הוא נגיש רק למי שיודע לפתוח CSV ולקרוא טבלאות באנגלית. govil.ai סוגר את הפער.
+      <h2 class="font-display font-semibold m-0 text-2xl md:text-4xl tracking-tight">
+        המידע כבר שם.
+        <span class="md:block text-brand-700">אנחנו עוזרים להבין מה הוא אומר.</span>
+      </h2>
+      <p class="mt-3 text-base md:text-lg text-ink/75 leading-relaxed">
+        אלפי מאגרים ציבוריים מתפרסמים בכל שנה — דוחות, רישומים, קואורדינטות, מספרים.
+        govil.ai הופך אותם לסיפור: תקציר ברור, גרפים מתאימים ותובנות שאפשר לשתף.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
       <div
         v-for="(b, i) in benefits"
         :key="i"
-        class="card p-5 flex gap-4 items-start"
+        class="card p-6 md:p-7 flex gap-4 items-start hover:shadow-card-hover hover:-translate-y-0.5 transition"
       >
-        <div class="flex-none w-10 h-10 rounded-gov-pill bg-brand-50 grid place-items-center">
-          <img :src="b.icon" alt="" class="w-5 h-5 opacity-80" />
+        <div class="flex-none w-12 h-12 rounded-gov-pill bg-brand-50 ring-1 ring-brand-100 grid place-items-center">
+          <img :src="b.icon" alt="" class="w-6 h-6 opacity-90" />
         </div>
         <div>
-          <h3 class="font-display text-ink m-0 mb-1 text-base">{{ b.title }}</h3>
-          <p class="text-sm text-ink/75 leading-relaxed m-0">{{ b.body }}</p>
+          <h3 class="font-display text-ink m-0 mb-1.5 text-lg md:text-xl font-semibold">{{ b.title }}</h3>
+          <p class="text-base text-ink/75 leading-relaxed m-0">{{ b.body }}</p>
         </div>
       </div>
     </div>
