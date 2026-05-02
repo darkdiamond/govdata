@@ -87,7 +87,7 @@ const heroFeatures = [
       <div class="mt-7 flex flex-wrap items-center gap-3">
         <NuxtLink to="/datasets/" class="btn-primary text-base md:text-lg shadow-card hover:shadow-card-hover transition">
           <img src="/icons/database.svg" alt="" class="w-4 h-4 invert opacity-90" />
-          גלה מאגרים
+          עיון במאגרים
         </NuxtLink>
         <NuxtLink to="/how-it-works/" class="btn-ghost text-base md:text-lg">
           איך זה עובד?

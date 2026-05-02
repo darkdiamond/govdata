@@ -110,7 +110,7 @@ const trust = [
       <div class="mt-12 flex flex-wrap gap-3">
         <NuxtLink to="/datasets/" class="btn-primary">
           <img src="/icons/database.svg" alt="" class="w-4 h-4 invert opacity-90" />
-          גלה מאגרים
+          עיון במאגרים
         </NuxtLink>
         <NuxtLink to="/faq/" class="btn-ghost">
           שאלות נפוצות
