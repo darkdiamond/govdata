@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Fuse from 'fuse.js'
+import type FuseT from 'fuse.js'
 import { useManifest } from '~/composables/useManifest'
 import type { ManifestEntry } from '~/types/manifest'
 
@@ -12,9 +12,15 @@ const buttonEl = ref<HTMLElement | null>(null)
 const inputEl = ref<HTMLInputElement | null>(null)
 const panelEl = ref<HTMLElement | null>(null)
 
-const fuse = computed(
-  () =>
-    new Fuse<ManifestEntry>(manifest.value?.datasets ?? [], {
+// Fuse.js is ~24KB min+gz and only fires when the user opens the search popover,
+// so we load it on first toggle/input rather than bundling it into the layout chunk.
+const fuse = shallowRef<FuseT<ManifestEntry> | null>(null)
+let fusePromise: Promise<void> | null = null
+
+function ensureFuse(): Promise<void> {
+  if (fusePromise) return fusePromise
+  fusePromise = import('fuse.js').then(({ default: Fuse }) => {
+    fuse.value = new Fuse<ManifestEntry>(manifest.value?.datasets ?? [], {
       keys: [
         { name: 'title', weight: 0.5 },
         { name: 'summary_he', weight: 0.25 },
@@ -26,12 +32,14 @@ const fuse = computed(
       includeScore: false,
       minMatchCharLength: 2,
       ignoreLocation: true,
-    }),
-)
+    })
+  })
+  return fusePromise
+}
 
 const results = computed<ManifestEntry[]>(() => {
   const q = query.value.trim()
-  if (q.length < 2) return []
+  if (q.length < 2 || !fuse.value) return []
   return fuse.value.search(q, { limit: 6 }).map((r) => r.item)
 })
 
@@ -41,7 +49,10 @@ watch(results, () => {
 
 function toggle() {
   open.value = !open.value
-  if (open.value) nextTick(() => inputEl.value?.focus())
+  if (open.value) {
+    ensureFuse()
+    nextTick(() => inputEl.value?.focus())
+  }
 }
 
 function close() {

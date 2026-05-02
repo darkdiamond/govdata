@@ -11,8 +11,17 @@ scale by bumping `N_PER_RUN`, not instance count.
 ## 1. Project bootstrap — `infra/bootstrap.sh`
 
 Creates the Firebase project (GCP project with the same ID is created
-automatically), enables APIs, provisions Firestore + the GCS staging bucket,
+automatically), enables APIs, provisions Firestore + the GCS staging bucket
+(with a 30-day age-based lifecycle policy from `infra/staging-lifecycle.json`),
 creates the three service accounts, and reserves the Secret Manager secret.
+
+Re-running `bootstrap.sh` re-applies the lifecycle policy. To tweak the
+retention window without a full bootstrap:
+
+```sh
+gcloud storage buckets update gs://govdata-il-staging \
+  --lifecycle-file=infra/staging-lifecycle.json --project=govdata-il
+```
 
 Prereqs:
 

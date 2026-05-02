@@ -23,6 +23,14 @@ SOURCES_COLL = "sources"
 SCAN_RUNS_COLL = "scan_runs"
 
 
+def _count(query) -> int:
+    """Run a Firestore .count() aggregation; return 0 on empty result."""
+    result = query.count().get()
+    if not result or not result[0]:
+        return 0
+    return int(result[0][0].value)
+
+
 @dataclass
 class SourceRecord:
     """In-memory view of a `sources/{id}` document."""
@@ -205,13 +213,15 @@ class FirestoreStateStore:
         processed_source_ids: Optional[list[str]] = None,
         processed_statuses: Optional[dict[str, str]] = None,
         errors: Optional[list[str]] = None,
+        started_at: Optional[datetime] = None,
     ) -> None:
         now = datetime.now(timezone.utc)
         ref = self.client.collection(SCAN_RUNS_COLL).document(scan_id)
-        snap = ref.get()
-        started_at: Optional[datetime] = (
-            (snap.to_dict() or {}).get("started_at") if snap.exists else None
-        )
+        if started_at is None:
+            snap = ref.get()
+            started_at = (
+                (snap.to_dict() or {}).get("started_at") if snap.exists else None
+            )
         duration_ms = (
             int((now - started_at).total_seconds() * 1000) if started_at else 0
         )
@@ -284,14 +294,11 @@ class FirestoreStateStore:
         page_path: str,
     ) -> None:
         now = datetime.now(timezone.utc)
-        ref = self.client.collection(SOURCES_COLL).document(dataset_id)
-        snap = ref.get()
-        prev_version = int((snap.to_dict() or {}).get("last_analyzed_version") or 0)
-        ref.set(
+        self.client.collection(SOURCES_COLL).document(dataset_id).set(
             {
                 "analysis_status": "succeeded",
                 "last_analyzed_at": now,
-                "last_analyzed_version": prev_version + 1,
+                "last_analyzed_version": firestore.Increment(1),
                 "page_path": page_path,
                 "last_error": None,
             },
@@ -327,18 +334,12 @@ class FirestoreStateStore:
     # ---- Ops helpers -----------------------------------------------------
 
     def get_stats(self) -> dict[str, int]:
-        counts = {
-            "total": 0,
-            "never": 0,
-            "succeeded": 0,
-            "failed": 0,
-            "pending": 0,
-        }
-        for d in self.client.collection(SOURCES_COLL).stream():
-            counts["total"] += 1
-            status = (d.to_dict() or {}).get("analysis_status", "never")
-            if status in counts:
-                counts[status] += 1
+        coll = self.client.collection(SOURCES_COLL)
+        counts: dict[str, int] = {"total": _count(coll)}
+        for status in ("never", "succeeded", "failed", "pending"):
+            counts[status] = _count(
+                coll.where(filter=FieldFilter("analysis_status", "==", status))
+            )
         return counts
 
     def get_all_dataset_ids(self) -> list[str]:
