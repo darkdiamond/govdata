@@ -12,6 +12,7 @@ const links = [
   { to: '/how-it-works/', label: 'איך זה עובד' },
   { to: '/about/', label: 'אודות' },
   { to: '/faq/', label: 'שאלות נפוצות' },
+  { to: '/contact/', label: 'צור קשר' },
 ]
 
 function setOpen(v: boolean) {
@@ -128,7 +129,7 @@ onBeforeUnmount(() => {
           </nav>
 
           <div class="border-t border-rule p-4 text-xs text-subtle leading-relaxed">
-            פרויקט עצמאי — אינו אתר ממשלתי רשמי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.
+            האתר אינו אתר ממשלתי רשמי אלא פרויקט פרטי להנגשת המידע הממשלתי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.
           </div>
         </aside>
       </Transition>

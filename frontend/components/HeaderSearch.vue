@@ -119,7 +119,7 @@ onBeforeUnmount(() => {
       :aria-label="open ? 'סגירת חיפוש' : 'פתיחת חיפוש'"
       :aria-expanded="open"
       aria-haspopup="dialog"
-      class="inline-flex items-center gap-2 ps-2 pe-3 sm:ps-3 sm:pe-4 h-9 rounded-gov-pill bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm transition-colors"
+      class="inline-flex items-center justify-center gap-2 px-2.5 sm:ps-3 sm:pe-4 h-9 min-w-9 rounded-gov-pill bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm transition-colors"
       @click="toggle"
     >
       <img src="/icons/search.svg" alt="" class="w-4 h-4 invert opacity-90" />
