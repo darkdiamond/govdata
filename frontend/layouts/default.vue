@@ -10,7 +10,7 @@ const year = new Date().getFullYear()
       <div class="max-w-gov mx-auto px-4 h-header flex items-center justify-between gap-3 sm:gap-6">
         <div class="flex items-center gap-2">
           <MobileNavDrawer />
-          <NuxtLink to="/" class="flex items-center gap-2.5 no-underline hover:no-underline text-white" aria-label="govil.ai — דף הבית">
+          <NuxtLink to="/" class="flex items-center gap-2.5 no-underline hover:no-underline text-white hover:text-white focus:text-white" aria-label="govil.ai — דף הבית">
             <svg class="w-9 h-9 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
               <rect x="2.5" y="20.5" width="18" height="1.5" rx="0.5"/>
               <rect x="4" y="14" width="3" height="6.5" rx="0.5"/>
@@ -37,6 +37,7 @@ const year = new Date().getFullYear()
           <NuxtLink to="/tags/" class="text-white/85 hover:text-white no-underline hover:no-underline">נושאים</NuxtLink>
           <NuxtLink to="/how-it-works/" class="text-white/85 hover:text-white no-underline hover:no-underline">איך זה עובד</NuxtLink>
           <NuxtLink to="/about/" class="text-white/85 hover:text-white no-underline hover:no-underline">אודות</NuxtLink>
+          <NuxtLink to="/contact/" class="text-white/85 hover:text-white no-underline hover:no-underline">צור קשר</NuxtLink>
         </nav>
 
         <div class="flex items-center gap-3">
@@ -78,6 +79,7 @@ const year = new Date().getFullYear()
             <li><NuxtLink to="/how-it-works/" class="text-white/85 hover:text-white no-underline hover:no-underline">איך זה עובד</NuxtLink></li>
             <li><NuxtLink to="/about/" class="text-white/85 hover:text-white no-underline hover:no-underline">אודות</NuxtLink></li>
             <li><NuxtLink to="/faq/" class="text-white/85 hover:text-white no-underline hover:no-underline">שאלות נפוצות</NuxtLink></li>
+            <li><NuxtLink to="/contact/" class="text-white/85 hover:text-white no-underline hover:no-underline">צור קשר</NuxtLink></li>
           </ul>
         </div>
         <div>
@@ -100,7 +102,7 @@ const year = new Date().getFullYear()
       </div>
       <div class="border-t border-white/10">
         <div class="max-w-gov mx-auto px-4 py-4 text-xs text-white/70 flex flex-col sm:flex-row sm:justify-between gap-2">
-          <div>פרויקט עצמאי — אינו אתר ממשלתי רשמי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.</div>
+          <div>האתר אינו אתר ממשלתי רשמי אלא פרויקט פרטי להנגשת המידע הממשלתי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.</div>
           <div>© {{ year }} govil.ai</div>
         </div>
       </div>
