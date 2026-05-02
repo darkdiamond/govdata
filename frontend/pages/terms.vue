@@ -110,8 +110,8 @@ useSeo({
 
       <h2 class="font-display mt-8">9. יצירת קשר</h2>
       <p class="text-ink/85 leading-relaxed">
-        לכל שאלה משפטית או בנוגע לתנאים אלה, פנו אלינו בדוא״ל
-        <a href="mailto:hello@govil.ai" class="text-brand-700 underline">hello@govil.ai</a>.
+        לכל שאלה משפטית או בנוגע לתנאים אלה, פנו אלינו דרך
+        <NuxtLink to="/contact/" class="text-brand-700 underline">טופס יצירת הקשר</NuxtLink>.
       </p>
     </article>
   </div>

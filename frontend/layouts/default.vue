@@ -51,7 +51,7 @@ const year = new Date().getFullYear()
     </main>
 
     <footer class="bg-ink-deep text-white mt-16">
-      <div class="max-w-gov mx-auto px-4 py-10 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+      <div class="max-w-gov mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
         <div>
           <div class="font-display text-base mb-2 flex items-center gap-2">
             <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
@@ -70,12 +70,17 @@ const year = new Date().getFullYear()
           </p>
         </div>
         <div>
-          <div class="font-display text-base mb-2">ניווט</div>
+          <div class="font-display text-base mb-2">עיון</div>
           <ul class="list-none p-0 m-0 space-y-1.5">
             <li><NuxtLink to="/" class="text-white/85 hover:text-white no-underline hover:no-underline">ראשי</NuxtLink></li>
             <li><NuxtLink to="/datasets/" class="text-white/85 hover:text-white no-underline hover:no-underline">כל המאגרים</NuxtLink></li>
             <li><NuxtLink to="/ministries/" class="text-white/85 hover:text-white no-underline hover:no-underline">משרדים</NuxtLink></li>
             <li><NuxtLink to="/tags/" class="text-white/85 hover:text-white no-underline hover:no-underline">נושאים</NuxtLink></li>
+          </ul>
+        </div>
+        <div>
+          <div class="font-display text-base mb-2">על האתר</div>
+          <ul class="list-none p-0 m-0 space-y-1.5">
             <li><NuxtLink to="/how-it-works/" class="text-white/85 hover:text-white no-underline hover:no-underline">איך זה עובד</NuxtLink></li>
             <li><NuxtLink to="/about/" class="text-white/85 hover:text-white no-underline hover:no-underline">אודות</NuxtLink></li>
             <li><NuxtLink to="/faq/" class="text-white/85 hover:text-white no-underline hover:no-underline">שאלות נפוצות</NuxtLink></li>
