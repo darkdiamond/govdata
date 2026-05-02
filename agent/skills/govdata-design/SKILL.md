@@ -273,6 +273,27 @@ const option = Object.assign({}, baseECharts, {
 });
 ```
 
+### Hebrew unit suffixes inside chart code
+
+Hebrew abbreviations like `מ'` (meter), `ק"ג` (kilogram), `ס"מ` (cm)
+contain a geresh (`'`) or gershayim (`"`). These characters close JS
+string literals. Inside an inline `<script>`, embed them in a
+**double-quoted** string or escape — a single bare geresh inside a
+single-quoted string closes the string early, the rest of the line
+re-opens, and the whole IIFE fails to parse, silently killing every
+chart on the page.
+
+```js
+// WRONG — `'` after `מ` closes the string; parser dies on next `;`
+formatter: v => v.toFixed(1) + ' מ''
+// RIGHT — double-quoted, or escape the geresh
+formatter: v => v.toFixed(1) + " מ'"
+formatter: v => v.toFixed(1) + ' מ\''
+```
+
+In HTML body text (outside `<script>`) the bare apostrophe is fine —
+this rule applies only to JS string literals.
+
 ### Leaflet RTL caveats
 
 The wrapper already injects:
@@ -285,6 +306,66 @@ The wrapper already injects:
 Inside popups, Hebrew flows RTL; tiles stay LTR. Convert ITM
 (`EPSG:2039`) → WGS84 (`EPSG:4326`) with pyproj before embedding
 `[lat, lng]` arrays in JS.
+
+## Mobile-first layout (non-negotiable)
+
+Most traffic is mobile. Every page must render cleanly at a 375px
+viewport. Three rules:
+
+**1. Highlight / KPI card grids — Tailwind responsive utilities only.**
+
+```html
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+  <div class="card p-4 text-center">…</div>
+  …
+</div>
+```
+
+If a count doesn't divide neatly (3 cards, 5 cards), use auto-fit:
+
+```html
+<div class="grid gap-4 mb-5"
+     style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+```
+
+Never combine a Tailwind class with a fixed inline `repeat(N, 1fr)` —
+the inline style wins and overrides the responsive class:
+
+```html
+<!-- WRONG: stays 4-col on phones, breaks at 375px -->
+<div class="grid grid-cols-2"
+     style="grid-template-columns: repeat(4, 1fr);">
+```
+
+**2. Chart container heights — responsive Tailwind utilities.**
+
+```html
+<div id="chart-main" class="h-64 md:h-80"></div>   <!-- 256px / 320px -->
+```
+
+For maps, prefer `class="h-72 md:h-[420px]"` (288px / 420px). Always
+pair with a resize listener so ECharts reflows on orientation change:
+
+```js
+window.addEventListener('resize', () => chart.resize());
+```
+
+Avoid inline `style="height: NNNpx"` — fixed pixel heights don't adapt
+to phone viewports.
+
+**3. Two-column comparison rows — collapse to one column on mobile.**
+
+```html
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+  <div class="card p-4">…</div>
+  <div class="card p-4">…</div>
+</div>
+```
+
+The Nuxt shell carries a CSS backstop that collapses 3-/4-/5-column
+grids and clamps inline chart heights at <640px, but the agent should
+emit correct mobile markup on its own. Treat the backstop as defense
+in depth, not a substitute.
 
 ## Reference content.html skeleton
 
@@ -307,6 +388,15 @@ sizes you to `max-w-gov` already).
   <p class="m-0 text-subtle">שני עד שלושה משפטים בעברית, המתארים את המאגר…</p>
 </section>
 
+<!-- highlight cards (KPIs) — responsive: 2 cols on mobile, 4 on desktop -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">74,977</div>
+    <div class="text-sm text-subtle">עמותות רשומות</div>
+  </div>
+  <!-- 3 more cards… -->
+</div>
+
 <!-- metadata + resources: rendered by the Nuxt shell (frontend/pages/datasets/[id].vue)
      from data.json (organization, license, last-updated, record_count, downloads).
      The publisher writes data.json from the scanner's Firestore record — you do NOT
@@ -324,7 +414,7 @@ sizes you to `max-w-gov` already).
 <!-- data explorer -->
 <section class="card p-5 mb-5">
   <h2 class="m-0 mb-3 text-base font-display">חקר הנתונים</h2>
-  <div id="chart-main" class="h-80"></div>
+  <div id="chart-main" class="h-64 md:h-80"></div>
 </section>
 
 <!-- original notes -->
