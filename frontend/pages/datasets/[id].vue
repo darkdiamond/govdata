@@ -342,9 +342,13 @@ onMounted(async () => {
               <dt class="text-subtle">רישיון</dt>
               <dd class="m-0">{{ entry.license }}</dd>
             </template>
-            <template v-if="entry.last_analyzed_at || entry.metadata_modified">
-              <dt class="text-subtle">עודכן</dt>
-              <dd class="m-0">{{ formatDateHe(entry.last_analyzed_at ?? entry.metadata_modified) }}</dd>
+            <template v-if="entry.metadata_modified">
+              <dt class="text-subtle">עודכן בממשלה</dt>
+              <dd class="m-0">{{ formatDateHe(entry.metadata_modified) }}</dd>
+            </template>
+            <template v-if="entry.last_analyzed_at">
+              <dt class="text-subtle">עודכן באתר</dt>
+              <dd class="m-0">{{ formatDateHe(entry.last_analyzed_at) }}</dd>
             </template>
             <template v-if="entry.record_count != null">
               <dt class="text-subtle">רשומות</dt>
