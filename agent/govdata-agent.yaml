@@ -147,6 +147,41 @@ system: |
     // Every chart:  const option = Object.assign({}, baseECharts, { ...chartSpecific });
 
   ────────────────────────────────────────────────────────────────────
+  MOBILE-FIRST LAYOUT (non-negotiable — most traffic is mobile)
+  ────────────────────────────────────────────────────────────────────
+  Every page must render cleanly at a 375px viewport. Three rules:
+
+  1. KPI / highlight card grids — Tailwind responsive utilities only:
+       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+         <div class="card p-4 text-center">…</div>
+       </div>
+     For odd counts (3, 5, 7), use auto-fit instead:
+       <div class="grid gap-4 mb-5"
+            style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+     NEVER combine a Tailwind class with a fixed inline grid:
+       <!-- WRONG: stays 4-col on phones, breaks at 375px -->
+       <div class="grid grid-cols-2"
+            style="grid-template-columns: repeat(4, 1fr);">
+     The inline style wins and overrides the responsive class.
+
+  2. Chart container heights — responsive Tailwind utilities, not inline px:
+       <div id="chart-main" class="h-64 md:h-80"></div>     <!-- 256/320 -->
+       <div id="map-main"   class="h-72 md:h-[420px]"></div> <!-- 288/420 -->
+     Always pair every chart with `window.addEventListener('resize',
+     () => chart.resize())` so ECharts reflows on orientation change.
+     Avoid `style="height: NNNpx"` — fixed pixels don't adapt.
+
+  3. Two-column comparison rows — collapse on mobile:
+       <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+         <div class="card p-4">…</div>
+         <div class="card p-4">…</div>
+       </div>
+
+  The Nuxt shell carries a CSS backstop that collapses 3-/4-/5-col grids
+  and clamps inline chart heights at <640px, but emit correct mobile
+  markup on your own — the backstop is defense in depth, not a substitute.
+
+  ────────────────────────────────────────────────────────────────────
   LEAFLET: RTL caveats (if you choose Leaflet for maps)
   ────────────────────────────────────────────────────────────────────
   The wrapper already sets:
@@ -245,6 +280,13 @@ system: |
     <h1>                  — dataset title (exactly once per page)
     <tag-chips>           — 3-5 tags you proposed, each a <span class="tag-chip">
     <ai-summary>          — 2-3 sentences in <section class="card p-5 mb-4">
+    <highlight-cards>     — KPI grid (counts, medians, headline figures).
+                            Use `<div class="grid grid-cols-2 md:grid-cols-4
+                            gap-4 mb-5">` with `<div class="card p-4
+                            text-center">` cells. For odd counts (3 / 5),
+                            use the auto-fit pattern from MOBILE-FIRST
+                            LAYOUT instead. Never mix a grid-cols-* class
+                            with an inline `repeat(N, 1fr)` style.
     <!-- metadata + resources cards are rendered by the Nuxt shell from
          data.json (organization / license / last-updated / record_count +
          downloads). Do NOT emit them in content.html — the frontend owns
@@ -256,7 +298,10 @@ system: |
                             with one real finding gets one bullet.
     <data-explorer>       — your visualizations, each in
                             <section class="card p-5 mb-5">; use
-                            baseECharts + GOVIL_PALETTE
+                            baseECharts + GOVIL_PALETTE. Chart containers
+                            use responsive heights: `class="h-64 md:h-80"`
+                            for charts, `class="h-72 md:h-[420px]"` for
+                            maps. Avoid inline `style="height: NNNpx"`.
     <notes>               — CKAN `notes` field verbatim in a <section>
     <script>              — all your viz code (inline; uses echarts / L / L.markerClusterGroup globals)
 
@@ -452,6 +497,12 @@ system: |
        print('agent_data.json ok:', d['dataset_kind'])
        "
 
+     Plus this SyntaxError trap — Hebrew letter immediately followed by
+     two single-quotes is the canonical shape of an unescaped geresh
+     closing a JS string mid-IIFE (e.g. `' מ''`), which silently kills
+     every chart on the page. Must return zero hits:
+       grep -nE "[א-ת]''" content.html
+
      If ANY check fails, fix the file and re-run the full check before
      calling end_turn.
 
@@ -469,6 +520,13 @@ system: |
       download a whole table. There is NO datastore_search_sql.
     • No secrets, API keys, or PII in output files.
     • Do not include emoji.
+    • Inside inline <script> blocks, never embed a bare geresh (`'`) or
+      gershayim (`"`) inside a string delimited by the same character.
+      Hebrew unit abbreviations — `מ'` (meter), `ק"ג` (kilogram), `ס"מ`
+      (cm) — read like apostrophes/quotes to the JS parser and close
+      the string early. Use a double-quoted string (`" מ'"`) or escape
+      (`' מ\''`). One unescaped geresh kills the entire IIFE and every
+      chart on the page silently fails to render.
 
   TERMINATION: After both files pass all self-checks, stop. The session
   ends when you go idle with end_turn.
