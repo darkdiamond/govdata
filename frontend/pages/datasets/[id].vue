@@ -266,7 +266,18 @@ async function awaitDatasetLibs(timeoutMs = 5000): Promise<void> {
 onMounted(async () => {
   if (nuxtApp.isHydrating) return
   await awaitDatasetLibs()
-  if (bodyEl.value) void executeBodyScripts(bodyEl.value)
+  if (!bodyEl.value) return
+  void executeBodyScripts(bodyEl.value)
+  // Bridge container-width changes (orientation, sidebar reflow at lg) into
+  // a window resize so ECharts re-fits via the agent's existing
+  // `chart.resize()` listeners. rAF-debounced to coalesce smooth resizes.
+  let raf = 0
+  const ro = new ResizeObserver(() => {
+    cancelAnimationFrame(raf)
+    raf = requestAnimationFrame(() => window.dispatchEvent(new Event('resize')))
+  })
+  ro.observe(bodyEl.value)
+  onBeforeUnmount(() => { cancelAnimationFrame(raf); ro.disconnect() })
 })
 </script>
 
@@ -397,5 +408,33 @@ onMounted(async () => {
 .dataset-body :deep(pre) {
   overflow-x: auto;
   max-width: 100%;
+}
+/* Mobile backstop for agent-emitted highlight cards and chart containers.
+   Auto-fit / auto-fill grids and `auto 1fr` definition lists already
+   reflow correctly and are deliberately untouched. */
+@media (max-width: 640px) {
+  /* Hardcoded equal-column inline grids collapse to one column. */
+  .dataset-body :deep([style*="grid-template-columns"][style*="repeat(2"]),
+  .dataset-body :deep([style*="grid-template-columns"][style*="repeat(3"]),
+  .dataset-body :deep([style*="grid-template-columns"][style*="repeat(4"]),
+  .dataset-body :deep([style*="grid-template-columns"][style*="repeat(5"]),
+  .dataset-body :deep([style*="grid-template-columns: 1fr 1fr"]),
+  .dataset-body :deep([style*="grid-template-columns:1fr 1fr"]) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* Tailwind multi-column utilities without a responsive prefix collapse.
+     `grid-cols-2` is left alone — two cards across 375px is tight but
+     readable, and several pages already use it deliberately. */
+  .dataset-body :deep(.grid-cols-3),
+  .dataset-body :deep(.grid-cols-4),
+  .dataset-body :deep(.grid-cols-5) {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  /* Cap chart and map container heights. */
+  .dataset-body :deep([id^="chart-"][style*="height:"]),
+  .dataset-body :deep([id^="map-"][style*="height:"]),
+  .dataset-body :deep([id="map"][style*="height:"]) {
+    height: clamp(240px, 65vw, 320px) !important;
+  }
 }
 </style>
