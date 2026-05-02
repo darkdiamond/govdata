@@ -37,7 +37,7 @@ const year = new Date().getFullYear()
           <NuxtLink to="/tags/" class="text-white/85 hover:text-white no-underline hover:no-underline">נושאים</NuxtLink>
           <NuxtLink to="/how-it-works/" class="text-white/85 hover:text-white no-underline hover:no-underline">איך זה עובד</NuxtLink>
           <NuxtLink to="/about/" class="text-white/85 hover:text-white no-underline hover:no-underline">אודות</NuxtLink>
-          <NuxtLink to="/contact/" class="text-white/85 hover:text-white no-underline hover:no-underline">צור קשר</NuxtLink>
+          <NuxtLink to="/contact/" class="text-white/85 hover:text-white no-underline hover:no-underline">צרו קשר</NuxtLink>
         </nav>
 
         <div class="flex items-center gap-3">
@@ -84,7 +84,7 @@ const year = new Date().getFullYear()
             <li><NuxtLink to="/how-it-works/" class="text-white/85 hover:text-white no-underline hover:no-underline">איך זה עובד</NuxtLink></li>
             <li><NuxtLink to="/about/" class="text-white/85 hover:text-white no-underline hover:no-underline">אודות</NuxtLink></li>
             <li><NuxtLink to="/faq/" class="text-white/85 hover:text-white no-underline hover:no-underline">שאלות נפוצות</NuxtLink></li>
-            <li><NuxtLink to="/contact/" class="text-white/85 hover:text-white no-underline hover:no-underline">צור קשר</NuxtLink></li>
+            <li><NuxtLink to="/contact/" class="text-white/85 hover:text-white no-underline hover:no-underline">צרו קשר</NuxtLink></li>
           </ul>
         </div>
         <div>
