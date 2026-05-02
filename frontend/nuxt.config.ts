@@ -107,6 +107,7 @@ export default defineNuxtConfig({
         '/about/',
         '/how-it-works/',
         '/faq/',
+        '/contact/',
         ...categoryRoutes(),
         ...datasetRoutes(),
       ],
