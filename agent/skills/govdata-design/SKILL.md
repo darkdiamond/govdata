@@ -1,7 +1,7 @@
 ---
 name: govdata-design
 description: |
-  Design system + body-content contract for GovData.IL dataset pages. Load
+  Design system + body-content contract for govil.ai dataset pages. Load
   when authoring a per-dataset content.html + agent_data.json. The page
   chrome (header, nav, breadcrumb, related sidebar, footer) is injected by
   a Python wrapper — this skill describes ONLY what you write, and the
@@ -9,7 +9,7 @@ description: |
   www.gov.il so the output looks native.
 ---
 
-# GovData.IL — Body-Content Design Skill
+# govil.ai — Body-Content Design Skill
 
 You write the **main content body** for one dataset page. The Python
 wrapper already includes the site shell: shared head (fonts, Tailwind,

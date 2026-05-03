@@ -1,4 +1,4 @@
-# GovData.IL — Landing pages for Israeli open data
+# govil.ai — Landing pages for Israeli open data
 
 Each week the Israeli government publishes new datasets on
 [data.gov.il](https://data.gov.il). This repo turns each dataset into a
