@@ -58,6 +58,49 @@ _LINK_CDN_TAG = re.compile(
     rf'<link\b[^>]*\bhref\s*=\s*"https?://{_CDN_HOSTS}[^"]*"[^>]*/?>',
     re.IGNORECASE,
 )
+_HTML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
+_OPEN_SCRIPT = re.compile(r"<script\b[^>]*>", re.IGNORECASE)
+_CLOSE_SCRIPT = re.compile(r"</script\s*>", re.IGNORECASE)
+_OPEN_STYLE = re.compile(r"<style\b[^>]*>", re.IGNORECASE)
+_CLOSE_STYLE = re.compile(r"</style\s*>", re.IGNORECASE)
+# Above this many missing closers the body is structurally broken in
+# ways a string-append can't safely fix — fail loudly instead.
+_MAX_AUTO_REPAIR = 5
+
+
+def _balance_raw_text_tag(
+    body: str,
+    opener: re.Pattern,
+    closer: re.Pattern,
+    name: str,
+    *,
+    tag: str,
+) -> str:
+    # `<script>` and `<style>` put the parser in a raw-text state until
+    # the matching `</…>`; an unclosed opener swallows the rest of the
+    # document, breaks the inline JS, and (for the agent body) blocks
+    # Nuxt hydration. Auto-repair: if opens > closes, append the missing
+    # closers so the parser can exit raw-text state cleanly.
+    counted = _HTML_COMMENT.sub("", body)
+    opens = len(opener.findall(counted))
+    closes = len(closer.findall(counted))
+    delta = opens - closes
+    if delta == 0:
+        return body
+    if delta < 0:
+        log.warning(
+            "%ssanitizer: %d stray </%s> than <%s> — leaving as-is",
+            tag, -delta, name, name,
+        )
+        return body
+    if delta > _MAX_AUTO_REPAIR:
+        raise ValueError(
+            f"{tag}sanitizer: {delta} unclosed <{name}> tags exceeds "
+            f"auto-repair cap ({_MAX_AUTO_REPAIR}); refusing to publish"
+        )
+    log.warning("%ssanitizer: appended %d missing </%s> tag(s)", tag, delta, name)
+    sep = "" if body.endswith("\n") else "\n"
+    return body + sep + (f"</{name}>\n" * delta)
 
 
 def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
@@ -69,7 +112,10 @@ def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
     Strips `integrity=` / `crossorigin=` attributes (any SRI hash the
     agent emits is fabricated; same-origin loads don't need either).
     Replaces `<\\/script>` (JSON string-escape) with `</script>` so the
-    HTML parser actually closes the tag.
+    HTML parser actually closes the tag. Auto-closes unclosed
+    `<script>`/`<style>` tags (e4a5e2d7-… shipped without the trailing
+    `</script>`, which let the parser swallow the page footer and the
+    Nuxt config bootstrap, blanking every chart and breaking hydration).
 
     Each transform logs a WARNING with a count and the dataset id so we
     can trace prompt regressions even when the sanitizer silently fixes
@@ -101,6 +147,9 @@ def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
     if n:
         log.warning("%ssanitizer: dropped %d <link href=CDN> tag(s)", tag, n)
     body = new_body
+
+    body = _balance_raw_text_tag(body, _OPEN_SCRIPT, _CLOSE_SCRIPT, "script", tag=tag)
+    body = _balance_raw_text_tag(body, _OPEN_STYLE, _CLOSE_STYLE, "style", tag=tag)
 
     return body
 

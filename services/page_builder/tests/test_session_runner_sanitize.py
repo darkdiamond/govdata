@@ -118,6 +118,93 @@ def test_real_world_27b4b40e_pattern() -> None:
     assert out.count("</script>") == 1
 
 
+def test_balances_unclosed_script_tag() -> None:
+    """Real failure mode from dataset e4a5e2d7-…: an inline <script>
+    opened but never closed swallows the rest of the document. Sanitizer
+    must append the missing </script>."""
+    src = '<h1>x</h1>\n<script>\n(function(){console.log(1);})();\n'
+    out, recs = _logs(None, body=src)
+    assert out.count("<script") == 1
+    assert out.count("</script>") == 1
+    msgs = " ".join(r.getMessage() for r in recs)
+    assert "appended 1 missing </script>" in msgs
+
+
+def test_balances_two_unclosed_scripts() -> None:
+    src = (
+        '<script>(function(){a();})();\n'
+        '<script>(function(){b();})();\n'
+    )
+    out, _ = _logs(None, body=src)
+    assert out.count("<script") == 2
+    assert out.count("</script>") == 2
+
+
+def test_balances_unclosed_style_tag() -> None:
+    src = '<style>.x{color:red;}\n<h1>title</h1>'
+    out, recs = _logs(None, body=src)
+    assert out.count("<style") == 1
+    assert out.count("</style>") == 1
+    msgs = " ".join(r.getMessage() for r in recs)
+    assert "appended 1 missing </style>" in msgs
+
+
+def test_balanced_input_unchanged() -> None:
+    src = '<script>x</script>\n<style>.a{}</style>'
+    out, recs = _logs(None, body=src)
+    assert out == src
+    assert not [r for r in recs if "appended" in r.getMessage()]
+
+
+def test_commented_out_script_does_not_count() -> None:
+    """An <!-- <script> --> comment must not be treated as an opener."""
+    src = '<!-- <script>old</script> -->\n<script>x</script>'
+    out, recs = _logs(None, body=src)
+    assert out == src
+    assert not [r for r in recs if "appended" in r.getMessage()]
+
+
+def test_stray_close_script_warns_but_unchanged() -> None:
+    src = '<p>hi</p></script>'
+    out, recs = _logs(None, body=src)
+    assert out == src
+    msgs = " ".join(r.getMessage() for r in recs)
+    assert "stray" in msgs
+
+
+def test_excess_unclosed_scripts_raises() -> None:
+    """If the body is structurally broken (more than the cap of unclosed
+    scripts), refuse to publish — a string-append won't safely repair it."""
+    import pytest  # type: ignore
+    src = "<script>a\n<script>b\n<script>c\n<script>d\n<script>e\n<script>f\n"
+    try:
+        _sanitize_content_html(src)
+    except ValueError as e:
+        assert "exceeds auto-repair cap" in str(e)
+    else:
+        raise AssertionError("expected ValueError for excess unclosed scripts")
+
+
+def test_real_world_e4a5e2d7_pattern() -> None:
+    """Exact failure shape from dataset e4a5e2d7-…: the inline ECharts
+    IIFE is the only <script>, it never gets closed, and the file ends
+    on `})();\\n`. After sanitize there must be a matching </script>."""
+    src = (
+        '<h1>title</h1>\n'
+        '<div id="chart-monthly"></div>\n'
+        '<script>\n'
+        '(function(){\n'
+        '  const el = document.getElementById("chart-monthly");\n'
+        '  echarts.init(el).setOption({});\n'
+        '})();\n'
+    )
+    out, _ = _logs(None, body=src)
+    assert out.count("<script") == 1
+    assert out.count("</script>") == 1
+    # The IIFE itself must still be intact.
+    assert 'echarts.init' in out
+
+
 def main() -> None:
     tests = [
         test_replaces_escaped_script_end_tag,
@@ -126,6 +213,14 @@ def main() -> None:
         test_clean_input_pass_through_no_warnings,
         test_does_not_drop_local_lib_scripts,
         test_real_world_27b4b40e_pattern,
+        test_balances_unclosed_script_tag,
+        test_balances_two_unclosed_scripts,
+        test_balances_unclosed_style_tag,
+        test_balanced_input_unchanged,
+        test_commented_out_script_does_not_count,
+        test_stray_close_script_warns_but_unchanged,
+        test_excess_unclosed_scripts_raises,
+        test_real_world_e4a5e2d7_pattern,
     ]
     for t in tests:
         t()
