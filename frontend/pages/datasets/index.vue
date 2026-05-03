@@ -29,7 +29,7 @@ const formatFilter = ref<string | null>(null)
 const initialQ = typeof route.query.q === 'string' ? route.query.q : ''
 const query = ref(initialQ)
 const debouncedQuery = ref(initialQ)
-const sortKey = ref<SortKey>(isSortKey(route.query.sort) ? route.query.sort : 'gov')
+const sortKey = ref<SortKey>(isSortKey(route.query.sort) ? route.query.sort : 'site')
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null
 watch(query, (q) => {
@@ -94,14 +94,14 @@ watch(
 )
 
 watch(sortKey, (s) => {
-  const next = { ...route.query, sort: s === 'gov' ? undefined : s }
+  const next = { ...route.query, sort: s === 'site' ? undefined : s }
   router.replace({ query: next })
 })
 
 watch(
   () => route.query.sort,
   (s) => {
-    const v = isSortKey(s) ? s : 'gov'
+    const v = isSortKey(s) ? s : 'site'
     if (v !== sortKey.value) sortKey.value = v
   },
 )
