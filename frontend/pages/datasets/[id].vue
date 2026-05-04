@@ -275,14 +275,16 @@ async function awaitDatasetLibs(timeoutMs = 5000): Promise<void> {
       L?: { markerClusterGroup?: unknown }
       echarts?: unknown
       GovExplorer?: { create?: unknown }
+      GovMap?: { create?: unknown }
     }
     const ready =
       typeof w.echarts !== 'undefined' &&
       w.L && typeof w.L.markerClusterGroup === 'function' &&
-      w.GovExplorer && typeof w.GovExplorer.create === 'function'
+      w.GovExplorer && typeof w.GovExplorer.create === 'function' &&
+      w.GovMap && typeof w.GovMap.create === 'function'
     if (ready) return
     if (Date.now() - start > timeoutMs) {
-      console.warn('[dataset libs] timed out waiting for window.{L,echarts,GovExplorer} after SPA nav')
+      console.warn('[dataset libs] timed out waiting for window.{L,echarts,GovExplorer,GovMap} after SPA nav')
       return
     }
     await new Promise((r) => setTimeout(r, 30))

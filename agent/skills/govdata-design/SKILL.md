@@ -121,12 +121,17 @@ Pick libraries per dataset; there is no fixed taxonomy. Common fits:
 
 | `dataset_kind` | Libraries to reach for                              |
 | -------------- | --------------------------------------------------- |
-| map            | Leaflet + OSM tiles; MarkerCluster if >200 points   |
-| timeseries     | ECharts line / area (RTL-friendly)                  |
-| registry       | Custom table + ECharts bar for a column breakdown   |
+| map            | `GovMap` for point sets (paginates CKAN at runtime, ITM→WGS84 in JS); raw Leaflet only for choropleths / single-point maps |
+| timeseries     | ECharts line / area (RTL-friendly). Two-axis time (month × category, year × month %) → ECharts heatmap |
+| registry       | Custom table + ECharts bar for a column breakdown; `GovExplorer` for >100 named entities |
 | rankings       | ECharts horizontal bar                              |
 | misc           | Pick what the data shape suggests (ECharts covers   |
 |                | sunburst, treemap, graph/force-directed, heatmap)   |
+
+For wide datasets (≥10 columns) or large datasets (≥10K rows), 6–10
+charts that each tell a distinct story is fine — even encouraged.
+A dataset with both geography and time and categories deserves the
+depth. The constraint is that each chart tells a *distinct* story.
 
 Available globals (pre-loaded by the shell — these are the tools,
 use them):
@@ -137,6 +142,7 @@ use them):
 | `L` | Leaflet | maps + tiles |
 | `L.markerClusterGroup` | Leaflet.markercluster | clustering when >200 points |
 | `GovExplorer` | (in-house) | live `datastore_search`-backed search + paginated table — see "Live Data Explorer" below |
+| `GovMap` | (in-house) | paginated, clustered map fed from `datastore_search`. ITM→WGS84 done inline. See "Live Map" below |
 
 Do NOT write `<script src=…>` or `<link rel="stylesheet" href=…>` to
 load anything. Tailwind, Rubik, and the viz libs above are already
@@ -231,6 +237,101 @@ message. Don't emit your own.
 the browser. Keep your build-time bash queries focused on aggregates
 and chart inputs — let the Explorer handle the row-level browsing.
 
+## Live Map (GovMap)
+
+For map-shaped datasets — point sets keyed by lat/lng or ITM
+easting/northing — use `GovMap` instead of inlining marker
+coordinates as a JS array. The lib paginates `datastore_search` in
+the browser, applies the ITM→WGS84 inverse transform inline (no
+pyproj at build time), and renders a clustered Leaflet layer with
+RTL Hebrew popups. Built-in skeleton + network-error fallback.
+
+**Why this matters**: pre-GovMap, map pages baked the entire point
+set into HTML as JS literals — 226KB on `b2370286…` (קרקעות
+מזוהמות), 63KB on `5944b454…` (עצים). Tailwind JIT scanned the
+junk; first-paint parse cost was meaningful on mobile. GovMap fetches
+the same rows from the same CKAN endpoint at runtime.
+
+**Globals**: `window.GovMap.create({...})` pre-loaded alongside `L` /
+`echarts` / `GovExplorer`. Do NOT add a `<script src=>` for it.
+
+**Canonical config snippet**:
+
+```html
+<section class="card p-5 mb-5">
+  <h2 class="font-semibold text-ink-deep mb-3">מפת המאגר</h2>
+  <div id="map-main" class="h-72 md:h-[420px]"></div>
+</section>
+<script>
+  GovMap.create({
+    container:   '#map-main',
+    resourceId:  '<resource-uuid>',
+    latField:    '<lat-or-northing-col>',
+    lngField:    '<lng-or-easting-col>',
+    projection:  'wgs84',           // or 'itm' for EPSG:2039
+    popupFields: [
+      { field: '<name-col>',    label: 'שם' },
+      { field: '<address-col>', label: 'כתובת' },
+    ],
+    popupTitleField: '<name-col>',
+    cluster:    true,                // default
+    totalCap:   5000,                // safety cap
+  });
+</script>
+```
+
+**Config**:
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `container` | selector\|Element | target div (set a height via Tailwind utilities, not inline px) |
+| `resourceId` | string | CKAN resource UUID |
+| `latField` / `lngField` | string | column names. For ITM: `latField` = northing (Y), `lngField` = easting (X). |
+| `projection` | `'wgs84'`\|`'itm'` | default `'wgs84'`. Use `'itm'` for EPSG:2039 — the lib runs the Snyder TM inverse inline (~50m accuracy across Israel, well below marker scale). |
+| `popupFields` | `[{field, label}]` | rows in the RTL popup. `textContent`-only render, so values are XSS-safe. |
+| `popupTitleField` | string | optional larger title at top of popup |
+| `cluster` | boolean | default `true`; set `false` for sparse maps where clustering hides density |
+| `totalCap` | number | default 5000; absolute cap on points fetched |
+| `pageSize` | number | default 1000; CKAN page size |
+| `filters` / `q` | object/string | optional `datastore_search` filters |
+| `tileUrl` | string | default OSM; override only with explicit reason |
+| `initialView` | `{center, zoom}` | fallback if no points load |
+
+**When to skip**: choropleths (use raw Leaflet + GeoJSON), single-
+point maps (just embed one `[lat, lng]`), polygon overlays. For
+those, ITM→WGS84 with pyproj at build time is fine because the
+output is small. **Never** inline a marker array of >100 items.
+
+### ECharts heatmap (two-axis time, month × category, etc.)
+
+When the data has two ordinal axes — month × category, year × month
+percentage, district × type — a heatmap compresses what would
+otherwise be 6–12 line charts. Use `GOVIL_PALETTE[0]` to
+`GOVIL_PALETTE[1]` as the ramp:
+
+```js
+const heat = echarts.init(document.getElementById('chart-heat'));
+heat.setOption(Object.assign({}, baseECharts, {
+  tooltip: { position: 'top' },
+  grid: { left: 80, right: 24, top: 32, bottom: 64, containLabel: true },
+  xAxis: { type: 'category', data: months, splitArea: { show: true } },
+  yAxis: { type: 'category', data: categories, splitArea: { show: true } },
+  visualMap: {
+    min: 0, max: maxValue,
+    calculable: true,
+    orient: 'horizontal', left: 'center', bottom: 8,
+    inRange: { color: ['#dbe8fb', '#0068f5', '#0b3668'] },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+  },
+  series: [{
+    type: 'heatmap',
+    data: cells,        // [[xIdx, yIdx, value], ...]
+    label: { show: true, fontFamily: 'Rubik' },
+    emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,104,245,.3)' } },
+  }],
+}));
+```
+
 ### Categorical palette — use on every chart
 
 Copy this into a `<script>` block near the top of `content.html`:
@@ -294,7 +395,30 @@ formatter: v => v.toFixed(1) + ' מ\''
 In HTML body text (outside `<script>`) the bare apostrophe is fine —
 this rule applies only to JS string literals.
 
-### Leaflet RTL caveats
+### Inlining CKAN row data as JS literals
+
+CKAN address/name fields routinely carry embedded newlines, tabs, or
+other control chars (e.g. `"מלון התעשייה\n"`, `" \nתחנת דלק"`). A raw
+LF inside a `"…"`/`'…'` JS string literal is a hard syntax error —
+V8 aborts the whole `<script>` block, blanking every chart and the
+map. When you inline a row array, run each cell through
+`JSON.stringify` (or strip control chars yourself) — never paste the
+raw CKAN value into a JS literal:
+
+```js
+// WRONG — "מלון התעשייה\n" with raw LF kills the parser
+const sites = [[32.06, 34.78, "מלון התעשייה
+"]];
+// RIGHT — JSON-encode each string field
+const sites = [[32.06, 34.78, "מלון התעשייה\n"]];
+```
+
+### Leaflet RTL caveats (raw Leaflet only — for non-point overlays)
+
+For typical point-set maps, prefer `GovMap` (see Live Map above) — it
+handles RTL popups and ITM→WGS84 for you. Reach for raw Leaflet only
+when GovMap doesn't fit: choropleths (GeoJSON polygons), single-point
+maps, line/polygon overlays.
 
 The wrapper already injects:
 
@@ -303,9 +427,11 @@ The wrapper already injects:
 .leaflet-popup-content { direction: rtl; text-align: right; }
 ```
 
-Inside popups, Hebrew flows RTL; tiles stay LTR. Convert ITM
-(`EPSG:2039`) → WGS84 (`EPSG:4326`) with pyproj before embedding
-`[lat, lng]` arrays in JS.
+Inside popups, Hebrew flows RTL; tiles stay LTR. For raw Leaflet with
+ITM coordinates, convert to WGS84 with pyproj at build time and embed
+`[lat, lng]` arrays inline — but only when the dataset is small. For
+anything past ~100 points, use `GovMap` instead and avoid the inline
+array entirely.
 
 ## Mobile-first layout (non-negotiable)
 
