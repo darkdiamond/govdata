@@ -26,6 +26,7 @@ const FILES = [
 // into public/lib/. Reference path is relative to scripts/.
 const HANDWRITTEN_FILES = [
   ['gov-explorer.js', 'gov-explorer.js'],
+  ['gov-map.js', 'gov-map.js'],
 ]
 
 // Leaflet's CSS references images at `images/marker-icon.png` etc. relative to
