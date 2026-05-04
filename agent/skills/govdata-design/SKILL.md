@@ -24,11 +24,11 @@ Don't duplicate any of that.
 Must include (in this order, roughly):
 
 1. `<h1>` — dataset title.
-2. Tag chips — `<div class="flex flex-wrap gap-2 mb-4"><span class="tag-chip">…</span>…</div>`.
-3. AI summary card — 2–3 sentences in a `<section class="card p-5 mb-4">`.
+2. Tag chips — `<div class="flex flex-wrap gap-2 mb-6"><span class="tag-chip">…</span>…</div>`.
+3. AI summary card — 2–3 sentences in a `<section class="card p-5 mb-6">`.
 4. Metadata + Resources — two cards side by side (grid).
 5. Insights — a `<ul>` of as many bullets as the data genuinely supports (1 minimum, no upper cap). Don't pad with filler — a thin dataset with one real finding gets one bullet.
-6. **Data Explorer** — your visualizations, each in a `<section class="card p-5 mb-5">`.
+6. **Data Explorer** — your visualizations, each in a `<section class="card p-5 mb-6">`.
 7. Original notes (CKAN `notes` verbatim) in a `<section>`.
 
 **DO NOT** include `<html>`, `<head>`, `<body>`, a site `<header>` nav,
@@ -47,10 +47,24 @@ body parses.
 
 - **Font**: Rubik, loaded from Google Fonts (weights 300/400/500/600/700).
   Applies to both body text and headings. Do not load Heebo.
-- **Body**: `font-size: 1rem`, `line-height: 1.5` (not 1.7).
+- **Body**: `font-size: 1rem`, `line-height: 1.5` (not 1.7). If a Hebrew-
+  heavy paragraph genuinely needs more breathing room, add the Tailwind
+  `leading-relaxed` (1.625) utility on that paragraph — never inline
+  `style="line-height: …"`.
 - **Headings**: font-weight 500, line-height 1.2. Use the plain
   `<h1>`/`<h2>`/`<h3>` elements — the wrapper's `@layer base` applies
   gov.il's fluid `clamp()` sizes automatically.
+- **Spacing rhythm** (single canonical rule — every page should feel the same):
+  - Top-level blocks (every `<section class="card p-5">` AND any
+    between-card grids like the KPI row) separate with `mb-6`.
+    Never `mb-4` or `mb-5` on a top-level block.
+  - Inside a card: `mb-3` for heading→body, `mb-2` for tight
+    sub-elements, `mb-1` for very tight numeric labels.
+  - Don't reach for `mb-7`, `mb-8`, `mb-10`, etc.
+- **Color**: use the Tailwind classes from the table below (`text-danger`,
+  `text-ok`, `text-ink-deep`, etc.). Never inline `style="color: #…"`.
+  Semantic colors (`ok`/`warn`/`danger`/`info`) stay reserved for semantic
+  meaning, not categorical fills.
 
 Colors (Tailwind classes or raw hex):
 
@@ -170,7 +184,7 @@ alongside `echarts` / `L`. Do NOT add a `<script src=>` for it.
 your `<data-explorer>` section, after charts):
 
 ```html
-<section class="card p-5 mb-5">
+<section class="card p-5 mb-6">
   <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
     <h2 class="font-semibold text-ink-deep">עיון ברשימה</h2>
     <input
@@ -258,7 +272,7 @@ the same rows from the same CKAN endpoint at runtime.
 **Canonical config snippet**:
 
 ```html
-<section class="card p-5 mb-5">
+<section class="card p-5 mb-6">
   <h2 class="font-semibold text-ink-deep mb-3">מפת המאגר</h2>
   <div id="map-main" class="h-72 md:h-[420px]"></div>
 </section>
@@ -441,7 +455,7 @@ viewport. Three rules:
 **1. Highlight / KPI card grids — Tailwind responsive utilities only.**
 
 ```html
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
   <div class="card p-4 text-center">…</div>
   …
 </div>
@@ -450,7 +464,7 @@ viewport. Three rules:
 If a count doesn't divide neatly (3 cards, 5 cards), use auto-fit:
 
 ```html
-<div class="grid gap-4 mb-5"
+<div class="grid gap-4 mb-6"
      style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
 ```
 
@@ -503,19 +517,19 @@ sizes you to `max-w-gov` already).
 ```html
 <!-- tag chips -->
 <h1>שם המאגר</h1>
-<div class="flex flex-wrap gap-2 mb-4">
+<div class="flex flex-wrap gap-2 mb-6">
   <span class="tag-chip">תגית-1</span>
   <span class="tag-chip">תגית-2</span>
 </div>
 
 <!-- AI summary card -->
-<section class="card p-5 mb-4">
+<section class="card p-5 mb-6">
   <h2 class="m-0 mb-2 text-base font-display">תקציר</h2>
   <p class="m-0 text-subtle">שני עד שלושה משפטים בעברית, המתארים את המאגר…</p>
 </section>
 
 <!-- highlight cards (KPIs) — responsive: 2 cols on mobile, 4 on desktop -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
   <div class="card p-4 text-center">
     <div class="text-3xl font-bold text-brand mb-1">74,977</div>
     <div class="text-sm text-subtle">עמותות רשומות</div>
@@ -529,7 +543,7 @@ sizes you to `max-w-gov` already).
      emit any of those fields in agent_data.json or in content.html. -->
 
 <!-- insights -->
-<section class="card p-5 mb-4">
+<section class="card p-5 mb-6">
   <h2 class="m-0 mb-3 text-base font-display">תובנות</h2>
   <ul class="m-0 ps-5 space-y-2 text-sm">
     <li>המדידה הנמוכה ביותר: <span dir="ltr">−440.79 מ'</span> (מרץ 2026).</li>
@@ -538,13 +552,13 @@ sizes you to `max-w-gov` already).
 </section>
 
 <!-- data explorer -->
-<section class="card p-5 mb-5">
+<section class="card p-5 mb-6">
   <h2 class="m-0 mb-3 text-base font-display">חקר הנתונים</h2>
   <div id="chart-main" class="h-64 md:h-80"></div>
 </section>
 
 <!-- original notes -->
-<section class="card p-5 mb-4">
+<section class="card p-5 mb-6">
   <h2 class="m-0 mb-2 text-base font-display">תיאור מקורי</h2>
   <p class="m-0 text-sm text-subtle whitespace-pre-line">…</p>
 </section>
@@ -583,13 +597,32 @@ domain genuinely needs it). Same content as the AI summary card in
 content.html, but as plain text — the frontend uses this for SEO meta
 tags and home-page cards.
 
-`dataset_kind` — required. Drives the `/kinds/<kind>/` route and a few
-icon/label choices on cards.
+`dataset_kind` — required. Pick the FIRST matching row:
 
-`related_ids` — up to 5 dataset IDs you think are topically related.
-Return `[]` if you don't have enough context. The publisher merges your
-suggestions with deterministic scoring (ministry + shared tags +
-embedding similarity).
+| Has lat/lng or ITM coords?                                  | → `map`        |
+| Has a date axis with ≥3 distinct dates and a value series?  | → `timeseries` |
+| Is a top-N / leaderboard?                                   | → `rankings`   |
+| Is a registry of named entities (>100 distinct)?            | → `registry`  |
+| None of the above                                           | → `misc`       |
+
+A dataset that has BOTH geography and time is `map` — geographic
+primacy is what users expect on the `/kinds/` route.
+
+`related_ids` — aim for 2–3 IDs. Find them with one CKAN call:
+
+```bash
+curl -fsSG -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
+  "https://data.gov.il/api/3/action/package_search" \
+  --data-urlencode "fq=organization:<org-name>" \
+  --data-urlencode "rows=15" -o /tmp/related.json
+```
+
+Then in Python pick IDs (not titles, not slugs) from datasets that
+share the ministry + at least one tag with this dataset, excluding
+this dataset's own ID. Return up to 5. If `package_search` returns
+nothing usable, return `[]` — the publisher's deterministic scoring
+(ministry + shared tags + embedding similarity) still merges your
+suggestions with its own signals.
 
 ## Accessibility + SEO
 
@@ -613,6 +646,15 @@ embedding similarity).
 - Do not set `line-height: 1.7` on body or paragraphs — gov.il uses
   1.5. If Hebrew-heavy prose feels tight, bump *that paragraph* to
   `leading-relaxed` (1.625), not the whole doc.
+- Do not write inline `style="line-height: …"` or `style="color: …"`
+  at all. Use Tailwind utilities (`leading-relaxed`, `text-ink-deep`,
+  `text-subtle`, `text-danger`, `text-ok`, `text-warn`, `text-info`).
+  The only inline `style=` patterns this skill blesses are the
+  `grid-template-columns: repeat(auto-fit, …)` for KPI auto-fit and
+  CSS variables for chart-specific values.
+- Do not flip-flop `mb-*` between sections. Top-level blocks always
+  use `mb-6`; never `mb-4` or `mb-5`. The publisher's self-check
+  rejects pages that violate this.
 - Do not generate emoji in government content.
 - Do not override the card radius (`rounded-gov` = 0.5rem / 8px). No
   `rounded-xl` or `rounded-2xl`.

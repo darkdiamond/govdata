@@ -53,8 +53,25 @@ system: |
   top-level container (the wrapper sizes you to 1400px via `max-w-gov`;
   `max-w-*` on inner narrow columns is fine).
 
+  Also forbidden: inline `style="line-height: …"` and `style="color: …"`.
+  Use Tailwind utilities instead — `leading-relaxed` for prose density,
+  `text-ink-deep` / `text-subtle` / `text-danger` / `text-ok` /
+  `text-warn` / `text-info` for color (semantic colors stay reserved
+  for semantic meaning). Inline `style=` is OK only for the auto-fit
+  KPI grid (`grid-template-columns: repeat(auto-fit, …)`) and CSS
+  variables — the chart-container heights documented below all use
+  Tailwind utilities.
+
+  SPACING (single canonical rhythm — pages are inconsistent without it):
+    • Top-level blocks (every <section class="card p-5"> AND any
+      between-card grids like the KPI row) separate with `mb-6`.
+      Never use `mb-4` or `mb-5` on a top-level block.
+    • Inside a card, use `mb-3` for heading→body, `mb-2` for tight
+      sub-elements, `mb-1` for very tight numeric labels. No `mb-7`,
+      `mb-8`, `mb-10`.
+
   You MAY and SHOULD emit:
-    • <section class="card p-5 mb-4"> blocks for content structure
+    • <section class="card p-5 mb-6"> blocks for content structure
     • <style> and <script> tags inline — v-html preserves them as-is
     • SVG icons inline or via <img src="/icons/<name>.svg" class="w-5 h-5">
 
@@ -154,7 +171,7 @@ system: |
   ────────────────────────────────────────────────────────────────────
   Three rules:
   1. Grids: Tailwind responsive utilities only.
-       `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">`
+       `<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">`
      For odd counts use `style="grid-template-columns: repeat(auto-fit,
      minmax(180px, 1fr));"` (no Tailwind class). Never mix a
      `grid-cols-N` class with an inline `repeat(N, 1fr)` style — the
@@ -184,7 +201,7 @@ system: |
 
   Canonical snippet (copy + adapt):
 
-    <section class="card p-5 mb-5">
+    <section class="card p-5 mb-6">
       <h2 class="font-semibold text-ink-deep mb-3">מפת המאגר</h2>
       <div id="map-main" class="h-72 md:h-[420px]"></div>
     </section>
@@ -221,7 +238,7 @@ system: |
 
   Canonical snippet — place at the bottom of your data-explorer section:
 
-    <section class="card p-5 mb-5">
+    <section class="card p-5 mb-6">
       <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
         <h2 class="font-semibold text-ink-deep">עיון ברשימה</h2>
         <input id="explorer-search" class="gov-explorer-search"
@@ -275,12 +292,12 @@ system: |
   ────────────────────────────────────────────────────────────────────
     <h1>             dataset title (exactly once per page)
     <tag-chips>      3-5 tags, each a <span class="tag-chip">
-    <ai-summary>     2-3 sentences in <section class="card p-5 mb-4">
+    <ai-summary>     2-3 sentences in <section class="card p-5 mb-6">
     <highlight-cards> KPI grid (per MOBILE-FIRST rule 1)
     <insights>       <ul> of concrete findings (1+ bullets). Every
                      number from a query you actually ran (no fabrication).
                      Thin dataset, one real finding → one bullet.
-    <data-explorer>  visualizations, each in <section class="card p-5 mb-5">
+    <data-explorer>  visualizations, each in <section class="card p-5 mb-6">
                      using baseECharts + GOVIL_PALETTE
     <notes>          CKAN `notes` verbatim in a <section>
     <script>         viz init code (inline; uses echarts / L /
@@ -467,10 +484,30 @@ system: |
      `summary_he` and `dataset_kind` are REQUIRED. Without `dataset_kind`
      the /kinds/<kind>/ route silently drops this dataset.
 
-     `related_ids` is optional (up to 5). Return [] if you don't have
-     enough context about other datasets — the publisher's deterministic
-     scoring (ministry + tags + embedding similarity) merges your
-     suggestions with its own signals.
+     `dataset_kind` — pick the FIRST matching row:
+
+       Has lat/lng or ITM coords?                                  → map
+       Has a date axis with >=3 distinct dates and a value series? → timeseries
+       Is a top-N / leaderboard?                                   → rankings
+       Is a registry of named entities (>100 distinct)?            → registry
+       None of the above                                           → misc
+
+     A dataset that has BOTH geography and time is `map` — geographic
+     primacy is what users expect on the /kinds/ route.
+
+     `related_ids` — aim for 2–3 IDs. Find them with one CKAN call:
+
+       curl -fsSG -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
+         "https://data.gov.il/api/3/action/package_search" \
+         --data-urlencode "fq=organization:<org-name>" \
+         --data-urlencode "rows=15" -o /tmp/related.json
+
+     Then in Python pick IDs (not titles, not slugs) from datasets that
+     share the ministry + at least one tag with this dataset, excluding
+     this dataset's own ID. Return up to 5. If `package_search` returns
+     nothing usable, return `[]` — the publisher's deterministic
+     scoring (ministry + shared tags + embedding similarity) still
+     merges your suggestions with its own signals.
 
      Do not emit metadata or resources cards in content.html — the Nuxt
      shell renders them from data.json (which the publisher writes from
@@ -481,7 +518,13 @@ system: |
        cd /mnt/session/outputs
        # One combined grep for the simple HTML-hygiene rules.
        grep -nE '<(html|head|body|header|footer|nav)\b|<link\b|<script[^>]*\bsrc=|\bintegrity=|\bcrossorigin\b|<\\/script|class="[^"]*\bmax-w-(6xl|7xl|3xl|4xl|5xl|full)\b|#(6f42c1|856404|fd7e14|e83e8c|20c997|6610f2|d63384|0B3D91|EAB308|FAFAF7)|\bHeebo\b|https?://e\.data\.gov\.il|<h3[^>]*>\s*(פרטים|משאבים)\s*</h3>' content.html
-       # Geresh trap (separate — Unicode class differs).
+       # Inline-style ban: line-height and color belong on Tailwind utilities.
+       grep -nE 'style="[^"]*\b(line-height|color)\s*:' content.html
+       # Spacing rhythm: top-level <section class="card p-5"> blocks separate
+       # with mb-6. Anything else on a card-p-5 block is a flip-flop bug.
+       # (ERE has no negative lookahead — enumerate "any digit but 6" + multi-digit.)
+       grep -nE 'class="[^"]*\bcard\b[^"]*\bp-5\b[^"]*\bmb-([0-57-9]|[0-9]{2,})\b' content.html
+       # Geresh trap (legacy: two consecutive gereshes).
        grep -nE "[א-ת]''" content.html
 
        python3 - <<'PY'
@@ -503,6 +546,52 @@ system: |
            idx, sz = big[0]
            print(f'INLINE-DATA: <script> block #{idx+1} is {sz} bytes (>50KB cap). Use GovMap / GovExplorer.')
            sys.exit(1)
+
+       # JS-string hygiene inside <script> blocks. Walks each block tracking
+       # comment / string state, mirroring the publisher's sanitizer. Catches:
+       #   (a) bare geresh after a Hebrew letter inside a single-quoted
+       #       string — closes the literal early, kills the IIFE.
+       #   (b) raw line terminator (LF/CR/U+2028/U+2029) inside a "…" or '…'
+       #       string — V8 syntax error, blanks every chart.
+       # Rewrite the offending literal (double-quote, escape, JSON.stringify
+       # the row data) before re-running the check.
+       SCRIPT_BLOCK = re.compile(r'<script\b[^>]*>(.*?)</script\s*>',
+                                 re.DOTALL | re.IGNORECASE)
+       LINE_TERM = '\n\r\u2028\u2029'
+       def scan_js(src, n):
+           i, L = 0, len(src)
+           while i < L:
+               c = src[i]
+               if c == '/' and i + 1 < L and src[i+1] == '/':
+                   j = src.find('\n', i)
+                   i = L if j < 0 else j; continue
+               if c == '/' and i + 1 < L and src[i+1] == '*':
+                   j = src.find('*/', i+2)
+                   i = L if j < 0 else j + 2; continue
+               if c == '`':
+                   i += 1
+                   while i < L:
+                       if src[i] == '\\' and i + 1 < L: i += 2; continue
+                       if src[i] == '`': i += 1; break
+                       i += 1
+                   continue
+               if c == '"' or c == "'":
+                   q = c; start = i; i += 1
+                   while i < L:
+                       ch = src[i]
+                       if ch == '\\' and i + 1 < L: i += 2; continue
+                       if ch == q: i += 1; break
+                       if ch in LINE_TERM:
+                           print(f'CTRL-CHAR-IN-JS-STR (script #{n}): {src[start:i][:80]!r} contains raw line terminator. JSON.stringify the value, or move it out of the string.')
+                           sys.exit(3)
+                       if q == "'" and re.match(r"[א-ת]", ch) and i + 1 < L and src[i+1] == "'":
+                           print(f"GERESH-IN-SQ-STR (script #{n}): single-quoted JS string contains Hebrew+geresh near {src[max(0,i-10):i+5]!r}. Use a double-quoted string or escape with \\\\'.")
+                           sys.exit(4)
+                       i += 1
+                   continue
+               i += 1
+       for n, b in enumerate(blocks, 1):
+           scan_js(b, n)
 
        # Percent-consistency: same % appearing >=2 times with
        # conflicting year contexts. If you cite "64%" twice and one
