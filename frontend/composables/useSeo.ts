@@ -48,6 +48,7 @@ export function useSeo(input: SeoInput) {
     url: SITE_URL,
     inLanguage: 'he-IL',
     description: input.description,
+    image: `${SITE_URL}/favicon-192.png`,
   }
 
   const ldBlocks: object[] = [websiteLd]
