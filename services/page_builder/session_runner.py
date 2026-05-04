@@ -63,6 +63,13 @@ _OPEN_SCRIPT = re.compile(r"<script\b[^>]*>", re.IGNORECASE)
 _CLOSE_SCRIPT = re.compile(r"</script\s*>", re.IGNORECASE)
 _OPEN_STYLE = re.compile(r"<style\b[^>]*>", re.IGNORECASE)
 _CLOSE_STYLE = re.compile(r"</style\s*>", re.IGNORECASE)
+_SCRIPT_BLOCK = re.compile(
+    r"(<script\b[^>]*>)(.*?)(</script\s*>)", re.IGNORECASE | re.DOTALL
+)
+_SCRIPT_DATA_TYPE = re.compile(
+    r'\btype\s*=\s*"(?:application/(?:[a-z0-9-]+\+)?json|text/[a-z0-9-]+)"',
+    re.IGNORECASE,
+)
 # Above this many missing closers the body is structurally broken in
 # ways a string-append can't safely fix — fail loudly instead.
 _MAX_AUTO_REPAIR = 5
@@ -103,6 +110,120 @@ def _balance_raw_text_tag(
     return body + sep + (f"</{name}>\n" * delta)
 
 
+_JS_CTRL_ESCAPES: dict[str, str] = {
+    "\x08": "\\b",
+    "\x09": "\\t",
+    "\x0a": "\\n",
+    "\x0b": "\\v",
+    "\x0c": "\\f",
+    "\x0d": "\\r",
+    "\u2028": "\\u2028",
+    "\u2029": "\\u2029",
+}
+for _i in list(range(0x00, 0x08)) + [0x0e, 0x0f] + list(range(0x10, 0x20)):
+    _JS_CTRL_ESCAPES.setdefault(chr(_i), f"\\u{_i:04x}")
+
+
+def _escape_js_string_controls(script_body: str) -> tuple[str, int]:
+    # Walk the script body tracking comment/string state and replace any raw
+    # control char or line terminator inside `"…"` / `'…'` literals with its
+    # JS escape. CKAN address fields routinely carry embedded LFs; when the
+    # agent inlines a row array as a JS literal those LFs land *unescaped*
+    # inside the string and V8 aborts the whole <script> with "Invalid or
+    # unexpected token" — taking every chart and the Leaflet map down with
+    # it (b2370286-… exhibited exactly this).
+    out: list[str] = []
+    i = 0
+    n = len(script_body)
+    count = 0
+    while i < n:
+        c = script_body[i]
+        # Line comment — preserve verbatim.
+        if c == "/" and i + 1 < n and script_body[i + 1] == "/":
+            j = script_body.find("\n", i)
+            if j < 0:
+                j = n
+            out.append(script_body[i:j])
+            i = j
+            continue
+        # Block comment — preserve verbatim.
+        if c == "/" and i + 1 < n and script_body[i + 1] == "*":
+            j = script_body.find("*/", i + 2)
+            j = n if j < 0 else j + 2
+            out.append(script_body[i:j])
+            i = j
+            continue
+        # Template literal — raw newlines are legal here, leave as-is. We do
+        # not try to parse `${…}` interpolation; for the purpose of this
+        # sanitizer it's enough to skip to the matching backtick honouring
+        # backslash escape.
+        if c == "`":
+            out.append(c)
+            i += 1
+            while i < n:
+                ch = script_body[i]
+                if ch == "\\" and i + 1 < n:
+                    out.append(script_body[i:i + 2])
+                    i += 2
+                    continue
+                out.append(ch)
+                i += 1
+                if ch == "`":
+                    break
+            continue
+        # `'…'` / `"…"` string — the only place we actually escape.
+        if c == '"' or c == "'":
+            quote = c
+            out.append(quote)
+            i += 1
+            while i < n:
+                ch = script_body[i]
+                if ch == "\\" and i + 1 < n:
+                    out.append(script_body[i:i + 2])
+                    i += 2
+                    continue
+                if ch == quote:
+                    out.append(quote)
+                    i += 1
+                    break
+                esc = _JS_CTRL_ESCAPES.get(ch)
+                if esc is not None:
+                    out.append(esc)
+                    count += 1
+                    i += 1
+                    continue
+                out.append(ch)
+                i += 1
+            continue
+        out.append(c)
+        i += 1
+    return "".join(out), count
+
+
+def _escape_script_string_controls(body: str, *, tag: str) -> str:
+    total = 0
+
+    def handle(match: "re.Match[str]") -> str:
+        nonlocal total
+        opener, inner, closer = match.group(1), match.group(2), match.group(3)
+        # Skip data blocks (JSON-LD, application/json, etc.) — those aren't
+        # parsed as JS, raw newlines are fine and "fixing" them would break
+        # the JSON.
+        if _SCRIPT_DATA_TYPE.search(opener):
+            return match.group(0)
+        new_inner, n = _escape_js_string_controls(inner)
+        total += n
+        return opener + new_inner + closer
+
+    new_body = _SCRIPT_BLOCK.sub(handle, body)
+    if total:
+        log.warning(
+            "%ssanitizer: escaped %d raw control char(s) in JS string literal(s)",
+            tag, total,
+        )
+    return new_body
+
+
 def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
     """Strip agent-output failure modes that recur as LLM hallucinations.
 
@@ -116,6 +237,10 @@ def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
     `<script>`/`<style>` tags (e4a5e2d7-… shipped without the trailing
     `</script>`, which let the parser swallow the page footer and the
     Nuxt config bootstrap, blanking every chart and breaking hydration).
+    Escapes raw control chars (LF/CR/etc.) inside `"…"`/`'…'` JS string
+    literals (b2370286-… inlined CKAN address fields containing embedded
+    newlines as a JS array literal — V8 aborted the whole <script> on the
+    first one, blanking 4 ECharts + the Leaflet map).
 
     Each transform logs a WARNING with a count and the dataset id so we
     can trace prompt regressions even when the sanitizer silently fixes
@@ -150,6 +275,9 @@ def _sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
 
     body = _balance_raw_text_tag(body, _OPEN_SCRIPT, _CLOSE_SCRIPT, "script", tag=tag)
     body = _balance_raw_text_tag(body, _OPEN_STYLE, _CLOSE_STYLE, "style", tag=tag)
+
+    # Run after balancing so every <script> has a closer the regex can find.
+    body = _escape_script_string_controls(body, tag=tag)
 
     return body
 

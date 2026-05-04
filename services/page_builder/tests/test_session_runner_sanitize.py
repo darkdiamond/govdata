@@ -205,6 +205,109 @@ def test_real_world_e4a5e2d7_pattern() -> None:
     assert 'echarts.init' in out
 
 
+def test_escapes_raw_lf_in_double_quoted_js_string() -> None:
+    src = '<script>const x = "before\nafter";</script>'
+    out, recs = _logs(None, body=src)
+    assert '"before\\nafter"' in out
+    assert "\nafter" not in out  # raw LF must be gone
+    msgs = " ".join(r.getMessage() for r in recs)
+    assert "escaped 1 raw control char" in msgs
+
+
+def test_escapes_raw_lf_in_single_quoted_js_string() -> None:
+    src = "<script>const x = 'a\nb';</script>"
+    out, _ = _logs(None, body=src)
+    assert "'a\\nb'" in out
+
+
+def test_escapes_cr_tab_and_u2028_inside_string() -> None:
+    src = '<script>const x = "a\rb\tc\u2028d";</script>'
+    out, _ = _logs(None, body=src)
+    assert '"a\\rb\\tc\\u2028d"' in out
+
+
+def test_leaves_template_literal_newlines_alone() -> None:
+    """Backtick strings legally span lines; do not touch them."""
+    src = "<script>const x = `multi\nline`;</script>"
+    out, recs = _logs(None, body=src)
+    assert out == src
+    assert not [r for r in recs if "raw control char" in r.getMessage()]
+
+
+def test_leaves_application_json_block_alone() -> None:
+    src = (
+        '<script type="application/ld+json">{"@context":"https://schema.org",'
+        '"name":"line1\nline2"}</script>'
+    )
+    out, recs = _logs(None, body=src)
+    assert out == src
+    assert not [r for r in recs if "raw control char" in r.getMessage()]
+
+
+def test_does_not_misread_lf_inside_line_comment() -> None:
+    """Line comments have a literal newline at their end; the scanner must
+    not enter a string from a `'` that lives inside a comment."""
+    src = "<script>// don't break here\nconst x = \"safe\";</script>"
+    out, recs = _logs(None, body=src)
+    assert out == src
+    assert not [r for r in recs if "raw control char" in r.getMessage()]
+
+
+def test_preserves_existing_backslash_escape_inside_string() -> None:
+    """An escaped quote like `\\\"` must not terminate the string and must
+    survive the pass byte-for-byte. Then the trailing raw LF still gets
+    escaped."""
+    src = '<script>const a = "he said \\"hi\\"\nok";</script>'
+    out, _ = _logs(None, body=src)
+    assert '\\"hi\\"' in out
+    assert '"hi\\"\\nok"' in out
+
+
+def test_real_world_b2370286_pattern() -> None:
+    """Exact failure shape from dataset b2370286-…: a JS array literal of
+    site rows, one of which has a leading-space + LF inside a `"…"` value.
+    Before the fix, V8 aborted the whole <script> with `Invalid or
+    unexpected token`. After sanitize there must be no raw newline inside
+    any `"…"` string in the script body."""
+    src = (
+        "<script>\n"
+        "const sites = [\n"
+        '  [32.05, 34.77, " \nתחנת דלק"],\n'
+        '  [32.06, 34.78, "מלון התעשייה\n"],\n'
+        "];\n"
+        "</script>"
+    )
+    out, recs = _logs(None, body=src)
+    # Walk the inner script and assert no raw LF/CR appears inside any
+    # "…"/'…' string literal. (Outside strings, the agent's existing
+    # newlines between statements must remain.)
+    import re as _re
+    inner = _re.search(r"<script>(.*)</script>", out, _re.DOTALL).group(1)
+    in_str = None
+    escape = False
+    for ch in inner:
+        if escape:
+            escape = False
+            continue
+        if in_str:
+            if ch == "\\":
+                escape = True
+                continue
+            if ch == in_str:
+                in_str = None
+                continue
+            assert ch not in ("\n", "\r"), (
+                f"raw {ch!r} still inside {in_str} string after sanitize"
+            )
+            continue
+        if ch in ('"', "'"):
+            in_str = ch
+    assert '" \\nתחנת דלק"' in inner
+    assert '"מלון התעשייה\\n"' in inner
+    msgs = " ".join(r.getMessage() for r in recs)
+    assert "escaped 2 raw control char" in msgs
+
+
 def main() -> None:
     tests = [
         test_replaces_escaped_script_end_tag,
@@ -221,6 +324,14 @@ def main() -> None:
         test_stray_close_script_warns_but_unchanged,
         test_excess_unclosed_scripts_raises,
         test_real_world_e4a5e2d7_pattern,
+        test_escapes_raw_lf_in_double_quoted_js_string,
+        test_escapes_raw_lf_in_single_quoted_js_string,
+        test_escapes_cr_tab_and_u2028_inside_string,
+        test_leaves_template_literal_newlines_alone,
+        test_leaves_application_json_block_alone,
+        test_does_not_misread_lf_inside_line_comment,
+        test_preserves_existing_backslash_escape_inside_string,
+        test_real_world_b2370286_pattern,
     ]
     for t in tests:
         t()
