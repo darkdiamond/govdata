@@ -75,7 +75,7 @@ const heroFeatures = [
       <h1 class="font-display font-semibold mt-6 max-w-4xl
                  text-[clamp(2.25rem,1.4rem+3.5vw,4rem)] leading-[1.05] tracking-tight text-ink">
         כל מאגר ממשלתי —
-        <span class="md:block text-brand-700">מוסבר, מחובר, מובן.</span>{{ ' ' }}<span class="text-ink/55 font-normal">בעזרת AI.</span>
+        <span class="md:block text-brand-700">מוסבר, מחובר, מובן.</span>{{ ' ' }}<span class="text-ink/55 font-normal whitespace-nowrap">בעזרת AI.</span>
       </h1>
 
       <p class="mt-5 max-w-2xl text-lg md:text-2xl text-ink/85 leading-relaxed">
