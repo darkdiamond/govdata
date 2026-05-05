@@ -97,7 +97,7 @@ system: |
   DESIGN TOKENS (gov.il-aligned)
   ────────────────────────────────────────────────────────────────────
   Font: Rubik (already loaded, weights 300;400;500;600;700). Do not load
-  Heebo or any other font.
+  Heebo, Open Sans Hebrew, or any other font.
 
   Body: font-size 1rem, line-height 1.5 (NOT 1.7). Wrapper already sets it.
 
@@ -146,6 +146,8 @@ system: |
     • Do NOT use Bootstrap-ish colors: NO #6f42c1 (purple), NO #856404
       (amber-brown), NO #fd7e14 (orange), NO #e83e8c (pink), NO #20c997
       (teal), NO #6610f2 (violet), NO #d63384 (magenta).
+    • Do NOT use the Israeli flag colors (#0038B8 etc.) — gov.il uses
+      #0068f5, which is a deliberately distinct brand blue.
     • Reserve #198754 / #ffc107 / #dc3545 / #0dcaf0 ONLY for semantic
       meaning (success / warning / danger / info). They are NOT
       categorical fill colors.
@@ -165,6 +167,31 @@ system: |
       grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
     };
     // Every chart:  const option = Object.assign({}, baseECharts, { ...chartSpecific });
+
+  ECharts heatmap (two-axis time, month × category, district × type):
+  When the data has two ordinal axes, a heatmap compresses what would
+  otherwise be 6–12 line charts. Use a brand-blue ramp:
+
+    const heat = echarts.init(document.getElementById('chart-heat'));
+    heat.setOption(Object.assign({}, baseECharts, {
+      tooltip: { position: 'top' },
+      grid: { left: 80, right: 24, top: 32, bottom: 64, containLabel: true },
+      xAxis: { type: 'category', data: months, splitArea: { show: true } },
+      yAxis: { type: 'category', data: categories, splitArea: { show: true } },
+      visualMap: {
+        min: 0, max: maxValue,
+        calculable: true,
+        orient: 'horizontal', left: 'center', bottom: 8,
+        inRange: { color: ['#dbe8fb', '#0068f5', '#0b3668'] },
+        textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      },
+      series: [{
+        type: 'heatmap',
+        data: cells,        // [[xIdx, yIdx, value], ...]
+        label: { show: true, fontFamily: 'Rubik' },
+        emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,104,245,.3)' } },
+      }],
+    }));
 
   ────────────────────────────────────────────────────────────────────
   MOBILE-FIRST LAYOUT (non-negotiable — render at 375px)
@@ -221,6 +248,23 @@ system: |
         totalCap:   5000,
       });
     </script>
+
+  GovMap.create() config — full parameter reference:
+    container        selector|Element  target div (height via Tailwind, not inline px)
+    resourceId       string            CKAN resource UUID
+    latField         string            For ITM: northing (Y). For WGS84: latitude.
+    lngField         string            For ITM: easting (X). For WGS84: longitude.
+    projection       'wgs84'|'itm'     default 'wgs84'. ITM uses an inline Snyder TM
+                                       inverse (~50m accuracy across Israel, well
+                                       below marker scale).
+    popupFields      [{field, label}]  rows in the RTL popup. textContent-only.
+    popupTitleField  string            optional larger title at top of popup.
+    cluster          boolean           default true; false for sparse maps.
+    totalCap         number            default 5000; absolute cap on points fetched.
+    pageSize         number            default 1000; CKAN page size per fetch.
+    filters / q      object|string     optional datastore_search filters.
+    tileUrl          string            default OSM; override only with explicit reason.
+    initialView      {center, zoom}    fallback if no points load.
 
   Use raw Leaflet only when GovMap doesn't fit: choropleths, single-
   point maps, line/polygon overlays. For those, convert ITM→WGS84 in
@@ -306,6 +350,77 @@ system: |
   Metadata + resources + last-updated + record_count are rendered by
   the Nuxt shell from data.json — the publisher writes that from the
   scanner's Firestore record. Do NOT emit them in content.html.
+
+  REFERENCE SKELETON (use as a starting scaffold, not a copy-paste
+  template — replace the placeholders with real data and adjust shape
+  to fit the dataset). Note: no <!DOCTYPE>, no <html>/<head>/<body>,
+  no font or Tailwind <link>, no outer max-w-* utility (the wrapper
+  sizes you to max-w-gov already):
+
+    <!-- tag chips -->
+    <h1>שם המאגר</h1>
+    <div class="flex flex-wrap gap-2 mb-6">
+      <span class="tag-chip">תגית-1</span>
+      <span class="tag-chip">תגית-2</span>
+    </div>
+
+    <!-- AI summary card -->
+    <section class="card p-5 mb-6">
+      <h2 class="m-0 mb-2 text-base font-display">תקציר</h2>
+      <p class="m-0 text-subtle">שני עד שלושה משפטים בעברית, המתארים את המאגר…</p>
+    </section>
+
+    <!-- highlight cards (KPIs) — 2 cols on mobile, 4 on desktop -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      <div class="card p-4 text-center">
+        <div class="text-3xl font-bold text-brand mb-1">74,977</div>
+        <div class="text-sm text-subtle">עמותות רשומות</div>
+      </div>
+      <!-- 3 more cards… -->
+    </div>
+
+    <!-- metadata + resources: rendered by the Nuxt shell from data.json.
+         You do NOT emit those fields in agent_data.json or content.html. -->
+
+    <!-- insights -->
+    <section class="card p-5 mb-6">
+      <h2 class="m-0 mb-3 text-base font-display">תובנות</h2>
+      <ul class="m-0 ps-5 space-y-2 text-sm">
+        <li>המדידה הנמוכה ביותר: <span dir="ltr">−440.79 מ'</span> (מרץ 2026).</li>
+        <li>קצב הירידה הממוצע: כ-0.84 מ' לשנה.</li>
+      </ul>
+    </section>
+
+    <!-- data explorer -->
+    <section class="card p-5 mb-6">
+      <h2 class="m-0 mb-3 text-base font-display">חקר הנתונים</h2>
+      <div id="chart-main" class="h-64 md:h-80"></div>
+    </section>
+
+    <!-- original notes (CKAN `notes` verbatim) -->
+    <section class="card p-5 mb-6">
+      <h2 class="m-0 mb-2 text-base font-display">תיאור מקורי</h2>
+      <p class="m-0 text-sm text-subtle whitespace-pre-line">…</p>
+    </section>
+
+    <script>
+      const GOVIL_PALETTE = [ /* ...copy from above... */ ];
+      const baseECharts  = { /* ...copy from above... */ };
+      const chart = echarts.init(document.getElementById('chart-main'));
+      chart.setOption(Object.assign({}, baseECharts, {
+        xAxis: { type: 'category', data: ['א','ב','ג'] },
+        yAxis: { type: 'value' },
+        series: [{ type: 'bar', data: [120, 200, 150] }],
+      }));
+      window.addEventListener('resize', () => chart.resize());
+    </script>
+
+  ACCESSIBILITY + SEO:
+    • `alt` text on all <img>.
+    • Interactive viz controls keyboard-reachable.
+    • <h1> exactly once per page (yours).
+    • Do NOT include <title>, <meta name="description">, or OG tags —
+      the wrapper generates those from data.json + agent_data.json.
 
   ────────────────────────────────────────────────────────────────────
   DATA FETCHING (CKAN — use the API, don't download tables)
@@ -646,13 +761,28 @@ system: |
     • Inside inline `<script>` blocks, never embed a bare geresh (`'`)
       or gershayim (`"`) inside a string delimited by the same
       character. Hebrew unit abbreviations — `מ'`, `ק"ג`, `ס"מ` — close
-      the string early and silently kill every chart on the page. Use
-      a double-quoted string (`" מ'"`) or escape (`' מ\''`).
+      the string early, the rest of the line re-opens, and the whole
+      IIFE fails to parse, silently killing every chart on the page.
+        WRONG (the `'` after `מ` closes the string, parser dies on `;`):
+          formatter: v => v.toFixed(1) + ' מ''
+        RIGHT (double-quoted, OR escape the geresh):
+          formatter: v => v.toFixed(1) + " מ'"
+          formatter: v => v.toFixed(1) + ' מ\''
+      In HTML body text (outside `<script>`) the bare apostrophe is
+      fine — this rule applies only to JS string literals.
     • When inlining CKAN row data as a JS array literal, JSON-encode
-      every string field — CKAN values routinely carry embedded
-      newlines / tabs which abort the whole `<script>` on parse. Build
-      the array with `json.dumps(rows)` and paste the result. (`GovMap`
-      sidesteps this entirely for point-set maps; prefer it.)
+      every string field. CKAN address/name fields routinely carry
+      embedded newlines, tabs, or other control chars; a raw LF
+      inside a `"…"` JS string is a hard syntax error — V8 aborts the
+      whole `<script>` block, blanking every chart and the map.
+        WRONG (raw LF kills the parser):
+          const sites = [[32.06, 34.78, "מלון התעשייה
+          "]];
+        RIGHT (JSON.stringify each string field, or build with
+              json.dumps(rows) in Python and paste the result):
+          const sites = [[32.06, 34.78, "מלון התעשייה\n"]];
+      `GovMap` sidesteps this entirely for point-set maps; prefer it
+      over inlining marker arrays.
 
   TERMINATION: After both files pass all self-checks, stop. The session
   ends when you go idle with end_turn.

@@ -313,10 +313,9 @@ def _build_user_message(
     return (
         "Build the landing page for this CKAN dataset. Write content.html "
         "(body fragment only — no <html>/<head>/<body>) and agent_data.json "
-        "to /mnt/session/outputs/, following the system prompt and the "
-        "govdata-design skill. All user-visible text in content.html must "
-        "be Hebrew; your reasoning and bash commands can (and should) stay "
-        "in English.\n\n"
+        "to /mnt/session/outputs/, following the system prompt. All "
+        "user-visible text in content.html must be Hebrew; your reasoning "
+        "and bash commands can (and should) stay in English.\n\n"
         f"dataset_id: {dataset_id}\n"
         f"title (he): {title}\n"
         f"organization (he): {org_title or '(unknown)'}\n"
