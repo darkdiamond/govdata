@@ -60,11 +60,18 @@ class DatasetMeta(BaseModel):
     record_count: Optional[int] = None
     resources: list[ResourceEntry] = Field(default_factory=list)
 
-    # When the agent last (re)built the page for this dataset. Used by the
-    # frontend as the user-facing "עודכן" timestamp — `metadata_modified`
-    # from CKAN gets bumped daily for auto-refreshed datasets and is too
-    # noisy to surface directly.
+    # When the agent last (re)built the page for this dataset. Rendered as
+    # "הדף נוצר ב-" in the sidebar.
     last_analyzed_at: Optional[datetime] = None
+
+    # Source's `metadata_modified` snapshotted at the moment the agent
+    # ran — i.e. the vintage of the data the page's content is based on.
+    # Distinct from the live `metadata_modified` above, which the scanner
+    # overwrites on every poll. Rendered as "המידע נכון ל-" in the sidebar.
+    # The publisher backfills this with `min(metadata_modified,
+    # last_analyzed_at)` for legacy sources that succeeded before the
+    # field existed.
+    analyzed_metadata_modified: Optional[datetime] = None
 
     version: int = 1
 
@@ -108,6 +115,7 @@ class ManifestEntry(BaseModel):
     record_count: Optional[int] = None
     resources: list[ResourceEntry] = Field(default_factory=list)
     last_analyzed_at: Optional[datetime] = None
+    analyzed_metadata_modified: Optional[datetime] = None
 
     # AgentData fields (optional — a scanned-but-never-analyzed source has none)
     summary_he: Optional[str] = None

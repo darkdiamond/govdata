@@ -31,6 +31,11 @@ log = logging.getLogger("page_builder.pipeline")
 async def _build_one(src: SourceRecord, staging_bucket: str, store: FirestoreStateStore) -> dict:
     """Run one Managed Agents session. Updates Firestore on success or failure."""
     log.info("building %s — %s", src.id[:8], (src.title or "")[:60])
+    # Capture the source's metadata_modified *before* the agent runs — this
+    # is the data vintage the agent's content will be based on. Persisted on
+    # success so the dataset page can show "המידע נכון ל-X" honestly even
+    # after CKAN re-publishes a newer version.
+    analyzed_metadata_modified = src.metadata_modified
     await asyncio.to_thread(store.mark_analysis_pending, src.id)
 
     primary_id = pick_primary_resource_id(src.resources)
@@ -52,7 +57,12 @@ async def _build_one(src: SourceRecord, staging_bucket: str, store: FirestoreSta
 
     # session_runner already wrote `sources/<id>.agent_data` via store.set_agent_data().
     page_path = f"datasets/{src.id}/"
-    await asyncio.to_thread(store.mark_analysis_succeeded, src.id, page_path)
+    await asyncio.to_thread(
+        store.mark_analysis_succeeded,
+        src.id,
+        page_path,
+        analyzed_metadata_modified,
+    )
     return {
         "id": src.id,
         "status": "succeeded",
