@@ -62,6 +62,18 @@ def main() -> int:
         if key in spec and spec[key] is not None:
             kwargs[key] = spec[key]
 
+    # Prompt caching: client.beta.agents.update does NOT expose
+    # cache_control in the Python SDK as of anthropic==0.97.0 — neither
+    # the array-form `system` block nor a top-level cache_control kwarg
+    # is accepted. We do not need to: the Managed Agents runtime
+    # auto-caches the system prompt across the agent's tool-loop
+    # iterations within a single session. On a single Veterinarians
+    # session (2026-05-05) the agent read 760,546 cached tokens vs.
+    # 39,380 written + 29 fresh — ~95% of input served from cache.
+    # Verify the cache hit rate on future runs via
+    # `session_runner._accumulate_usage` (it already collects
+    # cache_read_input_tokens / cache_creation_input_tokens from
+    # `span.model_request_end` events).
     updated = client.beta.agents.update(agent_id, **kwargs)
     print(f"new version:     {updated.version}")
     print("ok")
