@@ -42,7 +42,7 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 - **Design tokens** (aligned with www.gov.il — mirrored across
   `frontend/tailwind.config.ts`,
   `services/page_builder/templates/dataset_page.html.j2`, and
-  `agent/skills/govdata-design/SKILL.md`):
+  the `system:` block of `agent/govdata-agent.yaml`):
   primary `#0068f5` (hover `#0053c4`), ink `#0c3058`, ink-deep `#0b3668`,
   surface `#f1f7ff`, surface-alt `#f0f4fa`, rule `#c3cfe7`, subtle
   `#6c757d`. Semantic: ok `#198754`, warn `#ffc107`, danger `#dc3545`,
@@ -102,8 +102,7 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 | Firestore layer | `services/shared/firestore.py` | `FirestoreStateStore`, schema, queries |
 | Session orchestration | `services/page_builder/session_runner.py` | Stream agent until idle; download agent_data.json + content.html; persist agent_data on the source doc; stage content.html to GCS |
 | Publisher | `services/page_builder/publish.py` | Reads each succeeded `sources/<id>` and writes data.json, agent_data.json, manifest.json (single source of truth) |
-| Agent behavior | `agent/govdata-agent.yaml` | Agent's system prompt. Skill content is inlined because the skill file is not sent to the runtime. |
-| Agent design | `agent/skills/govdata-design/SKILL.md` | Design tokens + output contract + chart palette + RTL snippets |
+| Agent behavior | `agent/govdata-agent.yaml` | Single source of truth for the agent's system prompt — design tokens, output contract, chart palette, RTL snippets, mobile rules, GovMap/GovExplorer recipes. Pushed via `infra/update-agent.py`; the Managed Agents runtime auto-caches it across the agent's tool-loop iterations within a session (~95% of input tokens served from cache, verified 2026-05-05). |
 | Dataset page shell | `frontend/pages/datasets/[id].vue` | Reads data.json + agent_data.json + content.html, merges into one entry, wraps in default layout |
 | Page chrome | `frontend/layouts/default.vue` | Header/footer — sole source of truth, inherited by every page including datasets |
 | Schema | `services/page_builder/schema.py` | `DatasetMeta` (scanner) + `AgentData` (agent) + merged `ManifestEntry` — split contract |

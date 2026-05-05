@@ -56,7 +56,6 @@ services/
 agent/
   govdata-agent.yaml           Managed Agent config (model, system prompt, tools)
   govdata-env.yaml             sandbox environment (cloud, unrestricted network)
-  skills/govdata-design/       design tokens + output-file contract
 infra/
   setup-agent.sh               one-time: creates agent + env via `ant` CLI
   cloudfunction.deploy.sh      gcloud deploy
