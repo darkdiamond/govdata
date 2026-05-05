@@ -35,6 +35,11 @@ export interface DatasetMeta {
   record_count?: number
   resources?: ResourceEntry[]
   last_analyzed_at?: string
+  /** Source's metadata_modified at the moment the agent ran — i.e. the
+   *  vintage of the data this page's content is based on. Distinct from
+   *  the live `metadata_modified` above. The publisher backfills this
+   *  with min(metadata_modified, last_analyzed_at) for legacy sources. */
+  analyzed_metadata_modified?: string
   version: number
 }
 
@@ -64,6 +69,7 @@ export interface ManifestEntry {
   record_count?: number
   resources?: ResourceEntry[]
   last_analyzed_at?: string
+  analyzed_metadata_modified?: string
 
   // AgentData fields (optional — a scanned-but-never-analyzed source has none)
   summary_he?: string
