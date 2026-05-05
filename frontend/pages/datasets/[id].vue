@@ -95,10 +95,20 @@ const hasMeta = computed(() =>
     entry.value.organization ||
       entry.value.license ||
       entry.value.last_analyzed_at ||
-      entry.value.metadata_modified ||
+      entry.value.analyzed_metadata_modified ||
       entry.value.record_count != null,
   ),
 )
+
+// Show "מקור עודכן מאז" badge when CKAN's live metadata_modified has moved
+// past the snapshot the page was analyzed against. Both fields are present
+// on every succeeded source after the publisher's min(...) fallback.
+const sourceUpdatedSinceAnalysis = computed<boolean>(() => {
+  const live = entry.value.metadata_modified
+  const snap = entry.value.analyzed_metadata_modified
+  if (!live || !snap) return false
+  return new Date(live).getTime() > new Date(snap).getTime()
+})
 
 const HE_DATE = new Intl.DateTimeFormat('he-IL', { dateStyle: 'long' })
 function formatDateHe(iso?: string | null): string {
@@ -344,12 +354,18 @@ onMounted(async () => {
               <dt class="text-subtle">רישיון</dt>
               <dd class="m-0">{{ entry.license }}</dd>
             </template>
-            <template v-if="entry.metadata_modified">
-              <dt class="text-subtle">עודכן במקור</dt>
-              <dd class="m-0">{{ formatDateHe(entry.metadata_modified) }}</dd>
+            <template v-if="entry.analyzed_metadata_modified">
+              <dt class="text-subtle">המידע נכון ל-</dt>
+              <dd class="m-0">
+                {{ formatDateHe(entry.analyzed_metadata_modified) }}
+                <span
+                  v-if="sourceUpdatedSinceAnalysis"
+                  class="text-xs text-subtle ms-1"
+                >· מקור עודכן מאז</span>
+              </dd>
             </template>
             <template v-if="entry.last_analyzed_at">
-              <dt class="text-subtle">עודכן באתר</dt>
+              <dt class="text-subtle">הדף נוצר ב-</dt>
               <dd class="m-0">{{ formatDateHe(entry.last_analyzed_at) }}</dd>
             </template>
             <template v-if="entry.record_count != null">

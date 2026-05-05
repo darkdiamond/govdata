@@ -54,6 +54,14 @@ class SourceRecord:
     change_status: str = "unchanged"
 
     last_analyzed_at: Optional[datetime] = None
+    # Source's metadata_modified at the moment of the last successful
+    # analysis — i.e. the data vintage the agent's content is based on.
+    # Distinct from `metadata_modified`, which is the *live* CKAN value
+    # and gets overwritten on every scan. Captured by the builder via
+    # `mark_analysis_succeeded`. The publisher falls back to
+    # `min(metadata_modified, last_analyzed_at)` for legacy docs that
+    # succeeded before this field existed.
+    analyzed_metadata_modified: Optional[datetime] = None
     last_analyzed_version: int = 0
     analysis_status: str = "never"
     last_error: Optional[str] = None
@@ -89,6 +97,7 @@ class SourceRecord:
             last_scanned_at=data.get("last_scanned_at"),
             change_status=data.get("change_status", "unchanged"),
             last_analyzed_at=data.get("last_analyzed_at"),
+            analyzed_metadata_modified=data.get("analyzed_metadata_modified"),
             last_analyzed_version=int(data.get("last_analyzed_version") or 0),
             analysis_status=data.get("analysis_status", "never"),
             last_error=data.get("last_error"),
@@ -292,12 +301,14 @@ class FirestoreStateStore:
         self,
         dataset_id: str,
         page_path: str,
+        analyzed_metadata_modified: Optional[datetime] = None,
     ) -> None:
         now = datetime.now(timezone.utc)
         self.client.collection(SOURCES_COLL).document(dataset_id).set(
             {
                 "analysis_status": "succeeded",
                 "last_analyzed_at": now,
+                "analyzed_metadata_modified": analyzed_metadata_modified,
                 "last_analyzed_version": firestore.Increment(1),
                 "page_path": page_path,
                 "last_error": None,

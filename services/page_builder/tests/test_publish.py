@@ -140,3 +140,56 @@ def test_manifest_merges_scanner_and_agent_fields(tmp_path: Path, monkeypatch):
     assert b["license"] == "Creative Commons Attribution"
     assert "summary_he" not in b or b.get("summary_he") is None
     assert "dataset_kind" not in b or b.get("dataset_kind") is None
+
+
+def test_publish_propagates_captured_analyzed_metadata_modified(
+    tmp_path: Path, monkeypatch
+):
+    """When the source doc carries a real snapshot, it flows verbatim to
+    data.json + manifest.json."""
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    src = _src(dataset_id="captured", with_agent=True)
+    src.last_analyzed_at = datetime(2026, 4, 25, tzinfo=timezone.utc)
+    src.analyzed_metadata_modified = datetime(2026, 4, 20, tzinfo=timezone.utc)
+    store = _store_mock([src])
+
+    publish.publish(tmp_path, store=store)
+
+    data = json.loads((tmp_path / "datasets/captured/data.json").read_text())
+    assert data["analyzed_metadata_modified"].startswith("2026-04-20")
+    # Live source date is preserved separately so the frontend can detect
+    # "מקור עודכן מאז" by comparing the two.
+    assert data["metadata_modified"].startswith("2026-04-24")
+
+    manifest = json.loads((tmp_path / "data/manifest.json").read_text())
+    entry = next(d for d in manifest["datasets"] if d["id"] == "captured")
+    assert entry["analyzed_metadata_modified"].startswith("2026-04-20")
+
+
+def test_publish_falls_back_to_min_for_legacy_sources(
+    tmp_path: Path, monkeypatch
+):
+    """Legacy source (no analyzed_metadata_modified set on the doc) gets
+    min(metadata_modified, last_analyzed_at). Both branches of the min."""
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+
+    # Case A: analyzed AFTER source update — fallback = metadata_modified
+    after = _src(dataset_id="legacy-after", with_agent=True)
+    after.metadata_modified = datetime(2026, 3, 1, tzinfo=timezone.utc)
+    after.last_analyzed_at = datetime(2026, 4, 1, tzinfo=timezone.utc)
+    after.analyzed_metadata_modified = None
+
+    # Case B: source updated AFTER last analysis — fallback = last_analyzed_at
+    before = _src(dataset_id="legacy-before", with_agent=True)
+    before.metadata_modified = datetime(2026, 5, 1, tzinfo=timezone.utc)
+    before.last_analyzed_at = datetime(2026, 4, 1, tzinfo=timezone.utc)
+    before.analyzed_metadata_modified = None
+
+    store = _store_mock([after, before])
+    publish.publish(tmp_path, store=store)
+
+    a = json.loads((tmp_path / "datasets/legacy-after/data.json").read_text())
+    assert a["analyzed_metadata_modified"].startswith("2026-03-01")
+
+    b = json.loads((tmp_path / "datasets/legacy-before/data.json").read_text())
+    assert b["analyzed_metadata_modified"].startswith("2026-04-01")
