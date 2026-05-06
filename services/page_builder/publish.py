@@ -75,15 +75,11 @@ def _formats_from_resources(resources: Iterable[ResourceEntry]) -> list[str]:
 def dataset_meta_from_source(src: SourceRecord) -> DatasetMeta:
     """Build the scanner-derived `data.json` shape from a Firestore source doc."""
     resources = _resources_from_source(src)
-    # Backward-compat fallback: legacy sources succeeded before we started
-    # snapshotting metadata_modified at analysis time. The agent must have
-    # seen *some* version of the source no later than `last_analyzed_at` and
-    # no later than `metadata_modified`, so `min(...)` is the safe upper
-    # bound — and it makes the "מקור עודכן מאז" badge fire iff the live
-    # source has actually moved past whatever the analysis used.
-    snapshot = src.analyzed_metadata_modified
-    if snapshot is None and src.metadata_modified and src.last_analyzed_at:
-        snapshot = min(src.metadata_modified, src.last_analyzed_at)
+    # Pass `analyzed_metadata_modified` through verbatim. Legacy sources
+    # (analyzed before the pipeline started snapshotting it) leave this
+    # None — the frontend then falls back to `last_analyzed_at` for the
+    # "המידע נכון ל-" display and suppresses the "מקור עודכן מאז" icon,
+    # since we have no honest snapshot to compare against.
     return DatasetMeta(
         id=src.id,
         slug=src.slug or src.id,
@@ -98,7 +94,7 @@ def dataset_meta_from_source(src: SourceRecord) -> DatasetMeta:
         record_count=src.record_count,
         resources=resources,
         last_analyzed_at=src.last_analyzed_at,
-        analyzed_metadata_modified=snapshot,
+        analyzed_metadata_modified=src.analyzed_metadata_modified,
     )
 
 

@@ -67,10 +67,9 @@ class DatasetMeta(BaseModel):
     # Source's `metadata_modified` snapshotted at the moment the agent
     # ran — i.e. the vintage of the data the page's content is based on.
     # Distinct from the live `metadata_modified` above, which the scanner
-    # overwrites on every poll. Rendered as "המידע נכון ל-" in the sidebar.
-    # The publisher backfills this with `min(metadata_modified,
-    # last_analyzed_at)` for legacy sources that succeeded before the
-    # field existed.
+    # overwrites on every poll. Rendered as "המידע נכון ל-" in the sidebar
+    # when present; legacy sources (analyzed before this field existed)
+    # leave it None and the frontend falls back to `last_analyzed_at`.
     analyzed_metadata_modified: Optional[datetime] = None
 
     version: int = 1
