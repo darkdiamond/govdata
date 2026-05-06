@@ -14,7 +14,7 @@ PROJECT=${FIREBASE_PROJECT:-govdata-il}
 REGION=${REGION:-me-west1}
 SERVICE=${CLOUD_RUN_SERVICE:-govdata-builder}
 JOB_NAME=${SCHEDULER_JOB:-govdata-pipeline-6h}
-SCHEDULE=${SCHEDULE:-"0 */6 * * *"}
+SCHEDULE=${SCHEDULE:-"0 7 * * *"}
 TIMEZONE=${SCHEDULE_TZ:-"Asia/Jerusalem"}
 
 SCHEDULER_SA="govdata-scheduler@${PROJECT}.iam.gserviceaccount.com"
