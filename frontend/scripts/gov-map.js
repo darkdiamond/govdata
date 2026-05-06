@@ -85,7 +85,7 @@
     var style = document.createElement('style');
     style.id = 'gov-map-styles';
     style.textContent =
-      '.gov-map-wrap{position:relative;width:100%;height:100%;border-radius:.5rem;overflow:hidden}' +
+      '.gov-map-wrap{position:relative;width:100%;border-radius:.5rem;overflow:hidden}' +
       '.gov-map-wrap .leaflet-container{width:100%;height:100%;font-family:Rubik,sans-serif}' +
       '.gov-map-skel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#f1f7ff 0%,#e7eef9 50%,#f1f7ff 100%);background-size:200% 100%;animation:gov-map-pulse 1.4s ease-in-out infinite;color:#6c757d;font-size:.85rem;z-index:401}' +
       '.gov-map-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem;color:#6c757d;font-size:.9rem;background:#f1f7ff;z-index:401}' +
