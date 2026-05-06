@@ -101,14 +101,20 @@ const hasMeta = computed(() =>
 )
 
 // Show the "updated since analysis" info icon when CKAN's live
-// metadata_modified has moved past the snapshot the page was analyzed
-// against. Both fields are present on every succeeded source after the
-// publisher's min(...) fallback.
+// metadata_modified has moved to a later UTC calendar day than the
+// snapshot the page was analyzed against. Both fields are present on
+// every succeeded source after the publisher's min(...) fallback.
+// Compare at day granularity so the icon stays hidden when the rendered
+// Hebrew date is identical for both.
 const sourceUpdatedSinceAnalysis = computed<boolean>(() => {
   const live = entry.value.metadata_modified
   const snap = entry.value.analyzed_metadata_modified
   if (!live || !snap) return false
-  return new Date(live).getTime() > new Date(snap).getTime()
+  const dayUTC = (iso: string) => {
+    const d = new Date(iso)
+    return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
+  }
+  return dayUTC(live) > dayUTC(snap)
 })
 
 const HE_DATE = new Intl.DateTimeFormat('he-IL', { dateStyle: 'long' })
