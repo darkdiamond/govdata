@@ -166,30 +166,29 @@ def test_publish_propagates_captured_analyzed_metadata_modified(
     assert entry["analyzed_metadata_modified"].startswith("2026-04-20")
 
 
-def test_publish_falls_back_to_min_for_legacy_sources(
+def test_publish_passes_through_null_snapshot_for_legacy_sources(
     tmp_path: Path, monkeypatch
 ):
-    """Legacy source (no analyzed_metadata_modified set on the doc) gets
-    min(metadata_modified, last_analyzed_at). Both branches of the min."""
+    """Legacy sources (analyzed_metadata_modified=None on the Firestore doc)
+    flow through with no synthesized snapshot. The frontend falls back to
+    last_analyzed_at for display and suppresses the "updated since analysis"
+    icon — we don't have an honest snapshot to compare against."""
     monkeypatch.setattr(publish, "embed", lambda _text: None)
 
-    # Case A: analyzed AFTER source update — fallback = metadata_modified
-    after = _src(dataset_id="legacy-after", with_agent=True)
-    after.metadata_modified = datetime(2026, 3, 1, tzinfo=timezone.utc)
-    after.last_analyzed_at = datetime(2026, 4, 1, tzinfo=timezone.utc)
-    after.analyzed_metadata_modified = None
+    legacy = _src(dataset_id="legacy", with_agent=True)
+    legacy.metadata_modified = datetime(2026, 5, 1, tzinfo=timezone.utc)
+    legacy.last_analyzed_at = datetime(2026, 4, 1, tzinfo=timezone.utc)
+    legacy.analyzed_metadata_modified = None
 
-    # Case B: source updated AFTER last analysis — fallback = last_analyzed_at
-    before = _src(dataset_id="legacy-before", with_agent=True)
-    before.metadata_modified = datetime(2026, 5, 1, tzinfo=timezone.utc)
-    before.last_analyzed_at = datetime(2026, 4, 1, tzinfo=timezone.utc)
-    before.analyzed_metadata_modified = None
-
-    store = _store_mock([after, before])
+    store = _store_mock([legacy])
     publish.publish(tmp_path, store=store)
 
-    a = json.loads((tmp_path / "datasets/legacy-after/data.json").read_text())
-    assert a["analyzed_metadata_modified"].startswith("2026-03-01")
+    data = json.loads((tmp_path / "datasets/legacy/data.json").read_text())
+    # exclude_none=True drops the field entirely when there's no snapshot
+    assert "analyzed_metadata_modified" not in data
+    assert data["metadata_modified"].startswith("2026-05-01")
+    assert data["last_analyzed_at"].startswith("2026-04-01")
 
-    b = json.loads((tmp_path / "datasets/legacy-before/data.json").read_text())
-    assert b["analyzed_metadata_modified"].startswith("2026-04-01")
+    manifest = json.loads((tmp_path / "data/manifest.json").read_text())
+    entry = next(d for d in manifest["datasets"] if d["id"] == "legacy")
+    assert "analyzed_metadata_modified" not in entry

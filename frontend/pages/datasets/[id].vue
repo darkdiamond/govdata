@@ -100,12 +100,19 @@ const hasMeta = computed(() =>
   ),
 )
 
+// "המידע נכון ל-" displays the data vintage. For sources analyzed after
+// the pipeline started snapshotting metadata_modified at analysis time,
+// that's the authoritative snapshot. For legacy sources (analyzed_metadata_modified
+// is null), fall back to last_analyzed_at so the row still renders.
+const dataVintage = computed<string | null>(() =>
+  entry.value.analyzed_metadata_modified ?? entry.value.last_analyzed_at ?? null,
+)
+
 // Show the "updated since analysis" info icon when CKAN's live
 // metadata_modified has moved to a later UTC calendar day than the
-// snapshot the page was analyzed against. Both fields are present on
-// every succeeded source after the publisher's min(...) fallback.
-// Compare at day granularity so the icon stays hidden when the rendered
-// Hebrew date is identical for both.
+// authoritative snapshot. Suppressed for legacy sources without a
+// snapshot — we don't know what version the agent saw, so we can't
+// honestly claim the source has been updated since.
 const sourceUpdatedSinceAnalysis = computed<boolean>(() => {
   const live = entry.value.metadata_modified
   const snap = entry.value.analyzed_metadata_modified
@@ -361,10 +368,10 @@ onMounted(async () => {
               <dt class="text-subtle">רישיון</dt>
               <dd class="m-0">{{ entry.license }}</dd>
             </template>
-            <template v-if="entry.analyzed_metadata_modified">
+            <template v-if="dataVintage">
               <dt class="text-subtle">המידע נכון ל-</dt>
               <dd class="m-0">
-                {{ formatDateHe(entry.analyzed_metadata_modified) }}
+                {{ formatDateHe(dataVintage) }}
                 <img
                   v-if="sourceUpdatedSinceAnalysis"
                   src="/icons/info.svg"
