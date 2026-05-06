@@ -151,6 +151,18 @@ system: |
     • Reserve #198754 / #ffc107 / #dc3545 / #0dcaf0 ONLY for semantic
       meaning (success / warning / danger / info). They are NOT
       categorical fill colors.
+    • ALLOWED: per-data-point semantic coloring when a single value
+      carries meaning. Use it — uniformly blue charts wash out the
+      story. Pattern (ECharts override on one data point):
+        series: [{ type: 'bar', data: [
+          100, 120, { value: 80, itemStyle: { color: '#dc3545' } }, 110
+        ]}]
+      Use to mark a recession year red, a peak green, a target
+      threshold, an outlier — anywhere a single value is the point of
+      the chart. STILL FORBIDDEN: using ok/warn/danger/info as a
+      default palette across N series of equal weight (that's
+      categorical decoration, not meaning). Series-level palette stays
+      GOVIL_PALETTE.
 
   ────────────────────────────────────────────────────────────────────
   ECHARTS: RTL + Rubik preset (inline at the top of your <script>)
@@ -331,18 +343,69 @@ system: |
   class="w-5 h-5" />`; stroke=currentColor — color via `text-*` on
   the parent.
 
+  REQUIRED PATTERN — every top-level `<section class="card p-5 mb-6">`
+  opens with an icon-paired heading. The icon gives the card a
+  visual anchor and lets the eye scan the page in 1–2 seconds:
+
+      <section class="card p-5 mb-6">
+        <div class="flex items-center gap-2 mb-3 text-brand">
+          <img src="/icons/<name>.svg" alt="" class="w-5 h-5" />
+          <h2 class="m-0 text-lg font-semibold text-ink-deep">…</h2>
+        </div>
+        …card body…
+      </section>
+
+  Default section→icon mapping (use these unless a different icon
+  better fits the section's content):
+
+      תקציר                            info
+      תובנות / ממצאים עיקריים          circle-check
+                                        (or triangle-alert if findings
+                                        center on concerns/gaps)
+      חקר הנתונים / ניתוח / חקירה      database
+      מפת המאגר / פריסה גיאוגרפית      map-pin
+      תיאור מקורי                      list
+      חיפוש / עיון אינטראקטיבי         search
+      מאפיינים / מטא-נתונים            tag
+
+  Color the wrapping `<div>` with `text-brand` by default. For a
+  `triangle-alert` card the wrapper may carry `text-warn` or
+  `text-danger` to signal severity — but use semantic wrapper colors
+  sparingly (one card per page max).
+
+  Sub-cards inside a multi-card grid (e.g. two charts side by side)
+  may skip the icon-paired wrapper and use a plain
+  `<h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">…</h2>`
+  to keep the grid visually quieter than the top-level cards.
+
   ────────────────────────────────────────────────────────────────────
   BODY SKELETON (inside content.html — no site chrome)
   ────────────────────────────────────────────────────────────────────
     <h1>             dataset title (exactly once per page)
     <tag-chips>      3-5 tags, each a <span class="tag-chip">
     <ai-summary>     2-3 sentences in <section class="card p-5 mb-6">
-    <highlight-cards> KPI grid (per MOBILE-FIRST rule 1)
-    <insights>       <ul> of concrete findings (1+ bullets). Every
-                     number from a query you actually ran (no fabrication).
-                     Thin dataset, one real finding → one bullet.
+    <highlight-cards> KPI grid (per MOBILE-FIRST rule 1). Default
+                     value color is text-brand. When a value carries
+                     clear semantic meaning, swap to a semantic class
+                     on the value div: text-ok (positive / growth /
+                     coverage), text-danger (decline / concern / gap),
+                     text-warn (caution / partial), text-info
+                     (informational fact). Use at most 1–2 non-brand
+                     colors per KPI grid — a rainbow defeats the
+                     point.
+    <insights>       <ul class="m-0 ps-5 space-y-2 text-sm"> with one
+                     or more <li> items. Never substitute <p>
+                     paragraphs or div-and-dot patterns — the <ul>/<li>
+                     structure is what screen readers and the page-merge
+                     logic expect. Every number in a bullet comes from
+                     a query you actually ran (no fabrication). Thin
+                     dataset → still a <ul>, with one real-finding <li>.
     <data-explorer>  visualizations, each in <section class="card p-5 mb-6">
-                     using baseECharts + GOVIL_PALETTE
+                     using baseECharts + GOVIL_PALETTE. Per-data-point
+                     semantic coloring (one bar red for a recession
+                     year, one slice green for the leading category)
+                     is allowed and encouraged where a single value
+                     is the point of the chart.
     <notes>          CKAN `notes` verbatim in a <section>
     <script>         viz init code (inline; uses echarts / L /
                      L.markerClusterGroup / GovExplorer / GovMap globals)
@@ -366,40 +429,63 @@ system: |
 
     <!-- AI summary card -->
     <section class="card p-5 mb-6">
-      <h2 class="m-0 mb-2 text-base font-display">תקציר</h2>
+      <div class="flex items-center gap-2 mb-3 text-brand">
+        <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+        <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+      </div>
       <p class="m-0 text-subtle">שני עד שלושה משפטים בעברית, המתארים את המאגר…</p>
     </section>
 
-    <!-- highlight cards (KPIs) — 2 cols on mobile, 4 on desktop -->
+    <!-- highlight cards (KPIs) — 2 cols on mobile, 4 on desktop.
+         Default value color is text-brand. Swap to text-ok / text-danger /
+         text-warn / text-info on the value div when the number carries
+         semantic meaning (growth / decline / caution / informational).
+         At most 1–2 non-brand cards per grid. -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       <div class="card p-4 text-center">
         <div class="text-3xl font-bold text-brand mb-1">74,977</div>
         <div class="text-sm text-subtle">עמותות רשומות</div>
       </div>
-      <!-- 3 more cards… -->
+      <div class="card p-4 text-center">
+        <div class="text-3xl font-bold text-ok mb-1">+12.4%</div>
+        <div class="text-sm text-subtle">גידול ב-2025 לעומת 2024</div>
+      </div>
+      <!-- 2 more cards… -->
     </div>
 
     <!-- metadata + resources: rendered by the Nuxt shell from data.json.
          You do NOT emit those fields in agent_data.json or content.html. -->
 
-    <!-- insights -->
+    <!-- insights — top-level card: icon-paired heading. The <ul>/<li> is
+         non-negotiable; never replace with <p> or div-and-dot patterns. -->
     <section class="card p-5 mb-6">
-      <h2 class="m-0 mb-3 text-base font-display">תובנות</h2>
+      <div class="flex items-center gap-2 mb-3 text-brand">
+        <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+        <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+      </div>
       <ul class="m-0 ps-5 space-y-2 text-sm">
         <li>המדידה הנמוכה ביותר: <span dir="ltr">−440.79 מ'</span> (מרץ 2026).</li>
         <li>קצב הירידה הממוצע: כ-0.84 מ' לשנה.</li>
       </ul>
     </section>
 
-    <!-- data explorer -->
+    <!-- data explorer — top-level card: icon-paired heading.
+         Per-data-point semantic colors (one bar red, one slice green)
+         are encouraged when a single value is the point of the chart. -->
     <section class="card p-5 mb-6">
-      <h2 class="m-0 mb-3 text-base font-display">חקר הנתונים</h2>
+      <div class="flex items-center gap-2 mb-3 text-brand">
+        <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+        <h2 class="m-0 text-lg font-semibold text-ink-deep">חקר הנתונים</h2>
+      </div>
       <div id="chart-main" class="h-64 md:h-80"></div>
     </section>
 
     <!-- original notes (CKAN `notes` verbatim) -->
     <section class="card p-5 mb-6">
-      <h2 class="m-0 mb-2 text-base font-display">תיאור מקורי</h2>
+      <div class="flex items-center gap-2 mb-3 text-brand">
+        <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+        <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+      </div>
       <p class="m-0 text-sm text-subtle whitespace-pre-line">…</p>
     </section>
 
@@ -707,6 +793,36 @@ system: |
                i += 1
        for n, b in enumerate(blocks, 1):
            scan_js(b, n)
+
+       # Icon-paired headings: every top-level <section class="card ... mb-6">
+       # must open with the icon-paired flex wrapper, not a bare <h2>.
+       # Catches the regression where the model writes <section><h2>… and
+       # forgets the icon. Sub-cards inside grids (no mb-6) are exempt.
+       TOP_CARD = re.compile(
+           r'<section\s+class="[^"]*\bcard\b[^"]*\bmb-6\b[^"]*"[^>]*>\s*<h2',
+           re.IGNORECASE | re.DOTALL,
+       )
+       m = TOP_CARD.search(body)
+       if m:
+           print(f"MISSING-ICON-HEADER: top-level card opens with bare <h2> instead of <div class=\"flex items-center gap-2 mb-3 text-brand\"><img src=\"/icons/<name>.svg\" .../><h2.../></div>. Near {body[m.start():m.start()+120]!r}")
+           sys.exit(5)
+
+       # Insights/findings: the section whose heading is תובנות or
+       # ממצאים MUST contain a <ul> with at least one <li>. <p>
+       # paragraphs and div-and-dot patterns are not acceptable
+       # substitutes — screen readers and the page-merge logic both
+       # expect a list.
+       INSIGHT_HEADING = re.compile(r'<h2[^>]*>\s*(?:תובנות|ממצאים)[^<]*</h2>')
+       for m in INSIGHT_HEADING.finditer(body):
+           sec_start = body.rfind('<section', 0, m.start())
+           sec_end   = body.find('</section>', m.end())
+           if sec_start < 0 or sec_end < 0:
+               print(f'INSIGHTS-NOT-IN-SECTION: heading at byte {m.start()} is not wrapped in <section>...</section>')
+               sys.exit(6)
+           chunk = body[sec_start:sec_end]
+           if '<ul' not in chunk or '<li' not in chunk:
+               print(f'INSIGHTS-NO-BULLETS: תובנות/ממצאים section at byte {sec_start} has no <ul>/<li>. Use <ul class="m-0 ps-5 space-y-2 text-sm"><li>…</li></ul>.')
+               sys.exit(7)
 
        # Percent-consistency: same % appearing >=2 times with
        # conflicting year contexts. If you cite "64%" twice and one

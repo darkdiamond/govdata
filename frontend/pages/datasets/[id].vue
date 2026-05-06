@@ -100,9 +100,10 @@ const hasMeta = computed(() =>
   ),
 )
 
-// Show "מקור עודכן מאז" badge when CKAN's live metadata_modified has moved
-// past the snapshot the page was analyzed against. Both fields are present
-// on every succeeded source after the publisher's min(...) fallback.
+// Show the "updated since analysis" info icon when CKAN's live
+// metadata_modified has moved past the snapshot the page was analyzed
+// against. Both fields are present on every succeeded source after the
+// publisher's min(...) fallback.
 const sourceUpdatedSinceAnalysis = computed<boolean>(() => {
   const live = entry.value.metadata_modified
   const snap = entry.value.analyzed_metadata_modified
@@ -358,10 +359,14 @@ onMounted(async () => {
               <dt class="text-subtle">המידע נכון ל-</dt>
               <dd class="m-0">
                 {{ formatDateHe(entry.analyzed_metadata_modified) }}
-                <span
+                <img
                   v-if="sourceUpdatedSinceAnalysis"
-                  class="text-xs text-subtle ms-1"
-                >· מקור עודכן מאז</span>
+                  src="/icons/info.svg"
+                  alt=""
+                  class="inline w-3.5 h-3.5 ms-1 align-middle opacity-70 cursor-help"
+                  title="פורסמה גרסה מעודכנת של המאגר"
+                  aria-label="פורסמה גרסה מעודכנת של המאגר"
+                />
               </dd>
             </template>
             <template v-if="entry.last_analyzed_at">
