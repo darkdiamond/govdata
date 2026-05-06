@@ -78,16 +78,20 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   GCS staging carries only `content.html`. Don't reintroduce a path that
   rsyncs `data.json` from GCS — single writer per file is the whole point.
 - **Selection priority** (`services/page_builder/selector.py`):
-  Both tracks are gated by `max_age_days` (default 365): a source is
-  only eligible if its CKAN `metadata_modified` is within the last year.
-  Older never-analyzed sources are skipped by policy — gov.il has ~700
+  Both tracks are gated by an effective cutoff =
+  `max(min_modified_floor, now - max_age_days)`. Defaults:
+  `min_modified_floor = 2026-01-01 UTC`, `max_age_days = 365`. A source
+  is only eligible if its CKAN `metadata_modified` is on/after that
+  cutoff. Today the floor wins (we publish only 2026+ datasets);
+  starting some time in 2027 the rolling 365-day window overtakes the
+  floor and early-2026 pages age out naturally. gov.il has ~700
   archival/abandoned datasets we'd rather not burn agent budget on
   unless CKAN flags them as updated again.
-  1. `analysis_status == "never"` AND `metadata_modified` within
-     `max_age_days` — ordered by `metadata_modified` DESC.
-  2. `change_status in {new, updated}` AND `metadata_modified` within
-     `max_age_days` AND (`last_analyzed_at` null or older than 14 days)
-     — ordered by `metadata_modified` DESC.
+  1. `analysis_status == "never"` AND `metadata_modified >= cutoff` —
+     ordered by `metadata_modified` DESC.
+  2. `change_status in {new, updated}` AND `metadata_modified >= cutoff`
+     AND (`last_analyzed_at` null or older than 14 days) — ordered by
+     `metadata_modified` DESC.
   The (recent) never-analyzed backlog is drained first; re-analysis of
   already-published pages waits until every recent source has at least
   one page. The 14-day cooldown applies only to Track 2 (already-
