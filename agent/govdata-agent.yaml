@@ -393,13 +393,35 @@ system: |
                      (informational fact). Use at most 1–2 non-brand
                      colors per KPI grid — a rainbow defeats the
                      point.
-    <insights>       <ul class="m-0 ps-5 space-y-2 text-sm"> with one
-                     or more <li> items. Never substitute <p>
-                     paragraphs or div-and-dot patterns — the <ul>/<li>
-                     structure is what screen readers and the page-merge
-                     logic expect. Every number in a bullet comes from
-                     a query you actually ran (no fabrication). Thin
-                     dataset → still a <ul>, with one real-finding <li>.
+    <insights>       <ul> with one or more <li> items, MUST render
+                     a visible marker per row. Tailwind's preflight
+                     resets default disc bullets, so an unstyled <ul>
+                     looks like an unindented paragraph stack — pick
+                     one of two patterns:
+
+                       (A) Disc bullets in brand color — the default:
+                       <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+                         <li>…</li>
+                       </ul>
+
+                       (B) Icon per row — when each finding warrants
+                       its own visual cue (mixed positive/concern,
+                       checkmarks/warnings, etc.):
+                       <ul class="list-none m-0 ps-0 space-y-2 text-sm">
+                         <li class="flex items-start gap-2">
+                           <img src="/icons/circle-check.svg" alt=""
+                                class="w-4 h-4 mt-1 text-ok shrink-0" />
+                           <span>…</span>
+                         </li>
+                       </ul>
+
+                     Never substitute <p> paragraphs or unmarked rows
+                     — the <ul>/<li> structure is what screen readers
+                     and the page-merge logic expect, and the visible
+                     marker is what the eye uses to scan findings.
+                     Every number in a bullet comes from a query you
+                     actually ran (no fabrication). Thin dataset →
+                     still a <ul>, with one real-finding <li>.
     <data-explorer>  visualizations, each in <section class="card p-5 mb-6">
                      using baseECharts + GOVIL_PALETTE. Per-data-point
                      semantic coloring (one bar red for a recession
@@ -463,7 +485,7 @@ system: |
         <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
         <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
       </div>
-      <ul class="m-0 ps-5 space-y-2 text-sm">
+      <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
         <li>המדידה הנמוכה ביותר: <span dir="ltr">−440.79 מ'</span> (מרץ 2026).</li>
         <li>קצב הירידה הממוצע: כ-0.84 מ' לשנה.</li>
       </ul>
@@ -813,6 +835,8 @@ system: |
        # substitutes — screen readers and the page-merge logic both
        # expect a list.
        INSIGHT_HEADING = re.compile(r'<h2[^>]*>\s*(?:תובנות|ממצאים)[^<]*</h2>')
+       LI_RE = re.compile(r'<li\b[^>]*>(.*?)</li>', re.DOTALL | re.IGNORECASE)
+       UL_OPEN = re.compile(r'<ul\b([^>]*)>')
        for m in INSIGHT_HEADING.finditer(body):
            sec_start = body.rfind('<section', 0, m.start())
            sec_end   = body.find('</section>', m.end())
@@ -821,8 +845,21 @@ system: |
                sys.exit(6)
            chunk = body[sec_start:sec_end]
            if '<ul' not in chunk or '<li' not in chunk:
-               print(f'INSIGHTS-NO-BULLETS: תובנות/ממצאים section at byte {sec_start} has no <ul>/<li>. Use <ul class="m-0 ps-5 space-y-2 text-sm"><li>…</li></ul>.')
+               print(f'INSIGHTS-NO-BULLETS: תובנות/ממצאים section at byte {sec_start} has no <ul>/<li>. Use <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand"><li>…</li></ul>.')
                sys.exit(7)
+           # Visible marker: Tailwind's preflight strips default disc bullets,
+           # so a bare <ul class="m-0 ps-5 ..."> renders unmarked rows. Either
+           # use list-disc (Tailwind restores the disc), or give every <li>
+           # its own <img> icon. Anything else is invisible to the reader.
+           ul = UL_OPEN.search(chunk)
+           if ul:
+               ul_attrs = ul.group(1)
+               if 'list-disc' not in ul_attrs and 'list-decimal' not in ul_attrs:
+                   items = LI_RE.findall(chunk)
+                   bad = [i for i, it in enumerate(items) if '<img' not in it.lower()]
+                   if bad:
+                       print(f'INSIGHTS-NO-MARKER: <ul> in תובנות/ממצאים has neither `list-disc` (with optional `marker:text-brand`) nor an <img> inside every <li>. Tailwind preflight kills default bullets — pick one of the two patterns from the BODY SKELETON. Bad <li> indices: {bad[:3]}')
+                       sys.exit(8)
 
        # Percent-consistency: same % appearing >=2 times with
        # conflicting year contexts. If you cite "64%" twice and one
