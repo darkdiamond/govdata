@@ -453,6 +453,18 @@ onMounted(async () => {
   max-width: 100%;
   height: auto;
 }
+/* Leaflet's renderer canvas / SVG extends beyond the map's visible box
+   (a buffer for pan + zoom), and tile <img> elements are sized inline
+   to 256px. The responsive-media reset above clamps them to the
+   leaflet-overlay-pane's 0×0 bounding box — markers vanish, tiles
+   shrink. Hand the sizing back to the library for everything inside
+   .leaflet-container. */
+.dataset-body :deep(.leaflet-container img),
+.dataset-body :deep(.leaflet-container svg),
+.dataset-body :deep(.leaflet-container canvas) {
+  max-width: none;
+  height: auto;
+}
 .dataset-body :deep(pre) {
   overflow-x: auto;
   max-width: 100%;
