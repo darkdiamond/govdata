@@ -34,6 +34,9 @@ export interface DatasetMeta {
   license?: string
   record_count?: number
   resources?: ResourceEntry[]
+  /** CKAN's free-text dataset description. Used as a fallback for the
+   *  SEO meta-description when the agent's summary_he is missing. */
+  notes?: string
   last_analyzed_at?: string
   /** Source's metadata_modified at the moment the agent ran — i.e. the
    *  vintage of the data this page's content is based on. Distinct from
@@ -48,6 +51,10 @@ export interface AgentData {
   summary_he: string
   dataset_kind: DatasetKind
   related_ids?: string[]
+  /** Optional Schema.org-aligned coverage hints; present only when the
+   *  dataset clearly carries time/geo scope. Emitted into Dataset JSON-LD. */
+  temporal_coverage?: string
+  spatial_coverage?: string
   version: number
   // `extra='allow'` on the pydantic side — future fields land here.
   [key: string]: unknown
@@ -68,12 +75,15 @@ export interface ManifestEntry {
   license?: string
   record_count?: number
   resources?: ResourceEntry[]
+  notes?: string
   last_analyzed_at?: string
   analyzed_metadata_modified?: string
 
   // AgentData fields (optional — a scanned-but-never-analyzed source has none)
   summary_he?: string
   dataset_kind?: DatasetKind
+  temporal_coverage?: string
+  spatial_coverage?: string
 
   // Publisher-computed
   related_ids: string[]

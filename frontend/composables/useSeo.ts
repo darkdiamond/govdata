@@ -33,10 +33,17 @@ export interface SeoInput {
   keywords?: string[]
   breadcrumbs?: BreadcrumbItem[]
   extraJsonLd?: object | object[]
+  /** Optional <meta name="author"> — set to the publishing ministry on
+   *  dataset/ministry pages so search engines and social previews credit
+   *  the source. Falls back to the site name when omitted. */
+  author?: string
 }
 
+// Google routinely rewrites SERP titles when sites self-append branding;
+// we let it do that instead by emitting the page title verbatim and
+// declaring the brand once via og:site_name.
 export function useSeo(input: SeoInput) {
-  const title = input.title.includes(SITE_NAME) ? input.title : `${input.title} — ${SITE_NAME}`
+  const title = input.title
   const url = `${SITE_URL}${input.path}`
   const image = input.ogImage ? `${SITE_URL}${input.ogImage}` : `${SITE_URL}${DEFAULT_OG}`
   const keywords = [...BASE_KEYWORDS, ...(input.keywords ?? [])].join(', ')
@@ -77,6 +84,7 @@ export function useSeo(input: SeoInput) {
     meta: [
       { name: 'description', content: input.description },
       { name: 'keywords', content: keywords },
+      { name: 'author', content: input.author ?? SITE_NAME },
       { property: 'og:type', content: 'website' },
       { property: 'og:site_name', content: SITE_NAME },
       { property: 'og:title', content: title },
