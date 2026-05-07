@@ -48,6 +48,8 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
     ...meta,
     summary_he: agent?.summary_he,
     dataset_kind: agent?.dataset_kind,
+    temporal_coverage: agent?.temporal_coverage as string | undefined,
+    spatial_coverage: agent?.spatial_coverage as string | undefined,
     related_ids: [],
   }
 
@@ -146,7 +148,30 @@ function formatClass(fmt?: string | null): string {
 
 const SITE_URL = 'https://govil.ai'
 const datasetUrl = `${SITE_URL}/datasets/${entry.value.id}/`
-const datasetDescription = (entry.value.summary_he ?? entry.value.title).slice(0, 160)
+
+// CKAN's free-text `notes` can be 1.5KB+ of prose. When it's our description
+// fallback, trim at the last word/sentence break before ~200 chars so search
+// snippets don't show a half-word ellipsis (Hebrew has no spaces inside
+// words, so a hard slice can chop mid-token).
+function trimToWord(s: string, max: number): string {
+  if (s.length <= max) return s
+  const cut = s.slice(0, max)
+  const lastBreak = Math.max(
+    cut.lastIndexOf(' '),
+    cut.lastIndexOf('.'),
+    cut.lastIndexOf('׃'),
+    cut.lastIndexOf('—'),
+  )
+  return (lastBreak > max * 0.6 ? cut.slice(0, lastBreak) : cut).trimEnd() + '…'
+}
+
+// Description fallback chain: agent's summary_he is short and self-regulated,
+// emit it verbatim. CKAN notes are long prose, trim at a word boundary. Title
+// is the last-resort fallback (rare — selector gates publish on agent success).
+const datasetDescription =
+  entry.value.summary_he
+    ?? (entry.value.notes ? trimToWord(entry.value.notes, 200) : null)
+    ?? entry.value.title
 
 const breadcrumbs = [
   { name: 'ראשי', url: `${SITE_URL}/` },
@@ -161,7 +186,7 @@ const datasetLd: Record<string, unknown> = {
   '@context': 'https://schema.org',
   '@type': 'Dataset',
   name: entry.value.title,
-  description: entry.value.summary_he ?? entry.value.title,
+  description: datasetDescription,
   identifier: entry.value.id,
   url: datasetUrl,
   inLanguage: 'he',
@@ -170,14 +195,31 @@ const datasetLd: Record<string, unknown> = {
 }
 if (entry.value.license) datasetLd.license = entry.value.license
 if (entry.value.tags_he?.length) datasetLd.keywords = entry.value.tags_he
-if (entry.value.metadata_modified) datasetLd.dateModified = entry.value.metadata_modified
+if (entry.value.metadata_modified) {
+  datasetLd.dateModified = entry.value.metadata_modified
+  // We don't track CKAN's metadata_created separately; metadata_modified is
+  // a safe proxy for datePublished (it equals creation time for sources that
+  // never change, and the latest revision otherwise).
+  datasetLd.datePublished = entry.value.metadata_modified
+}
+if (entry.value.version) datasetLd.version = entry.value.version
 if (entry.value.organization) {
-  datasetLd.creator = {
+  const org = {
     '@type': 'GovernmentOrganization',
     name: entry.value.organization,
     url: 'https://www.gov.il',
   }
+  // creator = the ministry that produced the dataset; publisher = the
+  // ministry that released it publicly. Same entity in our case, but Google
+  // Dataset Search ranks on both fields being present.
+  datasetLd.creator = org
+  datasetLd.publisher = org
 }
+// temporal_coverage / spatial_coverage are optional AgentData fields the
+// agent populates only when the dataset clearly carries time/geo scope.
+// Emit only when present so older pages stay clean.
+if (entry.value.temporal_coverage) datasetLd.temporalCoverage = entry.value.temporal_coverage
+if (entry.value.spatial_coverage) datasetLd.spatialCoverage = entry.value.spatial_coverage
 if (entry.value.resources?.length) {
   datasetLd.distribution = entry.value.resources.map((r) => {
     const dist: Record<string, unknown> = {
@@ -191,20 +233,22 @@ if (entry.value.resources?.length) {
   })
 }
 
-// Google truncates titles around 60 chars. The auto-suffix " — govil.ai"
-// adds ~11; leave a 50-char budget for the page title and only append the
-// ministry when the result still fits — long CKAN titles stand on their own.
+// Google truncates titles around 60 chars in Hebrew SERPs. useSeo no longer
+// auto-appends " — govil.ai" (the brand goes through og:site_name instead),
+// so the full 60 are ours. Append the ministry with a thin separator only
+// when the combined string still fits — long CKAN titles stand on their own.
 const seoTitle = (() => {
   const t = entry.value.title
   const org = entry.value.organization
-  const withOrg = org ? `${t} | ${org}` : t
-  return withOrg.length <= 50 ? withOrg : t
+  const withOrg = org ? `${t} · ${org}` : t
+  return withOrg.length <= 60 ? withOrg : t
 })()
 
 useSeo({
   title: seoTitle,
   description: datasetDescription,
   path: `/datasets/${entry.value.id}/`,
+  author: entry.value.organization,
   breadcrumbs,
   extraJsonLd: datasetLd,
 })

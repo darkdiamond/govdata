@@ -93,6 +93,7 @@ def dataset_meta_from_source(src: SourceRecord) -> DatasetMeta:
         license=src.license_title,
         record_count=src.record_count,
         resources=resources,
+        notes=src.notes,
         last_analyzed_at=src.last_analyzed_at,
         analyzed_metadata_modified=src.analyzed_metadata_modified,
     )
@@ -140,6 +141,8 @@ def _merged_entry(
         **meta.model_dump(),
         summary_he=agent.summary_he if agent else None,
         dataset_kind=agent.dataset_kind if agent else None,
+        temporal_coverage=agent.temporal_coverage if agent else None,
+        spatial_coverage=agent.spatial_coverage if agent else None,
         related_ids=list(agent.related_ids) if agent else [],
         embedding=embedding,
     )
