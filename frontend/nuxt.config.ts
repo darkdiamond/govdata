@@ -9,7 +9,7 @@
 // Category routes (ministries/tags/kinds) are enumerated from manifest.json
 // (the merged view) the same way.
 
-import { readdirSync, readFileSync } from 'node:fs'
+import { copyFileSync, existsSync, readdirSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -125,10 +125,24 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    // Nitro writes an empty SPA-fallback `404.html` by design (confirmed
+    // by Nuxt maintainer in nuxt/nuxt#21937). To get a server-rendered
+    // 404 page on Firebase Hosting (which serves `404.html` at the root
+    // for unmatched routes), we prerender `/404/` as a real page and
+    // mirror that file over the empty fallback once Nitro finishes.
+    hooks: {
+      'compiled' (nitro) {
+        const out = nitro.options.output.publicDir
+        const src = resolve(out, '404/index.html')
+        const dst = resolve(out, '404.html')
+        if (existsSync(src)) copyFileSync(src, dst)
+      },
+    },
     prerender: {
       crawlLinks: false,
       routes: [
         '/',
+        '/404/',
         '/datasets/',
         '/about/',
         '/how-it-works/',
