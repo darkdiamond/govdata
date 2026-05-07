@@ -146,6 +146,86 @@ Prereqs for the local path: `gcloud auth application-default login`,
 See [`infra/DEPLOY.md`](infra/DEPLOY.md) for the full deployment runbook and
 [`CLAUDE.md`](CLAUDE.md) for repository conventions.
 
+## Manual-run model harness (Kimi K2.6 / Sonnet / Haiku / GPT)
+
+A local CLI lets you A/B page quality across models without touching the
+live pipeline. Default model is **Kimi K2.6** via Moonshot's OpenAI-compat
+endpoint; `--model anthropic:claude-sonnet-4-6 / haiku-4-5` and
+`--model openai:gpt-...` also work. The agent runs through PydanticAI's
+agent loop in a rootless Podman+`llm-sandbox` container, bypassing
+Anthropic Managed Agents entirely.
+
+### Install (local-only)
+
+The production builder + publisher images do **not** install these deps —
+they live in a separate file, and `Dockerfile` / `infra/Dockerfile.publisher`
+only `COPY services/page_builder/requirements.txt`. So the live images stay
+byte-identical whether or not this harness is used.
+
+```sh
+sudo apt install podman                              # rootless sandbox runtime
+pip install -r services/page_builder/requirements.txt \
+            -r services/page_builder/requirements-test.txt
+```
+
+Set the API key for whichever model you'll run (`MOONSHOT_API_KEY` for Kimi,
+`ANTHROPIC_API_KEY` for Sonnet/Haiku, `OPENAI_API_KEY` for GPT).
+
+### Run
+
+```sh
+# 1. regenerate the system prompt from agent/govdata-agent.yaml
+#    (run this whenever the yaml changes; produces agent/govdata-agent-kimi.system.md)
+python -m services.page_builder._build_kimi_system
+
+# 2. build one dataset (or --batch <id1> <id2> ... / --auto-trio)
+python -m services.page_builder.cli.kimi_test --source <dataset_id>
+
+# outputs land in tmp/kimi_test/<id>/
+#   content.html       agent body
+#   agent_data.json    summary_he, dataset_kind, related_ids
+#   transcript.json    full message log
+#   cost.json          tokens + USD breakdown
+```
+
+Verbose per-tool-call logging is on by default — each `bash`, `python`,
+`web_fetch`, `web_search` call prints its arg preview, elapsed time, and
+output size.
+
+### Preview against the live prod page
+
+Two ways to see a kimi build rendered through the real dataset shell:
+
+```sh
+# Offline — splices the kimi body into a fetched copy of the live govil.ai
+# page, strips Nuxt hydration so the splice survives, rewrites root-relative
+# URLs to absolute. Open the printed file:// URL.
+python -m services.page_builder.cli.preview render <id>
+
+# Full Nuxt-shell — backs up frontend/public/datasets/<id>/{content.html,
+# agent_data.json}, drops the kimi build in their place, then `npm run dev`
+# serves it at localhost:3000. Restores the prod files when you're done.
+python -m services.page_builder.cli.preview swap <id>
+cd frontend && npm run dev
+# http://localhost:3000/datasets/<id>  vs  https://govil.ai/datasets/<id>
+python -m services.page_builder.cli.preview restore <id>
+
+python -m services.page_builder.cli.preview status   # what's swapped right now
+```
+
+### Production isolation (what the harness does NOT touch)
+
+- **No Cloud Run / Cloud Build image change.** Test-only deps live in
+  `requirements-test.txt`, never copied by the production Dockerfiles.
+- **No imports leak.** `kimi_runner` / `podman_sandbox` / `cli/*` are
+  only referenced by themselves; `pipeline.py`, `publish.py`, `scanner/`,
+  and `session_runner.run_session` never load them.
+- **No Firestore / GCS writes.** The harness reads source records from
+  Firestore (so it picks up real CKAN metadata) but writes nothing back;
+  outputs land under `tmp/kimi_test/`, which is gitignored.
+- **No production page change.** `swap` backs up the prod files first;
+  `restore` returns them byte-identical.
+
 ## License
 
 MIT.
