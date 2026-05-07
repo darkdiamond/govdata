@@ -46,7 +46,7 @@
     @apply inline-block px-2 py-0.5 text-xs bg-white border border-rule rounded-gov-sm text-subtle;
   }
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 bg-brand text-white rounded-gov px-4 py-2 no-underline hover:bg-brand-600 hover:no-underline transition-colors;
+    @apply inline-flex items-center justify-center gap-2 bg-brand text-white rounded-gov px-4 py-2 no-underline hover:bg-brand-600 hover:text-white hover:no-underline transition-colors;
   }
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2 text-brand border border-brand rounded-gov px-4 py-2 no-underline hover:bg-brand-50 hover:no-underline transition-colors;
