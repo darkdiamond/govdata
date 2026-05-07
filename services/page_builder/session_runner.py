@@ -297,23 +297,25 @@ class SessionResult:
         log.info("session[%s]: %s", self.session_id[:10], msg)
 
 
-def _build_user_message(
+def build_user_message(
     *,
     dataset_id: str,
     title: str,
     notes: str,
     org_title: str,
     primary_resource_id: Optional[str],
+    outputs_dir: str = "/mnt/session/outputs/",
 ) -> str:
     resource_line = (
         f"primary_resource_id: {primary_resource_id}"
         if primary_resource_id
         else "primary_resource_id: (not pre-identified — pick one from package_show)"
     )
+    od = outputs_dir.rstrip("/") + "/"
     return (
         "Build the landing page for this CKAN dataset. Write content.html "
         "(body fragment only — no <html>/<head>/<body>) and agent_data.json "
-        "to /mnt/session/outputs/, following the system prompt. All "
+        f"to {od}, following the system prompt. All "
         "user-visible text in content.html must be Hebrew; your reasoning "
         "and bash commands can (and should) stay in English.\n\n"
         f"dataset_id: {dataset_id}\n"
@@ -323,6 +325,9 @@ def _build_user_message(
         f"{resource_line}\n\n"
         "Begin by investigating the dataset. When both files are written, stop."
     )
+
+
+_build_user_message = build_user_message
 
 
 def _is_terminal(event) -> bool:

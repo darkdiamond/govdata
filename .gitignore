@@ -84,6 +84,9 @@ home.png
 antennas.png
 deadsea.png
 
+# kimi_test harness scratch dir (tmp/kimi_test/<id>/...)
+tmp/
+
 # Nuxt build output + stray dirs
 frontend/dist
 frontend/3000/
