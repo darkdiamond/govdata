@@ -150,10 +150,10 @@ See [`infra/DEPLOY.md`](infra/DEPLOY.md) for the full deployment runbook and
 
 A local CLI lets you A/B page quality across models without touching the
 live pipeline. Default model is **Kimi K2.6** via Moonshot's OpenAI-compat
-endpoint; `--model anthropic:claude-sonnet-4-6 / haiku-4-5` and
-`--model openai:gpt-...` also work. The agent runs through PydanticAI's
-agent loop in a rootless Podman+`llm-sandbox` container, bypassing
-Anthropic Managed Agents entirely.
+endpoint; `--model grok-4.3` (xAI), `--model anthropic:claude-sonnet-4-6 /
+haiku-4-5`, and `--model openai:gpt-...` also work. The agent runs through
+PydanticAI's agent loop in a rootless Podman+`llm-sandbox` container,
+bypassing Anthropic Managed Agents entirely.
 
 ### Install (local-only)
 
@@ -169,7 +169,10 @@ pip install -r services/page_builder/requirements.txt \
 ```
 
 Set the API key for whichever model you'll run (`MOONSHOT_API_KEY` for Kimi,
-`ANTHROPIC_API_KEY` for Sonnet/Haiku, `OPENAI_API_KEY` for GPT).
+`XAI_API_KEY` for Grok, `ANTHROPIC_API_KEY` for Sonnet/Haiku,
+`OPENAI_API_KEY` for GPT). Cost reporting requires a price entry in
+`PRICE_TABLE` (see `services/page_builder/kimi_runner.py`); models without
+one log `cost: unknown` but still run end-to-end.
 
 ### Run
 
