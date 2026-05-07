@@ -1,0 +1,192 @@
+"""CLI: run Kimi K2.6 (or any other model) against one or more CKAN datasets.
+
+Local-only harness. Production Cloud Run / Cloud Build images do not install
+the deps this module needs. To run it:
+
+    pip install -r services/page_builder/requirements.txt \\
+                -r services/page_builder/requirements-test.txt
+    python -m services.page_builder._build_kimi_system   # regenerate prompt
+    python -m services.page_builder.cli.kimi_test --source <dataset_id>
+
+Outputs land in `tmp/kimi_test/<id>/{content.html,agent_data.json,transcript.json,cost.json}`.
+To preview a kimi build inside the actual Nuxt shell — and compare it visually
+to the live prod page on govil.ai — use:
+
+    python -m services.page_builder.cli.preview render <id>     # offline file://
+    python -m services.page_builder.cli.preview swap <id>       # full Nuxt-shell
+    python -m services.page_builder.cli.preview restore <id>
+
+Read-only on prod Firestore. Writes nothing to GCS or Firestore.
+
+Examples:
+    python -m services.page_builder.cli.kimi_test --source <dataset_id>
+    python -m services.page_builder.cli.kimi_test --batch <id1> <id2> <id3>
+    python -m services.page_builder.cli.kimi_test --auto-trio
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import logging
+import os
+import sys
+from collections import defaultdict
+from pathlib import Path
+from typing import Optional
+
+from services.page_builder.kimi_runner import TestSessionResult, run_test_session
+from services.shared.firestore import FirestoreStateStore, SourceRecord
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
+PROD_DATASETS_DIR = REPO_ROOT / "frontend" / "public" / "datasets"
+DEFAULT_OUT_DIR = REPO_ROOT / "tmp" / "kimi_test"
+
+log = logging.getLogger(__name__)
+
+
+def _load_source(store: FirestoreStateStore, dataset_id: str) -> SourceRecord:
+    src = store.get_source(dataset_id)
+    if src is None:
+        raise SystemExit(f"source not found in Firestore: {dataset_id}")
+    return src
+
+
+def _pick_auto_trio() -> list[str]:
+    """Pick one dataset each of dataset_kind ∈ {map, timeseries, registry} from
+    the already-built prod pages, preferring smaller resources for fast runs."""
+    by_kind: dict[str, list[tuple[int, str]]] = defaultdict(list)
+    for d in PROD_DATASETS_DIR.iterdir():
+        if not d.is_dir():
+            continue
+        agent_data_path = d / "agent_data.json"
+        data_path = d / "data.json"
+        if not agent_data_path.exists():
+            continue
+        try:
+            ad = json.loads(agent_data_path.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+        kind = ad.get("dataset_kind") or "misc"
+        size_hint = 0
+        if data_path.exists():
+            try:
+                meta = json.loads(data_path.read_text(encoding="utf-8"))
+                size_hint = int(meta.get("record_count") or 0)
+            except Exception:
+                pass
+        by_kind[kind].append((size_hint, d.name))
+
+    picks: list[str] = []
+    for kind in ("registry", "timeseries", "map"):
+        candidates = sorted(by_kind.get(kind) or [])
+        if candidates:
+            picks.append(candidates[0][1])
+    return picks
+
+
+def _print_summary(res) -> None:
+    cost = res.cost_usd
+    usage = res.usage
+    cost_line = (
+        f"  $: tokens={cost['tokens_usd']:.4f} -> total={cost['total_usd']:.4f}"
+        if cost.get("tokens_usd") is not None
+        else f"  $: unknown ({cost.get('note', '')})"
+    )
+    print(
+        f"\n=== {res.dataset_id} (model={res.model}) ===\n"
+        f"  out: {res.out_dir}\n"
+        f"  iterations: {res.iterations}, elapsed: {res.elapsed_seconds:.1f}s\n"
+        f"  tokens: in={usage['input_tokens']:,} out={usage['output_tokens']:,} "
+        f"cached={usage['cache_read_tokens']:,} total={usage['total_tokens']:,}\n"
+        f"{cost_line}\n"
+        f"  files: {res.content_html_path.name}, {res.agent_data_path.name}, "
+        f"transcript.json, cost.json"
+    )
+
+
+def _run_one(*, dataset_id: str, args, store: FirestoreStateStore):
+    src = _load_source(store, dataset_id)
+    out_dir = Path(args.out) / dataset_id
+    primary_resource_id = None
+    for r in src.resources or []:
+        if (r.get("format") or "").upper() == "CSV":
+            primary_resource_id = r.get("id")
+            break
+    if not primary_resource_id and src.resources:
+        primary_resource_id = src.resources[0].get("id")
+
+    org_title = ""
+    if isinstance(src.organization, dict):
+        org_title = src.organization.get("title") or src.organization.get("name") or ""
+
+    print(f"\n--- running {args.model} on {dataset_id} ({src.title!r}) ---")
+    try:
+        res = run_test_session(
+            dataset_id=dataset_id,
+            title=src.title or "",
+            notes=src.notes or "",
+            org_title=org_title,
+            primary_resource_id=primary_resource_id,
+            out_dir=out_dir,
+            model=args.model,
+            max_iters=args.max_iters,
+        )
+    except Exception as e:
+        log.exception("test[%s]: run_test_session failed: %s", dataset_id[:8], e)
+        return None
+
+    _print_summary(res)
+    print(
+        f"  preview: python -m services.page_builder.cli.preview swap {dataset_id}"
+    )
+    return res
+
+
+def main(argv: Optional[list[str]] = None) -> int:
+    p = argparse.ArgumentParser(description="Page-builder test harness (any model, Podman sandbox)")
+    g = p.add_mutually_exclusive_group(required=True)
+    g.add_argument("--source", help="single dataset id")
+    g.add_argument("--batch", nargs="+", help="multiple dataset ids")
+    g.add_argument("--auto-trio", action="store_true",
+                   help="auto-pick one map / timeseries / registry from existing prod builds")
+    p.add_argument("--model", default="kimi-k2.6",
+                   help="model id: 'kimi-k2.6', 'anthropic:claude-sonnet-4-6', "
+                        "'anthropic:claude-haiku-4-5', 'openai:gpt-...', etc.")
+    p.add_argument("--out", default=str(DEFAULT_OUT_DIR))
+    p.add_argument("--max-iters", type=int, default=30)
+    p.add_argument("--project", default=os.environ.get("FIREBASE_PROJECT") or "govdata-il")
+    p.add_argument("-v", "--verbose", action="store_true")
+    args = p.parse_args(argv)
+
+    logging.basicConfig(
+        level=logging.DEBUG if args.verbose else logging.INFO,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+    )
+
+    if args.auto_trio:
+        ids = _pick_auto_trio()
+        if not ids:
+            print("no candidates found in frontend/public/datasets/", file=sys.stderr)
+            return 2
+        print(f"auto-trio picked: {', '.join(ids)}")
+    elif args.source:
+        ids = [args.source]
+    else:
+        ids = list(args.batch or [])
+
+    store = FirestoreStateStore(project_id=args.project)
+    results: list[TestSessionResult] = []
+    for did in ids:
+        res = _run_one(dataset_id=did, args=args, store=store)
+        if res is not None:
+            results.append(res)
+
+    if results:
+        total = sum(r.cost_usd["total_usd"] for r in results)
+        print(f"\n=== batch summary: {len(results)}/{len(ids)} ok, "
+              f"total $: {total:.4f} ===")
+    return 0 if len(results) == len(ids) else 1
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

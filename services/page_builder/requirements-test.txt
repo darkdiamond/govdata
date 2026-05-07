@@ -1,0 +1,18 @@
+# Manual-run harness dependencies — NOT installed by the production
+# Cloud Run / Cloud Build images. The top-level Dockerfile and
+# infra/Dockerfile.publisher only `COPY services/page_builder/requirements.txt`,
+# so these stay out of the live builder/publisher.
+#
+# Local-only install:
+#   pip install -r services/page_builder/requirements.txt \
+#               -r services/page_builder/requirements-test.txt
+#
+# Used by:
+#   services/page_builder/kimi_runner.py
+#   services/page_builder/podman_sandbox.py
+#   services/page_builder/cli/kimi_test.py
+#   services/page_builder/cli/preview.py
+
+pydantic-ai>=1.0,<2          # agent loop; pulls anthropic/openai SDKs
+llm-sandbox[podman]>=0.3     # rootless Podman sandbox; needs `apt install podman`
+duckduckgo-search>=8         # free web_search backend, no API key
