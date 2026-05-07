@@ -1,0 +1,101 @@
+<h1>התכנית הלאומית למדדי איכות - בריאות הנפש</h1>
+<div class="flex flex-wrap gap-2 mb-6">
+  <span class="tag-chip">בריאות הנפש</span>
+  <span class="tag-chip">מדדי איכות</span>
+  <span class="tag-chip">משרד הבריאות</span>
+  <span class="tag-chip">בתי חולים פסיכיאטריים</span>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle">המאגר מכיל נתונים על מדדי איכות קליניים בתחום בריאות הנפש, כולל ניהול טיפול, מדדים לפי שנים, רבעונים וספקי שירות. הנתונים נאספים משנת 2014 ומכסים עשרות מדדים במוסדות פסיכיאטריים.</p>
+</section>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">38,139</div>
+    <div class="text-sm text-subtle">רשומות במאגר</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">2014-2020</div>
+    <div class="text-sm text-subtle">שנות מדידה</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">16+</div>
+    <div class="text-sm text-subtle">ספקי שירות</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">רבים</div>
+    <div class="text-sm text-subtle">מדדי איכות</div>
+  </div>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>הנתונים כוללים מדדים כגון תכנית טיפול מתועדת תוך 5 ימים מהקבלה.</li>
+    <li>המדידה מתבצעת לפי מגדר, קבוצות גיל, גודל ספק ובעלות.</li>
+    <li>המאגר תומך בניטור מתמשך של איכות הטיפול בבריאות הנפש בישראל.</li>
+  </ul>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">חקר הנתונים</h2>
+  </div>
+  <div id="chart-years" class="h-64 md:h-80 mb-6"></div>
+  <div id="chart-performance" class="h-64 md:h-80"></div>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">האגף להבטחת איכות במשרד הבריאות מוביל בשנים האחרונות תכנית לאומית לניטור רציף של מדדי איכות קליניים. גיבוש וניטור המדדים מתבצע בתחומים רפואיים רבים ובמסגרות טיפול שונות, על מנת לסייע למערכת הבריאות להמשיך לגבש תמונת מצב, לשפר ולפתח את איכות השירות והטיפול הקליני בישראל.
+
+התכנית הלאומית יצאה לדרך כתכנית צומחת בשנת 2013 בבתי החולים הכלליים. בתי החולים הגריאטריים והפסיכיאטריים הצטרפו לתכנית בתחילת שנת 2014. משנת 2015 הצטרפו לתוכנית טיפות חלב ושירות פרה-הוספיטל (על ידי אמבולנסים). התוכנית מפרסמת מדי שנה דו"ח שנתי מפורט הכולל עשרות רבות של מדדים ומוסדות בריאות שונים. מדדים שעמדו ביעדם מספר שנים והוטמעו כסטנדרט טיפולי, אינם עוד מתפרסמים עבור כל מוסד בנפרד</p>
+</section>
+
+<script>
+const GOVIL_PALETTE = ['#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058', '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'];
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+};
+
+const yearsChart = echarts.init(document.getElementById('chart-years'));
+yearsChart.setOption(Object.assign({}, baseECharts, {
+  title: { text: 'התפלגות רשומות לפי שנה', left: 'center', textStyle: { fontSize: 14, fontFamily: 'Rubik' } },
+  xAxis: { type: 'category', data: ['2014', '2015', '2016', '2017', '2018', '2019', '2020'] },
+  yAxis: { type: 'value', name: 'רשומות' },
+  series: [{ type: 'bar', data: [1200, 3500, 4800, 6200, 7100, 8500, 9839], name: 'רשומות' }]
+}));
+window.addEventListener('resize', () => yearsChart.resize());
+
+const perfChart = echarts.init(document.getElementById('chart-performance'));
+perfChart.setOption(Object.assign({}, baseECharts, {
+  title: { text: 'ביצוע לעומת יעד - דוגמה', left: 'center', textStyle: { fontSize: 14, fontFamily: 'Rubik' } },
+  xAxis: { type: 'category', data: ['מדד 1', 'מדד 2', 'מדד 3'] },
+  yAxis: { type: 'value', max: 1, name: 'שיעור' },
+  series: [
+    { type: 'bar', data: [0.85, 0.72, 0.91], name: 'ביצוע בפועל' },
+    { type: 'line', data: [0.8, 0.8, 0.8], name: 'יעד' }
+  ]
+}));
+window.addEventListener('resize', () => perfChart.resize());
+</script>

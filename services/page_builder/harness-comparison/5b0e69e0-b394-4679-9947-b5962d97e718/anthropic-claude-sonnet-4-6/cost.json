@@ -1,0 +1,25 @@
+{
+  "model": "anthropic:claude-sonnet-4-6",
+  "elapsed_seconds": 412.83,
+  "usage": {
+    "input_tokens": 1456981,
+    "output_tokens": 30826,
+    "total_tokens": 1487807,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0
+  },
+  "cost_usd": {
+    "tokens_usd": 4.833333,
+    "total_usd": 4.833333
+  },
+  "tool_calls": {
+    "bash": 36,
+    "code_execution": 0,
+    "web_fetch": 0,
+    "web_search": 0
+  },
+  "sandbox_files": [
+    "agent_data.json",
+    "content.html"
+  ]
+}

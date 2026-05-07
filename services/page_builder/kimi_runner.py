@@ -43,7 +43,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import httpx
-from pydantic_ai import Agent, RunContext
+from pydantic_ai import Agent, ModelRetry, RunContext
 
 from .schema import AgentData
 from .session_runner import _sanitize_content_html, build_user_message
@@ -207,21 +207,56 @@ def _build_pydantic_model(model_id: str):
 
 
 def _build_agent(*, model, system_prompt: str) -> Agent[Deps, str]:
-    agent = Agent(model=model, deps_type=Deps, system_prompt=system_prompt, retries=2)
+    # retries=5 + an explicit max_tokens ceiling. The token bump is a real
+    # bug-fix, not a defensive knob: Anthropic's streaming adapter (and the
+    # corresponding PydanticAI parser path) drops tool_use input arguments
+    # when the response hits max_tokens mid-stream, leaving the tool call
+    # with `input={}`. Pre-1.91 PydanticAI silently surfaced the truncated
+    # call to the agent loop, which then looked like the model emitting
+    # empty bash calls. Sonnet's bash heredocs (multi-KB python scripts in
+    # `cat <<PY ... PY`) routinely push past 4096 — the previous default.
+    # See pydantic-ai #3118 + PR #3137.
+    agent = Agent(
+        model=model,
+        deps_type=Deps,
+        system_prompt=system_prompt,
+        retries=5,
+        model_settings={"max_tokens": 16384},
+    )
 
     @agent.tool
-    def bash(ctx: RunContext[Deps], cmd: str) -> dict:
+    def bash(
+        ctx: RunContext[Deps],
+        command: str | None = None,
+        restart: bool = False,
+    ) -> dict:
         """Run a shell command inside the sandbox (state persists between calls).
 
         Args:
-            cmd: shell command. cwd, exported env, and written files persist.
+            command: shell command. cwd, exported env, and written files persist.
+            restart: ignored — the sandbox already provides a fresh persistent
+                shell per session. Accepted only for compatibility with models
+                trained on the Anthropic Managed Agents bash tool surface.
         """
         ctx.deps.bash_calls += 1
         n = ctx.deps.bash_calls
         ds = ctx.deps.dataset_id[:8]
-        log.info("test[%s]: bash#%d $ %s", ds, n, _summarize_arg(cmd))
+        if not command:
+            log.info(
+                "test[%s]: bash#%d empty call (restart=%s) — raising ModelRetry",
+                ds, n, restart,
+            )
+            raise ModelRetry(
+                "bash requires a non-empty `command` parameter. The sandbox "
+                "is persistent — there is nothing to restart. If you have "
+                "completed all investigation and written "
+                "/tmp/session/outputs/content.html and agent_data.json, end "
+                "the run by returning a final assistant message instead of "
+                "calling a tool."
+            )
+        log.info("test[%s]: bash#%d $ %s", ds, n, _summarize_arg(command))
         t0 = time.monotonic()
-        out = _exec_to_dict(ctx.deps.sandbox.run_code(cmd, language="bash", timeout=120))
+        out = _exec_to_dict(ctx.deps.sandbox.run_code(command, language="bash", timeout=120))
         log.info(
             "test[%s]: bash#%d done in %.1fs — %s",
             ds, n, time.monotonic() - t0, _summarize_run_result(out),

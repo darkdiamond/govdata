@@ -1,0 +1,12 @@
+{
+  "summary_he": "נתוני ניטור לאומי לאחוז מאושפזים פסיכיאטריים שתכנית הטיפול שלהם תועדה תוך 5 ימים, ב-20 מוסדות בשנים 2020–2024 — שיעור עמידה של 89.3% ב-2024 לעומת יעד לאומי של 80%.",
+  "dataset_kind": "timeseries",
+  "related_ids": [
+    "46728cf3-2186-417e-9681-0f789dbb35c2",
+    "a5aa4b26-dcec-4df6-9183-82a81743a21f",
+    "3c1de3e2-1028-4efc-8f48-60edc80fa4df"
+  ],
+  "temporal_coverage": null,
+  "spatial_coverage": null,
+  "version": 1
+}

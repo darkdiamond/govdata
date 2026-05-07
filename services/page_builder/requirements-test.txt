@@ -13,6 +13,7 @@
 #   services/page_builder/cli/kimi_test.py
 #   services/page_builder/cli/preview.py
 
-pydantic-ai>=1.0,<2          # agent loop; pulls anthropic/openai SDKs
+pydantic-ai>=1.91.0,<2       # agent loop; 1.91 carries PR #3137 — fixes Anthropic streaming adapter dropping tool_use args at max_tokens
+
 llm-sandbox[podman]>=0.3     # rootless Podman sandbox; needs `apt install podman`
 duckduckgo-search>=8         # free web_search backend, no API key

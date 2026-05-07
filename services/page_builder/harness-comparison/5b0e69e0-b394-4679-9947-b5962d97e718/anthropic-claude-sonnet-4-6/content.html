@@ -1,0 +1,406 @@
+<!-- tag chips -->
+<h1>התכנית הלאומית למדדי איכות של משרד הבריאות – בריאות הנפש</h1>
+<div class="flex flex-wrap gap-2 mb-6">
+  <span class="tag-chip">בריאות הנפש</span>
+  <span class="tag-chip">מדדי איכות</span>
+  <span class="tag-chip">בתי חולים פסיכיאטריים</span>
+  <span class="tag-chip">ניטור קליני</span>
+  <span class="tag-chip">משרד הבריאות</span>
+</div>
+
+<!-- AI summary card -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle leading-relaxed">
+    מאגר זה כולל נתוני ניטור רציף של מדד איכות מרכזי בבריאות הנפש: אחוז המאושפזים שתכנית הטיפול שלהם תועדה בתיק תוך 5 ימים מיום הקבלה לאשפוז, ביחס ליעד לאומי של 80%. הנתונים מכסים את השנים 2020–2024, ומקיפים 20 מוסדות פסיכיאטריים (בתי חולים פסיכיאטריים ומחלקות פסיכיאטריות בבתי חולים כלליים), עם למעלה מ-56,000 אירועי אשפוז. בשנת 2024 עמד שיעור העמידה בסטנדרט על 89.3% (יעד: 80%), שיפור ניכר לעומת 2020.
+  </p>
+</section>
+
+<!-- KPI highlight cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">89.3%</div>
+    <div class="text-sm text-subtle">שיעור עמידה ביעד, 2024</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-ok mb-1">17/20</div>
+    <div class="text-sm text-subtle">מוסדות שעמדו ביעד של 80%</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">20</div>
+    <div class="text-sm text-subtle">מוסדות פסיכיאטריים במאגר</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">56,603</div>
+    <div class="text-sm text-subtle">אירועי אשפוז 2020–2024</div>
+  </div>
+</div>
+
+<!-- insights -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">ממצאים עיקריים</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>שיעור העמידה הכולל הציג מגמת שיפור בשלוש השנים האחרונות: ב-2024 הגיע ל-89.3%, שיא מאז תחילת המדידה בשנת 2020.</li>
+    <li>בתי חולים כלליים עם מחלקות פסיכיאטריות (90.5%) מציגים שיעור עמידה ממוצע גבוה יותר מבתי חולים פסיכיאטריים ייעודיים (87.8%).</li>
+    <li>3 מוסדות נותרים מתחת ליעד הלאומי של 80%: מזור (75.8%), מעלה הכרמל (73.0%) ושער מנשה (65.9%).</li>
+    <li>פערים בין בעלויות: מוסדות כללית (98.5%) ומוסדות ציבוריים (96.6%) עולים באופן עקבי על מוסדות ממשלתיים (82.5% בממוצע רב-שנתי).</li>
+    <li>שיעורי העמידה נשים (86.8% ממוצע) ממוצע דומה לגברים (84.4%), ללא פער מובהק בין קבוצות גיל (65+: 87.1% לעומת 18–64: 85.1%).</li>
+  </ul>
+</section>
+
+<!-- Charts: trend over years + quarterly -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">מגמת עמידה ביעד לפי שנה</h2>
+  </div>
+  <p class="text-sm text-subtle mb-3">שיעור המאושפזים שתכנית הטיפול תועדה תוך 5 ימים (יעד: 80%). נתוני מדגם של 25,000 רשומות.</p>
+  <div id="chart-trend" class="h-64 md:h-80"></div>
+</section>
+
+<!-- Provider ranking chart -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/building-2.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">שיעור עמידה ביעד לפי מוסד (2020–2024)</h2>
+  </div>
+  <p class="text-sm text-subtle mb-3">ממוצע רב-שנתי. הקו האדום מסמן את היעד הלאומי (80%). מוסדות מתחת ליעד מסומנים באדום.</p>
+  <div id="chart-providers" class="h-[520px] md:h-[600px]"></div>
+</section>
+
+<!-- Two-column: ownership trend + gender trend -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <div class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">שיעור עמידה לפי בעלות ושנה</h2>
+    <div id="chart-ownership" class="h-64 md:h-72"></div>
+  </div>
+  <div class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">שיעור עמידה לפי מגדר ושנה</h2>
+    <div id="chart-gender" class="h-64 md:h-72"></div>
+  </div>
+</div>
+
+<!-- Provider trends over time for selected hospitals -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">מגמות מוסדות נבחרים לאורך זמן</h2>
+  </div>
+  <p class="text-sm text-subtle mb-3">6 מוסדות — שלושה עם ביצועים גבוהים ושלושה עם מגמות שיפור/אתגר. הקו המקווקו מסמן את יעד 80%.</p>
+  <div id="chart-prov-trend" class="h-72 md:h-96"></div>
+</section>
+
+<!-- Original notes -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">האגף להבטחת איכות במשרד הבריאות מוביל בשנים האחרונות תכנית לאומית לניטור רציף של מדדי איכות קליניים. גיבוש וניטור המדדים מתבצע בתחומים רפואיים רבים ובמסגרות טיפול שונות, על מנת לסייע למערכת הבריאות להמשיך לגבש תמונת מצב, לשפר ולפתח את איכות השירות והטיפול הקליני בישראל.
+
+התכנית הלאומית יצאה לדרך כתכנית צומחת בשנת 2013 בבתי החולים הכלליים. בתי החולים הגריאטריים והפסיכיאטריים הצטרפו לתכנית בתחילת שנת 2014. משנת 2015 הצטרפו לתוכנית טיפות חלב ושירות פרה-הוספיטל (על ידי אמבולנסים). התוכנית מפרסמת מדי שנה דוח שנתי מפורט הכולל עשרות רבות של מדדים ומוסדות בריאות שונים. מדדים שעמדו ביעדם מספר שנים והוטמעו כסטנדרט טיפולי, אינם עוד מתפרסמים עבור כל מוסד בנפרד.</p>
+</section>
+
+<script>
+const GOVIL_PALETTE = [
+  '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
+  '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
+];
+
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+};
+
+// ── Chart 1: Annual trend ──────────────────────────────────────────
+const chartTrend = echarts.init(document.getElementById('chart-trend'));
+chartTrend.setOption(Object.assign({}, baseECharts, {
+  tooltip: Object.assign({}, baseECharts.tooltip, {
+    trigger: 'axis',
+    formatter: function(params) {
+      const p = params[0];
+      return p.axisValue + ': ' + p.value.toFixed(1) + '%';
+    }
+  }),
+  xAxis: {
+    type: 'category',
+    data: ['2020', '2021', '2022', '2023', '2024'],
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'value',
+    min: 60, max: 100,
+    axisLabel: {
+      fontFamily: 'Rubik', color: '#6c757d',
+      formatter: v => v + '%'
+    },
+    splitLine: { lineStyle: { color: '#c3cfe7', type: 'dashed' } }
+  },
+  markLine: {},
+  series: [
+    {
+      name: "שיעור עמידה",
+      type: 'bar',
+      data: [
+        { value: 88.2, itemStyle: { color: '#0068f5' } },
+        { value: 81.0, itemStyle: { color: '#dc3545' } },
+        { value: 81.4, itemStyle: { color: '#dc3545' } },
+        { value: 86.3, itemStyle: { color: '#0068f5' } },
+        { value: 89.3, itemStyle: { color: '#198754' } }
+      ],
+      label: {
+        show: true, position: 'top',
+        fontFamily: 'Rubik', color: '#0c3058',
+        formatter: p => p.value.toFixed(1) + '%'
+      },
+      markLine: {
+        silent: true,
+        data: [{ yAxis: 80, name: "יעד 80%" }],
+        lineStyle: { color: '#dc3545', type: 'dashed', width: 2 },
+        label: { show: true, formatter: "יעד 80%", fontFamily: 'Rubik', color: '#dc3545' }
+      }
+    }
+  ]
+}));
+window.addEventListener('resize', () => chartTrend.resize());
+
+// ── Chart 2: Provider ranking (horizontal bar) ──────────────────────
+const provNames = [
+  "שער מנשה", "מעלה הכרמל", "מזור (לשעבר מזרע)", "יהודה אברבנאל",
+  "מרחבים", "איתנים - כפר שאול", "לב השרון", "רמבם", "סוראסקי",
+  "שיבא", "שניידר", "ברזילי", "זיו", "בריאות הנפש באר שבע",
+  "הסקוטי", "הדסה עין כרם", "המרכזי בעמק", "שלוותה", "גהה", "הלל יפה"
+];
+const provRates = [65.9, 73.0, 75.8, 83.0, 83.5, 83.6, 84.0, 86.1, 87.7, 88.4,
+                   90.9, 95.0, 95.1, 95.4, 96.3, 96.8, 97.2, 97.8, 98.6, 99.0];
+
+const chartProviders = echarts.init(document.getElementById('chart-providers'));
+chartProviders.setOption(Object.assign({}, baseECharts, {
+  grid: { left: 160, right: 80, top: 20, bottom: 40, containLabel: true },
+  tooltip: Object.assign({}, baseECharts.tooltip, {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: function(params) {
+      const p = params[0];
+      return p.name + ': ' + p.value + '%';
+    }
+  }),
+  xAxis: {
+    type: 'value',
+    min: 60, max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#6c757d', formatter: v => v + '%' },
+    splitLine: { lineStyle: { color: '#c3cfe7', type: 'dashed' } }
+  },
+  yAxis: {
+    type: 'category',
+    data: provNames,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 12 }
+  },
+  series: [{
+    type: 'bar',
+    data: provRates.map((v, i) => ({
+      value: v,
+      itemStyle: {
+        color: v < 80 ? '#dc3545' : (v >= 95 ? '#198754' : '#0068f5'),
+        borderRadius: [0, 3, 3, 0]
+      }
+    })),
+    label: {
+      show: true, position: 'right',
+      fontFamily: 'Rubik', color: '#0c3058', fontSize: 11,
+      formatter: p => p.value + '%'
+    },
+    markLine: {
+      silent: true,
+      data: [{ xAxis: 80, name: "יעד 80%" }],
+      lineStyle: { color: '#dc3545', type: 'dashed', width: 2 },
+      label: { show: true, formatter: "יעד 80%", fontFamily: 'Rubik', color: '#dc3545', position: 'insideStartTop' }
+    }
+  }]
+}));
+window.addEventListener('resize', () => chartProviders.resize());
+
+// ── Chart 3: Ownership × Year ────────────────────────────────────────
+const years = ['2020', '2021', '2022', '2023', '2024'];
+const chartOwnership = echarts.init(document.getElementById('chart-ownership'));
+chartOwnership.setOption(Object.assign({}, baseECharts, {
+  grid: { left: 40, right: 20, top: 36, bottom: 48, containLabel: true },
+  legend: {
+    data: ["ממשלתית", "כללית", "ציבורית"],
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    top: 4
+  },
+  tooltip: Object.assign({}, baseECharts.tooltip, {
+    trigger: 'axis',
+    formatter: function(params) {
+      let s = params[0].axisValue + '<br/>';
+      params.forEach(p => { s += p.marker + p.seriesName + ': ' + p.value + '%<br/>'; });
+      return s;
+    }
+  }),
+  xAxis: {
+    type: 'category', data: years,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'value', min: 60, max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#6c757d', formatter: v => v + '%' },
+    splitLine: { lineStyle: { color: '#c3cfe7', type: 'dashed' } }
+  },
+  series: [
+    {
+      name: "ממשלתית", type: 'line', smooth: true,
+      data: [85.9, 77.3, 77.7, 83.9, 87.6],
+      itemStyle: { color: '#0068f5' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6
+    },
+    {
+      name: "כללית", type: 'line', smooth: true,
+      data: [98.5, 98.6, 97.6, 98.4, 97.4],
+      itemStyle: { color: '#198754' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6
+    },
+    {
+      name: "ציבורית", type: 'line', smooth: true,
+      data: [95.4, 94.4, 97.2, 97.2, 98.9],
+      itemStyle: { color: '#0b3668' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6
+    }
+  ]
+}));
+window.addEventListener('resize', () => chartOwnership.resize());
+
+// ── Chart 4: Gender × Year ───────────────────────────────────────────
+const chartGender = echarts.init(document.getElementById('chart-gender'));
+chartGender.setOption(Object.assign({}, baseECharts, {
+  grid: { left: 40, right: 20, top: 36, bottom: 48, containLabel: true },
+  legend: {
+    data: ["זכר", "נקבה"],
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    top: 4
+  },
+  tooltip: Object.assign({}, baseECharts.tooltip, {
+    trigger: 'axis',
+    formatter: function(params) {
+      let s = params[0].axisValue + '<br/>';
+      params.forEach(p => { s += p.marker + p.seriesName + ': ' + p.value + '%<br/>'; });
+      return s;
+    }
+  }),
+  xAxis: {
+    type: 'category', data: years,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'value', min: 60, max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#6c757d', formatter: v => v + '%' },
+    splitLine: { lineStyle: { color: '#c3cfe7', type: 'dashed' } }
+  },
+  series: [
+    {
+      name: "זכר", type: 'line', smooth: true,
+      data: [87.2, 78.6, 80.0, 85.3, 90.7],
+      itemStyle: { color: '#0068f5' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6
+    },
+    {
+      name: "נקבה", type: 'line', smooth: true,
+      data: [89.9, 84.2, 83.3, 87.8, 87.5],
+      itemStyle: { color: '#6c9fd8' }, lineStyle: { width: 2, type: 'dashed' },
+      symbol: 'circle', symbolSize: 6
+    }
+  ]
+}));
+window.addEventListener('resize', () => chartGender.resize());
+
+// ── Chart 5: Provider trends over years ─────────────────────────────
+const chartProvTrend = echarts.init(document.getElementById('chart-prov-trend'));
+chartProvTrend.setOption(Object.assign({}, baseECharts, {
+  grid: { left: 48, right: 24, top: 44, bottom: 48, containLabel: true },
+  legend: {
+    data: ["מרחבים", "שער מנשה", "מעלה הכרמל", "גהה", "שלוותה", "ב.הנפש ב\"ש"],
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 },
+    top: 4
+  },
+  tooltip: Object.assign({}, baseECharts.tooltip, {
+    trigger: 'axis',
+    formatter: function(params) {
+      let s = params[0].axisValue + '<br/>';
+      params.forEach(p => {
+        if (p.value !== null && p.value !== undefined) {
+          s += p.marker + p.seriesName + ': ' + p.value + '%<br/>';
+        }
+      });
+      return s;
+    }
+  }),
+  xAxis: {
+    type: 'category', data: years,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'value', min: 40, max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#6c757d', formatter: v => v + '%' },
+    splitLine: { lineStyle: { color: '#c3cfe7', type: 'dashed' } }
+  },
+  series: [
+    {
+      name: "מרחבים", type: 'line', smooth: true,
+      data: [78, 62, 88, 94, 94],
+      itemStyle: { color: '#0068f5' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6,
+      markLine: {
+        silent: true,
+        data: [{ yAxis: 80 }],
+        lineStyle: { color: '#dc3545', type: 'dashed', width: 1.5 },
+        label: { show: true, formatter: "יעד 80%", fontFamily: 'Rubik', color: '#dc3545', position: 'insideEndTop' }
+      }
+    },
+    {
+      name: "שער מנשה", type: 'line', smooth: true,
+      data: [79, 64, 50, 65, 70],
+      itemStyle: { color: '#dc3545' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6
+    },
+    {
+      name: "מעלה הכרמל", type: 'line', smooth: true,
+      data: [null, 52, 68, 85, 83],
+      itemStyle: { color: '#0b3668' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6,
+      connectNulls: false
+    },
+    {
+      name: "גהה", type: 'line', smooth: true,
+      data: [98, 99, 99, 99, 97],
+      itemStyle: { color: '#198754' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6
+    },
+    {
+      name: "שלוותה", type: 'line', smooth: true,
+      data: [99, 98, 96, 98, 98],
+      itemStyle: { color: '#3d70b0' }, lineStyle: { width: 2 },
+      symbol: 'circle', symbolSize: 6
+    },
+    {
+      name: "ב.הנפש ב\"ש", type: 'line', smooth: true,
+      data: [99, 96, 92, 96, 95],
+      itemStyle: { color: '#6c9fd8' }, lineStyle: { width: 2, type: 'dashed' },
+      symbol: 'circle', symbolSize: 6
+    }
+  ]
+}));
+window.addEventListener('resize', () => chartProvTrend.resize());
+</script>

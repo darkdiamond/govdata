@@ -1,0 +1,76 @@
+{
+  "id": "5b0e69e0-b394-4679-9947-b5962d97e718",
+  "slug": "5b0e69e0-b394-4679-9947-b5962d97e718",
+  "title": "התכנית הלאומית למדדי איכות של משרד הבריאות - בריאות הנפש",
+  "organization": "משרד הבריאות",
+  "organization_slug": "ministry-health",
+  "tags_he": [
+    "בריאות הנפש",
+    "מדדי איכות"
+  ],
+  "primary_resource_id": "3c678810-8079-457a-a923-67b7e7661cae",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2025-10-28T12:16:33.960091Z",
+  "license": "אחר (פתוח)",
+  "record_count": 38139,
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/3c678810-8079-457a-a923-67b7e7661cae/download/mental-health-documented-treatment-plan-within-5-days.csv",
+      "format": "CSV",
+      "name": "תכנית טיפול מתועדת תוך 5 ימים",
+      "size_bytes": 13045941
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/eb5c186c-d062-4a2c-9fbb-98f72c7de4bb/download/mental-health-detailed-disease-summary.csv",
+      "format": "CSV",
+      "name": "סיכום מחלה מפורט",
+      "size_bytes": 10195156
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/e8adbc37-713a-4f36-8242-28e23032f43b/download/mental-health-making-an-appointment-in-the-community-for-those-released-from-hospitalization.csv",
+      "format": "CSV",
+      "name": "קביעת תור בקהילה למשוחררים מאשפוז",
+      "size_bytes": 34377105
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/333b85b0-4fea-4398-b3da-32610e97646e/download/mental-health-a-documented-long-term-hospitalization-treatment-plan.csv",
+      "format": "CSV",
+      "name": "תכנית טיפול מתועדת באשפוז ממושך",
+      "size_bytes": 886382
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/cbb4cc45-ddd0-44ba-8af2-c40232d8c48d/download/mental-health-lipid-profile-measurement.csv",
+      "format": "CSV",
+      "name": "מדידת פרופיל שומנים",
+      "size_bytes": 1964692
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/b31b6f1a-55e2-443b-b783-87da7555fd40/download/mental-health-screening-for-diabetes.csv",
+      "format": "CSV",
+      "name": "סקר לגילוי סוכרת",
+      "size_bytes": 1590151
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/bfb32c1c-dcc3-46ca-a9c4-2dbdd578ee58/download/mental-health-body-mass-bmi.csv",
+      "format": "CSV",
+      "name": "מסת גוף (BMI)",
+      "size_bytes": 748887
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/b64681a2-0966-4096-b7b3-6b607c0ec8a6/download/mental-health-meeting-between-the-physician-and-the-parents-within-5-days-of-hospitalization.csv",
+      "format": "CSV",
+      "name": "מפגש בין הרופא המטפל להורים תוך 5 ימים מהאשפוז",
+      "size_bytes": 770028
+    },
+    {
+      "url": "https://data.gov.il/dataset/5b0e69e0-b394-4679-9947-b5962d97e718/resource/f7b22fc7-8a3d-474a-b308-086c9dc3a61b/download/mental-health-occult-blood-stool.csv",
+      "format": "CSV",
+      "name": "דם סמוי בצואה",
+      "size_bytes": 172316
+    }
+  ],
+  "last_analyzed_at": "2026-05-06T15:18:29.802804Z",
+  "version": 1
+}

@@ -1,0 +1,551 @@
+<!-- tag chips -->
+<h1 class="text-2xl font-bold text-ink-deep mb-3">התכנית הלאומית למדדי איכות - בריאות הנפש</h1>
+<div class="flex flex-wrap gap-2 mb-6">
+  <span class="tag-chip">מדדי איכות</span>
+  <span class="tag-chip">בריאות הנפש</span>
+  <span class="tag-chip">אשפוז פסיכיאטרי</span>
+  <span class="tag-chip">ניטור קליני</span>
+  <span class="tag-chip">משרד הבריאות</span>
+</div>
+
+<!-- AI summary card -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle leading-relaxed">
+    מסד נתונים זה מרכז את תוצאות הניטור הרציף של 9 מדדי איכות קלינית במערך בריאות הנפש בישראל, בפריסה רבעונית לשנים 2020–2024, ומכסה 20 מוסדות פסיכיאטריים ממגזרים שונים.
+    הנתונים מאפשרים להשוות את רמת הציות לפרוטוקולי טיפול — כגון תיעוד תכנית טיפול תוך 5 ימים מהאשפוז, הבטחת רצף הטיפול בקהילה, ובדיקות סקר רפואיות — ביחס לסף היעד שקבע משרד הבריאות.
+    בשנת 2024 עמדו כל שבעת המדדים עם נתונים זמינים מעל יעדם, לעומת עמידה חלקית בשנות הניטור הראשונות.
+  </p>
+</section>
+
+<!-- KPI cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">9</div>
+    <div class="text-sm text-subtle">מדדי איכות מנוטרים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">20</div>
+    <div class="text-sm text-subtle">מוסדות פסיכיאטריים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-ok mb-1">7 / 7</div>
+    <div class="text-sm text-subtle">מדדים עמדו ביעדם ב-2024</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">5</div>
+    <div class="text-sm text-subtle">שנות ניטור (2020–2024)</div>
+  </div>
+</div>
+
+<!-- insights -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>בשנת 2024 עמדו כל 7 המדדים עם נתונים זמינים מעל יעדי משרד הבריאות — שיפור ניכר לעומת 2020–2021, שבהן שניים מהמדדים היו מתחת ליעד.</li>
+    <li>המדד "מפגש רופא מטפל-הורים תוך 5 ימים" הציג את השיפור הדרמטי ביותר: מ-70.7% בשנת 2020 ל-89.3% ב-2024, חצה את יעד 85% לראשונה בשנת 2023.</li>
+    <li>במדד "תכנית טיפול מתועדת תוך 5 ימים" נרשמה ירידה לכ-81% בשנים 2021–2022 — ייתכן בהשפעת מגפת הקורונה — ולאחר מכן שיפור מתמיד ועמידה ביעד בכל שנות הניטור.</li>
+    <li>קיים פער משמעותי בין מוסדות: גהה ושלוותה מציגים ציות של 97–99%, ואילו שער מנשה נמצא ב-66.9% — מתחת ליעד 80%.</li>
+    <li>מוסדות "כללית" (98.3%) ו"ציבורית" (96.4%) מציגים ציות גבוה יותר ממוסדות "ממשלתיים" (83.4%) במדד הראשי.</li>
+    <li>מחלקות פסיכיאטריות בבתי חולים כלליים (92.5%) מציגות ציות גבוה יותר מבתי החולים הפסיכיאטריים הייעודיים (84.9%).</li>
+  </ul>
+</section>
+
+<!-- Heatmap: measures x years -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">עמידה ביעד לפי מדד ושנה</h2>
+  </div>
+  <p class="text-sm text-subtle mb-3">צבע כחול = מעל היעד; אדום = מתחת ליעד. הערכים בתאים הם שיעור הציות בפועל (%). הציר הצבעוני מציג את הפער בנקודות אחוז מהיעד.</p>
+  <div id="chart-heatmap" class="h-72 md:h-96"></div>
+</section>
+
+<!-- Primary measure trend -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">מגמה שנתית — תכנית טיפול מתועדת תוך 5 ימים</h2>
+  </div>
+  <p class="text-sm text-subtle mb-3">שיעור המטופלים שתכנית הטיפול שלהם תועדה תוך 5 ימים מקבלתם לאשפוז. יעד: 80%.</p>
+  <div id="chart-trend" class="h-64 md:h-80"></div>
+</section>
+
+<!-- Provider compliance horizontal bar -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/building-2.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">ציות לפי מוסד — תכנית טיפול מתועדת תוך 5 ימים (2020–2024 מצטבר)</h2>
+  </div>
+  <p class="text-sm text-subtle mb-3">שלושה מוסדות (מסומנים באדום) נמצאים מתחת ליעד 80%. הנתון הוא ממוצע משוקלל של כל מקרי הניטור בכלל שנות הנתונים.</p>
+  <div id="chart-providers" class="h-[420px] md:h-[520px]"></div>
+</section>
+
+<!-- Ownership + Provider type -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <div class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">ציות לפי בעלות — מדד ראשי</h2>
+    <div id="chart-ownership" class="h-56 md:h-64"></div>
+  </div>
+  <div class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">ציות לפי סוג מסגרת — מדד ראשי</h2>
+    <div id="chart-spt" class="h-56 md:h-64"></div>
+  </div>
+</div>
+
+<!-- Improvement story: מפגש רופא-הורים -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">מסלול שיפור — מפגש רופא מטפל-הורים תוך 5 ימים מהאשפוז</h2>
+  </div>
+  <p class="text-sm text-subtle mb-3">מדד זה עלה בעקביות מ-70.7% (2020) ועד 89.3% (2024), עבר את יעד 85% לראשונה בשנת 2023. האזור האדום הבהיר מדגיש את התקופה שבה המדד היה מתחת ליעד.</p>
+  <div id="chart-improvement" class="h-64 md:h-80"></div>
+</section>
+
+<!-- Original notes -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line leading-relaxed">האגף להבטחת איכות במשרד הבריאות מוביל בשנים האחרונות תכנית לאומית לניטור רציף של מדדי איכות קליניים. גיבוש וניטור המדדים מתבצע בתחומים רפואיים רבים ובמסגרות טיפול שונות, על מנת לסייע למערכת הבריאות להמשיך לגבש תמונת מצב, לשפר ולפתח את איכות השירות והטיפול הקליני בישראל.
+
+התכנית הלאומית יצאה לדרך כתכנית צומחת בשנת 2013 בבתי החולים הכלליים. בתי החולים הגריאטריים והפסיכיאטריים הצטרפו לתכנית בתחילת שנת 2014. משנת 2015 הצטרפו לתוכנית טיפות חלב ושירות פרה-הוספיטל (על ידי אמבולנסים). התוכנית מפרסמת מדי שנה דוח שנתי מפורט הכולל עשרות רבות של מדדים ומוסדות בריאות שונים. מדדים שעמדו ביעדם מספר שנים והוטמעו כסטנדרט טיפולי, אינם עוד מתפרסמים עבור כל מוסד בנפרד.</p>
+</section>
+
+<script>
+const GOVIL_PALETTE = [
+  '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
+  '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
+];
+
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true }
+};
+
+/* =====================================================================
+   HEATMAP: 8 measures x 5 years — delta from target (pp above/below)
+   ===================================================================== */
+const heatYears   = ["2020", "2021", "2022", "2023", "2024"];
+const heatMeasures = [
+  "תכנית טיפול תוך 5 ימים",
+  "סיכום מחלה מפורט",
+  "קביעת תור בקהילה",
+  "אשפוז ממושך",
+  "פרופיל שומנים",
+  "סקר סוכרת",
+  "מסת גוף (BMI)",
+  "מפגש רופא-הורים"
+];
+const heatTargets = [80, 80, 85, 80, 85, 90, 95, 85];
+
+// [year_idx, measure_idx, actual_rate_pct]
+const rawHeat = [
+  [0,0,88.2],[1,0,81.0],[2,0,81.4],[3,0,86.3],[4,0,89.3],
+  [0,1,84.4],[1,1,84.7],[2,1,84.6],[3,1,83.5],[4,1,85.6],
+  [0,2,91.0],[1,2,90.4],[2,2,91.3],[3,2,90.8],[4,2,89.5],
+  [0,3,96.1],[1,3,91.5],[2,3,90.8],[3,3,96.3],[4,3,94.9],
+  [0,4,92.4],[1,4,92.8],[2,4,95.8],[3,4,93.4],[4,4,96.2],
+  [0,5,87.2],[1,5,88.9],[2,5,91.5],[3,5,93.4],[4,5,94.8],
+  [0,6,97.5],[1,6,99.0],
+  [0,7,70.7],[1,7,75.3],[2,7,83.5],[3,7,88.3],[4,7,89.3]
+];
+
+// Build delta data (actual - target) for color; store actual for labels
+const heatDeltaData = rawHeat.map(function(d) {
+  var delta = parseFloat((d[2] - heatTargets[d[1]]).toFixed(1));
+  return { value: [d[0], d[1], delta], actual: d[2] };
+});
+
+var chartHeat = echarts.init(document.getElementById('chart-heatmap'));
+chartHeat.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);',
+    formatter: function(params) {
+      var xIdx = params.data.value[0];
+      var yIdx = params.data.value[1];
+      var delta = params.data.value[2];
+      var actual = params.data.actual;
+      var target = heatTargets[yIdx];
+      var sign = delta >= 0 ? '+' : '';
+      var arrow = delta >= 0 ? "\u25b2" : "\u25bc";
+      return heatMeasures[yIdx] + "<br/>" +
+             heatYears[xIdx] + ": <b>" + actual + "%</b><br/>" +
+             "יעד: " + target + "%<br/>" +
+             arrow + " " + sign + delta.toFixed(1) + " נ.א. מהיעד";
+    }
+  },
+  grid: { left: 160, right: 24, top: 32, bottom: 80, containLabel: true },
+  xAxis: {
+    type: 'category',
+    data: heatYears,
+    splitArea: { show: true },
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'category',
+    data: heatMeasures,
+    splitArea: { show: true },
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 }
+  },
+  visualMap: {
+    min: -15, max: 17,
+    calculable: true,
+    orient: 'horizontal',
+    left: 'center',
+    bottom: 8,
+    inRange: { color: ['#dc3545', '#f8d7da', '#e8eef8', '#b7d2f7', '#0068f5', '#0b3668'] },
+    text: ["+17 נ.א.", "-15 נ.א."],
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 }
+  },
+  series: [{
+    type: 'heatmap',
+    data: heatDeltaData,
+    label: {
+      show: true,
+      fontFamily: 'Rubik',
+      fontSize: 11,
+      color: '#0c3058',
+      formatter: function(params) {
+        return params.data.actual !== undefined ? params.data.actual + '%' : '';
+      }
+    },
+    emphasis: { itemStyle: { shadowBlur: 8, shadowColor: 'rgba(0,104,245,.3)' } }
+  }]
+}));
+
+/* =====================================================================
+   LINE: Primary measure trend 2020-2024
+   ===================================================================== */
+var chartTrend = echarts.init(document.getElementById('chart-trend'));
+chartTrend.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    trigger: 'axis',
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);',
+    formatter: function(params) {
+      return params[0].axisValue + '<br/>' + 'ציות: <b>' + params[0].value + '%</b>';
+    }
+  },
+  xAxis: {
+    type: 'category',
+    data: ["2020", "2021", "2022", "2023", "2024"],
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'value',
+    min: 75,
+    max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', formatter: '{value}%' }
+  },
+  series: [{
+    name: "שיעור ציות",
+    type: 'line',
+    data: [88.2, 81.0, 81.4, 86.3, 89.3],
+    smooth: true,
+    lineStyle: { width: 3, color: '#0068f5' },
+    itemStyle: { color: '#0068f5' },
+    areaStyle: { color: 'rgba(0,104,245,0.08)' },
+    markLine: {
+      silent: true,
+      data: [{ yAxis: 80, name: "יעד 80%" }],
+      lineStyle: { type: 'dashed', color: '#dc3545', width: 2 },
+      label: {
+        formatter: "יעד 80%",
+        fontFamily: 'Rubik',
+        color: '#dc3545',
+        position: 'end'
+      }
+    },
+    markArea: {
+      silent: true,
+      data: [[{ xAxis: '2021' }, { xAxis: '2022' }]],
+      itemStyle: { color: 'rgba(220,53,69,0.06)' },
+      label: {
+        show: true,
+        position: 'insideTop',
+        formatter: "תקופת קורונה",
+        fontFamily: 'Rubik',
+        fontSize: 11,
+        color: '#6c757d'
+      }
+    }
+  }]
+}));
+
+/* =====================================================================
+   HORIZONTAL BAR: Provider compliance (sorted ascending)
+   ===================================================================== */
+var provNames = [
+  "שער מנשה","מעלה הכרמל","מזור (לשעבר מזרע)",
+  "מרחבים","יהודה אברבנאל","לב השרון","איתנים - כפר שאול",
+  "סוראסקי","רמבם","שיבא","שניידר","זיו",
+  "בריאות הנפש באר שבע","הסקוטי","ברזילי",
+  "הדסה עין כרם","המרכזי בעמק","שלוותה","הלל יפה","גהה"
+];
+var provValues = [
+  { value: 66.9, itemStyle: { color: '#dc3545' } },
+  { value: 75.8, itemStyle: { color: '#dc3545' } },
+  { value: 76.5, itemStyle: { color: '#dc3545' } },
+  83.4, 84.4, 85.2, 85.8, 87.1, 87.1, 90.4, 92.3, 94.7,
+  94.9, 95.2, 95.8, 97.1, 97.3, 97.9, 98.3, 98.8
+];
+
+var chartProviders = echarts.init(document.getElementById('chart-providers'));
+chartProviders.setOption(Object.assign({}, baseECharts, {
+  color: GOVIL_PALETTE,
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);',
+    formatter: function(params) {
+      var val = params[0].value;
+      var diff = parseFloat((val - 80).toFixed(1));
+      var sign = diff >= 0 ? '+' : '';
+      var arrow = diff >= 0 ? "\u25b2" : "\u25bc";
+      return params[0].name + "<br/>" + "ציות: <b>" + val + "%</b><br/>" +
+             arrow + " " + sign + diff + " נ.א. מיעד 80%";
+    }
+  },
+  grid: { left: 16, right: 60, top: 20, bottom: 20, containLabel: true },
+  xAxis: {
+    type: 'value',
+    min: 60,
+    max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', formatter: '{value}%' }
+  },
+  yAxis: {
+    type: 'category',
+    data: provNames,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 }
+  },
+  series: [{
+    type: 'bar',
+    data: provValues,
+    barMaxWidth: 28,
+    itemStyle: { color: '#0068f5', borderRadius: [0, 3, 3, 0] },
+    label: {
+      show: true,
+      position: 'right',
+      fontFamily: 'Rubik',
+      fontSize: 11,
+      color: '#0c3058',
+      formatter: '{c}%'
+    },
+    markLine: {
+      silent: true,
+      data: [{ xAxis: 80 }],
+      lineStyle: { type: 'dashed', color: '#dc3545', width: 2 },
+      label: { formatter: "יעד 80%", fontFamily: 'Rubik', color: '#dc3545', position: 'end' }
+    }
+  }]
+}));
+
+/* =====================================================================
+   BAR: Compliance by ownership
+   ===================================================================== */
+var chartOwnership = echarts.init(document.getElementById('chart-ownership'));
+chartOwnership.setOption(Object.assign({}, baseECharts, {
+  color: GOVIL_PALETTE,
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);',
+    formatter: function(params) {
+      return params[0].name + ': <b>' + params[0].value + '%</b>';
+    }
+  },
+  grid: { left: 16, right: 48, top: 24, bottom: 24, containLabel: true },
+  xAxis: {
+    type: 'category',
+    data: ["ממשלתית", "ציבורית", "כללית"],
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'value',
+    min: 75,
+    max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', formatter: '{value}%' }
+  },
+  series: [{
+    type: 'bar',
+    data: [
+      { value: 83.4, itemStyle: { color: '#6c9fd8' } },
+      { value: 96.4, itemStyle: { color: '#0053c4' } },
+      { value: 98.3, itemStyle: { color: '#0068f5' } }
+    ],
+    barMaxWidth: 56,
+    label: {
+      show: true,
+      position: 'top',
+      fontFamily: 'Rubik',
+      fontSize: 12,
+      color: '#0c3058',
+      formatter: '{c}%'
+    },
+    markLine: {
+      silent: true,
+      data: [{ yAxis: 80 }],
+      lineStyle: { type: 'dashed', color: '#dc3545', width: 2 },
+      label: { formatter: "יעד 80%", fontFamily: 'Rubik', color: '#dc3545', position: 'end' }
+    }
+  }]
+}));
+
+/* =====================================================================
+   BAR: Compliance by special_provider_type
+   ===================================================================== */
+var chartSpt = echarts.init(document.getElementById('chart-spt'));
+chartSpt.setOption(Object.assign({}, baseECharts, {
+  color: GOVIL_PALETTE,
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);',
+    formatter: function(params) {
+      return params[0].name + ': <b>' + params[0].value + '%</b>';
+    }
+  },
+  grid: { left: 16, right: 48, top: 24, bottom: 24, containLabel: true },
+  xAxis: {
+    type: 'category',
+    data: ["בית חולים פסיכיאטרי", "מחלקה פסיכיאטרית\nבביח כללי"],
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 }
+  },
+  yAxis: {
+    type: 'value',
+    min: 75,
+    max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', formatter: '{value}%' }
+  },
+  series: [{
+    type: 'bar',
+    data: [
+      { value: 84.9, itemStyle: { color: '#3d70b0' } },
+      { value: 92.5, itemStyle: { color: '#0068f5' } }
+    ],
+    barMaxWidth: 72,
+    label: {
+      show: true,
+      position: 'top',
+      fontFamily: 'Rubik',
+      fontSize: 12,
+      color: '#0c3058',
+      formatter: '{c}%'
+    },
+    markLine: {
+      silent: true,
+      data: [{ yAxis: 80 }],
+      lineStyle: { type: 'dashed', color: '#dc3545', width: 2 },
+      label: { formatter: "יעד 80%", fontFamily: 'Rubik', color: '#dc3545', position: 'end' }
+    }
+  }]
+}));
+
+/* =====================================================================
+   LINE: Improvement story — מפגש רופא-הורים
+   ===================================================================== */
+var chartImprovement = echarts.init(document.getElementById('chart-improvement'));
+chartImprovement.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    trigger: 'axis',
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);',
+    formatter: function(params) {
+      var val = params[0].value;
+      var diff = parseFloat((val - 85).toFixed(1));
+      var sign = diff >= 0 ? '+' : '';
+      var arrow = diff >= 0 ? "\u25b2" : "\u25bc";
+      return params[0].axisValue + ": <b>" + val + "%</b><br/>" +
+             arrow + " " + sign + diff + " נ.א. מיעד 85%";
+    }
+  },
+  xAxis: {
+    type: 'category',
+    data: ["2020", "2021", "2022", "2023", "2024"],
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+  },
+  yAxis: {
+    type: 'value',
+    min: 65,
+    max: 100,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', formatter: '{value}%' }
+  },
+  series: [{
+    name: "שיעור ציות",
+    type: 'line',
+    data: [70.7, 75.3, 83.5, 88.3, 89.3],
+    smooth: true,
+    lineStyle: { width: 3, color: '#0068f5' },
+    itemStyle: { color: '#0068f5' },
+    areaStyle: { color: 'rgba(0,104,245,0.08)' },
+    markPoint: {
+      data: [
+        { type: 'min', name: "מינימום", label: { fontFamily: 'Rubik', fontSize: 11 } }
+      ],
+      itemStyle: { color: '#dc3545' },
+      label: { fontFamily: 'Rubik', fontSize: 11 }
+    },
+    markLine: {
+      silent: true,
+      data: [{ yAxis: 85, name: "יעד 85%" }],
+      lineStyle: { type: 'dashed', color: '#dc3545', width: 2 },
+      label: { formatter: "יעד 85%", fontFamily: 'Rubik', color: '#dc3545', position: 'end' }
+    },
+    markArea: {
+      silent: true,
+      data: [[{ xAxis: '2020' }, { xAxis: '2022' }]],
+      itemStyle: { color: 'rgba(220,53,69,0.07)' },
+      label: {
+        show: true,
+        position: 'insideTop',
+        formatter: "מתחת ליעד",
+        fontFamily: 'Rubik',
+        fontSize: 11,
+        color: '#dc3545'
+      }
+    }
+  }]
+}));
+
+/* resize all charts on window resize */
+window.addEventListener('resize', function() {
+  chartHeat.resize();
+  chartTrend.resize();
+  chartProviders.resize();
+  chartOwnership.resize();
+  chartSpt.resize();
+  chartImprovement.resize();
+});
+</script>
