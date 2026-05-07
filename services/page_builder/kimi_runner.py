@@ -22,6 +22,8 @@ Single implementation per concern (per `feedback_one_path_default` memory):
 The `model` parameter accepts:
 - `kimi-k2.6` (default) — routes to Moonshot's OpenAI-compat endpoint;
   needs `MOONSHOT_API_KEY`.
+- `grok-4.3` (and any other `grok-*`) — routes to xAI's OpenAI-compat
+  endpoint at https://api.x.ai/v1; needs `XAI_API_KEY`.
 - `anthropic:claude-sonnet-4-6` / `anthropic:claude-haiku-4-5` — routes
   through PydanticAI's native Anthropic provider; needs `ANTHROPIC_API_KEY`.
 - `openai:gpt-...` — needs `OPENAI_API_KEY`.
@@ -69,11 +71,14 @@ SEARCH_SNIPPET_CAP = 2_000
 # Per-model token prices in $/1M tokens. Sources:
 #   Anthropic: https://platform.claude.com/docs/en/about-claude/pricing
 #   Moonshot:  https://platform.kimi.ai/docs/pricing
+#   xAI:       https://console.x.ai (per-team; not in public docs)
 # Add a row here to make a model's cost trackable; otherwise the runner
-# logs `cost: unknown`.
+# logs `cost: unknown` and the cost.json `tokens_usd` / `total_usd`
+# fields stay null (the batch summary handles unpriced runs gracefully).
 PRICE_TABLE: dict[str, dict[str, float]] = {
     "kimi-k2.6":                  {"input": 0.60, "cached": 0.15, "output": 2.50},
     "kimi-k2.5":                  {"input": 0.44, "cached": 0.11, "output": 2.00},
+    "grok-4.3":                   {"input": 1.25, "cached": 0.20, "output": 2.50},
     "anthropic:claude-sonnet-4-6": {"input": 3.00, "cached": 0.30, "output": 15.00},
     "anthropic:claude-haiku-4-5":  {"input": 1.00, "cached": 0.10, "output": 5.00},
     "anthropic:claude-opus-4-7":   {"input": 5.00, "cached": 0.50, "output": 25.00},
@@ -154,26 +159,47 @@ def _load_system_prompt() -> str:
     return SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 
 
+_OPENAI_COMPAT_PROVIDERS: dict[str, dict[str, str]] = {
+    # Each entry maps a model-id prefix to the OpenAI-compat endpoint that
+    # serves it. The model id is forwarded verbatim — the provider treats
+    # the OpenAI SDK as a transport.
+    "kimi-": {
+        "base_url": "https://api.moonshot.ai/v1",
+        "env_var": "MOONSHOT_API_KEY",
+        "label":   "Moonshot",
+    },
+    "grok-": {
+        "base_url": "https://api.x.ai/v1",
+        "env_var": "XAI_API_KEY",
+        "label":   "xAI",
+    },
+}
+
+
 def _build_pydantic_model(model_id: str):
     """Resolve a model id to a PydanticAI model handle.
 
-    Bare `kimi-*` strings get the Moonshot OpenAI-compat endpoint with
-    explicit base_url. Everything else is passed through as-is for
-    PydanticAI's provider-prefix shorthand to handle (`anthropic:...`,
-    `openai:...`, etc.). PydanticAI reads the standard env var per provider.
+    `kimi-*` and `grok-*` route to their respective OpenAI-compat endpoints
+    (Moonshot / xAI) via PydanticAI's `OpenAIChatModel`. Everything else
+    is passed through as-is so PydanticAI's provider-prefix shorthand
+    (`anthropic:...`, `openai:...`, etc.) can resolve it. Each provider
+    reads its own standard env var.
     """
-    if model_id.startswith("kimi-"):
+    for prefix, cfg in _OPENAI_COMPAT_PROVIDERS.items():
+        if not model_id.startswith(prefix):
+            continue
         from pydantic_ai.models.openai import OpenAIChatModel
         from pydantic_ai.providers.openai import OpenAIProvider
-        api_key = os.environ.get("MOONSHOT_API_KEY")
+        api_key = os.environ.get(cfg["env_var"])
         if not api_key:
             raise RuntimeError(
-                f"model={model_id!r} but MOONSHOT_API_KEY not set"
+                f"model={model_id!r} ({cfg['label']}) but "
+                f"{cfg['env_var']} not set"
             )
         return OpenAIChatModel(
             model_id,
             provider=OpenAIProvider(
-                base_url="https://api.moonshot.ai/v1",
+                base_url=cfg["base_url"],
                 api_key=api_key,
             ),
         )

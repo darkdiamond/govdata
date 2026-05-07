@@ -182,9 +182,14 @@ def main(argv: Optional[list[str]] = None) -> int:
             results.append(res)
 
     if results:
-        total = sum(r.cost_usd["total_usd"] for r in results)
+        priced = [r for r in results if (r.cost_usd or {}).get("total_usd") is not None]
+        total = sum(r.cost_usd["total_usd"] for r in priced)
+        suffix = (
+            f" + {len(results) - len(priced)} unpriced"
+            if len(priced) < len(results) else ""
+        )
         print(f"\n=== batch summary: {len(results)}/{len(ids)} ok, "
-              f"total $: {total:.4f} ===")
+              f"total $: {total:.4f}{suffix} ===")
     return 0 if len(results) == len(ids) else 1
 
 
