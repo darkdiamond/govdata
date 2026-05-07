@@ -60,6 +60,13 @@ class DatasetMeta(BaseModel):
     record_count: Optional[int] = None
     resources: list[ResourceEntry] = Field(default_factory=list)
 
+    # CKAN's free-text description. Captured by the scanner so the dataset
+    # page can fall back to it for SEO meta-description when the agent's
+    # short summary_he is missing (rare — selector gates publish on agent
+    # success, but this guarantees a non-empty description even on a
+    # transient agent_data.json read failure).
+    notes: Optional[str] = None
+
     # When the agent last (re)built the page for this dataset. Rendered as
     # "הדף נוצר ב-" in the sidebar.
     last_analyzed_at: Optional[datetime] = None
@@ -88,6 +95,14 @@ class AgentData(BaseModel):
     dataset_kind: DatasetKind
     related_ids: list[str] = Field(default_factory=list, max_length=5)
 
+    # Optional Schema.org-aligned coverage hints. Populated only when the
+    # dataset clearly carries time or geo scope (date columns, geographic
+    # columns). Emitted into the Dataset JSON-LD as `temporalCoverage` /
+    # `spatialCoverage` to help Google Dataset Search ranking. Older pages
+    # leave these None and the JSON-LD just omits the fields.
+    temporal_coverage: Optional[str] = None
+    spatial_coverage: Optional[str] = None
+
     version: int = 1
 
 
@@ -113,12 +128,15 @@ class ManifestEntry(BaseModel):
     license: Optional[str] = None
     record_count: Optional[int] = None
     resources: list[ResourceEntry] = Field(default_factory=list)
+    notes: Optional[str] = None
     last_analyzed_at: Optional[datetime] = None
     analyzed_metadata_modified: Optional[datetime] = None
 
     # AgentData fields (optional — a scanned-but-never-analyzed source has none)
     summary_he: Optional[str] = None
     dataset_kind: Optional[DatasetKind] = None
+    temporal_coverage: Optional[str] = None
+    spatial_coverage: Optional[str] = None
 
     # Publisher-computed
     related_ids: list[str] = Field(default_factory=list, max_length=5)
