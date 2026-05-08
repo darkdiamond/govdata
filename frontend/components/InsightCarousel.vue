@@ -294,7 +294,7 @@ onBeforeUnmount(() => {
         <div
           v-for="(tile, ti) in windowChunks"
           :key="ti"
-          class="shrink-0 w-1/3"
+          class="shrink-0 w-1/3 px-1.5"
           dir="rtl"
           :aria-hidden="ti === 1 ? undefined : 'true'"
         >
@@ -304,7 +304,7 @@ onBeforeUnmount(() => {
               :key="card.id"
               :href="card.href"
               :tabindex="ti === 1 ? 0 : -1"
-              class="card card-hover p-5 md:p-6 block no-underline group"
+              class="card card-hover p-5 md:p-6 flex flex-col no-underline group"
             >
               <div class="flex items-center justify-between gap-2 mb-3 text-xs">
                 <span class="badge bg-brand-50 text-brand-700 border-brand-100">{{ card.kind_label_he }}</span>
@@ -314,21 +314,23 @@ onBeforeUnmount(() => {
                 </span>
               </div>
 
-              <h3
-                class="font-display text-ink text-xl md:text-2xl leading-snug line-clamp-2 m-0 min-h-[2lh]
-                       group-hover:text-brand-700 transition-colors"
-              >
-                {{ card.title }}
-              </h3>
-              <div v-if="card.organization" class="text-sm text-subtle mt-1 truncate">
-                {{ card.organization }}
-              </div>
+              <div class="flex-1">
+                <h3
+                  class="font-display text-ink text-xl md:text-2xl leading-snug line-clamp-2 m-0
+                         group-hover:text-brand-700 transition-colors"
+                >
+                  {{ card.title }}
+                </h3>
+                <div v-if="card.organization" class="text-sm text-subtle mt-1 truncate">
+                  {{ card.organization }}
+                </div>
 
-              <div v-if="card.stat" class="mt-4 flex items-baseline gap-2">
-                <span class="font-display text-3xl md:text-4xl text-ink tabular-nums leading-none">
-                  {{ card.stat.value }}
-                </span>
-                <span class="text-sm text-subtle">{{ card.stat.unit }}</span>
+                <div v-if="card.stat" class="mt-4 flex items-baseline gap-2">
+                  <span class="font-display text-3xl md:text-4xl text-ink tabular-nums leading-none">
+                    {{ card.stat.value }}
+                  </span>
+                  <span class="text-sm text-subtle">{{ card.stat.unit }}</span>
+                </div>
               </div>
 
               <div class="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-rule/60">
