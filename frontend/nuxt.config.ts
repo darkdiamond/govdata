@@ -171,6 +171,9 @@ export default defineNuxtConfig({
       ],
       failOnError: false,
     },
+    // DrvFs polling for the Nitro server-route watcher — see comment on
+    // `vite.server.watch` below for the broader story.
+    watchOptions: { usePolling: true, interval: 300 },
   },
 
   tailwindcss: {
@@ -179,14 +182,20 @@ export default defineNuxtConfig({
   },
 
   // Repo lives on /mnt/d (WSL DrvFs) — inotify is unreliable across the
-  // Windows↔Linux boundary, so Vite's default watcher misses saves. Use
-  // chokidar polling so HMR fires reliably in dev.
+  // Windows↔Linux boundary, so default file watchers miss saves. Nuxt
+  // runs three independent watchers in dev; all three need polling, or
+  // HMR is silently partial (Vite-only polling reloads existing component
+  // edits but misses new files / layout / config / server-route changes).
+  //   1. Nuxt's chokidar — pages/, components/, layouts/, composables/,
+  //      auto-imports, nuxt.config.ts (full restart)
+  //   2. Nitro's watchOptions (above) — server/ routes
+  //   3. Vite's server.watch — Vue SFC / CSS / JS HMR
+  watchers: {
+    chokidar: { usePolling: true, interval: 300 },
+  },
   vite: {
     server: {
-      watch: {
-        usePolling: true,
-        interval: 300,
-      },
+      watch: { usePolling: true, interval: 300 },
     },
   },
 })
