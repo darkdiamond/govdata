@@ -64,11 +64,10 @@ def pick_next(
     seen: set[str] = set()
 
     # Track 1 — never analyzed AND `metadata_modified >= age_cutoff`.
-    # Both store queries return rows ordered by `metadata_modified` DESC, so
-    # once we hit a row past `age_cutoff` every remaining row is also too old.
-    for src in store.list_never_analyzed(limit=max(n * 4, 16)):
-        if src.id in seen:
-            continue
+    # Rows are ordered by `metadata_modified` DESC; once we hit one past
+    # `age_cutoff` every remaining row is also too old, so we break. No
+    # client-side skip filter exists in this track, so `limit=n` is exact.
+    for src in store.list_never_analyzed(limit=n):
         if src.metadata_modified is None or _as_utc(src.metadata_modified) < age_cutoff:
             break
         picks.append(src)
