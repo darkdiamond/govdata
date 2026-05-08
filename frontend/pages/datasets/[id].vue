@@ -461,14 +461,14 @@ onMounted(async () => {
           <h3 class="m-0 mb-3 text-sm text-subtle font-display">מאגרים קשורים</h3>
           <ul class="list-none m-0 p-0 space-y-2">
             <li v-for="r in related" :key="r.id">
-              <NuxtLink
-                :to="`/datasets/${r.id}/`"
+              <a
+                :href="`/datasets/${r.id}/`"
                 class="block card-hover p-2 rounded-gov-md hover:bg-brand-50 no-underline hover:no-underline"
               >
                 <div class="text-sm font-medium text-ink">{{ r.title }}</div>
                 <div v-if="r.organization" class="text-xs text-subtle mt-0.5">{{ r.organization }}</div>
                 <div v-if="r.summary_he" class="text-xs text-subtle mt-1 line-clamp-2">{{ r.summary_he }}</div>
-              </NuxtLink>
+              </a>
             </li>
           </ul>
         </section>
