@@ -30,10 +30,10 @@ async function onSubmit(e: Event) {
       return
     }
     const data = await res.json().catch(() => null) as { errors?: { message?: string }[] } | null
-    errorMsg.value = data?.errors?.[0]?.message || 'שליחה נכשלה. נסו שוב או שלחו לנו אימייל ל-hello@govil.ai.'
+    errorMsg.value = data?.errors?.[0]?.message || 'שליחה נכשלה. נסו שוב מאוחר יותר.'
     status.value = 'error'
   } catch {
-    errorMsg.value = 'בעיית חיבור. נסו שוב או שלחו לנו אימייל ל-hello@govil.ai.'
+    errorMsg.value = 'בעיית חיבור. נסו שוב מאוחר יותר.'
     status.value = 'error'
   }
 }
@@ -154,11 +154,6 @@ async function onSubmit(e: Event) {
           </span>
         </div>
       </form>
-
-      <p class="text-sm text-subtle mt-6">
-        מעדיפים אימייל ישיר?
-        <a href="mailto:hello@govil.ai">hello@govil.ai</a>
-      </p>
     </article>
   </div>
 </template>
