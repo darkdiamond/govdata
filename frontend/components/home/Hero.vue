@@ -36,13 +36,6 @@ onMounted(() => {
   const interval = window.setInterval(refresh, 60_000)
   onBeforeUnmount(() => window.clearInterval(interval))
 })
-
-const heroFeatures = [
-  'ויזואליזציות אוטומטיות',
-  'תובנות מוכנות לשיתוף',
-  'מבוסס מקור ממשלתי רשמי',
-  'חינמי וזמין לכל אחד',
-]
 </script>
 
 <template>
@@ -94,18 +87,6 @@ const heroFeatures = [
           <img src="/icons/arrow-left.svg" alt="" class="w-4 h-4" />
         </NuxtLink>
       </div>
-
-      <ul class="mt-10 flex flex-wrap gap-2.5 list-none p-0 m-0">
-        <li
-          v-for="f in heroFeatures"
-          :key="f"
-          class="flex items-center gap-2 rounded-gov-pill bg-white border border-rule
-                 ps-3 pe-4 py-2 text-sm sm:text-base font-medium text-ink shadow-card"
-        >
-          <img src="/icons/circle-check.svg" alt="" class="w-[18px] h-[18px] opacity-90" />
-          {{ f }}
-        </li>
-      </ul>
     </div>
   </section>
 </template>
