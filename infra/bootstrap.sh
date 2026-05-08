@@ -73,10 +73,10 @@ else
   echo "==> staging bucket gs://$STAGING_BUCKET already exists"
 fi
 
-# Lifecycle: prune content.html older than 30 days. Active datasets are
-# re-staged on every successful publish (default 14-day rebuild cooldown), so
-# anything past 30 days is orphaned by a dataset that was removed upstream
-# from CKAN or by failed/retried agent sessions.
+# Lifecycle: prune the Nuxt build cache after 14 days. Datasets/content.html
+# are NOT pruned: a dataset that CKAN never re-flags as updated would never
+# be re-staged, so a catch-all delete would silently strip the body from the
+# next publish.
 echo "==> applying lifecycle policy to gs://$STAGING_BUCKET"
 gcloud storage buckets update "gs://$STAGING_BUCKET" \
   --lifecycle-file="$(dirname "$0")/staging-lifecycle.json" \

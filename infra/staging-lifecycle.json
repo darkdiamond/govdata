@@ -7,10 +7,6 @@
           "age": 14,
           "matchesPrefix": ["build-cache/"]
         }
-      },
-      {
-        "action": { "type": "Delete" },
-        "condition": { "age": 30 }
       }
     ]
   }
