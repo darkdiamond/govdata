@@ -51,8 +51,8 @@ const year = new Date().getFullYear()
     </main>
 
     <footer class="bg-ink-deep text-white mt-16">
-      <div class="max-w-gov mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 text-sm">
-        <div>
+      <div class="max-w-gov mx-auto px-4 py-10 grid grid-cols-3 md:grid-cols-4 gap-4 sm:gap-8 text-sm">
+        <div class="col-span-3 md:col-span-1">
           <div class="font-display text-base mb-2 flex items-center gap-2">
             <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
               <rect x="2.5" y="20.5" width="18" height="1.5" rx="0.5"/>
