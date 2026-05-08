@@ -19,12 +19,16 @@ export const DATASET_LIB_TAGS = {
     { src: '/lib/leaflet.js' },
     { src: '/lib/leaflet.markercluster.js' },
     { src: '/lib/echarts.min.js' },
-    // gov-explorer.js + gov-map.js are hand-written (sourced from
-    // frontend/scripts/, committed there and copied into public/lib/ by
-    // scripts/copy-libs.mjs). Provide window.GovExplorer.create for
-    // live datastore_search-backed search/paginate cards, and
-    // window.GovMap.create for paginated, clustered Leaflet maps fed
-    // from the same CKAN endpoint.
+    // Hand-written browser libs (sourced from frontend/scripts/,
+    // copied into public/lib/ by scripts/copy-libs.mjs):
+    //   gov-echarts.js   → window.GOVIL_PALETTE + window.GovEcharts.{base,option}
+    //                      so per-page <script> blocks don't redefine
+    //                      the palette + RTL/Rubik base config.
+    //   gov-explorer.js  → window.GovExplorer.create for live
+    //                      datastore_search-backed search + pagination.
+    //   gov-map.js       → window.GovMap.create for paginated,
+    //                      clustered Leaflet maps over CKAN.
+    { src: '/lib/gov-echarts.js' },
     { src: '/lib/gov-explorer.js' },
     { src: '/lib/gov-map.js' },
   ],

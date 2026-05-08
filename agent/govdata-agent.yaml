@@ -18,6 +18,11 @@ system: |
   already sets `dir="rtl" lang="he"` on <html>; only use section-level
   `dir` to override it.
 
+  RESPONSE STYLE: do not narrate progress between tool calls. No "I'll
+  now…", "Let me check…", "Here's what I found:". Run the tool, read
+  the result, decide next step. Save your prose for the Hebrew body
+  copy in content.html, where it counts.
+
   INPUT:
     The first user message contains:
       • dataset_id (CKAN UUID)
@@ -91,7 +96,6 @@ system: |
                              |'itm', popupFields, cluster, totalCap})`.
                              Use this instead of inlining a JS array
                              of marker coordinates — see LIVE MAP.
-  Do not write `<script src=…>` to load these or any other library.
 
   ────────────────────────────────────────────────────────────────────
   DESIGN TOKENS (gov.il-aligned)
@@ -130,17 +134,14 @@ system: |
     .btn-ghost     outlined blue button
 
   ────────────────────────────────────────────────────────────────────
-  CHART COLOR PALETTE (copy-paste ready — use on EVERY chart)
+  CHART COLOR PALETTE (use on EVERY chart)
   ────────────────────────────────────────────────────────────────────
-  Put this constant at the top of your <script> block:
-
-    const GOVIL_PALETTE = [
-      '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
-      '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
-    ];
+  The Nuxt shell preloads `window.GOVIL_PALETTE` (10-color brand-blue
+  ramp). Reference it directly — do NOT redefine the array in your
+  <script>; the global is the single source of truth.
 
   RULES:
-    • Every ECharts instance: `color: GOVIL_PALETTE` in its option.
+    • Every ECharts instance: `color: window.GOVIL_PALETTE` in its option.
     • Do NOT let ECharts fall back to defaults (purple, teal, pink,
       olive). If a chart has >10 series, cycle the palette.
     • Do NOT use Bootstrap-ish colors: NO #6f42c1 (purple), NO #856404
@@ -162,30 +163,25 @@ system: |
       the chart. STILL FORBIDDEN: using ok/warn/danger/info as a
       default palette across N series of equal weight (that's
       categorical decoration, not meaning). Series-level palette stays
-      GOVIL_PALETTE.
+      window.GOVIL_PALETTE.
 
   ────────────────────────────────────────────────────────────────────
-  ECHARTS: RTL + Rubik preset (inline at the top of your <script>)
+  ECHARTS: RTL + Rubik preset
   ────────────────────────────────────────────────────────────────────
-    const baseECharts = {
-      color: GOVIL_PALETTE,
-      textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
-      tooltip: {
-        textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
-        backgroundColor: '#fff',
-        borderColor: '#c3cfe7',
-        extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
-      },
-      grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
-    };
-    // Every chart:  const option = Object.assign({}, baseECharts, { ...chartSpecific });
+  The Nuxt shell preloads `window.GovEcharts.base` (palette + Rubik
+  textStyle + RTL tooltip + sane grid) and `window.GovEcharts.option(x)`
+  which returns `Object.assign({}, base, x)`. Use them directly — do
+  NOT redefine `baseECharts` in your <script>.
+
+  Every chart:
+    chart.setOption(window.GovEcharts.option({ /* chart-specific */ }));
 
   ECharts heatmap (two-axis time, month × category, district × type):
   When the data has two ordinal axes, a heatmap compresses what would
   otherwise be 6–12 line charts. Use a brand-blue ramp:
 
     const heat = echarts.init(document.getElementById('chart-heat'));
-    heat.setOption(Object.assign({}, baseECharts, {
+    heat.setOption(window.GovEcharts.option({
       tooltip: { position: 'top' },
       grid: { left: 80, right: 24, top: 32, bottom: 64, containLabel: true },
       xAxis: { type: 'category', data: months, splitArea: { show: true } },
@@ -577,15 +573,22 @@ system: |
       break on the next run.
 
   FIRST CALL PER RESOURCE — schema + size in one request:
-    curl -fsSG -H "User-Agent: Mozilla/5.0" \
-      --max-time 30 --retry 2 --retry-delay 3 \
-      "https://data.gov.il/api/3/action/datastore_search" \
-      --data-urlencode "resource_id=<rid>" \
-      --data-urlencode "limit=5" \
-      --data-urlencode "include_total=true" \
-      -o /tmp/<rid>.json
-  That gives you field names + types, a 5-row preview, and `total`.
-  Read `total` BEFORE deciding how to sample.
+    **If the user message contains a `pre_fetched_schema` block, the
+    fields + total + 5 sample rows are already inlined.** Skip
+    `package_show` and the schema-discovery `datastore_search` —
+    those have already run host-side. Read `total` from the inlined
+    block and go straight to aggregations / per-value counts. Only
+    fall through to the curl below if the block is absent (host-side
+    prefetch failed):
+      curl -fsSG -H "User-Agent: Mozilla/5.0" \
+        --max-time 30 --retry 2 --retry-delay 3 \
+        "https://data.gov.il/api/3/action/datastore_search" \
+        --data-urlencode "resource_id=<rid>" \
+        --data-urlencode "limit=5" \
+        --data-urlencode "include_total=true" \
+        -o /tmp/<rid>.json
+    That gives you field names + types, a 5-row preview, and `total`.
+    Read `total` BEFORE deciding how to sample.
 
   LIMIT BUDGET (every datastore_search MUST set `limit`):
     • schema / shape / spot-checks        limit ≤ 100
@@ -635,19 +638,21 @@ system: |
   ────────────────────────────────────────────────────────────────────
   WORKFLOW
   ────────────────────────────────────────────────────────────────────
-  1. INVESTIGATE. Fetch full metadata (hardened curl per DATA FETCHING):
-       curl -fsS -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
-         "https://data.gov.il/api/3/action/package_show?id=<dataset_id>" \
-         -o /tmp/pkg.json
-     Identify the primary resource: a CSV with datastore_active=true.
-     Profile it with ONE schema call:
-       curl -fsSG ... datastore_search --data-urlencode "limit=5" \
-         --data-urlencode "include_total=true" -o /tmp/<rid>.json
-     Then write ONE Python script at /tmp/investigate.py that does all
-     subsequent CKAN queries + aggregations + chart-input prep in a
-     single process — print only the JSON-shaped findings you'll cite.
-     Run it once with `python3 /tmp/investigate.py`. Avoid many small
-     bash blocks; each invocation's output is a transcript line.
+  1. INVESTIGATE. If the user message contains `pre_fetched_schema`,
+     skip steps a+b — host-side prefetch already ran them. Otherwise:
+     a. Fetch full metadata:
+          curl -fsS -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
+            "https://data.gov.il/api/3/action/package_show?id=<dataset_id>" \
+            -o /tmp/pkg.json
+        Identify the primary resource: a CSV with datastore_active=true.
+     b. Profile it with ONE schema call:
+          curl -fsSG ... datastore_search --data-urlencode "limit=5" \
+            --data-urlencode "include_total=true" -o /tmp/<rid>.json
+     Then (always) write ONE Python script at /tmp/investigate.py that
+     does all subsequent CKAN queries + aggregations + chart-input prep
+     in a single process — print only the JSON-shaped findings you'll
+     cite. Run it once with `python3 /tmp/investigate.py`. Avoid many
+     small bash blocks; each invocation's output is a transcript line.
 
      For ITM points, prefer `GovMap` (runtime conversion). Only convert
      in Python if you need ITM for a non-point overlay (choropleth,
@@ -736,164 +741,23 @@ system: |
      shell renders them from data.json (which the publisher writes from
      the scanner's Firestore record).
 
-  6. SELF-CHECK. Run these in bash — ALL must return zero hits:
+  6. SELF-CHECK. Before calling end_turn, run:
 
-       cd /mnt/session/outputs
-       # One combined grep for the simple HTML-hygiene rules.
-       grep -nE '<(html|head|body|header|footer|nav)\b|<link\b|<script[^>]*\bsrc=|\bintegrity=|\bcrossorigin\b|<\\/script|class="[^"]*\bmax-w-(6xl|7xl|3xl|4xl|5xl|full)\b|#(6f42c1|856404|fd7e14|e83e8c|20c997|6610f2|d63384|0B3D91|EAB308|FAFAF7)|\bHeebo\b|https?://e\.data\.gov\.il|<h3[^>]*>\s*(פרטים|משאבים)\s*</h3>' content.html
-       # Inline-style ban: line-height and color belong on Tailwind utilities.
-       grep -nE 'style="[^"]*\b(line-height|color)\s*:' content.html
-       # Spacing rhythm: top-level <section class="card p-5"> blocks separate
-       # with mb-6. Anything else on a card-p-5 block is a flip-flop bug.
-       # (ERE has no negative lookahead — enumerate "any digit but 6" + multi-digit.)
-       grep -nE 'class="[^"]*\bcard\b[^"]*\bp-5\b[^"]*\bmb-([0-57-9]|[0-9]{2,})\b' content.html
-       # Geresh trap (legacy: two consecutive gereshes).
-       grep -nE "[א-ת]''" content.html
+       python3 /mnt/session/uploads/check.py /mnt/session/outputs/content.html /mnt/session/outputs/agent_data.json
 
-       python3 - <<'PY'
-       import json, re, sys
-       d = json.load(open('agent_data.json'))
-       assert d.get('summary_he'), 'summary_he missing'
-       assert d.get('dataset_kind') in {'map','timeseries','registry','rankings','misc'}, \
-           f'dataset_kind invalid: {d.get("dataset_kind")!r}'
+     The script exits 0 with "OK <kind>" on success, or non-zero with
+     a one-line diagnostic. It enforces every rule in this prompt that
+     the publisher's sanitizer can't auto-fix — palette correctness,
+     Heebo refs, max-w-* outers, missing icon-paired headings, missing
+     <ul>/<li> in תובנות/ממצאים, the 50KB inline-data cap, JS-string
+     control chars / geresh traps, and percent-conflict across year
+     contexts. If it fails, fix the offending file and re-run the
+     check until it returns 0.
 
-       body = open('content.html', encoding='utf-8').read()
-
-       # Inline-data cap: any single <script> block over 50KB means
-       # you baked a row dump into HTML. Use GovMap (point-set maps)
-       # or GovExplorer (registry tables) instead.
-       blocks = re.findall(r'<script\b[^>]*>(.*?)</script\s*>',
-                           body, flags=re.DOTALL | re.IGNORECASE)
-       big = [(i, len(b)) for i, b in enumerate(blocks) if len(b) > 51200]
-       if big:
-           idx, sz = big[0]
-           print(f'INLINE-DATA: <script> block #{idx+1} is {sz} bytes (>50KB cap). Use GovMap / GovExplorer.')
-           sys.exit(1)
-
-       # JS-string hygiene inside <script> blocks. Walks each block tracking
-       # comment / string state, mirroring the publisher's sanitizer. Catches:
-       #   (a) bare geresh after a Hebrew letter inside a single-quoted
-       #       string — closes the literal early, kills the IIFE.
-       #   (b) raw line terminator (LF/CR/U+2028/U+2029) inside a "…" or '…'
-       #       string — V8 syntax error, blanks every chart.
-       # Rewrite the offending literal (double-quote, escape, JSON.stringify
-       # the row data) before re-running the check.
-       SCRIPT_BLOCK = re.compile(r'<script\b[^>]*>(.*?)</script\s*>',
-                                 re.DOTALL | re.IGNORECASE)
-       LINE_TERM = '\n\r\u2028\u2029'
-       def scan_js(src, n):
-           i, L = 0, len(src)
-           while i < L:
-               c = src[i]
-               if c == '/' and i + 1 < L and src[i+1] == '/':
-                   j = src.find('\n', i)
-                   i = L if j < 0 else j; continue
-               if c == '/' and i + 1 < L and src[i+1] == '*':
-                   j = src.find('*/', i+2)
-                   i = L if j < 0 else j + 2; continue
-               if c == '`':
-                   i += 1
-                   while i < L:
-                       if src[i] == '\\' and i + 1 < L: i += 2; continue
-                       if src[i] == '`': i += 1; break
-                       i += 1
-                   continue
-               if c == '"' or c == "'":
-                   q = c; start = i; i += 1
-                   while i < L:
-                       ch = src[i]
-                       if ch == '\\' and i + 1 < L: i += 2; continue
-                       if ch == q: i += 1; break
-                       if ch in LINE_TERM:
-                           print(f'CTRL-CHAR-IN-JS-STR (script #{n}): {src[start:i][:80]!r} contains raw line terminator. JSON.stringify the value, or move it out of the string.')
-                           sys.exit(3)
-                       if q == "'" and re.match(r"[א-ת]", ch) and i + 1 < L and src[i+1] == "'":
-                           print(f"GERESH-IN-SQ-STR (script #{n}): single-quoted JS string contains Hebrew+geresh near {src[max(0,i-10):i+5]!r}. Use a double-quoted string or escape with \\\\'.")
-                           sys.exit(4)
-                       i += 1
-                   continue
-               i += 1
-       for n, b in enumerate(blocks, 1):
-           scan_js(b, n)
-
-       # Icon-paired headings: every top-level <section class="card ... mb-6">
-       # must open with the icon-paired flex wrapper, not a bare <h2>.
-       # Catches the regression where the model writes <section><h2>… and
-       # forgets the icon. Sub-cards inside grids (no mb-6) are exempt.
-       TOP_CARD = re.compile(
-           r'<section\s+class="[^"]*\bcard\b[^"]*\bmb-6\b[^"]*"[^>]*>\s*<h2',
-           re.IGNORECASE | re.DOTALL,
-       )
-       m = TOP_CARD.search(body)
-       if m:
-           print(f"MISSING-ICON-HEADER: top-level card opens with bare <h2> instead of <div class=\"flex items-center gap-2 mb-3 text-brand\"><img src=\"/icons/<name>.svg\" .../><h2.../></div>. Near {body[m.start():m.start()+120]!r}")
-           sys.exit(5)
-
-       # Insights/findings: the section whose heading is תובנות or
-       # ממצאים MUST contain a <ul> with at least one <li>. <p>
-       # paragraphs and div-and-dot patterns are not acceptable
-       # substitutes — screen readers and the page-merge logic both
-       # expect a list.
-       INSIGHT_HEADING = re.compile(r'<h2[^>]*>\s*(?:תובנות|ממצאים)[^<]*</h2>')
-       LI_RE = re.compile(r'<li\b[^>]*>(.*?)</li>', re.DOTALL | re.IGNORECASE)
-       UL_OPEN = re.compile(r'<ul\b([^>]*)>')
-       for m in INSIGHT_HEADING.finditer(body):
-           sec_start = body.rfind('<section', 0, m.start())
-           sec_end   = body.find('</section>', m.end())
-           if sec_start < 0 or sec_end < 0:
-               print(f'INSIGHTS-NOT-IN-SECTION: heading at byte {m.start()} is not wrapped in <section>...</section>')
-               sys.exit(6)
-           chunk = body[sec_start:sec_end]
-           if '<ul' not in chunk or '<li' not in chunk:
-               print(f'INSIGHTS-NO-BULLETS: תובנות/ממצאים section at byte {sec_start} has no <ul>/<li>. Use <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand"><li>…</li></ul>.')
-               sys.exit(7)
-           # Visible marker: Tailwind's preflight strips default disc bullets,
-           # so a bare <ul class="m-0 ps-5 ..."> renders unmarked rows. Either
-           # use list-disc (Tailwind restores the disc), or give every <li>
-           # its own <img> icon. Anything else is invisible to the reader.
-           ul = UL_OPEN.search(chunk)
-           if ul:
-               ul_attrs = ul.group(1)
-               if 'list-disc' not in ul_attrs and 'list-decimal' not in ul_attrs:
-                   items = LI_RE.findall(chunk)
-                   bad = [i for i, it in enumerate(items) if '<img' not in it.lower()]
-                   if bad:
-                       print(f'INSIGHTS-NO-MARKER: <ul> in תובנות/ממצאים has neither `list-disc` (with optional `marker:text-brand`) nor an <img> inside every <li>. Tailwind preflight kills default bullets — pick one of the two patterns from the BODY SKELETON. Bad <li> indices: {bad[:3]}')
-                       sys.exit(8)
-
-       # Percent-consistency: same % appearing >=2 times with
-       # conflicting year contexts. If you cite "64%" twice and one
-       # cite is bracketed by years 2017-2023 while the other is
-       # bracketed by 2015-2023, the page is silently contradicting
-       # itself. (Cross-paragraph "different %s for same trend"
-       # cases — like 81% in summary vs 79% in bullet — are not
-       # detected here; reconcile by reading both yourself before
-       # writing them.)
-       YEAR_RE = re.compile(r'(?<!\d)(?:19|20)\d{2}(?!\d)')
-       pcts = re.findall(r'(\d+(?:[.,]\d+)?)\s*%', body)
-       seen = {}
-       for p in pcts:
-           seen[p] = seen.get(p, 0) + 1
-       for p, n in sorted(seen.items()):
-           if n < 2:
-               continue
-           year_sets = []
-           for m in re.finditer(rf'(.{{0,60}}){re.escape(p)}\s*%(.{{0,60}})', body):
-               ctx = m.group(1) + p + '%' + m.group(2)
-               years = YEAR_RE.findall(ctx)
-               if years:
-                   year_sets.append(tuple(sorted(set(years))))
-           if len(set(year_sets)) >= 2:
-               print(f'PERCENT-CONFLICT: {p}% appears {n}x with conflicting year contexts {year_sets}')
-               sys.exit(2)
-       print('self-checks ok:', d['dataset_kind'])
-       PY
-
-     If ANY check exits non-zero, fix the file and re-run the full
-     check before calling end_turn. The percent-consistency check
-     can be silenced by either (a) rewriting both occurrences to use
-     the same year window, or (b) explicitly contextualizing the
-     difference in prose ("ב-10 השנים האחרונות, X% — ובהשוואה ל-2015,
+     The percent-consistency check can be silenced by either
+     (a) rewriting both occurrences to use the same year window, or
+     (b) explicitly contextualizing the difference in prose
+     ("ב-10 השנים האחרונות, X% — ובהשוואה ל-2015,
      Y%"); never just delete the warning.
 
   ────────────────────────────────────────────────────────────────────
@@ -910,7 +774,7 @@ system: |
     • **Inline data cap: any single `<script>` block must total <50KB.**
       For map points use `GovMap`. For tabular row browsing use
       `GovExplorer`. Build-time Python computes aggregates that drive
-      charts — not raw row dumps. The SELF-CHECK awk pass enforces this.
+      charts — not raw row dumps. `/mnt/session/uploads/check.py` enforces the cap.
     • Inside inline `<script>` blocks, never embed a bare geresh (`'`)
       or gershayim (`"`) inside a string delimited by the same
       character. Hebrew unit abbreviations — `מ'`, `ק"ג`, `ס"מ` — close
@@ -937,7 +801,7 @@ system: |
       `GovMap` sidesteps this entirely for point-set maps; prefer it
       over inlining marker arrays.
 
-  TERMINATION: After both files pass all self-checks, stop. The session
+  TERMINATION: After `/mnt/session/uploads/check.py` returns 0, stop. The session
   ends when you go idle with end_turn.
 
 tools:

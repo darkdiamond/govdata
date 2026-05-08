@@ -327,6 +327,45 @@ class FirestoreStateStore:
             {"agent_data": agent_data}, merge=True
         )
 
+    def set_session_usage(
+        self,
+        dataset_id: str,
+        *,
+        usage: dict[str, int],
+        model_requests: int,
+        elapsed_s: float,
+        session_id: Optional[str] = None,
+        agent_version: Optional[int] = None,
+    ) -> None:
+        """Persist per-session token usage so we can A/B prompt + tooling changes.
+
+        Stored under `sources/<id>.last_usage` — overwritten on every successful
+        run. Lets us measure the impact of each optimization stage against the
+        baseline (avg 24,343 output / 700,690 cache_read / 22.9 model_requests
+        per session as of 2026-05-08; ~$0.77/session at Sonnet 4.6 pricing).
+        """
+        now = datetime.now(timezone.utc)
+        self.client.collection(SOURCES_COLL).document(dataset_id).set(
+            {
+                "last_usage": {
+                    "input_tokens": int(usage.get("input_tokens", 0)),
+                    "output_tokens": int(usage.get("output_tokens", 0)),
+                    "cache_creation_input_tokens": int(
+                        usage.get("cache_creation_input_tokens", 0)
+                    ),
+                    "cache_read_input_tokens": int(
+                        usage.get("cache_read_input_tokens", 0)
+                    ),
+                    "model_requests": int(model_requests),
+                    "elapsed_s": float(elapsed_s),
+                    "session_id": session_id,
+                    "agent_version": agent_version,
+                    "recorded_at": now,
+                },
+            },
+            merge=True,
+        )
+
     def set_embedding(self, dataset_id: str, embedding: list[float]) -> None:
         """Cache the Voyage embedding so the publisher doesn't recompute it."""
         self.client.collection(SOURCES_COLL).document(dataset_id).set(
