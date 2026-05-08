@@ -16,7 +16,10 @@ const manifest = useManifest()
 const tags = computed(() => {
   const counts = new Map<string, number>()
   for (const d of manifest.value?.datasets ?? []) {
-    for (const t of d.tags_he) counts.set(t, (counts.get(t) ?? 0) + 1)
+    // Union of CKAN-official tags and the agent's curated suggested_tags,
+    // deduped per dataset so a tag that appears in both doesn't double-count.
+    const seen = new Set<string>([...(d.tags_he ?? []), ...(d.suggested_tags ?? [])])
+    for (const t of seen) counts.set(t, (counts.get(t) ?? 0) + 1)
   }
   return [...counts.entries()].sort((a, b) => b[1] - a[1])
 })

@@ -114,8 +114,8 @@ _TAG_URL_UNSAFE = re.compile(r"[\s/?#&]+")
 
 
 def _build_tag_slugs(entries: Iterable[ManifestEntry]) -> dict[str, str]:
-    """Map each Hebrew tag in any entry's `tags_he` to a URL-safe slug
-    that keeps the Hebrew characters.
+    """Map each Hebrew tag in any entry's `tags_he` or `suggested_tags`
+    to a URL-safe slug that keeps the Hebrew characters.
 
     Whitespace runs and URL-reserved chars (`/?#&`) collapse to `-`. The
     output is decoded Unicode (no percent-encoding) — Nitro writes those
@@ -124,7 +124,11 @@ def _build_tag_slugs(entries: Iterable[ManifestEntry]) -> dict[str, str]:
     output is stable across runs; on slug collision appends a short
     sha1 suffix to disambiguate deterministically.
     """
-    all_tags = sorted({t for e in entries for t in (e.tags_he or [])})
+    all_tags = sorted({
+        t
+        for e in entries
+        for t in (e.tags_he or []) + (e.suggested_tags or [])
+    })
     seen: dict[str, str] = {}        # url-slug -> the Hebrew tag that owns it
     out: dict[str, str] = {}
     for tag in all_tags:
@@ -150,6 +154,7 @@ def _merged_entry(
         dataset_kind=agent.dataset_kind if agent else None,
         temporal_coverage=agent.temporal_coverage if agent else None,
         spatial_coverage=agent.spatial_coverage if agent else None,
+        suggested_tags=list(agent.suggested_tags) if agent else [],
         related_ids=list(agent.related_ids) if agent else [],
         embedding=embedding,
     )

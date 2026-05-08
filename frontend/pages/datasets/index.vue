@@ -53,7 +53,7 @@ const filtered = computed<ManifestEntry[]>(() => {
     if (orgFilter.value && d.organization !== orgFilter.value) return false
     if (formatFilter.value && !d.formats.includes(formatFilter.value)) return false
     if (q) {
-      const hay = `${d.title} ${d.summary_he ?? ''} ${d.tags_he.join(' ')}`.toLowerCase()
+      const hay = `${d.title} ${d.summary_he ?? ''} ${d.tags_he.join(' ')} ${(d.suggested_tags ?? []).join(' ')}`.toLowerCase()
       if (!hay.includes(q)) return false
     }
     return true

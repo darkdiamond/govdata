@@ -275,6 +275,14 @@ def main(argv: list[str]) -> int:
         fail("AGENT-DATA: summary_he missing or empty")
     if d.get("dataset_kind") not in VALID_DATASET_KINDS:
         fail(f"AGENT-DATA: dataset_kind invalid: {d.get('dataset_kind')!r}")
+    suggested = d.get("suggested_tags") or []
+    if not isinstance(suggested, list) or not (1 <= len(suggested) <= 8):
+        fail(
+            f"AGENT-DATA: suggested_tags must be a list of 1-8 short Hebrew "
+            f"topic labels, got {suggested!r}"
+        )
+    if any(not isinstance(t, str) or not t.strip() for t in suggested):
+        fail("AGENT-DATA: suggested_tags entries must be non-empty strings")
 
     check_html_hygiene(body)
 

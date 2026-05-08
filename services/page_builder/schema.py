@@ -95,6 +95,14 @@ class AgentData(BaseModel):
     dataset_kind: DatasetKind
     related_ids: list[str] = Field(default_factory=list, max_length=5)
 
+    # 3–5 short Hebrew topic labels the agent chose for this dataset.
+    # The frontend shell renders them as the clickable chip row under
+    # the H1 (linking to /tags/<slug>/), and the publisher unions them
+    # into `Manifest.tag_slugs` so each chip resolves to a tag page.
+    # CKAN `tags_he` are sparsely populated by ministries; this is the
+    # editorial layer that gives every dataset a meaningful chip row.
+    suggested_tags: list[str] = Field(default_factory=list, max_length=8)
+
     # Optional Schema.org-aligned coverage hints. Populated only when the
     # dataset clearly carries time or geo scope (date columns, geographic
     # columns). Emitted into the Dataset JSON-LD as `temporalCoverage` /
@@ -137,6 +145,7 @@ class ManifestEntry(BaseModel):
     dataset_kind: Optional[DatasetKind] = None
     temporal_coverage: Optional[str] = None
     spatial_coverage: Optional[str] = None
+    suggested_tags: list[str] = Field(default_factory=list)
 
     # Publisher-computed
     related_ids: list[str] = Field(default_factory=list, max_length=5)
@@ -157,5 +166,5 @@ class Manifest(BaseModel):
     # because Nitro writes Unicode-named directories from decoded routes;
     # what previously broke on Windows/WSL was percent-encoded paths
     # leaking literal `%` into the directory name. Built by the publisher
-    # from the union of every entry's `tags_he`.
+    # from the union of every entry's `tags_he` and `suggested_tags`.
     tag_slugs: dict[str, str] = Field(default_factory=dict)
