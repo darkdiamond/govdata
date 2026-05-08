@@ -77,8 +77,8 @@ const related = computed<ManifestEntry[]>(() => {
 
 const tagSlugs = computed(() => manifest.value?.tag_slugs ?? {})
 function tagHref(t: string): string {
-  const slug = tagSlugs.value[t]
-  return slug ? `/tags/${slug}/` : `/tags/${encodeURIComponent(t)}/`
+  const slug = tagSlugs.value[t] ?? t
+  return `/tags/${encodeURI(slug)}/`
 }
 
 const KIND_LABELS_HE: Record<string, string> = {
