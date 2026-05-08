@@ -21,7 +21,9 @@ const hebrewTag = computed<string | null>(() => {
 const entries = computed(() => {
   const tag = hebrewTag.value
   if (!tag) return []
-  return (manifest.value?.datasets ?? []).filter((d) => d.tags_he.includes(tag))
+  return (manifest.value?.datasets ?? []).filter(
+    (d) => d.tags_he.includes(tag) || (d.suggested_tags ?? []).includes(tag),
+  )
 })
 
 if (!hebrewTag.value || entries.value.length === 0) {

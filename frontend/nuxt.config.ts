@@ -19,6 +19,7 @@ interface ManifestEntry {
   id: string
   organization_slug?: string
   tags_he?: string[]
+  suggested_tags?: string[]
   dataset_kind?: string
 }
 interface Manifest {
@@ -39,10 +40,10 @@ function categoryRoutes(): string[] {
     // Use the publisher-built tag_slugs map (Hebrew tag → URL-safe
     // Hebrew slug, with whitespace normalized to `-`). Pass the slug
     // raw — Nitro's prerender expects decoded routes and writes
-    // Unicode-named directories from them. Defensive skip if a tag
-    // is somehow missing from the map (shouldn't happen — publisher
-    // unions every tags_he).
-    for (const t of d.tags_he ?? []) {
+    // Unicode-named directories from them. Union both CKAN-official
+    // tags and the agent's suggested_tags so every chip on every
+    // dataset page resolves to a generated tag page.
+    for (const t of [...(d.tags_he ?? []), ...(d.suggested_tags ?? [])]) {
       const slug = tagSlugs[t]
       if (slug) routes.add(`/tags/${slug}/`)
     }

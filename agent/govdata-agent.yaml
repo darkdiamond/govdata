@@ -378,7 +378,6 @@ system: |
   BODY SKELETON (inside content.html — no site chrome)
   ────────────────────────────────────────────────────────────────────
     <h1>             dataset title (exactly once per page)
-    <tag-chips>      3-5 tags, each a <span class="tag-chip">
     <ai-summary>     2-3 sentences in <section class="card p-5 mb-6">
     <highlight-cards> KPI grid (per MOBILE-FIRST rule 1). Default
                      value color is text-brand. When a value carries
@@ -438,12 +437,7 @@ system: |
   no font or Tailwind <link>, no outer max-w-* utility (the wrapper
   sizes you to max-w-gov already):
 
-    <!-- tag chips -->
     <h1>שם המאגר</h1>
-    <div class="flex flex-wrap gap-2 mb-6">
-      <span class="tag-chip">תגית-1</span>
-      <span class="tag-chip">תגית-2</span>
-    </div>
 
     <!-- AI summary card -->
     <section class="card p-5 mb-6">
@@ -705,12 +699,18 @@ system: |
        {
          "summary_he": "<one-line hebrew summary>",
          "dataset_kind": "map" | "timeseries" | "registry" | "rankings" | "misc",
+         "suggested_tags": ["<3-5 short Hebrew topic labels>"],
          "related_ids": ["<id>", ...],
          "version": 1
        }
 
      `summary_he` and `dataset_kind` are REQUIRED. Without `dataset_kind`
      the /kinds/<kind>/ route silently drops this dataset.
+
+     `suggested_tags` — 3–5 short Hebrew topic labels (think hashtags).
+     Broad enough that other datasets might share them; lowercase nouns
+     where possible. Don't include the ministry name — it's already
+     surfaced elsewhere on the page.
 
      `dataset_kind` — pick the FIRST matching row:
 
