@@ -95,7 +95,7 @@ export interface Manifest {
   version: number
   generated_at: string
   datasets: ManifestEntry[]
-  // Hebrew tag → ASCII slug. Used to build /tags/<slug>/ URLs that survive
-  // `nuxt generate` on Windows/WSL. Built by services/page_builder/publish.py.
+  // Hebrew tag → URL-safe Hebrew slug (whitespace and URL-reserved chars
+  // normalized to `-`). Built by services/page_builder/publish.py.
   tag_slugs?: Record<string, string>
 }

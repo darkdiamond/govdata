@@ -36,10 +36,12 @@ function categoryRoutes(): string[] {
   const routes = new Set<string>(['/ministries/', '/tags/'])
   for (const d of data.datasets ?? []) {
     if (d.organization_slug) routes.add(`/ministries/${d.organization_slug}/`)
-    // Use the publisher-built Hebrew→Latin map. Falls back to a defensive
-    // skip for any tag that's somehow missing from the map (shouldn't
-    // happen — publisher unions every tags_he), avoiding a non-ASCII
-    // directory creation that would break prerender on Windows/WSL.
+    // Use the publisher-built tag_slugs map (Hebrew tag → URL-safe
+    // Hebrew slug, with whitespace normalized to `-`). Pass the slug
+    // raw — Nitro's prerender expects decoded routes and writes
+    // Unicode-named directories from them. Defensive skip if a tag
+    // is somehow missing from the map (shouldn't happen — publisher
+    // unions every tags_he).
     for (const t of d.tags_he ?? []) {
       const slug = tagSlugs[t]
       if (slug) routes.add(`/tags/${slug}/`)
@@ -122,6 +124,20 @@ export default defineNuxtConfig({
         },
       ],
     },
+  },
+
+  // Hebrew tag routes (e.g. /tags/אבטחה/) trigger a Nuxt 3.21 bug where
+  // the prerender renderer puts the raw decoded URL into an
+  // `x-nitro-prerender` HTTP header to hint Nitro to also prerender
+  // /<route>/_payload.json — but HTTP header values must be Latin-1, so
+  // any non-ASCII character throws `Cannot convert argument to a
+  // ByteString`, returning a 500 for the whole route. Disabling payload
+  // extraction skips that header entirely. Trade-off: client-side
+  // navigation between prerendered pages refetches the HTML instead of
+  // just a JSON payload, which is fine for this site (no SPA flow that
+  // benefits from _payload.json).
+  experimental: {
+    payloadExtraction: false,
   },
 
   nitro: {
