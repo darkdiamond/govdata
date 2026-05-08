@@ -1,0 +1,184 @@
+<script setup lang="ts">
+import type { InsightSlide } from '~/utils/insights'
+import { chunkBy, sampleInsights } from '~/utils/insights'
+
+const props = defineProps<{ pool: InsightSlide[]; sampleSize?: number }>()
+
+const SAMPLE = computed(() => props.sampleSize ?? 6)
+const ROTATE_MS = 5_500
+const LG_QUERY = '(min-width: 1024px)'
+
+const slides = ref<InsightSlide[]>(props.pool.slice(0, SAMPLE.value))
+const cardsPerSlide = ref(1)
+const idx = ref(0)
+const paused = ref(false)
+const reducedMotion = ref(false)
+
+const chunks = computed(() => chunkBy(slides.value, cardsPerSlide.value))
+
+let timer: ReturnType<typeof setInterval> | null = null
+let mql: MediaQueryList | null = null
+
+function advance(delta: number) {
+  const n = chunks.value.length
+  if (!n) return
+  idx.value = (idx.value + delta + n) % n
+}
+
+function start() {
+  stop()
+  if (reducedMotion.value || chunks.value.length < 2) return
+  timer = setInterval(() => {
+    if (!paused.value && !document.hidden) advance(1)
+  }, ROTATE_MS)
+}
+
+function stop() {
+  if (timer) {
+    clearInterval(timer)
+    timer = null
+  }
+}
+
+function syncCardsPerSlide() {
+  const next = mql?.matches ? 2 : 1
+  if (next === cardsPerSlide.value) return
+  cardsPerSlide.value = next
+  idx.value = 0
+}
+
+function onKey(e: KeyboardEvent) {
+  if (e.key === 'ArrowLeft') { advance(1); e.preventDefault() }
+  else if (e.key === 'ArrowRight') { advance(-1); e.preventDefault() }
+}
+
+onMounted(() => {
+  reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  mql = window.matchMedia(LG_QUERY)
+  cardsPerSlide.value = mql.matches ? 2 : 1
+  mql.addEventListener('change', syncCardsPerSlide)
+  slides.value = sampleInsights(props.pool, SAMPLE.value)
+  idx.value = 0
+  start()
+  document.addEventListener('visibilitychange', start)
+})
+
+onBeforeUnmount(() => {
+  stop()
+  if (typeof document !== 'undefined') {
+    document.removeEventListener('visibilitychange', start)
+  }
+  if (mql) mql.removeEventListener('change', syncCardsPerSlide)
+})
+
+const currentChunk = computed(() => chunks.value[idx.value] ?? [])
+</script>
+
+<template>
+  <section
+    v-if="slides.length"
+    class="not-prose -mt-10 md:-mt-14"
+    aria-roledescription="carousel"
+    aria-label="תובנות מתוך מאגרי המידע"
+    @mouseenter="paused = true"
+    @mouseleave="paused = false"
+    @focusin="paused = true"
+    @focusout="paused = false"
+    @keydown="onKey"
+  >
+    <div class="flex items-baseline justify-between mb-3">
+      <h2 class="font-display m-0 text-lg md:text-xl text-ink">מומלצים להתחלה</h2>
+      <span class="text-xs text-subtle">דוגמיות אקראיות מתוך מאגרי המידע</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-3" aria-live="polite">
+      <a
+        v-for="card in currentChunk"
+        :key="card.id"
+        :href="card.href"
+        class="card card-hover p-5 md:p-6 block no-underline group"
+      >
+        <div class="flex items-center justify-between gap-2 mb-3 text-xs">
+          <span class="badge bg-brand-50 text-brand-700 border-brand-100">{{ card.kind_label_he }}</span>
+          <span v-if="card.is_fresh" class="inline-flex items-center gap-1.5 text-ok font-medium">
+            <span class="h-1.5 w-1.5 rounded-full bg-ok" aria-hidden="true" />
+            עודכן השבוע
+          </span>
+        </div>
+
+        <h3
+          class="font-display text-ink text-xl md:text-2xl leading-snug line-clamp-2 m-0
+                 group-hover:text-brand-700 transition-colors"
+        >
+          {{ card.title }}
+        </h3>
+        <div v-if="card.organization" class="text-sm text-subtle mt-1 truncate">
+          {{ card.organization }}
+        </div>
+
+        <div v-if="card.stat" class="mt-4 flex items-baseline gap-2">
+          <span class="font-display text-3xl md:text-4xl text-ink tabular-nums leading-none">
+            {{ card.stat.value }}
+          </span>
+          <span class="text-sm text-subtle">{{ card.stat.unit }}</span>
+        </div>
+
+        <div class="mt-4 flex items-center justify-between gap-2 pt-3 border-t border-rule/60">
+          <span v-if="card.primary_tag" class="tag-chip">{{ card.primary_tag }}</span>
+          <span v-else aria-hidden="true" />
+          <span class="inline-flex items-center gap-1 text-sm font-medium text-brand-700">
+            פתח
+            <img
+              src="/icons/arrow-left.svg"
+              alt=""
+              class="w-4 h-4 transition-transform group-hover:-translate-x-1"
+            />
+          </span>
+        </div>
+      </a>
+    </div>
+
+    <div v-if="chunks.length > 1" class="mt-3 flex items-center justify-center gap-2">
+      <button
+        type="button"
+        class="p-1.5 rounded-gov-sm text-subtle hover:text-ink hover:bg-brand-50 transition"
+        aria-label="הקבוצה הקודמת"
+        @click.stop.prevent="advance(-1)"
+      >
+        <img src="/icons/chevron-right.svg" alt="" class="w-4 h-4" />
+      </button>
+
+      <div class="flex items-center gap-1.5" role="tablist">
+        <button
+          v-for="(_, i) in chunks"
+          :key="i"
+          type="button"
+          role="tab"
+          :aria-label="`מעבר לקבוצה ${i + 1}`"
+          :aria-current="i === idx ? 'true' : undefined"
+          class="h-1.5 rounded-full transition-all"
+          :class="i === idx ? 'w-5 bg-brand-600' : 'w-1.5 bg-rule hover:bg-brand-200'"
+          @click.stop.prevent="idx = i"
+        />
+      </div>
+
+      <button
+        type="button"
+        class="p-1.5 rounded-gov-sm text-subtle hover:text-ink hover:bg-brand-50 transition"
+        aria-label="הקבוצה הבאה"
+        @click.stop.prevent="advance(1)"
+      >
+        <img src="/icons/chevron-left.svg" alt="" class="w-4 h-4" />
+      </button>
+    </div>
+  </section>
+</template>
+
+<style scoped>
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+</style>
