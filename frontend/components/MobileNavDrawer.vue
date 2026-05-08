@@ -12,7 +12,7 @@ const links = [
   { to: '/how-it-works/', label: 'איך זה עובד' },
   { to: '/about/', label: 'אודות' },
   { to: '/faq/', label: 'שאלות נפוצות' },
-  { to: '/contact/', label: 'צור קשר' },
+  { to: '/contact/', label: 'צרו קשר' },
 ]
 
 function setOpen(v: boolean) {
