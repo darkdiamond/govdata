@@ -56,7 +56,7 @@ for (const d of manifest.datasets ?? []) {
   }
   for (const t of d.tags_he ?? []) {
     const slug = tagSlugs[t]
-    if (slug) add(`/tags/${slug}/`, '0.5', 'weekly', manifestLastmod)
+    if (slug) add(`/tags/${encodeURI(slug)}/`, '0.5', 'weekly', manifestLastmod)
   }
   if (d.dataset_kind) {
     add(`/kinds/${d.dataset_kind}/`, '0.5', 'weekly', manifestLastmod)

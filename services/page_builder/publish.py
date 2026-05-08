@@ -26,13 +26,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import logging
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable, Optional
 
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 from services.shared.resources import pick_primary_resource_id
-from services.shared.slug import slugify
 
 from .embeddings import embed, embedding_input
 from .related import top_related
@@ -110,25 +110,32 @@ def agent_data_from_source(src: SourceRecord) -> Optional[AgentData]:
         return None
 
 
-def _build_tag_slugs(entries: Iterable[ManifestEntry]) -> dict[str, str]:
-    """Map each Hebrew tag in any entry's `tags_he` to an ASCII URL slug.
+_TAG_URL_UNSAFE = re.compile(r"[\s/?#&]+")
 
-    Frontend builds `/tags/<slug>/` from this map so that prerendered
-    directories never contain non-ASCII (Nitro `mkdir` fails on Windows/WSL
-    when the URL has been `%`-encoded). Iterates in sorted order so the
-    output is stable across runs; on slug collision (rare) appends a short
+
+def _build_tag_slugs(entries: Iterable[ManifestEntry]) -> dict[str, str]:
+    """Map each Hebrew tag in any entry's `tags_he` to a URL-safe slug
+    that keeps the Hebrew characters.
+
+    Whitespace runs and URL-reserved chars (`/?#&`) collapse to `-`. The
+    output is decoded Unicode (no percent-encoding) — Nitro writes those
+    as native Unicode directory names during `nuxt generate`, and the
+    link side encodes for the wire. Iterates in sorted order so the
+    output is stable across runs; on slug collision appends a short
     sha1 suffix to disambiguate deterministically.
     """
     all_tags = sorted({t for e in entries for t in (e.tags_he or [])})
-    seen: dict[str, str] = {}      # latin slug -> the Hebrew tag that owns it
+    seen: dict[str, str] = {}        # url-slug -> the Hebrew tag that owns it
     out: dict[str, str] = {}
     for tag in all_tags:
-        latin = slugify(tag, fallback="tag")
-        if latin in seen and seen[latin] != tag:
+        slug = _TAG_URL_UNSAFE.sub("-", tag).strip("-")
+        if not slug:
+            slug = hashlib.sha1(tag.encode("utf-8")).hexdigest()[:8]
+        if slug in seen and seen[slug] != tag:
             digest = hashlib.sha1(tag.encode("utf-8")).hexdigest()[:6]
-            latin = f"{latin}-{digest}"
-        seen[latin] = tag
-        out[tag] = latin
+            slug = f"{slug}-{digest}"
+        seen[slug] = tag
+        out[tag] = slug
     return out
 
 

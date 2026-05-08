@@ -163,13 +163,17 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 
 ## Gotchas + open issues
 
-- **Hebrew tag URLs**: `/tags/<hebrew>/` routes 500 during `nuxt generate`
-  on Windows/WSL — the prerender step fails writing Hebrew-named
-  directories. Partial fix is in (`encodeURIComponent` both in
-  `nuxt.config.ts` and link generation), but tag pages still 500 after a
-  full generate. Next fix: Latin slug map (`tag_slugs`) stored in
-  `data.json`, or hash each tag into a stable short ID. Do NOT remove
-  tag pages — the user explicitly asked for them.
+- **Hebrew tag URLs need `experimental.payloadExtraction: false`**.
+  Tag URLs are Hebrew (`/tags/אבטחה/`, `/tags/אגף-תכנון/` for multi-word
+  tags); the publisher's `tag_slugs` map normalizes whitespace +
+  URL-reserved chars to `-` and keeps the Hebrew letters. The
+  `payloadExtraction: false` flag in `frontend/nuxt.config.ts` is
+  load-bearing: with it on, Nuxt 3.21's renderer puts the raw decoded
+  URL into an `x-nitro-prerender` HTTP header to hint payload
+  prerender, and HTTP header values are Latin-1 only — any Hebrew
+  character throws `Cannot convert argument to a ByteString` and the
+  whole route returns 500. Don't re-enable payload extraction without a
+  Nuxt fix.
 - **Voyage embeddings are wired in production.** The Cloud Run builder
   reads `VOYAGE_API_KEY` from Secret Manager (`voyage-api-key:latest`,
   see `infra/builder.deploy.sh`). The publisher embeds new sources

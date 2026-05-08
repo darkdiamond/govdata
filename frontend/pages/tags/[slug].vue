@@ -32,12 +32,13 @@ const SITE_URL = 'https://govil.ai'
 const tagDescription = computed(
   () => `${entries.value.length} מאגרי מידע ציבוריים מ-data.gov.il עם התגית "${hebrewTag.value}".`,
 )
-const canonicalUrl = computed(() => `${SITE_URL}/tags/${slug.value}/`)
+const encodedSlug = computed(() => encodeURI(slug.value))
+const canonicalUrl = computed(() => `${SITE_URL}/tags/${encodedSlug.value}/`)
 
 useSeo({
   title: `מאגרי מידע ממשלתיים בנושא ${hebrewTag.value}`,
   description: tagDescription.value,
-  path: `/tags/${slug.value}/`,
+  path: `/tags/${encodedSlug.value}/`,
   keywords: hebrewTag.value ? [hebrewTag.value] : [],
   breadcrumbs: [
     { name: 'ראשי', url: `${SITE_URL}/` },
