@@ -45,6 +45,13 @@ def _cosine(
     return dot / (na * nb)
 
 
+def _all_tags(e: ManifestEntry) -> set[str]:
+    """Union of CKAN tags (sparse, ministry-supplied) and the agent's
+    `suggested_tags` (dense, editorialized). Both populate /tags/<slug>/
+    pages, so both should count toward shared-tag similarity."""
+    return set(e.tags_he) | set(e.suggested_tags)
+
+
 def _score(
     target: ManifestEntry,
     cand: ManifestEntry,
@@ -56,7 +63,7 @@ def _score(
             cand.organization_slug == target.organization_slug):
         signals["same_ministry"] = MINISTRY_WEIGHT
 
-    shared_tags = set(target.tags_he) & set(cand.tags_he)
+    shared_tags = _all_tags(target) & _all_tags(cand)
     if shared_tags:
         signals["shared_tags"] = TAG_WEIGHT * min(len(shared_tags), TAG_CAP)
 

@@ -1,7 +1,8 @@
 """Voyage AI embeddings for dataset metadata — used to compute
 relatedness across datasets.
 
-Activates only when `VOYAGE_API_KEY` is set. If absent, returns None and
+Gated by `VOYAGE_ENABLED` (default off — disabled for cost). When on,
+also requires `VOYAGE_API_KEY`. If either is missing, returns None and
 the caller falls back to ministry + tag overlap + agent suggestions only.
 """
 from __future__ import annotations
@@ -16,6 +17,10 @@ log = logging.getLogger(__name__)
 
 VOYAGE_URL = "https://api.voyageai.com/v1/embeddings"
 VOYAGE_MODEL = os.environ.get("VOYAGE_MODEL", "voyage-4")
+
+
+def _voyage_enabled() -> bool:
+    return os.environ.get("VOYAGE_ENABLED", "false").lower() in ("true", "1", "yes")
 
 
 def embedding_input(title: str, summary_he: Optional[str],
@@ -41,6 +46,9 @@ def embed_batch(texts: list[str], *, api_key: Optional[str] = None,
     """
     if not texts:
         return []
+    if not _voyage_enabled():
+        log.info("VOYAGE_ENABLED=false — skipping embedding")
+        return [None] * len(texts)
     api_key = api_key or os.environ.get("VOYAGE_API_KEY")
     if not api_key:
         log.info("VOYAGE_API_KEY unset — skipping embedding")
