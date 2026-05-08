@@ -55,6 +55,9 @@ export interface AgentData {
    *  dataset clearly carries time/geo scope. Emitted into Dataset JSON-LD. */
   temporal_coverage?: string
   spatial_coverage?: string
+  /** 3-5 short Hebrew topic labels chosen by the agent. The shell
+   *  renders them as the chip row under the H1, linking to /tags/<slug>/. */
+  suggested_tags?: string[]
   version: number
   // `extra='allow'` on the pydantic side — future fields land here.
   [key: string]: unknown
@@ -84,6 +87,7 @@ export interface ManifestEntry {
   dataset_kind?: DatasetKind
   temporal_coverage?: string
   spatial_coverage?: string
+  suggested_tags?: string[]
 
   // Publisher-computed
   related_ids: string[]

@@ -26,6 +26,7 @@ function ensureFuse(): Promise<void> {
         { name: 'summary_he', weight: 0.25 },
         { name: 'organization', weight: 0.15 },
         { name: 'tags_he', weight: 0.1 },
+        { name: 'suggested_tags', weight: 0.1 },
       ],
       threshold: 0.4,
       distance: 100,

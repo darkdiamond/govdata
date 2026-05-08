@@ -33,9 +33,6 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
     fs.readFile(path.join(dir, 'agent_data.json'), 'utf-8').catch(() => null),
   ])
 
-  // Single ingress point for every agent body — see normalizeAgentBody().
-  const body = normalizeAgentBody(rawBody)
-
   const meta = JSON.parse(metaRaw) as DatasetMeta
   const agent = (agentRaw ? JSON.parse(agentRaw) : null) as AgentData | null
 
@@ -50,10 +47,11 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
     dataset_kind: agent?.dataset_kind,
     temporal_coverage: agent?.temporal_coverage as string | undefined,
     spatial_coverage: agent?.spatial_coverage as string | undefined,
+    suggested_tags: (agent?.suggested_tags as string[] | undefined) ?? [],
     related_ids: [],
   }
 
-  return { entry, body }
+  return { entry, rawBody }
 })
 
 if (!data.value) {
@@ -61,7 +59,6 @@ if (!data.value) {
 }
 
 const entry = computed(() => data.value!.entry)
-const body = computed(() => data.value!.body)
 
 const manifest = useManifest()
 const related = computed<ManifestEntry[]>(() => {
@@ -80,6 +77,39 @@ function tagHref(t: string): string {
   const slug = tagSlugs.value[t] ?? t
   return `/tags/${encodeURI(slug)}/`
 }
+
+// Title-row chips: prefer the agent's curated suggested_tags. If a page
+// hasn't been backfilled yet (no suggested_tags), fall back to the
+// official CKAN tags_he so something still renders. Each chip resolves
+// to a real /tags/<slug>/ link via the manifest's tag_slugs map.
+// Union of agent-curated `suggested_tags` and CKAN-official `tags_he`,
+// preserving order with the agent's labels first (they're the editorial
+// pick) and dropping duplicates. Used both for the title-row chips
+// injected into the body and the sidebar "תגיות" list.
+const allTags = computed<string[]>(() => {
+  const seen = new Set<string>()
+  const out: string[] = []
+  for (const t of [
+    ...(entry.value.suggested_tags ?? []),
+    ...(entry.value.tags_he ?? []),
+  ]) {
+    if (!t || seen.has(t)) continue
+    seen.add(t)
+    out.push(t)
+  }
+  return out
+})
+
+const titleChips = computed(() =>
+  allTags.value.map((label) => ({ label, href: tagHref(label) })),
+)
+
+// Single ingress point for every agent body — see normalizeAgentBody().
+// Strips the legacy chip wrapper (so old pages don't render two rows)
+// and injects the new clickable chip row right after the H1.
+const body = computed(() =>
+  normalizeAgentBody(data.value!.rawBody, { titleChips: titleChips.value }),
+)
 
 const KIND_LABELS_HE: Record<string, string> = {
   map: 'גיאוגרפי',
@@ -473,11 +503,11 @@ onMounted(async () => {
           </ul>
         </section>
 
-        <section v-if="entry.tags_he?.length" class="card p-4">
+        <section v-if="allTags.length" class="card p-4">
           <h3 class="m-0 mb-2 text-sm text-subtle font-display">תגיות</h3>
           <div class="flex flex-wrap gap-1">
             <NuxtLink
-              v-for="t in entry.tags_he"
+              v-for="t in allTags"
               :key="t"
               :to="tagHref(t)"
               class="tag-chip hover:bg-brand-100"
