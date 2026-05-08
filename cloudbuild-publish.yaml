@@ -28,11 +28,10 @@ steps:
         set -euo pipefail
         mkdir -p frontend/public/datasets
         gsutil -m rsync -r "gs://${_STAGING_BUCKET}/datasets/" frontend/public/datasets/
-        # Defense-in-depth: even if a stray data.json sneaks into staging,
-        # the publisher overwrites it in step [2]; this keeps that contract
-        # explicit and visible in the build log.
-        find frontend/public/datasets \
-          \( -name 'data.json' -o -name 'agent_data.json' \) -delete
+        # No defensive delete of data.json/agent_data.json here — that
+        # would race step [2] under waitFor:['-']. Step [2]'s publish.py
+        # is the canonical writer and overwrites those files from
+        # Firestore, so any stray copy is replaced for active sources.
 
   # [2] Emit per-dataset data.json + agent_data.json + aggregated manifest.json
   #     from Firestore — single source of truth.
