@@ -25,7 +25,7 @@ const tiles = computed(() =>
 <template>
   <section v-if="tiles.length">
     <div class="flex items-baseline justify-between mb-6">
-      <h2 class="font-display m-0">סייר לפי סוג מידע</h2>
+      <h2 class="font-display m-0">מאגרים לפי סוג מידע</h2>
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
