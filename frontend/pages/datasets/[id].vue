@@ -18,23 +18,26 @@ const id = String(route.params.id)
 useHead(DATASET_LIB_TAGS)
 
 const { data } = await useAsyncData(`dataset-${id}`, async () => {
+  const fs = await import('node:fs/promises')
+  const path = await import('node:path')
+  const dir = path.resolve(process.cwd(), 'public/datasets', id)
+
   // Three artifacts, two writers:
   //   - content.html      : agent body, synced from GCS staging
   //   - data.json         : DatasetMeta, written by the publisher from Firestore
   //   - agent_data.json   : AgentData,   written by the publisher from Firestore.
   //                         Optional — a scanned-but-never-analyzed source has none.
-  // We use $fetch instead of node:fs so this runs both during prerender (Nitro
-  // serves from public/) and on SPA navigation (real HTTP to the static file).
-  // payloadExtraction is disabled (see nuxt.config.ts) so SPA nav re-runs this
-  // callback in the browser, where node:fs would throw.
-  const [rawBody, meta, agent] = await Promise.all([
-    $fetch<string>(`/datasets/${id}/content.html`, { responseType: 'text' }),
-    $fetch<DatasetMeta>(`/datasets/${id}/data.json`),
-    $fetch<AgentData | null>(`/datasets/${id}/agent_data.json`).catch(() => null),
+  const [rawBody, metaRaw, agentRaw] = await Promise.all([
+    fs.readFile(path.join(dir, 'content.html'), 'utf-8'),
+    fs.readFile(path.join(dir, 'data.json'), 'utf-8'),
+    fs.readFile(path.join(dir, 'agent_data.json'), 'utf-8').catch(() => null),
   ])
 
   // Single ingress point for every agent body — see normalizeAgentBody().
   const body = normalizeAgentBody(rawBody)
+
+  const meta = JSON.parse(metaRaw) as DatasetMeta
+  const agent = (agentRaw ? JSON.parse(agentRaw) : null) as AgentData | null
 
   // Merge into a ManifestEntry-shaped object so existing template paths
   // (entry.summary_he, entry.dataset_kind, …) keep working. related_ids is
