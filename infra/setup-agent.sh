@@ -27,10 +27,18 @@ echo "==> creating agent from agent/govdata-agent.yaml"
 AGENT_ID=$(ant beta:agents create < agent/govdata-agent.yaml --transform id --format yaml)
 echo "AGENT_ID=$AGENT_ID"
 
+echo "==> uploading agent/skills/check.py via Files API"
+CHECK_PY_OUTPUT=$(python3 infra/upload-check-script.py)
+CHECK_PY_FILE_ID=$(echo "$CHECK_PY_OUTPUT" | sed -nE 's/^file_id:[[:space:]]+(.*)$/\1/p')
+echo "CHECK_PY_FILE_ID=$CHECK_PY_FILE_ID"
+
 echo
 echo "# Add these to your .env (or deployment env vars):"
 echo "ANTHROPIC_AGENT_ID=$AGENT_ID"
 echo "ANTHROPIC_ENV_ID=$ENV_ID"
+echo "ANTHROPIC_CHECK_PY_FILE_ID=$CHECK_PY_FILE_ID"
 echo
 echo "# To update the agent's system prompt later (creates a new version):"
 echo "#   ANTHROPIC_AGENT_ID=$AGENT_ID python3 infra/update-agent.py"
+echo "# To re-upload the self-check script after editing it:"
+echo "#   python3 infra/upload-check-script.py"

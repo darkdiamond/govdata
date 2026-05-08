@@ -27,6 +27,7 @@ const FILES = [
 const HANDWRITTEN_FILES = [
   ['gov-explorer.js', 'gov-explorer.js'],
   ['gov-map.js', 'gov-map.js'],
+  ['gov-echarts.js', 'gov-echarts.js'],
 ]
 
 // Leaflet's CSS references images at `images/marker-icon.png` etc. relative to

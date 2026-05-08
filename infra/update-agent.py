@@ -62,18 +62,19 @@ def main() -> int:
         if key in spec and spec[key] is not None:
             kwargs[key] = spec[key]
 
-    # Prompt caching: client.beta.agents.update does NOT expose
-    # cache_control in the Python SDK as of anthropic==0.97.0 — neither
-    # the array-form `system` block nor a top-level cache_control kwarg
-    # is accepted. We do not need to: the Managed Agents runtime
-    # auto-caches the system prompt across the agent's tool-loop
-    # iterations within a single session. On a single Veterinarians
-    # session (2026-05-05) the agent read 760,546 cached tokens vs.
-    # 39,380 written + 29 fresh — ~95% of input served from cache.
-    # Verify the cache hit rate on future runs via
-    # `session_runner._accumulate_usage` (it already collects
-    # cache_read_input_tokens / cache_creation_input_tokens from
-    # `span.model_request_end` events).
+    # Prompt caching: anthropic==0.97.0's `agents.update` only accepts
+    # `system: Optional[str]` (no array form), and there's no top-level
+    # `cache_control` kwarg — so we can't pin a longer TTL here. The
+    # Managed Agents runtime already auto-caches across the tool loop
+    # within a session — measured across 536 completed sessions
+    # (2026-05-08): avg cache_read=700,690 vs cache_write=51,103 vs
+    # uncached=25 input tokens per session, i.e. ~93% hit rate.
+    # The remaining ~$0.19/session cache-write cost would be worth
+    # chasing across sessions (1h TTL would let back-to-back batch
+    # builds share the cache), but that requires either an SDK upgrade
+    # exposing `cache_control` on agent update OR setting it at
+    # session.events.send time. Deferred. Track via `last_usage` rows
+    # in Firestore — `set_session_usage` writes them on every run.
     updated = client.beta.agents.update(agent_id, **kwargs)
     print(f"new version:     {updated.version}")
     print("ok")
