@@ -20,7 +20,7 @@ const top = computed<Row[]>(() => {
 <template>
   <section v-if="top.length">
     <div class="flex items-baseline justify-between mb-6">
-      <h2 class="font-display m-0">סייר לפי משרד</h2>
+      <h2 class="font-display m-0">מאגרים לפי משרד</h2>
       <NuxtLink to="/ministries/" class="text-sm text-brand-700 hover:underline">
         כל המשרדים ←
       </NuxtLink>
