@@ -34,7 +34,7 @@ from typing import Iterable, Optional
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 from services.shared.resources import pick_primary_resource_id
 
-from .embeddings import embed, embedding_input
+from .embeddings import voyage_enabled, embed, embedding_input
 from .related import top_related
 from .schema import (
     AgentData,
@@ -209,11 +209,19 @@ def publish(
     agents: dict[str, Optional[AgentData]] = {}
     embeddings: dict[str, Optional[list[float]]] = {}
 
+    voyage_on = voyage_enabled()
+    if not voyage_on:
+        log.info("VOYAGE_ENABLED=false — skipping embedding + cosine path")
+
     for src in sources:
         meta = dataset_meta_from_source(src)
         agent = agent_data_from_source(src)
         metas[src.id] = meta
         agents[src.id] = agent
+
+        if not voyage_on:
+            embeddings[src.id] = None
+            continue
 
         emb = src.embedding
         if emb is None and agent is not None:

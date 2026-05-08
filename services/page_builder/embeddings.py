@@ -19,7 +19,7 @@ VOYAGE_URL = "https://api.voyageai.com/v1/embeddings"
 VOYAGE_MODEL = os.environ.get("VOYAGE_MODEL", "voyage-4")
 
 
-def _voyage_enabled() -> bool:
+def voyage_enabled() -> bool:
     return os.environ.get("VOYAGE_ENABLED", "false").lower() in ("true", "1", "yes")
 
 
@@ -46,7 +46,7 @@ def embed_batch(texts: list[str], *, api_key: Optional[str] = None,
     """
     if not texts:
         return []
-    if not _voyage_enabled():
+    if not voyage_enabled():
         log.info("VOYAGE_ENABLED=false — skipping embedding")
         return [None] * len(texts)
     api_key = api_key or os.environ.get("VOYAGE_API_KEY")
