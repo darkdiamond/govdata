@@ -64,7 +64,12 @@ function close() {
 function go(entry: ManifestEntry) {
   open.value = false
   query.value = ''
-  router.push(`/datasets/${entry.id}/`)
+  // Full-page nav (not router.push) — dataset pages are SSG documents that
+  // read content.html / data.json / agent_data.json via node:fs in their
+  // useAsyncData callback. With payloadExtraction disabled (Hebrew tag
+  // prerender fix), Nuxt re-runs the callback on SPA nav and node:fs throws
+  // in the browser. DatasetCard uses <a href> for the same reason.
+  window.location.assign(`/datasets/${entry.id}/`)
 }
 
 function submit() {
