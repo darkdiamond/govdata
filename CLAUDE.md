@@ -174,15 +174,17 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   character throws `Cannot convert argument to a ByteString` and the
   whole route returns 500. Don't re-enable payload extraction without a
   Nuxt fix.
-- **Voyage embeddings are wired in production.** The Cloud Run builder
-  reads `VOYAGE_API_KEY` from Secret Manager (`voyage-api-key:latest`,
-  see `infra/builder.deploy.sh`). The publisher embeds new sources
-  on demand and caches the vector on `sources/<id>.embedding`. Model
-  defaults to `voyage-4` (1024-dim) and is overridable via the
-  `VOYAGE_MODEL` env var. If the secret is missing, `embed()` returns
-  `None` and `related.py` falls back to ministry + shared-tag +
-  agent-suggested scoring — keep that fallback. To retro-fill embeddings
-  on already-published sources, run
+- **Voyage embeddings are gated by `VOYAGE_ENABLED` (default off).**
+  Currently disabled for cost. The secret binding (`VOYAGE_API_KEY`
+  from Secret Manager) and call sites stay wired so re-enabling is a
+  one-line toggle: `gcloud run services update govdata-builder
+  --region=me-west1 --update-env-vars=VOYAGE_ENABLED=true`. While off,
+  `embed()` short-circuits to `None` and `related.py` falls back to
+  ministry + shared-tag (CKAN ∪ agent `suggested_tags`) + agent-suggested
+  scoring. Existing embeddings already cached on `sources/<id>.embedding`
+  keep contributing for those docs at zero new cost. Model defaults to
+  `voyage-4` (1024-dim), overridable via `VOYAGE_MODEL`. To retro-fill
+  embeddings on already-published sources (requires re-enable), run
   `python -m services.page_builder.backfill_embeddings`.
 - **Cloud Build trigger connection** is a manual step in `bootstrap.sh`.
   Cloud Build can't check out arbitrary filesystems — it needs either a
