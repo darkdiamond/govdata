@@ -9,7 +9,7 @@
 // Category routes (ministries/tags/kinds) are enumerated from manifest.json
 // (the merged view) the same way.
 
-import { copyFileSync, existsSync, readdirSync, readFileSync } from 'node:fs'
+import { copyFileSync, existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -52,12 +52,16 @@ function categoryRoutes(): string[] {
   return [...routes]
 }
 
+// Reads from manifest.json (the publisher's view of succeeded sources)
+// rather than the filesystem. The rsync from staging can leave orphan
+// content.html directories for sources whose Firestore status is now
+// `pending` or `failed` — the publisher skips those, no data.json gets
+// written, and prerendering them would 404 in [id].vue's fs.readFile.
 function datasetRoutes(): string[] {
-  const dir = resolve(__dirname, 'public/datasets')
+  const path = resolve(__dirname, 'public/data/manifest.json')
   try {
-    return readdirSync(dir, { withFileTypes: true })
-      .filter((d) => d.isDirectory())
-      .map((d) => `/datasets/${d.name}/`)
+    const data = JSON.parse(readFileSync(path, 'utf-8')) as Manifest
+    return (data.datasets ?? []).map((d) => `/datasets/${d.id}/`)
   } catch {
     return []
   }
@@ -197,6 +201,13 @@ export default defineNuxtConfig({
   vite: {
     server: {
       watch: { usePolling: true, interval: 300 },
+    },
+    // Vite's default 500kB threshold is below the natural size of a
+    // Nuxt 3.21 + Vue + Tailwind + components bundle for this app.
+    // Echarts/Leaflet are NOT in this bundle (they load via useHead
+    // from /lib/), so further code-splitting wouldn't move the needle.
+    build: {
+      chunkSizeWarningLimit: 1500,
     },
   },
 })
