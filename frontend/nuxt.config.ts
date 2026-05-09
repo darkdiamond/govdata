@@ -12,6 +12,7 @@
 import { copyFileSync, existsSync, readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createLogger } from 'vite'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -208,6 +209,28 @@ export default defineNuxtConfig({
     // from /lib/), so further code-splitting wouldn't move the needle.
     build: {
       chunkSizeWarningLimit: 1500,
+    },
+  },
+
+  hooks: {
+    // Suppress two cosmetic Vite warnings about node:fs/promises and node:path
+    // being externalized for the browser. They come from pages/datasets/[id].vue's
+    // useAsyncData fetcher, which is guarded by `if (!import.meta.server)` and
+    // only ever runs during prerender. Vite emits the warning at resolve time
+    // (before constant folding), so a runtime guard alone can't silence it.
+    // We swap in a wrapped logger via the vite:extendConfig hook so this
+    // overrides Nuxt's own logger setup.
+    'vite:extendConfig' (viteConfig) {
+      const logger = createLogger()
+      const _warn = logger.warn.bind(logger)
+      logger.warn = (msg, opts) => {
+        if (
+          typeof msg === 'string' &&
+          /Module "node:(fs\/promises|path)" has been externalized/.test(msg)
+        ) return
+        _warn(msg, opts)
+      }
+      viteConfig.customLogger = logger
     },
   },
 })
