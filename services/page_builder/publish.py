@@ -183,7 +183,15 @@ def _write_agent_data(out_root: Path, dataset_id: str, agent: AgentData) -> Path
 
 def _write_manifest(out_root: Path, manifest: Manifest) -> Path:
     target = out_root / "data" / "manifest.json"
-    body = manifest.model_dump_json(exclude_none=True, indent=2).encode("utf-8")
+    # Embeddings live on Firestore + interim entries for top_related scoring;
+    # the public manifest doesn't need them (no frontend code reads
+    # entry.embedding). Excluding shaves ~50% off the file when Voyage was
+    # ever enabled and left cached vectors on source docs.
+    body = manifest.model_dump_json(
+        exclude_none=True,
+        exclude={"datasets": {"__all__": {"embedding"}}},
+        indent=2,
+    ).encode("utf-8")
     _write_json(target, body)
     return target
 
