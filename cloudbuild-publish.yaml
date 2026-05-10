@@ -16,8 +16,9 @@
 steps:
   # [1] Pull only the agent's content.html (and any extras) from staging.
   #     The structured JSON files (data.json, agent_data.json) are written
-  #     in step [2] from Firestore — never synced from GCS — so the two
-  #     artifact paths can't drift.
+  #     in step [2] from Firestore — never synced from GCS. The `-x` regex
+  #     excludes those filenames + index.html so even if a pre-split-era
+  #     stale copy lingers in staging, rsync won't drag it into the deploy.
   - id: 'fetch-pages'
     name: '${_PUBLISHER_IMAGE}'
     entrypoint: 'bash'
@@ -27,17 +28,17 @@ steps:
       - |
         set -euo pipefail
         mkdir -p frontend/public/datasets
-        gsutil -m rsync -r "gs://${_STAGING_BUCKET}/datasets/" frontend/public/datasets/
-        # No defensive delete of data.json/agent_data.json here — that
-        # would race step [2] under waitFor:['-']. Step [2]'s publish.py
-        # is the canonical writer and overwrites those files from
-        # Firestore, so any stray copy is replaced for active sources.
+        gsutil -m rsync -r \
+          -x '.*/(data|agent_data)\.json$|.*/index\.html$' \
+          "gs://${_STAGING_BUCKET}/datasets/" frontend/public/datasets/
 
   # [2] Emit per-dataset data.json + agent_data.json + aggregated manifest.json
   #     from Firestore — single source of truth.
-  #     Runs concurrently with [1] (waitFor: ['-']): they write to disjoint
-  #     paths under frontend/public/, and step [3] depends on both via
-  #     default ("wait for all prior") sequencing.
+  #     waitFor:['fetch-pages']: deterministic ordering. publish.py writes
+  #     after the rsync, so even if stale data.json files ever slip past
+  #     step [1]'s `-x` filter (or get re-uploaded by some future code path),
+  #     this step's writes overwrite them. Belt-and-suspenders with the rsync
+  #     exclusion above.
   #     VOYAGE_API_KEY is mounted via availableSecrets so the publisher can
   #     compute + cache embeddings on sources that don't have one yet
   #     (services/page_builder/publish.py → embed()). Without it, related.py
@@ -45,7 +46,7 @@ steps:
   - id: 'publish-artifacts'
     name: '${_PUBLISHER_IMAGE}'
     entrypoint: 'bash'
-    waitFor: ['-']
+    waitFor: ['fetch-pages']
     env:
       - 'FIRESTORE_PROJECT_ID=${_FIREBASE_PROJECT}'
       - 'GOOGLE_CLOUD_PROJECT=${_FIREBASE_PROJECT}'
