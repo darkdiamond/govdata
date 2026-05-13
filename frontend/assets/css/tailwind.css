@@ -30,6 +30,20 @@
 
   a        { color: theme('colors.brand.DEFAULT'); }
   a:hover  { color: theme('colors.brand.600'); text-decoration: underline; }
+
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid theme('colors.brand.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: none;
+    border-color: theme('colors.brand.DEFAULT');
+    box-shadow: 0 0 0 2px theme('colors.brand.DEFAULT');
+  }
 }
 
 @layer components {

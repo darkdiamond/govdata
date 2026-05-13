@@ -34,7 +34,7 @@ export default <Config>{
         rule:         '#c3cfe7',
         subtle:       '#6c757d',
         ok:           '#198754',
-        warn:         '#ffc107',
+        warn:         '#9a6700',
         danger:       '#dc3545',
         info:         '#0dcaf0',
       },

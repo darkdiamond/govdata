@@ -71,7 +71,7 @@ function datasetRoutes(): string[] {
 export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2025-01-01',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   // The generated `.nuxt/tsconfig.json` sets `types: []` and includes
   // `webworker` in `lib`. Build-time helpers in this file (and prerender
@@ -172,6 +172,7 @@ export default defineNuxtConfig({
         '/contact/',
         '/privacy/',
         '/terms/',
+        '/accessibility/',
         ...categoryRoutes(),
         ...datasetRoutes(),
       ],
