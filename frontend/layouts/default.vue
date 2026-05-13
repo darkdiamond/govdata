@@ -6,6 +6,12 @@ const year = new Date().getFullYear()
 
 <template>
   <div class="min-h-screen flex flex-col bg-surface">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:start-2 focus:z-50 focus:bg-brand focus:text-white focus:px-4 focus:py-2 focus:rounded-gov focus:no-underline"
+    >
+      דלג לתוכן
+    </a>
     <header class="gov-header">
       <div class="max-w-gov mx-auto px-4 h-header flex items-center justify-between gap-3 sm:gap-6">
         <div class="flex items-center gap-2">
@@ -46,7 +52,7 @@ const year = new Date().getFullYear()
       </div>
     </header>
 
-    <main class="flex-1">
+    <main id="main" tabindex="-1" class="flex-1">
       <slot />
     </main>
 
@@ -109,6 +115,8 @@ const year = new Date().getFullYear()
         <div class="max-w-gov mx-auto px-4 py-4 text-xs text-white/70 flex flex-col sm:flex-row sm:justify-between gap-2">
           <div>האתר אינו אתר ממשלתי רשמי אלא פרויקט פרטי להנגשת המידע הממשלתי. התוכן נוצר אוטומטית על ידי AI ממאגרי data.gov.il.</div>
           <div class="flex items-center gap-3">
+            <NuxtLink to="/accessibility/" class="text-white/85 hover:text-white no-underline hover:no-underline">הצהרת נגישות</NuxtLink>
+            <span aria-hidden="true" class="text-white/40">·</span>
             <NuxtLink to="/privacy/" class="text-white/85 hover:text-white no-underline hover:no-underline">מדיניות פרטיות</NuxtLink>
             <span aria-hidden="true" class="text-white/40">·</span>
             <NuxtLink to="/terms/" class="text-white/85 hover:text-white no-underline hover:no-underline">תנאי שימוש</NuxtLink>

@@ -139,14 +139,16 @@ onBeforeUnmount(() => {
       aria-label="חיפוש מאגרים"
       class="absolute top-full mt-2 end-0 w-[min(22rem,calc(100vw-2rem))] bg-white text-ink rounded-gov shadow-card border border-rule overflow-hidden z-50"
     >
-      <label class="flex items-center gap-2 border-b border-rule px-3 py-2">
+      <label for="header-search-input" class="flex items-center gap-2 border-b border-rule px-3 py-2">
         <img src="/icons/search.svg" alt="" class="w-5 h-5 opacity-70" />
+        <span class="sr-only">חיפוש מאגרים, נושאים ומשרדים</span>
         <input
+          id="header-search-input"
           ref="inputEl"
           v-model="query"
           type="search"
           placeholder="חיפוש מאגר, נושא או משרד…"
-          class="flex-1 bg-transparent border-0 outline-none text-sm placeholder:text-subtle"
+          class="flex-1 bg-transparent border-0 text-sm placeholder:text-subtle"
           @keydown="onKeydown"
           @keydown.enter.prevent="submit"
         />
@@ -159,7 +161,7 @@ onBeforeUnmount(() => {
         <li v-for="(r, i) in results" :key="r.id">
           <button
             type="button"
-            class="w-full text-start px-3 py-2 flex flex-col gap-0.5 hover:bg-brand-50 focus:bg-brand-50 outline-none transition-colors"
+            class="w-full text-start px-3 py-2 flex flex-col gap-0.5 hover:bg-brand-50 focus:bg-brand-50 transition-colors"
             :class="{ 'bg-brand-50': i === highlight }"
             @click="go(r)"
             @mouseenter="highlight = i"

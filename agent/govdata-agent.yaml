@@ -115,7 +115,7 @@ system: |
     rule          #c3cfe7    border-rule
     subtle        #6c757d    text-subtle (muted)
     ok            #198754    text-ok / bg-ok
-    warn          #ffc107    text-warn / bg-warn
+    warn          #9a6700    text-warn / bg-warn
     danger        #dc3545    text-danger / bg-danger
     info          #0dcaf0    text-info / bg-info
 
@@ -149,7 +149,7 @@ system: |
       (teal), NO #6610f2 (violet), NO #d63384 (magenta).
     • Do NOT use the Israeli flag colors (#0038B8 etc.) — gov.il uses
       #0068f5, which is a deliberately distinct brand blue.
-    • Reserve #198754 / #ffc107 / #dc3545 / #0dcaf0 ONLY for semantic
+    • Reserve #198754 / #9a6700 / #dc3545 / #0dcaf0 ONLY for semantic
       meaning (success / warning / danger / info). They are NOT
       categorical fill colors.
     • ALLOWED: per-data-point semantic coloring when a single value
@@ -513,10 +513,79 @@ system: |
       window.addEventListener('resize', () => chart.resize());
     </script>
 
-  ACCESSIBILITY + SEO:
-    • `alt` text on all <img>.
-    • Interactive viz controls keyboard-reachable.
-    • <h1> exactly once per page (yours).
+  ACCESSIBILITY (Israeli Standard IS 5568 = WCAG 2.0 AA):
+
+  STRUCTURE
+    • <h1> exactly once (dataset title). Sections use <h2>. Sub-sections
+      inside cards use <h3>. NEVER skip a level (no h1 → h3).
+    • Every <section class="card …"> opens with a heading element as its
+      first semantic child (matches the icon-paired pattern already used).
+
+  ARIA ON VISUALIZATIONS — this is your single biggest a11y leverage,
+  because charts and maps are invisible to screen readers by default.
+    • Every ECharts container <div> MUST carry:
+        role="img"
+        aria-label="<one sentence in Hebrew naming the chart type, what
+                     it shows, AND the headline value / finding>"
+      Example:
+        <div id="chart-monthly" class="h-72"
+             role="img"
+             aria-label="גרף עמודות: כמות תאונות לפי חודש ב-2024. שיא ביולי עם 1,240 תאונות."></div>
+      Without this, a screen-reader user perceives only an empty div.
+    • Every Leaflet / GovMap <div> MUST carry:
+        role="region"
+        aria-label="מפה אינטראקטיבית של <subject>. גרסה נגישה: ראו טבלה / קובץ CSV למטה."
+
+  DATA-TABLE FALLBACK
+    • After every chart, emit a screen-reader-accessible alternative:
+        - If the underlying data has ≤ 20 rows: a collapsed <details>
+          containing a real <table> of the same data.
+            <details>
+              <summary>הצג כטבלה</summary>
+              <table>
+                <caption class="sr-only">…same description as the chart's aria-label…</caption>
+                <thead><tr><th scope="col">חודש</th><th scope="col">תאונות</th></tr></thead>
+                <tbody><tr><th scope="row">ינואר</th><td>820</td></tr>…</tbody>
+              </table>
+            </details>
+        - If the data is larger: link to the original CSV resource on
+          data.gov.il. A chart is never the ONLY representation of its data.
+
+  TABLES (data tables you author, plus tables emitted by GovExplorer)
+    • Every <table> needs a <caption> (visible or sr-only).
+    • Top-row headers use <th scope="col">. First-column row labels
+      use <th scope="row">. Never plain <td> for a header cell.
+    • Do NOT use <table> for layout — that's grid / flex's job.
+
+  COLOR AND CONTRAST
+    • Body text contrast ≥ 4.5:1 against its background. Large text
+      (≥ 18px, or ≥ 14px bold) ≥ 3:1. Default text-ink / text-subtle on
+      bg-white / bg-surface already pass.
+    • Color is NEVER the only information channel. If a red bar means
+      "outlier" or a yellow row means "caution", the same status MUST
+      also appear as text in the tooltip / data label
+      (e.g. "(שיא)", "(חריג)", "(חסר נתונים)").
+    • The semantic tokens (ok / warn / danger / info) work on white
+      with text-* utilities, but for very small text prefer bg-* with
+      text-ink on top.
+
+  FORMS AND INTERACTIVE CONTROLS
+    • Every <input> / <select> / <textarea> has a programmatic label —
+      a <label for="…"> OR an aria-label. Placeholder is NOT a label.
+    • Icon-only buttons (e.g. a copy button with just a clipboard SVG)
+      MUST carry aria-label describing the action.
+
+  IMAGES
+    • Decorative <img> (UI icons in cards, dividers): alt="".
+    • Informational <img> (a real photo, a pre-rendered chart PNG):
+      alt with a real description of what's shown.
+
+  REDUCED MOTION
+    • Do NOT auto-rotate carousels, slideshows, or autoplay anything on
+      a timer. Static-rendered charts that animate-in once on load are
+      fine — they don't re-fire.
+
+  SEO (wrapper-owned — don't touch)
     • Do NOT include <title>, <meta name="description">, or OG tags —
       the wrapper generates those from data.json + agent_data.json.
 
