@@ -10,6 +10,9 @@ useSeo({
   ],
 })
 
+const route = useRoute()
+const initialTopic = String(route.query.topic || '')
+
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 const status = ref<Status>('idle')
 const errorMsg = ref('')
@@ -89,7 +92,7 @@ async function onSubmit(e: Event) {
             name="name"
             type="text"
             autocomplete="name"
-            class="w-full border border-rule rounded-gov px-3 py-2 bg-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+            class="w-full border border-rule rounded-gov px-3 py-2 bg-white"
           />
         </div>
 
@@ -101,7 +104,7 @@ async function onSubmit(e: Event) {
             type="email"
             required
             autocomplete="email"
-            class="w-full border border-rule rounded-gov px-3 py-2 bg-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+            class="w-full border border-rule rounded-gov px-3 py-2 bg-white"
           />
         </div>
 
@@ -110,9 +113,11 @@ async function onSubmit(e: Event) {
           <select
             id="topic"
             name="topic"
-            class="w-full border border-rule rounded-gov px-3 py-2 bg-white focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+            :value="initialTopic"
+            class="w-full border border-rule rounded-gov px-3 py-2 bg-white"
           >
             <option value="">בחרו נושא…</option>
+            <option>נגישות</option>
             <option>שאלה כללית</option>
             <option>פידבק</option>
             <option>דיווח על באג</option>
@@ -129,7 +134,7 @@ async function onSubmit(e: Event) {
             name="message"
             required
             rows="6"
-            class="w-full border border-rule rounded-gov px-3 py-2 bg-white resize-y focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand"
+            class="w-full border border-rule rounded-gov px-3 py-2 bg-white resize-y"
           ></textarea>
         </div>
 
