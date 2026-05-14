@@ -90,13 +90,13 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   1. `analysis_status == "never"` AND `metadata_modified >= cutoff` —
      ordered by `metadata_modified` DESC.
   2. `change_status in {new, updated}` AND `metadata_modified >= cutoff`
-     AND (`last_analyzed_at` null or older than 14 days) — ordered by
+     AND (`last_analyzed_at` null or older than 30 days) — ordered by
      `metadata_modified` DESC.
   The (recent) never-analyzed backlog is drained first; re-analysis of
   already-published pages waits until every recent source has at least
-  one page. The 14-day cooldown applies only to Track 2 (already-
+  one page. The 30-day cooldown applies only to Track 2 (already-
   analyzed sources that CKAN re-flagged as `updated`): skip the rebuild
-  if the source was analyzed less than 14 days ago.
+  if the source was analyzed less than 30 days ago.
 - **Related-datasets scoring** (deterministic, content-first):
   `1.5·same_ministry + 2·min(shared_tag_count, 6) + 8·cosine(embedding) + 6·agent_suggested`.
   Embedding similarity dominates; same-ministry is a tiebreaker only.
