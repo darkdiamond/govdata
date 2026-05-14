@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { buildDatasetLdSummary } from '~/composables/useDatasetLd'
 import { useManifest } from '~/composables/useManifest'
 
 const KIND_LABELS: Record<string, string> = {
@@ -43,11 +44,7 @@ useSeo({
     name: `מאגרים מסוג ${label.value}`,
     inLanguage: 'he-IL',
     url: `${SITE_URL}/kinds/${kind.value}/`,
-    hasPart: entries.value.slice(0, 25).map((e) => ({
-      '@type': 'Dataset',
-      name: e.title,
-      url: `${SITE_URL}/datasets/${e.id}/`,
-    })),
+    hasPart: entries.value.slice(0, 25).map(buildDatasetLdSummary),
   },
 })
 </script>
