@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { buildDatasetLdSummary } from '~/composables/useDatasetLd'
 import { useManifest } from '~/composables/useManifest'
 
 const route = useRoute()
@@ -53,11 +54,7 @@ useSeo({
     name: `מאגרים עם התגית "${hebrewTag.value}"`,
     inLanguage: 'he-IL',
     url: canonicalUrl.value,
-    hasPart: entries.value.slice(0, 25).map((e) => ({
-      '@type': 'Dataset',
-      name: e.title,
-      url: `${SITE_URL}/datasets/${e.id}/`,
-    })),
+    hasPart: entries.value.slice(0, 25).map(buildDatasetLdSummary),
   },
 })
 </script>
