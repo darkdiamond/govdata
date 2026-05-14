@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { buildDatasetLd, datasetDescription } from '~/composables/useDatasetLd'
 import { useManifest } from '~/composables/useManifest'
 import { formatBytes, formatNumber } from '~/composables/useRelativeTime'
 import type { AgentData, DatasetMeta, ManifestEntry } from '~/types/manifest'
@@ -185,29 +186,7 @@ function formatClass(fmt?: string | null): string {
 const SITE_URL = 'https://govil.ai'
 const datasetUrl = `${SITE_URL}/datasets/${entry.value.id}/`
 
-// CKAN's free-text `notes` can be 1.5KB+ of prose. When it's our description
-// fallback, trim at the last word/sentence break before ~200 chars so search
-// snippets don't show a half-word ellipsis (Hebrew has no spaces inside
-// words, so a hard slice can chop mid-token).
-function trimToWord(s: string, max: number): string {
-  if (s.length <= max) return s
-  const cut = s.slice(0, max)
-  const lastBreak = Math.max(
-    cut.lastIndexOf(' '),
-    cut.lastIndexOf('.'),
-    cut.lastIndexOf('׃'),
-    cut.lastIndexOf('—'),
-  )
-  return (lastBreak > max * 0.6 ? cut.slice(0, lastBreak) : cut).trimEnd() + '…'
-}
-
-// Description fallback chain: agent's summary_he is short and self-regulated,
-// emit it verbatim. CKAN notes are long prose, trim at a word boundary. Title
-// is the last-resort fallback (rare — selector gates publish on agent success).
-const datasetDescription =
-  entry.value.summary_he
-    ?? (entry.value.notes ? trimToWord(entry.value.notes, 200) : null)
-    ?? entry.value.title
+const seoDescription = datasetDescription(entry.value)
 
 const breadcrumbs = [
   { name: 'ראשי', url: `${SITE_URL}/` },
@@ -218,56 +197,7 @@ const breadcrumbs = [
   { name: entry.value.title, url: datasetUrl },
 ]
 
-const datasetLd: Record<string, unknown> = {
-  '@context': 'https://schema.org',
-  '@type': 'Dataset',
-  name: entry.value.title,
-  description: datasetDescription,
-  identifier: entry.value.id,
-  url: datasetUrl,
-  inLanguage: 'he',
-  isAccessibleForFree: true,
-  isBasedOn: 'https://data.gov.il',
-}
-if (entry.value.license) datasetLd.license = entry.value.license
-if (entry.value.tags_he?.length) datasetLd.keywords = entry.value.tags_he
-if (entry.value.metadata_modified) {
-  datasetLd.dateModified = entry.value.metadata_modified
-  // We don't track CKAN's metadata_created separately; metadata_modified is
-  // a safe proxy for datePublished (it equals creation time for sources that
-  // never change, and the latest revision otherwise).
-  datasetLd.datePublished = entry.value.metadata_modified
-}
-if (entry.value.version) datasetLd.version = entry.value.version
-if (entry.value.organization) {
-  const org = {
-    '@type': 'GovernmentOrganization',
-    name: entry.value.organization,
-    url: 'https://www.gov.il',
-  }
-  // creator = the ministry that produced the dataset; publisher = the
-  // ministry that released it publicly. Same entity in our case, but Google
-  // Dataset Search ranks on both fields being present.
-  datasetLd.creator = org
-  datasetLd.publisher = org
-}
-// temporal_coverage / spatial_coverage are optional AgentData fields the
-// agent populates only when the dataset clearly carries time/geo scope.
-// Emit only when present so older pages stay clean.
-if (entry.value.temporal_coverage) datasetLd.temporalCoverage = entry.value.temporal_coverage
-if (entry.value.spatial_coverage) datasetLd.spatialCoverage = entry.value.spatial_coverage
-if (entry.value.resources?.length) {
-  datasetLd.distribution = entry.value.resources.map((r) => {
-    const dist: Record<string, unknown> = {
-      '@type': 'DataDownload',
-      contentUrl: publicResourceUrl(r.url),
-    }
-    if (r.format) dist.encodingFormat = r.format
-    if (r.name) dist.name = r.name
-    if (r.size_bytes) dist.contentSize = String(r.size_bytes)
-    return dist
-  })
-}
+const datasetLd = buildDatasetLd(entry.value, { canonical: datasetUrl })
 
 // Google truncates titles around 60 chars in Hebrew SERPs. useSeo no longer
 // auto-appends " — govil.ai" (the brand goes through og:site_name instead),
@@ -282,7 +212,7 @@ const seoTitle = (() => {
 
 useSeo({
   title: seoTitle,
-  description: datasetDescription,
+  description: seoDescription,
   path: `/datasets/${entry.value.id}/`,
   author: entry.value.organization,
   breadcrumbs,
