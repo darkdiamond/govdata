@@ -28,9 +28,9 @@ Backlog of (recent) never-analyzed sources is drained first — re-analyzing
 already-published pages because CKAN flagged them as `updated` waits
 until every recent source has at least one page.
 
-The 14-day cooldown applies ONLY to Track 2 (already-analyzed sources
+The 30-day cooldown applies ONLY to Track 2 (already-analyzed sources
 that CKAN just re-flagged as `updated`). For those, we skip a rebuild
-if their last analysis happened less than 14 days ago, to avoid burning
+if their last analysis happened less than 30 days ago, to avoid burning
 agent budget on a page that's still fresh.
 
 The cooldown does NOT apply to:
@@ -45,7 +45,7 @@ from datetime import datetime, timedelta, timezone
 
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 
-DEFAULT_COOLDOWN_DAYS = 14
+DEFAULT_COOLDOWN_DAYS = 30
 DEFAULT_MAX_AGE_DAYS = 365
 DEFAULT_MIN_MODIFIED_FLOOR = datetime(2026, 1, 1, tzinfo=timezone.utc)
 
