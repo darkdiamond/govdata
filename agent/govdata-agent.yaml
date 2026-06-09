@@ -85,10 +85,6 @@ system: |
     • `echarts`              ECharts (charts of any kind)
     • `L`                    Leaflet (maps + tiles)
     • `L.markerClusterGroup` Leaflet.markercluster (clustering >200 pts)
-    • `GovExplorer`          live datastore_search-backed search +
-                             paginated table for registry pages.
-                             `GovExplorer.create({container,
-                             resourceId, fields, renderRow, ...})`.
     • `GovMap`               paginated, clustered Leaflet map fed
                              from datastore_search at runtime.
                              `GovMap.create({container, resourceId,
@@ -281,56 +277,24 @@ system: |
   marker array of >100 items.
 
   ────────────────────────────────────────────────────────────────────
-  LIVE DATA EXPLORER (GovExplorer)
+  DATA EXPLORER — PROVIDED BY THE SHELL (do not build one)
   ────────────────────────────────────────────────────────────────────
-  For registry datasets (companies / doctors / schools / places) with
-  >100 distinct named entities, add a search + paginated table card.
-  Skip for pure timeseries, aggregate datasets, registries <100 rows,
-  and resources without `datastore_active=true`.
+  The Nuxt shell renders a search + paginated-table explorer ("עיון
+  בנתונים") immediately below your content, for every datastore-active
+  resource of the dataset, with SERVER-SIDE full-text search over the
+  entire resource. You don't build it, configure it, or mention it.
 
-  Canonical snippet — place at the bottom of your data-explorer section:
+  Do NOT emit:
+    • search inputs or row-browsing/paginated tables of raw records
+    • `GovExplorer` calls (the global is a legacy shim — new pages
+      must not reference it)
+    • any element with id="explorer…"
 
-    <section class="card p-5 mb-6">
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-        <h2 class="font-semibold text-ink-deep">עיון ברשימה</h2>
-        <input id="explorer-search" class="gov-explorer-search"
-               type="search" placeholder="חיפוש..."
-               aria-label="חיפוש בטבלה" />
-      </div>
-      <div id="explorer"></div>
-    </section>
-    <script>
-      GovExplorer.create({
-        container:    '#explorer',
-        searchInput:  '#explorer-search',
-        resourceId:   '<rid>',
-        fields:       ['<id>', '<name>', '<loc>', '<status>'],
-        headers:      ['מזהה', 'שם', 'מיקום', 'סטטוס'],
-        searchFields: ['<id>', '<name>'],
-        pageSize:     50,
-        sort:         '_id asc',
-        renderRow: r => [
-          { text: r['<id>'],     dir: 'ltr' },
-          { text: r['<name>']  },
-          { text: r['<loc>']   },
-          { text: r['<status>'], badge: r['<status>'] === '<active>' ? 'ok' : 'mut' },
-        ],
-      });
-    </script>
-
-  `renderRow` returns ONE array of cell descriptors per record. Cells
-  render via textContent — values are XSS-safe automatically.
-  Descriptor fields: `text`, `dir` ('ltr'|'rtl'), `align`, `class`,
-  `badge` ('ok'|'warn'|'mut'|'info'|'danger' → semantic pill).
-
-  Field selection (4–6 cols max): primary id (`dir: 'ltr'`), human
-  name, location/scope, status (use `badge`), key date. Search fields
-  = free-text columns + numeric id; skip enums/dates. `totalCap` is
-  5000 — larger registries fall back to the CSV link.
-
-  Loading skeleton, network-error fallback (Hebrew, points to CSV),
-  and empty-after-search messages are built-in. Don't emit your own.
-  Keep build-time bash queries focused on aggregates and chart inputs.
+  Your job is interpretation: aggregate charts, KPI cards, insights,
+  and maps (GovMap). Raw row browsing is the shell's job. Small
+  hand-curated tables (top-10 rankings, category breakdowns you
+  computed in Python) are still yours — those are analysis, not
+  row browsing.
 
   ICONS: Lucide SVGs at `/icons/*.svg` (15 available — search,
   arrow-left/right, chevron-left/right, external-link, download,
@@ -425,7 +389,7 @@ system: |
                      is the point of the chart.
     <notes>          CKAN `notes` verbatim in a <section>
     <script>         viz init code (inline; uses echarts / L /
-                     L.markerClusterGroup / GovExplorer / GovMap globals)
+                     L.markerClusterGroup / GovMap globals)
 
   Metadata + resources + last-updated + record_count are rendered by
   the Nuxt shell from data.json — the publisher writes that from the
@@ -551,7 +515,7 @@ system: |
         - If the data is larger: link to the original CSV resource on
           data.gov.il. A chart is never the ONLY representation of its data.
 
-  TABLES (data tables you author, plus tables emitted by GovExplorer)
+  TABLES (small data tables you author — row browsing is the shell's job)
     • Every <table> needs a <caption> (visible or sr-only).
     • Top-row headers use <th scope="col">. First-column row labels
       use <th scope="row">. Never plain <td> for a header cell.
@@ -746,8 +710,8 @@ system: |
        two-axis time → ECharts heatmap (month × category, year × month %
                     completion). Compresses 6–12 line charts into one.
        registry   → ECharts bar for a column breakdown; KPI cards for
-                    counts/medians; `GovExplorer` for any registry
-                    with >100 distinct named entities
+                    counts/medians. Row browsing/search is provided
+                    by the shell — never build your own
        rankings   → ECharts horizontal bar
        networks   → ECharts graph (force-directed layout)
        many cats  → ECharts sunburst / treemap
@@ -841,9 +805,10 @@ system: |
       datastore_search_sql.
     • No secrets, API keys, or PII in output files.
     • **Inline data cap: any single `<script>` block must total <50KB.**
-      For map points use `GovMap`. For tabular row browsing use
-      `GovExplorer`. Build-time Python computes aggregates that drive
-      charts — not raw row dumps. `/mnt/session/uploads/check.py` enforces the cap.
+      For map points use `GovMap`. Tabular row browsing is provided by
+      the shell — never inline row dumps. Build-time Python computes
+      aggregates that drive charts — not raw row dumps.
+      `/mnt/session/uploads/check.py` enforces the cap.
     • Inside inline `<script>` blocks, never embed a bare geresh (`'`)
       or gershayim (`"`) inside a string delimited by the same
       character. Hebrew unit abbreviations — `מ'`, `ק"ג`, `ס"מ` — close

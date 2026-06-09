@@ -151,6 +151,7 @@ class FirestoreStateStore:
                 "size": r.size,
                 "last_modified": r.last_modified,
                 "description": r.description,
+                "datastore_active": getattr(r, "datastore_active", False),
             }
             for r in dataset.resources
         ]
@@ -365,6 +366,28 @@ class FirestoreStateStore:
             },
             merge=True,
         )
+
+    def set_resource_datastore_flags(
+        self, source_id: str, flags: dict[str, bool]
+    ) -> bool:
+        """Merge `datastore_active` flags into the doc's `resources` array,
+        matched by resource id. Used by the one-shot backfill; the scanner
+        writes the flag on every regular upsert going forward. Returns True
+        if the doc was modified."""
+        ref = self.client.collection(SOURCES_COLL).document(source_id)
+        snap = ref.get()
+        if not snap.exists:
+            return False
+        resources = (snap.to_dict() or {}).get("resources") or []
+        changed = False
+        for r in resources:
+            rid = r.get("id")
+            if rid in flags and r.get("datastore_active") != flags[rid]:
+                r["datastore_active"] = flags[rid]
+                changed = True
+        if changed:
+            ref.set({"resources": resources}, merge=True)
+        return changed
 
     def set_embedding(self, dataset_id: str, embedding: list[float]) -> None:
         """Cache the Voyage embedding so the publisher doesn't recompute it."""

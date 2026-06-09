@@ -20,6 +20,12 @@
 //   5. Inject the new chip row from `opts.titleChips` immediately after
 //      the first <h1>. Each chip is a real <a href="/tags/<slug>/">
 //      so it ships in the static HTML (works without JS, indexes for SEO).
+//   6. Strip agent-built GovExplorer sections. The shell now owns the
+//      data explorer (components/DatasetExplorer.vue, server-side search
+//      over the full resource); legacy pages baked a client-side-search
+//      section into content.html. The GovExplorer.create() calls inside
+//      larger inline scripts are left alone — create() silently no-ops
+//      when its container is missing.
 
 const ESCAPED_SCRIPT_END = /<\\\/script>/g
 const IAP_HOST = /https:\/\/e\.data\.gov\.il/g
@@ -47,6 +53,14 @@ const LEGACY_CHIP_BLOCK_RE =
   /<div\b[^>]*>\s*(?:<span\s+class="tag-chip"\s*>[^<]*<\/span>\s*)+<\/div>/g
 
 const FIRST_H1_RE = /<h1\b[^>]*>[\s\S]*?<\/h1>/
+
+// Any flat <section> whose contents include id="explorer…" — covers
+// id="explorer", id="explorer-search", and the multi-explorer variants
+// (id="explorer-companies" etc.). The tempered token (?:(?!<\/?section\b)…)
+// forbids crossing a nested <section> boundary, so only the innermost
+// section is eaten; explorer sections in the published corpus are flat.
+const EXPLORER_SECTION_RE =
+  /<section\b[^>]*>(?:(?!<\/?section\b)[\s\S])*?\bid="explorer[^"]*"(?:(?!<\/?section\b)[\s\S])*?<\/section>\s*/g
 
 const HTML_ESCAPES: Record<string, string> = {
   '&': '&amp;',
@@ -84,6 +98,7 @@ export function normalizeAgentBody(raw: string, opts: NormalizeOptions = {}): st
     .replace(LIB_SCRIPT_RE, '')
     .replace(LIB_STYLE_RE, '')
     .replace(LEGACY_CHIP_BLOCK_RE, '')
+    .replace(EXPLORER_SECTION_RE, '')
 
   const chips = opts.titleChips ?? []
   if (chips.length > 0) {

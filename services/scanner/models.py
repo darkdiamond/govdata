@@ -46,6 +46,9 @@ class Resource(BaseModel):
     size: Optional[int] = None
     last_modified: Optional[datetime] = None
     description: Optional[str] = None
+    # Whether the resource is queryable via /api/3/action/datastore_search.
+    # Drives the shell's data-explorer section on the dataset page.
+    datastore_active: bool = False
     
     # Local tracking fields (not from CKAN)
     file_hash: Optional[str] = None
@@ -104,6 +107,7 @@ class Dataset(BaseModel):
                 size=res_data.get("size"),
                 last_modified=_parse_datetime(res_data.get("last_modified")),
                 description=res_data.get("description"),
+                datastore_active=bool(res_data.get("datastore_active")),
             )
             resources.append(resource)
         
