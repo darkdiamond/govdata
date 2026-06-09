@@ -131,6 +131,11 @@ async function dsSearch(
   }
 }
 
+// Returns the schema (possibly with zero usable columns — a valid but
+// empty datastore, e.g. a resource that was registered and never
+// loaded); null only when the probe itself fails (not datastore-backed,
+// 404, network). The distinction matters: probe failure drops the
+// tab/section, an empty datastore keeps its tab with an empty state.
 async function loadSchema(rid: string): Promise<Schema | null> {
   const cached = schemaCache.get(rid)
   if (cached) return cached
@@ -145,7 +150,6 @@ async function loadSchema(rid: string): Promise<Schema | null> {
       totalCols: all.length,
       baseTotal: res.total,
     }
-    if (!sch.cols.length) return null
     schemaCache.set(rid, sch)
     return sch
   } catch {
@@ -173,6 +177,15 @@ async function activate(rid: string) {
   }
   schema.value = sch
   offset.value = 0
+  if (!sch.cols.length) {
+    // Valid datastore with no usable columns (empty resource) — keep the
+    // tab, render the empty state instead of dropping the button the
+    // user just clicked.
+    rows.value = []
+    total.value = 0
+    loading.value = false
+    return
+  }
   await loadPage()
 }
 
@@ -240,6 +253,10 @@ function switchResource(rid: string) {
 
 const HE_NUM = (n: number) => n.toLocaleString('he-IL')
 
+// Valid datastore with no usable columns — the resource is registered
+// but holds no data. Renders an empty state instead of search + table.
+const schemaEmpty = computed(() => Boolean(schema.value && !schema.value.cols.length))
+
 const rangeText = computed(() => {
   if (!total.value) return ''
   const from = offset.value + 1
@@ -303,19 +320,26 @@ onBeforeUnmount(() => {
       </button>
     </div>
 
-    <input
-      v-model="searchText"
-      type="search"
-      class="explorer-search"
-      placeholder="חיפוש ברשומות…"
-      aria-label="חיפוש בכל רשומות המאגר"
-      @input="onSearchInput"
-    />
-    <p class="m-0 mt-1.5 mb-3 text-xs text-subtle">
-      החיפוש מתבצע בכל הרשומות במאגר, לפי מילים שלמות
-    </p>
+    <template v-if="!schemaEmpty">
+      <input
+        v-model="searchText"
+        type="search"
+        class="explorer-search"
+        placeholder="חיפוש ברשומות…"
+        aria-label="חיפוש בכל רשומות המאגר"
+        @input="onSearchInput"
+      />
+      <p class="m-0 mt-1.5 mb-3 text-xs text-subtle">
+        החיפוש מתבצע בכל הרשומות במאגר, לפי מילים שלמות
+      </p>
+    </template>
 
-    <div class="overflow-x-auto" :aria-busy="loading">
+    <div v-if="schemaEmpty" class="explorer-state">
+      אין רשומות זמינות לעיון בקובץ זה.
+      <a :href="visibleCandidates.find((c) => c.rid === activeRid)?.url" target="_blank" rel="noopener">להורדת הקובץ</a>
+    </div>
+
+    <div v-else class="overflow-x-auto" :aria-busy="loading">
       <table v-if="schema" class="explorer-tbl" :class="{ 'opacity-50': loading && rows.length }">
         <caption class="sr-only">תוכן המאגר — תוצאות מעומדות בטבלה</caption>
         <thead>
