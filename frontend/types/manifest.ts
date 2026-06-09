@@ -18,6 +18,12 @@ export interface ResourceEntry {
   name?: string
   size_bytes?: number
   description?: string
+  /** CKAN resource id — drives the shell's DatasetExplorer (datastore_search).
+   *  Present after the datastore_active backfill/republish. */
+  id?: string
+  /** true/false from CKAN's `datastore_active`; absent = unknown (legacy
+   *  data.json written before the flag was captured). */
+  datastore_active?: boolean
 }
 
 /** Scanner-derived metadata. Single source of truth: Firestore `sources/<id>` */

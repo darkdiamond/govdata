@@ -57,6 +57,8 @@ def _resources_from_source(src: SourceRecord) -> list[ResourceEntry]:
             name=r.get("name"),
             size_bytes=r.get("size"),
             description=r.get("description"),
+            id=r.get("id"),
+            datastore_active=r.get("datastore_active"),
         )
         for r in src.resources
         if r.get("url")

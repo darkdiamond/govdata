@@ -53,6 +53,12 @@ SPACING_RHYTHM_RE = re.compile(
 # Legacy geresh trap (two consecutive gereshes after a Hebrew letter).
 GERESH_RE = re.compile(r"[א-ת]''")
 
+# The shell renders the data explorer (search + paginated table with
+# server-side full-text search) below the agent's content for every
+# datastore-active resource. Agent output must not build its own:
+# no GovExplorer calls, no id="explorer…" elements.
+EXPLORER_RE = re.compile(r'\bGovExplorer\b|\bid="explorer')
+
 SCRIPT_BLOCK_RE = re.compile(
     r"<script\b[^>]*>(.*?)</script\s*>", re.DOTALL | re.IGNORECASE
 )
@@ -96,17 +102,24 @@ def check_html_hygiene(body: str) -> None:
             "GERESH-TRAP: legacy two-consecutive-geresh after Hebrew letter — "
             f"near {body[max(0,m.start()-10):m.end()+10]!r}"
         )
+    m = EXPLORER_RE.search(body)
+    if m:
+        fail(
+            "SHELL-EXPLORER: the shell renders the data explorer — remove "
+            f'GovExplorer / id="explorer…" near {body[max(0,m.start()-20):m.end()+40]!r}'
+        )
 
 
 def check_inline_data_cap(blocks: list[str]) -> None:
     # Any single <script> block over 50 KB means a row dump was inlined
-    # into HTML. Use GovMap (point-set maps) or GovExplorer (registry
-    # tables) instead.
+    # into HTML. Use GovMap for point-set maps; row browsing is provided
+    # by the shell — compute aggregates in Python instead.
     for i, b in enumerate(blocks, 1):
         if len(b) > 51_200:
             fail(
                 f"INLINE-DATA: <script> block #{i} is {len(b)} bytes (>50KB cap). "
-                "Use GovMap / GovExplorer.",
+                "Use GovMap for point maps; row browsing is provided by the "
+                "shell — compute aggregates in Python instead.",
                 code=1,
             )
 

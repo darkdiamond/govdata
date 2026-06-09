@@ -39,6 +39,15 @@ class ResourceEntry(BaseModel):
     size_bytes: Optional[int] = None
     description: Optional[str] = None
 
+    # CKAN resource id — drives the shell's data-explorer section
+    # (DatasetExplorer.vue queries /api/3/action/datastore_search with it).
+    id: Optional[str] = None
+    # True/False from CKAN's `datastore_active`. None = unknown (legacy
+    # Firestore doc ingested before the flag existed) — omitted from
+    # data.json via exclude_none, and the frontend falls back to probing
+    # the primary resource at runtime.
+    datastore_active: Optional[bool] = None
+
 
 class DatasetMeta(BaseModel):
     """Scanner-derived per-dataset metadata. Written to `data.json` by the

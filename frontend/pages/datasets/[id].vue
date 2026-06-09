@@ -358,7 +358,15 @@ onMounted(async () => {
     </nav>
 
     <div class="max-w-gov mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
-      <article ref="bodyEl" class="dataset-body" v-html="body" />
+      <!-- min-w-0 keeps the explorer's wide table from blowing out the 1fr track -->
+      <div class="min-w-0">
+        <article ref="bodyEl" class="dataset-body" v-html="body" />
+        <DatasetExplorer
+          :resources="entry.resources ?? []"
+          :primary-resource-id="entry.primary_resource_id"
+          :record-count="entry.record_count"
+        />
+      </div>
 
       <aside class="space-y-4 lg:pt-20">
         <section v-if="hasMeta" class="card p-4">
