@@ -1,8 +1,12 @@
-// gov-explorer.js — in-page search + paginated table over a CKAN
-// (data.gov.il) datastore_search resource. Pre-loaded by the Nuxt
-// dataset shell (see frontend/utils/dataset-libs.ts), so agent-emitted
-// content.html can call window.GovExplorer.create({...}) without any
-// <script src=>.
+// gov-explorer.js — LEGACY SHIM. The Nuxt shell now strips agent-built
+// explorer sections (utils/normalize-agent-body.ts) and renders
+// components/DatasetExplorer.vue instead (server-side search over the
+// full resource). This lib stays loaded because ~330 published
+// content.html bodies call window.GovExplorer.create(...) mid-script,
+// alongside chart init code — the global must exist and create() must
+// stay a silent no-op on a missing container, or those scripts would
+// throw and kill the charts that follow. New agent output must not use
+// GovExplorer (enforced by agent/skills/check.py).
 //
 // CORS: data.gov.il responds with permissive CORS for plain GETs to
 // /api/3/action/. We do not set custom headers and do not send
@@ -111,7 +115,9 @@
   function create(config) {
     if (!config) { console.warn('[GovExplorer] missing config'); return; }
     var container = resolveEl(config.container);
-    if (!container) { console.warn('[GovExplorer] container not found', config.container); return; }
+    // Silent no-op: the shell strips legacy explorer markup, so every
+    // pre-existing create() call lands here. Not a warn — it's expected.
+    if (!container) return;
     if (!config.resourceId) { console.warn('[GovExplorer] resourceId is required'); return; }
 
     var fields = Array.isArray(config.fields) ? config.fields.slice() : [];

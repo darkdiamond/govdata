@@ -142,6 +142,53 @@ def test_manifest_merges_scanner_and_agent_fields(tmp_path: Path, monkeypatch):
     assert "dataset_kind" not in b or b.get("dataset_kind") is None
 
 
+def test_publish_passes_resource_id_and_datastore_active(tmp_path: Path, monkeypatch):
+    """Resource id + datastore_active flow from the Firestore doc into
+    data.json (they drive the shell's DatasetExplorer); legacy resources
+    without the flag omit the key entirely (exclude_none) so the frontend
+    can tell "unknown" apart from an authoritative False."""
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    src = _src(dataset_id="flags", with_agent=False)
+    src.resources = [
+        {
+            "id": "rid-active",
+            "name": "main",
+            "format": "CSV",
+            "url": "https://data.gov.il/dataset/x/resource/rid-active/download/x.csv",
+            "size": 1024,
+            "description": None,
+            "datastore_active": True,
+        },
+        {
+            "id": "rid-flat-file",
+            "name": "pdf",
+            "format": "PDF",
+            "url": "https://data.gov.il/dataset/x/resource/rid-flat-file/download/x.pdf",
+            "size": 2048,
+            "description": None,
+            "datastore_active": False,
+        },
+        {
+            # Legacy shape — ingested before the scanner captured the flag.
+            "id": "rid-legacy",
+            "name": "old",
+            "format": "XLSX",
+            "url": "https://data.gov.il/dataset/x/resource/rid-legacy/download/x.xlsx",
+            "size": 4096,
+            "description": None,
+        },
+    ]
+    store = _store_mock([src])
+
+    publish.publish(tmp_path, store=store)
+
+    data = json.loads((tmp_path / "datasets/flags/data.json").read_text())
+    by_id = {r.get("id"): r for r in data["resources"]}
+    assert by_id["rid-active"]["datastore_active"] is True
+    assert by_id["rid-flat-file"]["datastore_active"] is False
+    assert "datastore_active" not in by_id["rid-legacy"]
+
+
 def test_publish_propagates_captured_analyzed_metadata_modified(
     tmp_path: Path, monkeypatch
 ):
