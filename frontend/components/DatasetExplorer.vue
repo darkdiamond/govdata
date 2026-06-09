@@ -16,7 +16,12 @@ const props = defineProps<{
 
 const API = 'https://data.gov.il/api/3/action/datastore_search'
 const PAGE_SIZE = 50
-const MAX_COLS = 12
+// Show every column — many CKAN resources keep their meaningful identity
+// columns (names, dates, statuses) at the END of the field list, so any
+// small cap hides exactly the wrong half. The wrapper scrolls
+// horizontally. MAX_COLS is only a backstop against pathological
+// resources (hundreds of columns) where a table stops making sense.
+const MAX_COLS = 60
 
 interface Candidate {
   rid: string
@@ -107,7 +112,7 @@ const DATE_TYPES = new Set(['date', 'timestamp', 'timestamptz', 'time'])
 const HIDDEN_FIELDS = new Set(['_id', '_full_text', 'rank'])
 
 async function dsSearch(
-  p: { resource_id: string; limit: number; offset?: number; q?: string; fields?: string[] },
+  p: { resource_id: string; limit: number; offset?: number; q?: string },
   signal?: AbortSignal,
 ): Promise<DsResult> {
   const params = new URLSearchParams({
@@ -117,9 +122,6 @@ async function dsSearch(
   })
   if (p.offset) params.set('offset', String(p.offset))
   if (p.q) params.set('q', p.q)
-  if (p.fields?.length && p.fields.every((f) => !f.includes(','))) {
-    params.set('fields', p.fields.join(','))
-  }
   const res = await fetch(`${API}?${params}`, { signal })
   if (!res.ok) throw new Error(`http ${res.status}`)
   const data = await res.json()
@@ -205,7 +207,6 @@ async function loadPage() {
         limit: PAGE_SIZE,
         offset: offset.value,
         q: query.value || undefined,
-        fields: sch.cols.map((c) => c.id),
       },
       aborter.signal,
     )
