@@ -126,6 +126,13 @@ async def run_pipeline(
     config = ScannerSettings()
 
     n = n_per_run if n_per_run is not None else int(os.environ.get("N_PER_RUN", "1"))
+    # Stopgap knob: pause Track 2 re-analysis (sources CKAN re-flagged as
+    # updated) until structural-change gating lands. Track 1 still runs.
+    reanalyze = os.environ.get("REANALYZE_ENABLED", "true").lower() not in (
+        "false",
+        "0",
+        "no",
+    )
     scan_limit = int(os.environ.get("SCAN_LIMIT", "500"))
     staging_bucket = os.environ.get("GCS_STAGING_BUCKET", "")
     project_id = (
@@ -155,7 +162,9 @@ async def run_pipeline(
             raise RuntimeError(f"override source {override_id} not found in Firestore")
         to_process = [src]
     else:
-        to_process = await asyncio.to_thread(selector.pick_next, store, n)
+        to_process = await asyncio.to_thread(
+            selector.pick_next, store, n, reanalyze=reanalyze
+        )
 
     summary: dict = {
         "mode": mode,

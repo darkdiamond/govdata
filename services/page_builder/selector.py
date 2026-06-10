@@ -63,6 +63,7 @@ def pick_next(
     cooldown_days: int = DEFAULT_COOLDOWN_DAYS,
     max_age_days: int = DEFAULT_MAX_AGE_DAYS,
     min_modified_floor: datetime = DEFAULT_MIN_MODIFIED_FLOOR,
+    reanalyze: bool = True,
 ) -> list[SourceRecord]:
     now = datetime.now(timezone.utc)
     cooldown_cutoff = now - timedelta(days=cooldown_days)
@@ -83,7 +84,11 @@ def pick_next(
             return picks
 
     # Track 2 — already analyzed, CKAN-updated, past cooldown, within max_age.
-    if len(picks) < n:
+    # `reanalyze=False` (env REANALYZE_ENABLED) pauses this track: until
+    # structural-vs-additive change gating exists, datasets that append rows
+    # daily re-qualify every cooldown period — a full agent run each, for a
+    # page that barely changes. Track 1 (never analyzed) is unaffected.
+    if reanalyze and len(picks) < n:
         for src in store.list_changed_sources(limit=max((n - len(picks)) * 4, 16)):
             if src.id in seen:
                 continue
