@@ -125,7 +125,13 @@ async function dsSearch(
     include_total: 'true',
   })
   if (p.offset) params.set('offset', String(p.offset))
-  if (p.q) params.set('q', p.q)
+  if (p.q) {
+    // q is always tsquery-shaped (built by buildTsQuery) — plain=false
+    // makes CKAN pass it to to_tsquery, enabling the :* prefix operator
+    // so partial words match (הרצל → הרצליה).
+    params.set('q', p.q)
+    params.set('plain', 'false')
+  }
   if (p.sort) params.set('sort', p.sort)
   const res = await fetch(`${API}?${params}`, { signal })
   if (!res.ok) throw new Error(`http ${res.status}`)
@@ -143,6 +149,20 @@ async function dsSearch(
 // loaded); null only when the probe itself fails (not datastore-backed,
 // 404, network). The distinction matters: probe failure drops the
 // tab/section, an empty datastore keeps its tab with an empty state.
+// Turn free user input into a safe PostgreSQL tsquery: every word
+// becomes a prefix match (tok:*), multiple words AND together. Any
+// non-letter/digit char is stripped first — raw tsquery metacharacters
+// (& | ! ( ) : * ' ") make CKAN return an Invalid-query error.
+function buildTsQuery(raw: string): string | null {
+  const tokens = raw
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 6)
+  if (!tokens.length) return null
+  return tokens.map((t) => `${t}:*`).join(' & ')
+}
+
 async function loadSchema(rid: string): Promise<Schema | null> {
   const cached = schemaCache.get(rid)
   if (cached) return cached
@@ -213,7 +233,7 @@ async function loadPage() {
         resource_id: rid,
         limit: PAGE_SIZE,
         offset: offset.value,
-        q: query.value || undefined,
+        q: (query.value && buildTsQuery(query.value)) || undefined,
         // Quoted form handles field ids with spaces or commas (verified
         // against data.gov.il). Ids containing `"` are unsortable.
         sort: sortCol.value ? `"${sortCol.value}" ${sortDir.value}` : undefined,
@@ -362,7 +382,7 @@ onBeforeUnmount(() => {
         @input="onSearchInput"
       />
       <p class="m-0 mt-1.5 mb-3 text-xs text-subtle">
-        החיפוש מתבצע בכל הרשומות במאגר, לפי מילים שלמות
+        החיפוש מתבצע בכל הרשומות במאגר, גם לפי תחילת מילה
       </p>
     </template>
 
