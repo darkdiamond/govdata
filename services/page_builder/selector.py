@@ -4,8 +4,15 @@ Priority (first non-empty track wins):
     1. `analysis_status == "never"`.
        Ordered by `metadata_modified` DESC.
     2. `change_status in {new, updated}` AND
+       `metadata_modified` newer than `analyzed_metadata_modified`
+       (null marker = legacy doc, treated as eligible) AND
        (`last_analyzed_at` is null OR older than `cooldown_days`).
        Ordered by CKAN `metadata_modified` DESC.
+
+The `analyzed_metadata_modified` guard exists because `change_status` is
+sticky: the scanner only writes it on NEW/UPDATED and nothing resets it
+after a successful analysis, so without the guard every source ever
+flagged `updated` would burn an agent run every cooldown period forever.
 
 Both tracks are gated by an effective cutoff = `max(min_modified_floor,
 now - max_age_days)`. A source is only eligible if its CKAN
@@ -82,6 +89,16 @@ def pick_next(
                 continue
             if src.metadata_modified is None or _as_utc(src.metadata_modified) < age_cutoff:
                 break
+            # `change_status` is sticky — the scanner only writes it on
+            # NEW/UPDATED and nothing resets it after analysis. Without
+            # this guard, every source ever flagged `updated` would be
+            # re-analyzed every cooldown period forever, even when CKAN
+            # hasn't changed since the page was built. Legacy docs with
+            # a null marker can't be compared — keep them eligible.
+            if src.analyzed_metadata_modified is not None and _as_utc(
+                src.metadata_modified
+            ) <= _as_utc(src.analyzed_metadata_modified):
+                continue
             if src.last_analyzed_at is None or _as_utc(src.last_analyzed_at) < cooldown_cutoff:
                 picks.append(src)
                 seen.add(src.id)
