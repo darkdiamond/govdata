@@ -95,6 +95,10 @@ const searchText = ref('')
 const query = ref('')
 const loading = ref(false)
 const fetchError = ref(false)
+// Server-side sort over the whole resource, like search. null = CKAN's
+// default order (_id, or rank under q).
+const sortCol = ref<string | null>(null)
+const sortDir = ref<'asc' | 'desc'>('asc')
 
 interface Schema {
   cols: Col[]
@@ -112,7 +116,7 @@ const DATE_TYPES = new Set(['date', 'timestamp', 'timestamptz', 'time'])
 const HIDDEN_FIELDS = new Set(['_id', '_full_text', 'rank'])
 
 async function dsSearch(
-  p: { resource_id: string; limit: number; offset?: number; q?: string },
+  p: { resource_id: string; limit: number; offset?: number; q?: string; sort?: string },
   signal?: AbortSignal,
 ): Promise<DsResult> {
   const params = new URLSearchParams({
@@ -122,6 +126,7 @@ async function dsSearch(
   })
   if (p.offset) params.set('offset', String(p.offset))
   if (p.q) params.set('q', p.q)
+  if (p.sort) params.set('sort', p.sort)
   const res = await fetch(`${API}?${params}`, { signal })
   if (!res.ok) throw new Error(`http ${res.status}`)
   const data = await res.json()
@@ -179,6 +184,8 @@ async function activate(rid: string) {
   }
   schema.value = sch
   offset.value = 0
+  sortCol.value = null
+  sortDir.value = 'asc'
   if (!sch.cols.length) {
     // Valid datastore with no usable columns (empty resource) — keep the
     // tab, render the empty state instead of dropping the button the
@@ -207,6 +214,9 @@ async function loadPage() {
         limit: PAGE_SIZE,
         offset: offset.value,
         q: query.value || undefined,
+        // Quoted form handles field ids with spaces or commas (verified
+        // against data.gov.il). Ids containing `"` are unsortable.
+        sort: sortCol.value ? `"${sortCol.value}" ${sortDir.value}` : undefined,
       },
       aborter.signal,
     )
@@ -244,6 +254,27 @@ function prevPage() {
   if (offset.value === 0) return
   offset.value = Math.max(0, offset.value - PAGE_SIZE)
   void loadPage()
+}
+
+function sortable(colId: string): boolean {
+  return !colId.includes('"')
+}
+
+function toggleSort(colId: string) {
+  if (!sortable(colId)) return
+  if (sortCol.value === colId) {
+    sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
+  } else {
+    sortCol.value = colId
+    sortDir.value = 'asc'
+  }
+  offset.value = 0
+  void loadPage()
+}
+
+function ariaSort(colId: string): 'ascending' | 'descending' | 'none' {
+  if (sortCol.value !== colId) return 'none'
+  return sortDir.value === 'asc' ? 'ascending' : 'descending'
 }
 
 function switchResource(rid: string) {
@@ -345,7 +376,26 @@ onBeforeUnmount(() => {
         <caption class="sr-only">תוכן המאגר — תוצאות מעומדות בטבלה</caption>
         <thead>
           <tr>
-            <th v-for="col in schema.cols" :key="col.id" scope="col">{{ col.id }}</th>
+            <th
+              v-for="col in schema.cols"
+              :key="col.id"
+              scope="col"
+              :aria-sort="sortable(col.id) ? ariaSort(col.id) : undefined"
+            >
+              <button
+                v-if="sortable(col.id)"
+                type="button"
+                class="th-sort"
+                :class="{ 'th-sort--active': sortCol === col.id }"
+                @click="toggleSort(col.id)"
+              >
+                <span>{{ col.id }}</span>
+                <span class="th-sort-arrow" aria-hidden="true">{{
+                  sortCol === col.id ? (sortDir === 'asc' ? '▲' : '▼') : '↕'
+                }}</span>
+              </button>
+              <template v-else>{{ col.id }}</template>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -436,6 +486,34 @@ onBeforeUnmount(() => {
 }
 .explorer-tbl tbody tr:hover td {
   background: #f1f7ff;
+}
+.th-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.th-sort:hover {
+  color: #0068f5;
+}
+.th-sort:focus-visible {
+  outline: 2px solid #0068f5;
+  outline-offset: 1px;
+  border-radius: 0.2rem;
+}
+.th-sort-arrow {
+  font-size: 0.65em;
+  opacity: 0.35;
+}
+.th-sort--active .th-sort-arrow {
+  opacity: 1;
+  color: #0068f5;
 }
 .explorer-state {
   padding: 1.5rem;
