@@ -37,12 +37,16 @@ interface Col {
   id: string
   numeric: boolean
   date: boolean
+  /** CKAN Data Dictionary (fields[].info) — publisher-curated Hebrew
+   *  label/explanation. Present on ~15% of data.gov.il resources. */
+  label?: string
+  notes?: string
 }
 
 interface DsResult {
   records: Record<string, unknown>[]
   total: number
-  fields?: { id: string; type: string }[]
+  fields?: { id: string; type: string; info?: { label?: string; notes?: string } }[]
 }
 
 const RESOURCE_URL_RE = /\/resource\/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\//
@@ -85,6 +89,7 @@ const candidates = computed<Candidate[]>(() => {
 
 const droppedRids = ref<Set<string>>(new Set())
 const visibleCandidates = computed(() => candidates.value.filter((c) => !droppedRids.value.has(c.rid)))
+const activeUrl = computed(() => visibleCandidates.value.find((c) => c.rid === activeRid.value)?.url)
 
 const collapsed = ref(false)
 const activeRid = ref<string | null>(null)
@@ -144,11 +149,6 @@ async function dsSearch(
   }
 }
 
-// Returns the schema (possibly with zero usable columns — a valid but
-// empty datastore, e.g. a resource that was registered and never
-// loaded); null only when the probe itself fails (not datastore-backed,
-// 404, network). The distinction matters: probe failure drops the
-// tab/section, an empty datastore keeps its tab with an empty state.
 // Turn free user input into a safe PostgreSQL tsquery: every word
 // becomes a prefix match (tok:*), multiple words AND together. Any
 // non-letter/digit char is stripped first — raw tsquery metacharacters
@@ -163,6 +163,11 @@ function buildTsQuery(raw: string): string | null {
   return tokens.map((t) => `${t}:*`).join(' & ')
 }
 
+// Returns the schema (possibly with zero usable columns — a valid but
+// empty datastore, e.g. a resource that was registered and never
+// loaded); null only when the probe itself fails (not datastore-backed,
+// 404, network). The distinction matters: probe failure drops the
+// tab/section, an empty datastore keeps its tab with an empty state.
 async function loadSchema(rid: string): Promise<Schema | null> {
   const cached = schemaCache.get(rid)
   if (cached) return cached
@@ -172,7 +177,13 @@ async function loadSchema(rid: string): Promise<Schema | null> {
     const sch: Schema = {
       cols: all.slice(0, MAX_COLS).map((f) => {
         const t = (f.type || '').toLowerCase()
-        return { id: f.id, numeric: NUMERIC_TYPES.has(t), date: DATE_TYPES.has(t) }
+        return {
+          id: f.id,
+          numeric: NUMERIC_TYPES.has(t),
+          date: DATE_TYPES.has(t),
+          label: f.info?.label?.trim() || undefined,
+          notes: f.info?.notes?.trim() || undefined,
+        }
       }),
       totalCols: all.length,
       baseTotal: res.total,
@@ -244,6 +255,7 @@ async function loadPage() {
     rows.value = res.records
     total.value = res.total
     loading.value = false
+    void nextTick(updateFades)
   } catch (err) {
     if (seq !== reqSeq || (err instanceof DOMException && err.name === 'AbortError')) return
     rows.value = []
@@ -265,15 +277,26 @@ function onSearchInput() {
   }, 350)
 }
 
-function nextPage() {
+const prevBtn = ref<HTMLButtonElement | null>(null)
+const nextBtn = ref<HTMLButtonElement | null>(null)
+
+async function nextPage() {
   if (offset.value + PAGE_SIZE >= total.value) return
   offset.value += PAGE_SIZE
-  void loadPage()
+  await loadPage()
+  // Reaching the last page disables the button under focus — focus would
+  // silently drop to <body>. Hand it to the counterpart instead.
+  if (offset.value + PAGE_SIZE >= total.value && document.activeElement === nextBtn.value) {
+    prevBtn.value?.focus()
+  }
 }
-function prevPage() {
+async function prevPage() {
   if (offset.value === 0) return
   offset.value = Math.max(0, offset.value - PAGE_SIZE)
-  void loadPage()
+  await loadPage()
+  if (offset.value === 0 && document.activeElement === prevBtn.value) {
+    nextBtn.value?.focus()
+  }
 }
 
 function sortable(colId: string): boolean {
@@ -305,6 +328,28 @@ function switchResource(rid: string) {
 
 const HE_NUM = (n: number) => n.toLocaleString('he-IL')
 
+// Display label for a column: publisher's Data Dictionary label when
+// present, otherwise the raw field id prettified — underscores→spaces,
+// camelCase split (operator_nm → "operator nm", WinnersMeshapryDiur →
+// "Winners Meshapry Diur"). Hebrew ids pass through unchanged. Sorting
+// always uses the raw id.
+function colLabel(col: Col): string {
+  if (col.label) return col.label
+  return col.id
+    .replace(/_/g, ' ')
+    .replace(/([a-z\d])([A-Z])/g, '$1 $2')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+// Columns worth a legend entry: a publisher explanation (notes), or a
+// curated label that differs from the raw id (so users can map the
+// header back to the downloadable file's column).
+const legendCols = computed<Col[]>(() => {
+  const cols = schema.value?.cols ?? []
+  return cols.filter((c) => c.notes || (c.label && c.label !== c.id))
+})
+
 // Valid datastore with no usable columns — the resource is registered
 // but holds no data. Renders an empty state instead of search + table.
 const schemaEmpty = computed(() => Boolean(schema.value && !schema.value.cols.length))
@@ -318,6 +363,13 @@ const rangeText = computed(() => {
     return `נמצאו ${HE_NUM(total.value)} רשומות תואמות מתוך ${HE_NUM(schema.value.baseTotal)} — ${base}`
   }
   return base
+})
+
+const pageText = computed(() => {
+  if (total.value <= PAGE_SIZE) return ''
+  const page = Math.floor(offset.value / PAGE_SIZE) + 1
+  const pages = Math.ceil(total.value / PAGE_SIZE)
+  return `עמוד ${HE_NUM(page)} מתוך ${HE_NUM(pages)}`
 })
 
 // Many CKAN columns store dates as text — "2027-04-06 00:00:00.000".
@@ -334,6 +386,37 @@ function cellText(v: unknown, col: Col): string {
   return s
 }
 
+// Horizontal-scroll cues: gradient fades on the edge(s) that still hide
+// columns. RTL scrollLeft is negative in Chromium/Firefox — Math.abs
+// normalizes. The component is always dir="rtl": inline-start = right,
+// content overflows toward the left (inline-end).
+const scrollEl = ref<HTMLElement | null>(null)
+const fadeStart = ref(false)
+const fadeEnd = ref(false)
+
+function updateFades() {
+  const el = scrollEl.value
+  if (!el) {
+    fadeStart.value = false
+    fadeEnd.value = false
+    return
+  }
+  const max = el.scrollWidth - el.clientWidth
+  const pos = Math.abs(el.scrollLeft)
+  fadeStart.value = max > 1 && pos > 1
+  fadeEnd.value = max > 1 && pos < max - 1
+}
+
+let fadeRo: ResizeObserver | null = null
+watch(scrollEl, (el) => {
+  fadeRo?.disconnect()
+  if (el) {
+    fadeRo = new ResizeObserver(updateFades)
+    fadeRo.observe(el)
+    updateFades()
+  }
+})
+
 onMounted(() => {
   const first = visibleCandidates.value[0]
   if (first) void activate(first.rid)
@@ -342,6 +425,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   clearTimeout(debounceTimer)
   aborter?.abort()
+  fadeRo?.disconnect()
 })
 </script>
 
@@ -379,87 +463,102 @@ onBeforeUnmount(() => {
         class="explorer-search"
         placeholder="חיפוש ברשומות…"
         aria-label="חיפוש בכל רשומות המאגר"
+        aria-describedby="explorer-search-hint"
         @input="onSearchInput"
       />
-      <p class="m-0 mt-1.5 mb-3 text-xs text-subtle">
+      <p id="explorer-search-hint" class="m-0 mt-1.5 mb-3 text-xs text-subtle">
         החיפוש מתבצע בכל הרשומות במאגר, גם לפי תחילת מילה
       </p>
     </template>
 
     <div v-if="schemaEmpty" class="explorer-state">
       אין רשומות זמינות לעיון בקובץ זה.
-      <a :href="visibleCandidates.find((c) => c.rid === activeRid)?.url" target="_blank" rel="noopener">להורדת הקובץ</a>
+      <a :href="activeUrl" target="_blank" rel="noopener">להורדת הקובץ</a>
     </div>
 
-    <div v-else class="overflow-x-auto" :aria-busy="loading">
-      <table v-if="schema" class="explorer-tbl" :class="{ 'opacity-50': loading && rows.length }">
-        <caption class="sr-only">תוכן המאגר — תוצאות מעומדות בטבלה</caption>
-        <thead>
-          <tr>
-            <th
-              v-for="col in schema.cols"
-              :key="col.id"
-              scope="col"
-              :aria-sort="sortable(col.id) ? ariaSort(col.id) : undefined"
-            >
-              <button
-                v-if="sortable(col.id)"
-                type="button"
-                class="th-sort"
-                :class="{ 'th-sort--active': sortCol === col.id }"
-                @click="toggleSort(col.id)"
+    <div v-else class="explorer-scroll-wrap" :class="{ 'fade-start': fadeStart, 'fade-end': fadeEnd }">
+      <div ref="scrollEl" class="explorer-scroll" :aria-busy="loading" @scroll.passive="updateFades">
+        <table v-if="schema" class="explorer-tbl" :class="{ 'opacity-50': loading && rows.length }">
+          <caption class="sr-only">תוכן המאגר — תוצאות מעומדות בטבלה</caption>
+          <thead>
+            <tr>
+              <th
+                v-for="col in schema.cols"
+                :key="col.id"
+                scope="col"
+                :aria-sort="sortable(col.id) ? ariaSort(col.id) : undefined"
               >
-                <span>{{ col.id }}</span>
-                <span class="th-sort-arrow" aria-hidden="true">{{
-                  sortCol === col.id ? (sortDir === 'asc' ? '▲' : '▼') : '↕'
-                }}</span>
-              </button>
-              <template v-else>{{ col.id }}</template>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <template v-if="loading && !rows.length">
-            <tr v-for="i in 5" :key="`skel-${i}`">
-              <td :colspan="schema.cols.length"><span class="explorer-skel" :style="{ width: `${100 - i * 8}%` }" /></td>
+                <button
+                  v-if="sortable(col.id)"
+                  type="button"
+                  class="th-sort"
+                  :class="{ 'th-sort--active': sortCol === col.id }"
+                  :title="col.notes"
+                  @click="toggleSort(col.id)"
+                >
+                  <span>{{ colLabel(col) }}</span>
+                  <span class="th-sort-arrow" aria-hidden="true">{{
+                    sortCol === col.id ? (sortDir === 'asc' ? '▲' : '▼') : '↕'
+                  }}</span>
+                </button>
+                <template v-else>{{ colLabel(col) }}</template>
+              </th>
             </tr>
-          </template>
-          <tr v-else-if="fetchError">
-            <td :colspan="schema.cols.length" class="explorer-state explorer-state--error">
-              לא ניתן לטעון את הנתונים כעת.
-              <a :href="visibleCandidates.find((c) => c.rid === activeRid)?.url" target="_blank" rel="noopener">להורדת הקובץ המלא</a>
-            </td>
-          </tr>
-          <tr v-else-if="!rows.length">
-            <td :colspan="schema.cols.length" class="explorer-state">לא נמצאו רשומות תואמות</td>
-          </tr>
-          <tr v-for="(row, ri) in rows" :key="`${offset}-${ri}`">
-            <td
-              v-for="col in schema.cols"
-              :key="col.id"
-              :dir="col.numeric || col.date ? 'ltr' : 'auto'"
-              :class="{ 'text-end tabular-nums': col.numeric || col.date }"
-              :title="cellText(row[col.id], col).length > 60 ? cellText(row[col.id], col) : undefined"
-            >{{ cellText(row[col.id], col) }}</td>
-          </tr>
-        </tbody>
-      </table>
-      <div v-else-if="loading" class="py-6">
-        <span v-for="i in 3" :key="i" class="explorer-skel" :style="{ width: `${100 - i * 12}%` }" />
+          </thead>
+          <tbody>
+            <template v-if="loading && !rows.length">
+              <tr v-for="i in 5" :key="`skel-${i}`">
+                <td :colspan="schema.cols.length"><span class="explorer-skel" :style="{ width: `${100 - i * 8}%` }" /></td>
+              </tr>
+            </template>
+            <tr v-else-if="fetchError">
+              <td :colspan="schema.cols.length" class="explorer-state explorer-state--error">
+                לא ניתן לטעון את הנתונים כעת.
+                <a :href="activeUrl" target="_blank" rel="noopener">להורדת הקובץ המלא</a>
+              </td>
+            </tr>
+            <tr v-else-if="!rows.length">
+              <td :colspan="schema.cols.length" class="explorer-state">לא נמצאו רשומות תואמות</td>
+            </tr>
+            <tr v-for="(row, ri) in rows" :key="`${offset}-${ri}`">
+              <td
+                v-for="col in schema.cols"
+                :key="col.id"
+                :dir="col.numeric || col.date ? 'ltr' : 'auto'"
+                :class="{ 'text-end tabular-nums': col.numeric || col.date }"
+                :title="cellText(row[col.id], col).length > 60 ? cellText(row[col.id], col) : undefined"
+              >{{ cellText(row[col.id], col) }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div v-else-if="loading" class="py-6">
+          <span v-for="i in 3" :key="i" class="explorer-skel" :style="{ width: `${100 - i * 12}%` }" />
+        </div>
       </div>
     </div>
 
+    <details v-if="legendCols.length" class="explorer-legend">
+      <summary>מקרא עמודות</summary>
+      <dl>
+        <template v-for="col in legendCols" :key="col.id">
+          <dt>{{ colLabel(col) }} <code v-if="col.label && col.label !== col.id">({{ col.id }})</code></dt>
+          <dd>{{ col.notes || '—' }}</dd>
+        </template>
+      </dl>
+    </details>
+
     <p v-if="schema && schema.totalCols > schema.cols.length" class="m-0 mt-2 text-xs text-subtle">
       מוצגות {{ schema.cols.length }} מתוך {{ schema.totalCols }} עמודות —
-      <a :href="visibleCandidates.find((c) => c.rid === activeRid)?.url" target="_blank" rel="noopener">לצפייה בכל העמודות הורידו את הקובץ</a>
+      <a :href="activeUrl" target="_blank" rel="noopener">לצפייה בכל העמודות הורידו את הקובץ</a>
     </p>
 
-    <div v-if="total > PAGE_SIZE || offset > 0 || rangeText" class="flex flex-wrap items-center gap-3 mt-3">
+    <div v-if="schema && !schemaEmpty" class="flex flex-wrap items-center gap-3 mt-3">
       <template v-if="total > PAGE_SIZE">
-        <button type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset === 0 || loading" @click="prevPage">הקודם</button>
-        <button type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset + PAGE_SIZE >= total || loading" @click="nextPage">הבא</button>
+        <button ref="prevBtn" type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset === 0 || loading" @click="prevPage">הקודם</button>
+        <button ref="nextBtn" type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset + PAGE_SIZE >= total || loading" @click="nextPage">הבא</button>
+        <span class="text-xs text-subtle">{{ pageText }}</span>
       </template>
-      <span class="text-xs text-subtle">{{ rangeText }}</span>
+      <span role="status" aria-live="polite" class="text-xs text-subtle">{{ rangeText }}</span>
     </div>
   </section>
 </template>
@@ -480,12 +579,56 @@ onBeforeUnmount(() => {
   outline: 2px solid #0068f5;
   outline-offset: 1px;
 }
+/* Scroll container: horizontal for wide tables, vertical past ~65vh so
+   50 rows don't push a 2,000px block into the page. Sticky thead keeps
+   column context while scrolling inside. */
+.explorer-scroll-wrap {
+  position: relative;
+}
+.explorer-scroll {
+  overflow: auto;
+  max-height: min(65vh, 40rem);
+}
+/* Edge fades hinting at horizontally-hidden columns. Component is
+   always RTL: start edge = right, content overflows to the left. */
+.explorer-scroll-wrap::before,
+.explorer-scroll-wrap::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 28px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 3;
+}
+.explorer-scroll-wrap::before {
+  right: 0;
+  background: linear-gradient(to left, #fff 10%, transparent);
+}
+.explorer-scroll-wrap::after {
+  left: 0;
+  background: linear-gradient(to right, #fff 10%, transparent);
+}
+.explorer-scroll-wrap.fade-start::before {
+  opacity: 1;
+}
+.explorer-scroll-wrap.fade-end::after {
+  opacity: 1;
+}
 .explorer-tbl {
   width: 100%;
-  border-collapse: collapse;
+  /* separate, not collapse — sticky header cells lose their borders
+     (and on some engines their stickiness) under border-collapse. */
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 0.85rem;
 }
 .explorer-tbl th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   background: #f1f7ff;
   color: #0b3668;
   padding: 0.5rem 0.75rem;
@@ -506,6 +649,36 @@ onBeforeUnmount(() => {
 }
 .explorer-tbl tbody tr:hover td {
   background: #f1f7ff;
+}
+.explorer-legend {
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #0c3058;
+}
+.explorer-legend summary {
+  cursor: pointer;
+  color: #0068f5;
+  font-weight: 500;
+}
+.explorer-legend dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.3rem 1rem;
+  margin: 0.5rem 0 0;
+  padding-inline-start: 0.5rem;
+}
+.explorer-legend dt {
+  font-weight: 600;
+  color: #0b3668;
+}
+.explorer-legend dt code {
+  font-weight: 400;
+  color: #6c757d;
+  direction: ltr;
+  unicode-bidi: embed;
+}
+.explorer-legend dd {
+  margin: 0;
 }
 .th-sort {
   display: inline-flex;
