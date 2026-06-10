@@ -1,0 +1,82 @@
+"""Tests for services.page_builder.selector.pick_next.
+
+Regression for the sticky `change_status` bug: the scanner only writes
+`change_status` on NEW/UPDATED and nothing ever resets it after a
+successful analysis, so a source flagged `updated` once stays in the
+Track 2 candidate set forever. Track 2 must therefore skip sources whose
+live CKAN `metadata_modified` hasn't advanced past the version already
+analyzed (`analyzed_metadata_modified`) — otherwise every published page
+gets a full agent re-run every cooldown period, forever.
+"""
+from __future__ import annotations
+
+from datetime import datetime, timedelta, timezone
+from unittest.mock import MagicMock
+
+from services.page_builder.selector import pick_next
+from services.shared.firestore import SourceRecord
+
+# Past the 2026-01-01 floor so the age gate never interferes.
+MODIFIED = datetime(2026, 5, 1, tzinfo=timezone.utc)
+
+
+def _track2_src(
+    dataset_id: str,
+    *,
+    metadata_modified: datetime = MODIFIED,
+    analyzed_metadata_modified: datetime | None = None,
+    last_analyzed_days_ago: int = 60,
+) -> SourceRecord:
+    return SourceRecord(
+        id=dataset_id,
+        title="מאגר לדוגמה",
+        metadata_modified=metadata_modified,
+        analyzed_metadata_modified=analyzed_metadata_modified,
+        last_analyzed_at=datetime.now(timezone.utc)
+        - timedelta(days=last_analyzed_days_ago),
+        analysis_status="succeeded",
+        change_status="updated",
+    )
+
+
+def _store(track2: list[SourceRecord]) -> MagicMock:
+    store = MagicMock()
+    store.list_never_analyzed.return_value = []
+    store.list_changed_sources.return_value = track2
+    return store
+
+
+def test_track2_skips_source_already_analyzed_at_current_version():
+    """metadata_modified == analyzed_metadata_modified ⇒ nothing changed
+    since the page was built; the sticky `updated` flag must not trigger
+    another agent run."""
+    src = _track2_src("stale-flag", analyzed_metadata_modified=MODIFIED)
+    assert pick_next(_store([src]), n=5) == []
+
+
+def test_track2_picks_source_when_ckan_advanced_past_analysis():
+    src = _track2_src(
+        "really-updated",
+        metadata_modified=MODIFIED + timedelta(days=3),
+        analyzed_metadata_modified=MODIFIED,
+    )
+    picks = pick_next(_store([src]), n=5)
+    assert [s.id for s in picks] == ["really-updated"]
+
+
+def test_track2_legacy_source_without_analyzed_marker_stays_eligible():
+    """Docs analyzed before `analyzed_metadata_modified` existed have it
+    as None — we can't tell whether they changed, so keep old behavior."""
+    src = _track2_src("legacy", analyzed_metadata_modified=None)
+    picks = pick_next(_store([src]), n=5)
+    assert [s.id for s in picks] == ["legacy"]
+
+
+def test_track2_cooldown_still_applies_to_genuinely_updated_source():
+    src = _track2_src(
+        "too-recent",
+        metadata_modified=MODIFIED + timedelta(days=3),
+        analyzed_metadata_modified=MODIFIED,
+        last_analyzed_days_ago=5,
+    )
+    assert pick_next(_store([src]), n=5) == []
