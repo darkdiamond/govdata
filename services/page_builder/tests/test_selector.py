@@ -72,6 +72,35 @@ def test_track2_legacy_source_without_analyzed_marker_stays_eligible():
     assert [s.id for s in picks] == ["legacy"]
 
 
+def test_reanalyze_false_pauses_track2_entirely():
+    """REANALYZE_ENABLED=false stopgap: until structural-vs-additive change
+    gating exists, daily-append datasets re-qualify every cooldown period;
+    the knob lets us pause all Track 2 re-runs without touching Track 1."""
+    src = _track2_src(
+        "would-be-picked",
+        metadata_modified=MODIFIED + timedelta(days=3),
+        analyzed_metadata_modified=MODIFIED,
+    )
+    store = _store([src])
+    assert pick_next(store, n=5, reanalyze=False) == []
+    store.list_changed_sources.assert_not_called()
+
+
+def test_reanalyze_false_keeps_track1():
+    never = SourceRecord(
+        id="brand-new",
+        title="חדש",
+        metadata_modified=MODIFIED,
+        analysis_status="never",
+        change_status="new",
+    )
+    store = MagicMock()
+    store.list_never_analyzed.return_value = [never]
+    store.list_changed_sources.return_value = []
+    picks = pick_next(store, n=5, reanalyze=False)
+    assert [s.id for s in picks] == ["brand-new"]
+
+
 def test_track2_cooldown_still_applies_to_genuinely_updated_source():
     src = _track2_src(
         "too-recent",
