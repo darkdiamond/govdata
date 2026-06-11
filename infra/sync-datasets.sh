@@ -20,18 +20,25 @@ mkdir -p "$DEST"
 
 if [[ "$MODE" != "--apply" ]]; then
   echo "==> DRY RUN  gs://$BUCKET/datasets/  ->  $DEST/  (pass --apply to sync)"
-  gsutil -m rsync -r -n "gs://$BUCKET/datasets/" "$DEST/"
+  gsutil -m rsync -r -d -n "gs://$BUCKET/datasets/" "$DEST/"
   exit 0
 fi
 
+# -d mirrors deletions: a page removed from the staging bucket disappears
+# locally too, matching Cloud Build's fresh-checkout behavior. It also
+# removes the publisher-written data.json/agent_data.json (not in GCS by
+# design) — fine, the publisher rebuilds them right after this step.
 echo "==> Syncing  gs://$BUCKET/datasets/  ->  $DEST/"
-gsutil -m rsync -r "gs://$BUCKET/datasets/" "$DEST/"
+gsutil -m rsync -r -d "gs://$BUCKET/datasets/" "$DEST/"
 
 # Per-dataset data.json + agent_data.json are owned by the publisher
-# (services.page_builder.publish) and rebuilt from Firestore. Drop any
-# copies that came down from GCS so the only writer is the publisher.
-echo "==> Scrubbing data.json + agent_data.json (publisher rebuilds them)"
-find "$DEST" \( -name 'data.json' -o -name 'agent_data.json' \) -delete
+# (services.page_builder.publish) and rebuilt from Firestore. index.html
+# is a pre-split-era artifact that would shadow the Nuxt-generated route.
+# Drop any copies that came down from GCS — same exclusions as the
+# Cloud Build rsync in cloudbuild-publish.yaml.
+echo "==> Scrubbing data.json + agent_data.json + index.html (publisher/Nuxt rebuild them)"
+find "$DEST" \( -name 'data.json' -o -name 'agent_data.json' -o -name 'index.html' \) -delete
+find "$DEST" -mindepth 1 -type d -empty -delete
 
 echo
 echo "==> Files touched:"

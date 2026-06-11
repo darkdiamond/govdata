@@ -12,7 +12,8 @@ scale by bumping `N_PER_RUN`, not instance count.
 
 Creates the Firebase project (GCP project with the same ID is created
 automatically), enables APIs, provisions Firestore + the GCS staging bucket
-(with a 30-day age-based lifecycle policy from `infra/staging-lifecycle.json`),
+(lifecycle policy from `infra/staging-lifecycle.json` — deletes only
+`build-cache/` objects after 14 days; `datasets/` never expires),
 creates the three service accounts, and reserves the Secret Manager secret.
 
 Re-running `bootstrap.sh` re-applies the lifecycle policy. To tweak the
@@ -105,17 +106,37 @@ bash infra/scheduler.setup.sh
 gcloud scheduler jobs resume govdata-pipeline-6h --location=me-west1
 ```
 
-## Cloud Build publisher trigger
+## Publishing
 
-`cloudbuild-publish.yaml` in the repo root contains the full pipeline
-(rsync agent artifacts → build manifest from Firestore → `nuxt generate`
-+ `firebase deploy --only hosting` in one step). The trigger must be
-registered against a connected repo; `infra/bootstrap.sh` prints the
-exact `gcloud builds triggers create manual …` invocation after printing
-the connection options.
+Publishing runs **locally** via `infra/publish-local.sh` — same four
+steps as the Cloud Build pipeline (rsync agent artifacts → rebuild
+manifest + per-dataset JSON from Firestore → `nuxt generate` →
+`firebase deploy --only hosting`), just on your machine. Run it whenever
+agent runs have staged new pages:
 
-Once registered, the builder fires the trigger at the end of every
-successful run via `services/page_builder/pipeline.py::_trigger_publish`.
+```sh
+source .venv/bin/activate
+./infra/publish-local.sh             # full publish
+./infra/publish-local.sh --serve     # local preview, no deploy
+```
+
+## Cloud Build publisher trigger (dormant)
+
+`cloudbuild-publish.yaml` in the repo root contains the same pipeline
+for Cloud Build. The trigger must be registered against a connected
+repo; `infra/bootstrap.sh` prints the exact
+`gcloud builds triggers create manual …` invocation after printing the
+connection options.
+
+The auto-fire from the builder is **disabled**: the `govdata-builder`
+Cloud Run service has `PUBLISH_TRIGGER_ID=""`, which makes
+`services/page_builder/pipeline.py::_trigger_publish` a no-op. To go
+back to Cloud Build publishing:
+
+```sh
+gcloud run services update govdata-builder --region=me-west1 \
+  --update-env-vars=PUBLISH_TRIGGER_ID=govdata-publish
+```
 
 ### Pre-baked publisher image
 
@@ -176,5 +197,8 @@ git status frontend/public/datasets/
 git add frontend/public/datasets/ && git commit -m "publish: sync agent output"
 ```
 
-The script never deletes — pages only ever accumulate, even if
-they're later pruned from the staging bucket.
+The sync mirrors deletions (`gsutil rsync -d`): a page pruned from the
+staging bucket disappears from the working tree on the next `--apply`,
+matching what a fresh Cloud Build checkout would deploy. It also scrubs
+`data.json`/`agent_data.json` (publisher rebuilds them from Firestore)
+and any pre-split-era `index.html`.

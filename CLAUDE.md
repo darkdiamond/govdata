@@ -21,11 +21,14 @@ landing pages. Four layers:
    `claude-sonnet-4-6` in a per-session container. Writes `content.html`
    (body) + `data.json` (manifest entry). Tools: bash, web_search,
    web_fetch, code_execution, file writing.
-4. **Publisher** — `cloudbuild-publish.yaml`. Cloud Build job triggered by
-   the builder at the end of a successful run. rsyncs staged pages from
-   GCS → `frontend/public/datasets/`, regenerates
+4. **Publisher** — run locally via `infra/publish-local.sh`: rsyncs
+   staged pages from GCS → `frontend/public/datasets/`, regenerates
    `frontend/public/data/manifest.json` from Firestore, runs
-   `nuxt generate`, then `firebase deploy --only hosting`.
+   `nuxt generate`, then `firebase deploy --only hosting`. The Cloud
+   Build path (`cloudbuild-publish.yaml`, same four steps) is dormant:
+   the prod builder has `PUBLISH_TRIGGER_ID=""` so it no longer fires
+   the trigger after agent runs — re-enable by setting it back to
+   `govdata-publish` on the `govdata-builder` Cloud Run service.
 
 State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 (per invocation). No SQLite. No Cloudflare.
@@ -197,7 +200,7 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 ## Running things locally
 
 ```sh
-source venv/bin/activate
+source .venv/bin/activate
 
 # Firestore emulator (so nothing hits prod)
 gcloud emulators firestore start --host-port=localhost:8080 &
@@ -219,6 +222,20 @@ python -m services.page_builder.manifest --from-firestore \
 # Frontend
 cd frontend && npm run generate && npx serve .output/public
 ```
+
+## Publishing (local — the production path)
+
+The prod builder no longer triggers Cloud Build (`PUBLISH_TRIGGER_ID=""`).
+After agent runs stage pages to GCS, deploy from your machine:
+
+```sh
+source .venv/bin/activate            # publish.py must be importable
+./infra/publish-local.sh            # sync GCS → Firestore artifacts → nuxt generate → firebase deploy
+./infra/publish-local.sh --serve    # same build, preview at localhost:3000 instead of deploying
+./infra/publish-local.sh --dry-run  # build everything, skip deploy
+```
+
+Needs `gcloud auth application-default login` + `firebase login` once.
 
 For cloud smoke + deploy, see `infra/DEPLOY.md`.
 
