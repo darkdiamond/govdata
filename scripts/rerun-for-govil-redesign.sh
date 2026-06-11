@@ -30,9 +30,9 @@ OUT="${OUT:-/tmp/gd}"
 mkdir -p "$OUT"
 
 # Activate the venv if present.
-if [[ -f venv/bin/activate ]]; then
+if [[ -f .venv/bin/activate ]]; then
   # shellcheck disable=SC1091
-  source venv/bin/activate
+  source .venv/bin/activate
 fi
 
 # Run all datasets in parallel. Each invocation creates its own Managed

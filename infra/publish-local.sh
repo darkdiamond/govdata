@@ -120,13 +120,22 @@ fi
 if ! python3 -c 'import services.page_builder.publish' >/dev/null 2>&1; then
   echo "python can't import services.page_builder.publish;" >&2
   echo "activate the project venv first:" >&2
-  echo "  source venv/bin/activate" >&2
+  echo "  source .venv/bin/activate" >&2
   exit 1
 fi
 
 if [[ ! -d frontend/node_modules ]]; then
   echo "frontend/node_modules missing — running npm ci"
   ( cd frontend && npm ci --prefer-offline --no-audit )
+fi
+
+# Cloud Build mounts VOYAGE_API_KEY from Secret Manager; locally you must
+# export it yourself or the publisher silently falls back to
+# ministry+shared-tag scoring for sources without a cached embedding.
+if [[ "${VOYAGE_ENABLED:-false}" == "true" && -z "${VOYAGE_API_KEY:-}" ]]; then
+  echo "WARNING: VOYAGE_ENABLED=true but VOYAGE_API_KEY is unset — embeddings" >&2
+  echo "         will be skipped. Export it with:" >&2
+  echo "  export VOYAGE_API_KEY=\$(gcloud secrets versions access latest --secret=voyage-api-key)" >&2
 fi
 
 step_end
