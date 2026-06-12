@@ -102,3 +102,9 @@ jobs:
         run: |
           npx --yes firebase-tools@latest deploy --only hosting \
             --project "${PROJECT}" --non-interactive
+
+      # Tell Bing/Yandex/etc. about every URL right after deploy (IndexNow).
+      # Key file ships in frontend/public/; failures never block the deploy.
+      - name: Ping IndexNow
+        continue-on-error: true
+        run: node frontend/scripts/indexnow-ping.mjs
