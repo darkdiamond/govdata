@@ -8,8 +8,15 @@
 // creator, publisher) so collection pages stop tripping the Dataset validator
 // on their `hasPart` children.
 
-import type { ManifestEntry } from '~/types/manifest'
+import type { ManifestEntry, SlimEntry } from '~/types/manifest'
 import { buildLicenseLd, type LicenseLd } from '~/utils/dataset-license'
+
+// Summary builders accept the slim search-index shape (collection pages no
+// longer carry full ManifestEntry objects). ManifestEntry is structurally
+// assignable to this, so detail-page callers don't change. `notes` is absent
+// from SlimEntry — summary_he is near-universal, and the rare gap falls back
+// to the title.
+type LdSource = SlimEntry & { notes?: string }
 
 const SITE_URL = 'https://govil.ai'
 const GOV_IL = 'https://www.gov.il'
@@ -73,7 +80,7 @@ function trimToWord(s: string, max: number): string {
 // Description precedence: agent's short summary_he, then trimmed CKAN notes,
 // then the title as last resort (selector gates publish on agent success, so
 // summary_he is almost always present).
-export function datasetDescription(entry: ManifestEntry): string {
+export function datasetDescription(entry: LdSource): string {
   if (entry.summary_he) return entry.summary_he
   if (entry.notes) return trimToWord(entry.notes, 200)
   return entry.title
@@ -83,7 +90,7 @@ export function datasetDescription(entry: ManifestEntry): string {
 // ranks on both being present, so we emit both even when they reference the
 // same entity. When CKAN omits the organization, fall back to a State-of-Israel
 // stub so the field is never missing.
-export function datasetCreator(entry: ManifestEntry): OrgLd {
+export function datasetCreator(entry: LdSource): OrgLd {
   if (!entry.organization) {
     return { '@type': 'GovernmentOrganization', name: 'מדינת ישראל', url: GOV_IL }
   }
@@ -135,7 +142,7 @@ export function buildDatasetLd(entry: ManifestEntry, opts: { canonical: string }
   return ld
 }
 
-export function buildDatasetLdSummary(entry: ManifestEntry): DatasetLdSummary {
+export function buildDatasetLdSummary(entry: LdSource): DatasetLdSummary {
   return {
     '@type': 'Dataset',
     name: entry.title,

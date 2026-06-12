@@ -1,16 +1,12 @@
-import manifestData from '~/public/data/manifest.json'
-import type { Manifest, ManifestEntry } from '~/types/manifest'
+import type { SlimEntry } from '~/types/manifest'
 
-// Read the manifest at build time — SSG needs every route resolvable during
-// prerender, before the static output is served. If you change
-// public/data/manifest.json you must rebuild the site.
-const _manifest = manifestData as unknown as Manifest
+// NOTE: this file must never statically import public/data/manifest.json —
+// that bundles the full 1.7MB manifest into a client chunk shipped on every
+// page. Pages load data through frontend/utils/search-index.ts instead:
+// server-side fs reads baked into each page's prerender payload, or an
+// on-demand $fetch of the slim /data/search-index.json.
 
-export function useManifest() {
-  return computed(() => _manifest)
-}
-
-export function useFacets(entries: ManifestEntry[]) {
+export function useFacets(entries: SlimEntry[]) {
   const orgs = new Map<string, number>()
   const formats = new Map<string, number>()
   for (const e of entries) {

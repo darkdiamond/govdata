@@ -1,18 +1,8 @@
 <script setup lang="ts">
-import { useManifest } from '~/composables/useManifest'
-import type { ManifestEntry } from '~/types/manifest'
+import type { SlimEntry } from '~/types/manifest'
 
-const manifest = useManifest()
-
-const latest = computed<ManifestEntry[]>(() => {
-  const list = [...(manifest.value?.datasets ?? [])]
-  list.sort((a, b) => {
-    const ta = a.last_analyzed_at ? Date.parse(a.last_analyzed_at) : 0
-    const tb = b.last_analyzed_at ? Date.parse(b.last_analyzed_at) : 0
-    return tb - ta
-  })
-  return list.slice(0, 6)
-})
+// Sorted + sliced by pages/index.vue's home payload.
+defineProps<{ latest: SlimEntry[] }>()
 </script>
 
 <template>

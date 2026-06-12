@@ -352,16 +352,18 @@ onBeforeUnmount(() => {
     </div>
 
     <div v-if="chunks.length > 1" class="mt-3 flex items-center justify-center gap-2">
+      <!-- 40px buttons / 24px dot hit-areas: visual dots stay small, the
+           clickable surface meets WCAG 2.5.8 target-size minimums. -->
       <button
         type="button"
-        class="p-1.5 rounded-gov-sm text-subtle hover:text-ink hover:bg-brand-50 transition"
+        class="p-3 rounded-gov-sm text-subtle hover:text-ink hover:bg-brand-50 transition"
         aria-label="הקבוצה הקודמת"
         @click.stop.prevent="advance(-1)"
       >
         <img src="/icons/chevron-right.svg" alt="" class="w-4 h-4" />
       </button>
 
-      <div class="flex items-center gap-1.5" role="tablist">
+      <div class="flex items-center" role="tablist">
         <button
           v-for="(_, i) in chunks"
           :key="i"
@@ -369,15 +371,20 @@ onBeforeUnmount(() => {
           role="tab"
           :aria-label="`מעבר לקבוצה ${i + 1}`"
           :aria-current="i === idx ? 'true' : undefined"
-          class="h-1.5 rounded-full transition-all"
-          :class="i === idx ? 'w-5 bg-brand-600' : 'w-1.5 bg-rule hover:bg-brand-200'"
+          class="group/dot flex items-center justify-center h-6 min-w-6 px-0.5"
           @click.stop.prevent="jumpTo(i)"
-        />
+        >
+          <span
+            class="h-1.5 rounded-full transition-all"
+            :class="i === idx ? 'w-5 bg-brand-600' : 'w-1.5 bg-rule group-hover/dot:bg-brand-200'"
+            aria-hidden="true"
+          />
+        </button>
       </div>
 
       <button
         type="button"
-        class="p-1.5 rounded-gov-sm text-subtle hover:text-ink hover:bg-brand-50 transition"
+        class="p-3 rounded-gov-sm text-subtle hover:text-ink hover:bg-brand-50 transition"
         aria-label="הקבוצה הבאה"
         @click.stop.prevent="advance(1)"
       >

@@ -1,14 +1,17 @@
 <script setup lang="ts">
 import { buildDatasetLdSummary } from '~/composables/useDatasetLd'
-import { useManifest } from '~/composables/useManifest'
+import { loadSearchIndex } from '~/utils/search-index'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
-const manifest = useManifest()
 
-const entries = computed(() =>
-  (manifest.value?.datasets ?? []).filter((d) => d.organization_slug === slug.value),
-)
+// Bake only this ministry's slim entries into the page payload.
+const { data } = await useAsyncData(`ministry-${slug.value}`, async () => {
+  const index = await loadSearchIndex()
+  return index.datasets.filter((d) => d.organization_slug === slug.value)
+})
+
+const entries = computed(() => data.value ?? [])
 const ministryTitle = computed(() => entries.value[0]?.organization ?? slug.value)
 
 if (entries.value.length === 0) {

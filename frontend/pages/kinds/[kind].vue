@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { buildDatasetLdSummary } from '~/composables/useDatasetLd'
-import { useManifest } from '~/composables/useManifest'
+import { loadSearchIndex } from '~/utils/search-index'
 
 const KIND_LABELS: Record<string, string> = {
   map: 'גיאוגרפי',
@@ -12,11 +12,14 @@ const KIND_LABELS: Record<string, string> = {
 
 const route = useRoute()
 const kind = computed(() => String(route.params.kind))
-const manifest = useManifest()
 
-const entries = computed(() =>
-  (manifest.value?.datasets ?? []).filter((d) => d.dataset_kind === kind.value),
-)
+// Bake only this kind's slim entries into the page payload.
+const { data } = await useAsyncData(`kind-${kind.value}`, async () => {
+  const index = await loadSearchIndex()
+  return index.datasets.filter((d) => d.dataset_kind === kind.value)
+})
+
+const entries = computed(() => data.value ?? [])
 const label = computed(() => KIND_LABELS[kind.value] ?? kind.value)
 
 if (entries.value.length === 0) {
