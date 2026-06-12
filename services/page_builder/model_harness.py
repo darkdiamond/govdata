@@ -1,23 +1,24 @@
-"""Model-agnostic page-builder test harness (manual-run only).
+"""The page-builder agent loop — shared by production and local testing.
 
-Drives any model through the Managed-Agents tool surface (`bash`,
-`code_execution`, `web_fetch`, `web_search`) using **PydanticAI** for
-the agent loop and **Podman + llm-sandbox** for the bash/python sandbox.
+Drives any model through the agent tool surface (`bash`,
+`code_execution`, `web_fetch`, `web_search`) using **PydanticAI**, on a
+pluggable sandbox backend:
 
-**Local-only install.** The dependencies for this module live in a separate
-file that the production Cloud Run / Cloud Build images deliberately do
-NOT install:
-
-    pip install -r services/page_builder/requirements.txt \\
-                -r services/page_builder/requirements-test.txt
+- production (`agent_runner.py`): `LocalSandbox` — subprocesses with a
+  private per-session workdir inside the builder container.
+- local testing (`run_test_session` + `cli/model_test.py`):
+  `PodmanSandbox` — a rootless Podman container (needs the extra deps
+  in requirements-test.txt).
 
 Single implementation per concern (per `feedback_one_path_default` memory):
 
-- Agent loop  : PydanticAI `Agent`
-- Sandbox     : `services.page_builder.podman_sandbox.PodmanSandbox`
+- Agent loop  : PydanticAI `Agent` (`run_agent_session`)
 - web_fetch   : `httpx`
 - web_search  : `duckduckgo-search` (DDG)
-- Output FS   : `/tmp/session/outputs/` inside the container
+- System prompt: `agent/system-prompt.md` (canonical, hand-edited);
+  per-session paths arrive via the user message (OUTPUTS_DIR /
+  CHECK_SCRIPT) so the prompt stays byte-identical across sessions
+  for provider prefix caching.
 
 The `model` parameter accepts two forms:
 - `<vendor>/<model>` — an OpenRouter model id (`minimax/minimax-m3`,
@@ -30,12 +31,12 @@ The `model` parameter accepts two forms:
   round-trip on history replay, which interleaved-thinking models
   (MiniMax, Kimi) need for stable tool loops.
 - `anthropic:claude-…` — PydanticAI's native Anthropic provider; needs
-  `ANTHROPIC_API_KEY`. Kept for harness-vs-Managed-Agents calibration;
-  cost falls back to the static Anthropic price table.
+  `ANTHROPIC_API_KEY`. Kept for calibration runs; cost falls back to the
+  static Anthropic price table.
 
-Test-only path. Writes outputs to a local directory for visual comparison
-against the live govil.ai pages. Does NOT touch Firestore or GCS, and is
-never imported by `pipeline.py`, `publish.py`, or `session_runner.run_session`.
+`run_agent_session` returns RAW outputs — validation/persistence belong
+to the caller (`agent_runner` in prod; `run_test_session` writes local
+artifacts and touches neither Firestore nor GCS).
 """
 from __future__ import annotations
 
@@ -50,14 +51,17 @@ from typing import Any, Optional
 import httpx
 from pydantic_ai import Agent, ModelRetry, RunContext
 
+from .agent_contract import build_user_message, sanitize_content_html
 from .schema import AgentData
-from .session_runner import _sanitize_content_html, build_user_message
 
 log = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SYSTEM_PROMPT_PATH = REPO_ROOT / "agent" / "govdata-agent-harness.system.md"
+SYSTEM_PROMPT_PATH = REPO_ROOT / "agent" / "system-prompt.md"
 CHECK_SCRIPT_PATH = REPO_ROOT / "agent" / "skills" / "check.py"
+# Fixed paths used by the Podman test harness (one session per container,
+# so they never collide). Production (LocalSandbox) passes per-session
+# paths instead.
 CHECK_SCRIPT_IN_SANDBOX = "/tmp/session/uploads/check.py"
 
 CONTENT_FILENAME = "content.html"
@@ -151,12 +155,12 @@ class TestSessionResult:
     sandbox_files: list[str] = field(default_factory=list)
 
 
-def _provision_check_script(sandbox) -> None:
-    """Copy agent/skills/check.py into the sandbox at the path the system
-    prompt references (/tmp/session/uploads/check.py — the harness mirror of
-    Managed Agents' /mnt/session/uploads/ mount). check.py is argv-driven,
-    so the same file works at either path. Base64 round-trip because the
-    Podman session has no file-write API (see _Files.read for the inverse).
+def _provision_check_script(sandbox, target: str = CHECK_SCRIPT_IN_SANDBOX) -> None:
+    """Copy agent/skills/check.py into the sandbox at `target` — the
+    CHECK_SCRIPT path the session's user message advertises. check.py is
+    argv-driven, so any path works. Base64 round-trip because the Podman
+    session has no file-write API (see _Files.read for the inverse); the
+    same bash works unchanged on LocalSandbox.
     """
     import base64
 
@@ -166,11 +170,11 @@ def _provision_check_script(sandbox) -> None:
             "step depends on it"
         )
     b64 = base64.b64encode(CHECK_SCRIPT_PATH.read_bytes()).decode("ascii")
-    target_dir = CHECK_SCRIPT_IN_SANDBOX.rsplit("/", 1)[0]
+    target_dir = target.rsplit("/", 1)[0]
     exe = sandbox.run_code(
         f"mkdir -p {target_dir} && "
-        f"echo {b64} | base64 -d > {CHECK_SCRIPT_IN_SANDBOX} && "
-        f"python3 -c \"import ast; ast.parse(open('{CHECK_SCRIPT_IN_SANDBOX}').read())\"",
+        f"echo {b64} | base64 -d > {target} && "
+        f"python3 -c \"import ast; ast.parse(open('{target}').read())\"",
         language="bash",
         timeout=30,
     )
@@ -184,8 +188,8 @@ def _provision_check_script(sandbox) -> None:
 def _load_system_prompt() -> str:
     if not SYSTEM_PROMPT_PATH.exists():
         raise FileNotFoundError(
-            f"{SYSTEM_PROMPT_PATH} missing — run "
-            "`python -m services.page_builder._build_harness_system` first"
+            f"{SYSTEM_PROMPT_PATH} missing — the canonical agent system "
+            "prompt must ship with the code (and the container image)"
         )
     return SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 
@@ -489,6 +493,111 @@ def _compute_cost(*, model: str, usage: dict[str, int], messages: list) -> dict[
     }
 
 
+@dataclass
+class AgentSessionOutput:
+    """Raw result of one agent session — not yet validated or persisted."""
+    content_html_raw: str
+    agent_data_raw: bytes
+    usage: dict[str, int]
+    cost: dict[str, Any]
+    iterations: int
+    tool_calls: dict[str, int]
+    messages: list
+    elapsed_seconds: float
+
+
+def run_agent_session(
+    *,
+    sandbox,
+    model: str,
+    dataset_id: str,
+    title: str,
+    notes: str,
+    org_title: str,
+    primary_resource_id: Optional[str],
+    outputs_dir: str,
+    check_script: str,
+    pre_fetched_schema: Optional[dict] = None,
+) -> AgentSessionOutput:
+    """Drive one agent session on an already-created sandbox.
+
+    Shared by production (`agent_runner`, LocalSandbox) and the local
+    test harness (`run_test_session`, PodmanSandbox). Provisions
+    check.py at `check_script`, runs the PydanticAI loop, and returns
+    the RAW outputs + telemetry — validation, sanitizing, and
+    persistence are the caller's responsibility.
+    """
+    system_prompt = _load_system_prompt()
+    user_msg = build_user_message(
+        dataset_id=dataset_id,
+        title=title,
+        notes=notes,
+        org_title=org_title,
+        primary_resource_id=primary_resource_id,
+        outputs_dir=outputs_dir,
+        check_script=check_script,
+        pre_fetched_schema=pre_fetched_schema,
+    )
+    httpx_client = httpx.Client()
+    deps = Deps(sandbox=sandbox, httpx_client=httpx_client, dataset_id=dataset_id)
+    started = time.monotonic()
+    try:
+        _provision_check_script(sandbox, check_script)
+        py_model, model_settings = _build_pydantic_model(model)
+        agent = _build_agent(
+            model=py_model, system_prompt=system_prompt, model_settings=model_settings
+        )
+        log.info("session[%s]: agent.run_sync model=%s", dataset_id[:8], model)
+        result = agent.run_sync(user_msg, deps=deps)
+        elapsed = time.monotonic() - started
+
+        od = outputs_dir.rstrip("/")
+        try:
+            content_html_bytes = sandbox.files.read(f"{od}/{CONTENT_FILENAME}")
+            agent_data_bytes = sandbox.files.read(f"{od}/{AGENT_DATA_FILENAME}")
+        except Exception as e:
+            raise RuntimeError(
+                f"agent did not produce both output files: {e}"
+            ) from e
+    finally:
+        try:
+            httpx_client.close()
+        except Exception:
+            pass
+
+    messages = result.all_messages()
+    usage = _extract_usage(result.usage)
+    iterations = sum(
+        1 for m in messages
+        if hasattr(m, "parts") and any(
+            type(p).__name__ in ("ToolCallPart", "ToolReturnPart") for p in m.parts
+        )
+    )
+    return AgentSessionOutput(
+        content_html_raw=(
+            content_html_bytes.decode("utf-8")
+            if isinstance(content_html_bytes, (bytes, bytearray))
+            else str(content_html_bytes)
+        ),
+        agent_data_raw=(
+            bytes(agent_data_bytes)
+            if isinstance(agent_data_bytes, (bytes, bytearray))
+            else str(agent_data_bytes).encode("utf-8")
+        ),
+        usage=usage,
+        cost=_compute_cost(model=model, usage=usage, messages=messages),
+        iterations=iterations,
+        tool_calls={
+            "bash": deps.bash_calls,
+            "code_execution": deps.code_calls,
+            "web_fetch": deps.fetch_calls,
+            "web_search": deps.search_calls,
+        },
+        messages=messages,
+        elapsed_seconds=round(elapsed, 2),
+    )
+
+
 def run_test_session(
     *,
     dataset_id: str,
@@ -500,73 +609,43 @@ def run_test_session(
     model: str,
     max_iters: int = 30,  # noqa: ARG001 - PydanticAI controls retries; kept for caller parity
 ) -> TestSessionResult:
-    """Run a model+sandbox session for one CKAN dataset; write outputs to `out_dir`."""
+    """Local test run: Podman sandbox, artifacts written to `out_dir`.
+
+    Manual-run only — never imported by production code.
+    """
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-
-    system_prompt = _load_system_prompt()
-    user_msg = build_user_message(
-        dataset_id=dataset_id,
-        title=title,
-        notes=notes,
-        org_title=org_title,
-        primary_resource_id=primary_resource_id,
-        outputs_dir=OUTPUTS_DIR_IN_SANDBOX,
-    )
 
     from .podman_sandbox import PodmanSandbox
 
     log.info("test[%s]: starting Podman sandbox + model=%s", dataset_id[:8], model)
     sandbox = PodmanSandbox.create()
-    httpx_client = httpx.Client()
-    deps = Deps(sandbox=sandbox, httpx_client=httpx_client, dataset_id=dataset_id)
-
-    started = time.monotonic()
     try:
-        _provision_check_script(sandbox)
-        py_model, model_settings = _build_pydantic_model(model)
-        agent = _build_agent(
-            model=py_model, system_prompt=system_prompt, model_settings=model_settings
+        out = run_agent_session(
+            sandbox=sandbox,
+            model=model,
+            dataset_id=dataset_id,
+            title=title,
+            notes=notes,
+            org_title=org_title,
+            primary_resource_id=primary_resource_id,
+            outputs_dir=OUTPUTS_DIR_IN_SANDBOX,
+            check_script=CHECK_SCRIPT_IN_SANDBOX,
         )
-        log.info("test[%s]: agent.run_sync", dataset_id[:8])
-        result = agent.run_sync(user_msg, deps=deps)
-        elapsed = time.monotonic() - started
-
-        try:
-            content_html_bytes = sandbox.files.read(
-                f"{OUTPUTS_DIR_IN_SANDBOX}/{CONTENT_FILENAME}"
-            )
-            agent_data_bytes = sandbox.files.read(
-                f"{OUTPUTS_DIR_IN_SANDBOX}/{AGENT_DATA_FILENAME}"
-            )
-        except Exception as e:
-            raise RuntimeError(
-                f"agent did not produce both output files: {e}. "
-                f"Inspect transcript at {out_dir / 'transcript.json'}"
-            ) from e
-
-        content_html = content_html_bytes.decode("utf-8") if isinstance(content_html_bytes, (bytes, bytearray)) else str(content_html_bytes)
-        agent_data_raw = bytes(agent_data_bytes) if isinstance(agent_data_bytes, (bytes, bytearray)) else str(agent_data_bytes).encode("utf-8")
-
-        content_html = _sanitize_content_html(content_html, dataset_id=dataset_id)
-        agent_data = AgentData.model_validate_json(agent_data_raw)
-
         sandbox_files: list[str] = []
         try:
             for entry in sandbox.files.list(OUTPUTS_DIR_IN_SANDBOX):
                 sandbox_files.append(getattr(entry, "name", str(entry)))
         except Exception:
             pass
-
     finally:
-        try:
-            httpx_client.close()
-        except Exception:
-            pass
         try:
             sandbox.kill()
         except Exception as e:
             log.warning("test[%s]: sandbox.kill failed: %s", dataset_id[:8], e)
+
+    content_html = sanitize_content_html(out.content_html_raw, dataset_id=dataset_id)
+    agent_data = AgentData.model_validate_json(out.agent_data_raw)
 
     content_html_path = out_dir / CONTENT_FILENAME
     agent_data_path = out_dir / AGENT_DATA_FILENAME
@@ -578,40 +657,24 @@ def run_test_session(
         json.dumps(agent_data.model_dump(), ensure_ascii=False, indent=2),
         encoding="utf-8",
     )
-    messages = result.all_messages()
     transcript_path.write_text(
-        json.dumps(_serialize_messages(messages), ensure_ascii=False, indent=2, default=str),
+        json.dumps(_serialize_messages(out.messages), ensure_ascii=False, indent=2, default=str),
         encoding="utf-8",
     )
-
-    usage = _extract_usage(result.usage())
-    cost = _compute_cost(model=model, usage=usage, messages=messages)
     cost_path.write_text(
         json.dumps(
             {
                 "model": model,
-                "elapsed_seconds": round(elapsed, 2),
-                "usage": usage,
-                "cost_usd": cost,
-                "tool_calls": {
-                    "bash": deps.bash_calls,
-                    "code_execution": deps.code_calls,
-                    "web_fetch": deps.fetch_calls,
-                    "web_search": deps.search_calls,
-                },
+                "elapsed_seconds": out.elapsed_seconds,
+                "usage": out.usage,
+                "cost_usd": out.cost,
+                "tool_calls": out.tool_calls,
                 "sandbox_files": sandbox_files,
             },
             ensure_ascii=False,
             indent=2,
         ),
         encoding="utf-8",
-    )
-
-    iterations = sum(
-        1 for m in messages
-        if hasattr(m, "parts") and any(
-            type(p).__name__ in ("ToolCallPart", "ToolReturnPart") for p in m.parts
-        )
     )
 
     return TestSessionResult(
@@ -622,9 +685,9 @@ def run_test_session(
         agent_data_path=agent_data_path,
         transcript_path=transcript_path,
         cost_path=cost_path,
-        iterations=iterations,
-        elapsed_seconds=elapsed,
-        usage=usage,
-        cost_usd=cost,
+        iterations=out.iterations,
+        elapsed_seconds=out.elapsed_seconds,
+        usage=out.usage,
+        cost_usd=out.cost,
         sandbox_files=sandbox_files,
     )

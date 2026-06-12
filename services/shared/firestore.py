@@ -285,6 +285,30 @@ class FirestoreStateStore:
         )
         return [SourceRecord.from_doc(d) for d in query.stream()]
 
+    def list_failed_retryable(
+        self, limit: int = 50, max_attempts: int = 3
+    ) -> list[SourceRecord]:
+        """Failed sources still under the daily-retry budget, newest first.
+
+        `failed_attempts < max_attempts` is filtered client-side: the field
+        was introduced 2026-06 and older failed docs may lack it (treated
+        as 1 — they failed at least once).
+        """
+        query = (
+            self.client.collection(SOURCES_COLL)
+            .where(filter=FieldFilter("analysis_status", "==", "failed"))
+            .order_by("metadata_modified", direction=firestore.Query.DESCENDING)
+            .limit(limit * 2)
+        )
+        out: list[SourceRecord] = []
+        for d in query.stream():
+            attempts = (d.to_dict() or {}).get("failed_attempts")
+            if int(attempts if attempts is not None else 1) < max_attempts:
+                out.append(SourceRecord.from_doc(d))
+                if len(out) >= limit:
+                    break
+        return out
+
     def iter_succeeded_sources(self) -> Iterator[SourceRecord]:
         query = self.client.collection(SOURCES_COLL).where(
             filter=FieldFilter("analysis_status", "==", "succeeded")
@@ -313,6 +337,7 @@ class FirestoreStateStore:
                 "last_analyzed_version": firestore.Increment(1),
                 "page_path": page_path,
                 "last_error": None,
+                "failed_attempts": 0,
             },
             merge=True,
         )
@@ -332,31 +357,34 @@ class FirestoreStateStore:
         self,
         dataset_id: str,
         *,
-        usage: dict[str, int],
+        usage: dict,
         model_requests: int,
         elapsed_s: float,
         session_id: Optional[str] = None,
         agent_version: Optional[int] = None,
     ) -> None:
-        """Persist per-session token usage so we can A/B prompt + tooling changes.
+        """Persist per-session usage + cost so we can compare models/prompts.
 
-        Stored under `sources/<id>.last_usage` — overwritten on every successful
-        run. Lets us measure the impact of each optimization stage against the
-        baseline (avg 24,343 output / 700,690 cache_read / 22.9 model_requests
-        per session as of 2026-05-08; ~$0.77/session at Sonnet 4.6 pricing).
+        Stored under `sources/<id>.last_usage` — overwritten on every
+        successful run. `actual_cost_usd` is the billed USD reported by
+        OpenRouter usage accounting (None for runs without it).
         """
         now = datetime.now(timezone.utc)
+        cost = usage.get("actual_cost_usd")
         self.client.collection(SOURCES_COLL).document(dataset_id).set(
             {
                 "last_usage": {
                     "input_tokens": int(usage.get("input_tokens", 0)),
                     "output_tokens": int(usage.get("output_tokens", 0)),
-                    "cache_creation_input_tokens": int(
-                        usage.get("cache_creation_input_tokens", 0)
-                    ),
                     "cache_read_input_tokens": int(
-                        usage.get("cache_read_input_tokens", 0)
+                        usage.get("cache_read_tokens")
+                        or usage.get("cache_read_input_tokens")
+                        or 0
                     ),
+                    "model": usage.get("model"),
+                    "actual_cost_usd": float(cost) if cost is not None else None,
+                    "cost_source": usage.get("cost_source"),
+                    "attempts": int(usage.get("attempts", 1)),
                     "model_requests": int(model_requests),
                     "elapsed_s": float(elapsed_s),
                     "session_id": session_id,
@@ -396,10 +424,14 @@ class FirestoreStateStore:
         )
 
     def mark_analysis_failed(self, dataset_id: str, error: str) -> None:
+        # `failed_attempts` counts whole pipeline-run failures (each one
+        # already burned SESSION_ATTEMPTS in-run retries). The selector
+        # re-picks failed sources until this reaches 3, then parks them.
         self.client.collection(SOURCES_COLL).document(dataset_id).set(
             {
                 "analysis_status": "failed",
                 "last_error": (error or "")[:1000],
+                "failed_attempts": firestore.Increment(1),
             },
             merge=True,
         )

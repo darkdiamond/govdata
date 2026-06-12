@@ -1,11 +1,16 @@
 """Builder pipeline — what a single Cloud Run invocation does.
 
-Flow: scan CKAN → select N sources → asyncio.gather N agent sessions →
-mark each source in Firestore → trigger the Cloud Build publisher.
+Daily batch (Cloud Scheduler, 07:00 Asia/Jerusalem): scan CKAN → select
+every never-analyzed (or retryable-failed) source up to DAILY_CAP →
+run all agent sessions concurrently (asyncio.gather bounded by
+Semaphore(MAX_CONCURRENT)) → mark each source in Firestore → if ≥1 page
+succeeded, trigger the Cloud Build publisher (no new pages → no build).
 
-All parallelism is in-process via `asyncio.gather`. Cloud Run is pinned to
-one container (`--max-instances=1 --concurrency=1`), so a scheduler tick
-produces exactly one pipeline run.
+All parallelism is in-process. Cloud Run is pinned to one container
+(`--max-instances=1 --concurrency=1`), so a scheduler tick produces
+exactly one pipeline run; sessions are PydanticAI agent loops calling
+OpenRouter (OPENROUTER_MODEL), with tool execution in per-session
+subprocess sandboxes inside this same container.
 """
 from __future__ import annotations
 
@@ -23,55 +28,62 @@ from services.shared.firestore import FirestoreStateStore, SourceRecord
 from services.shared.resources import pick_primary_resource_id
 
 from . import selector
-from .session_runner import run_session
+from .agent_runner import run_production_session
 
 log = logging.getLogger("page_builder.pipeline")
 
 
-async def _build_one(src: SourceRecord, staging_bucket: str, store: FirestoreStateStore) -> dict:
-    """Run one Managed Agents session. Updates Firestore on success or failure."""
-    log.info("building %s — %s", src.id[:8], (src.title or "")[:60])
-    # Capture the source's metadata_modified *before* the agent runs — this
-    # is the data vintage the agent's content will be based on. Persisted on
-    # success so the dataset page can show "המידע נכון ל-X" honestly even
-    # after CKAN re-publishes a newer version.
-    analyzed_metadata_modified = src.metadata_modified
-    await asyncio.to_thread(store.mark_analysis_pending, src.id)
+async def _build_one(
+    src: SourceRecord,
+    staging_bucket: str,
+    store: FirestoreStateStore,
+    sem: asyncio.Semaphore,
+) -> dict:
+    """Run one self-validating agent session. Updates Firestore either way."""
+    async with sem:
+        log.info("building %s — %s", src.id[:8], (src.title or "")[:60])
+        # Capture the source's metadata_modified *before* the agent runs — this
+        # is the data vintage the agent's content will be based on. Persisted on
+        # success so the dataset page can show "המידע נכון ל-X" honestly even
+        # after CKAN re-publishes a newer version.
+        analyzed_metadata_modified = src.metadata_modified
+        await asyncio.to_thread(store.mark_analysis_pending, src.id)
 
-    primary_id = pick_primary_resource_id(src.resources)
-    try:
-        result = await asyncio.to_thread(
-            run_session,
-            dataset_id=src.id,
-            title=src.title,
-            notes=src.notes or "",
-            org_title=(src.organization or {}).get("title", "") or "",
-            primary_resource_id=primary_id,
-            gcs_bucket=staging_bucket,
-            store=store,
+        primary_id = pick_primary_resource_id(src.resources)
+        try:
+            result = await asyncio.to_thread(
+                run_production_session,
+                dataset_id=src.id,
+                title=src.title,
+                notes=src.notes or "",
+                org_title=(src.organization or {}).get("title", "") or "",
+                primary_resource_id=primary_id,
+                gcs_bucket=staging_bucket,
+                store=store,
+            )
+        except Exception as e:
+            log.exception("build failed for %s", src.id)
+            await asyncio.to_thread(store.mark_analysis_failed, src.id, str(e))
+            return {"id": src.id, "status": "failed", "error": str(e)}
+
+        # run_production_session already wrote `sources/<id>.agent_data`.
+        page_path = f"datasets/{src.id}/"
+        await asyncio.to_thread(
+            store.mark_analysis_succeeded,
+            src.id,
+            page_path,
+            analyzed_metadata_modified,
         )
-    except Exception as e:
-        log.exception("build failed for %s", src.id)
-        await asyncio.to_thread(store.mark_analysis_failed, src.id, str(e))
-        return {"id": src.id, "status": "failed", "error": str(e)}
-
-    # session_runner already wrote `sources/<id>.agent_data` via store.set_agent_data().
-    page_path = f"datasets/{src.id}/"
-    await asyncio.to_thread(
-        store.mark_analysis_succeeded,
-        src.id,
-        page_path,
-        analyzed_metadata_modified,
-    )
-    return {
-        "id": src.id,
-        "status": "succeeded",
-        "session_id": result.session_id,
-        "elapsed_seconds": result.elapsed_seconds,
-        "events": result.events_seen,
-        "usage": result.usage,
-        "written": result.written,
-    }
+        return {
+            "id": src.id,
+            "status": "succeeded",
+            "session_id": result.session_id,
+            "attempts": result.attempts,
+            "elapsed_seconds": result.elapsed_seconds,
+            "usage": result.usage,
+            "cost": result.cost,
+            "written": result.written,
+        }
 
 
 async def _trigger_publish(
@@ -125,7 +137,10 @@ async def run_pipeline(
     db = StateDB(store=store)
     config = ScannerSettings()
 
-    n = n_per_run if n_per_run is not None else int(os.environ.get("N_PER_RUN", "1"))
+    # DAILY_CAP bounds "analyze everything new" — purely a cost fuse;
+    # anything past the cap stays `never` and is picked up tomorrow.
+    n = n_per_run if n_per_run is not None else int(os.environ.get("DAILY_CAP", "50"))
+    max_concurrent = int(os.environ.get("MAX_CONCURRENT", "8"))
     # Stopgap knob: pause Track 2 re-analysis (sources CKAN re-flagged as
     # updated) until structural-change gating lands. Track 1 still runs.
     reanalyze = os.environ.get("REANALYZE_ENABLED", "true").lower() not in (
@@ -179,16 +194,20 @@ async def run_pipeline(
         summary["status"] = "idle" if not to_process else "dry_run"
         return summary
 
-    # [3] fan-out agent sessions
-    # `_build_one` calls the sync Anthropic SDK via `asyncio.to_thread`, which
-    # uses the event loop's default ThreadPoolExecutor. That executor's default
-    # cap is `min(32, os.cpu_count() + 4)` — on a 2-CPU Cloud Run container it
-    # comes out to ~8, which silently bottlenecks N_PER_RUN above 8. Widen it
-    # so all N sessions actually start streaming in parallel.
+    # [3] fan-out agent sessions, bounded by MAX_CONCURRENT.
+    # `_build_one` runs the sync agent loop via `asyncio.to_thread`, which
+    # uses the event loop's default ThreadPoolExecutor. That executor's
+    # default cap is `min(32, os.cpu_count() + 4)` — on a 2-CPU Cloud Run
+    # container that's ~8, which would silently bottleneck below
+    # MAX_CONCURRENT (plus the Firestore mark calls also ride this pool).
+    # Widen it; the semaphore is the real concurrency control.
     loop = asyncio.get_running_loop()
-    loop.set_default_executor(ThreadPoolExecutor(max_workers=max(len(to_process), 50)))
+    loop.set_default_executor(
+        ThreadPoolExecutor(max_workers=max(max_concurrent * 2, 16))
+    )
+    sem = asyncio.Semaphore(max_concurrent)
     results = await asyncio.gather(
-        *[_build_one(src, staging_bucket, store) for src in to_process]
+        *[_build_one(src, staging_bucket, store, sem) for src in to_process]
     )
     summary["processed"] = results
     succeeded_ids = [r["id"] for r in results if r.get("status") == "succeeded"]
@@ -218,7 +237,7 @@ def _cli() -> None:
     p = argparse.ArgumentParser(description="Run the builder pipeline locally.")
     p.add_argument("--source", help="Specific dataset_id to build (skip scan+select)")
     p.add_argument("--dry-run", action="store_true", help="Scan + select but don't build")
-    p.add_argument("--n", type=int, default=None, help="Override N_PER_RUN")
+    p.add_argument("--n", type=int, default=None, help="Override DAILY_CAP")
     p.add_argument("--no-trigger-publish", action="store_true",
                    help="Skip Cloud Build trigger after successful builds")
     args = p.parse_args()
