@@ -1,0 +1,97 @@
+<h1>מעבדות אסבסט</h1>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle">רשימת המעבדות המורשות לטיפול באסבסט בישראל. המאגר כולל פרטי רישוי, סוגי פעילות (דיגום ואנליזה), פרטי יצירת קשר וסטטוס אמצעי משמעת רשומים.</p>
+</section>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">9</div>
+    <div class="text-sm text-subtle">סך הכל מעבדות מורשות</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-ok mb-1">7</div>
+    <div class="text-sm text-subtle">מעבדות ללא אמצעי משמעת</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">5</div>
+    <div class="text-sm text-subtle">מעבדות המתמחות בדיגום</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">4</div>
+    <div class="text-sm text-subtle">מעבדות המתמחות באנליזה</div>
+  </div>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>מתוך 9 המעבדות המורשות, 7 מעבדות פועלות ללא כל אמצעי משמעת רשומים, מה שמעיד על עמידה שוטפת בתקנים הנוגעים לטיפול באסבסט.</li>
+    <li>רוב המעבדות (5 מתוך 9) מורשות לביצוע דיגום בלבד, בעוד 4 מעבדות מתמחות באנליזה (כולל דגימות אוויר בלבד).</li>
+    <li>תוקף הרישיונות של המעבדות צפוי להסתיים בין השנים 2026 ל-2030, עם ריכוז חידושים גבוה בשנים 2027–2028.</li>
+  </ul>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">חקר הנתונים</h2>
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">התפלגות סוגי המעבדות</h3>
+      <div id="chart-types" class="h-64 md:h-80" role="img" aria-label="גרף עמודות: התפלגות סוגי המעבדות המורשות. 5 מעבדות דיגום, 2 מעבדות אנליזה, ו-2 מעבדות לאנליזה לדגימות אוויר בלבד."></div>
+    </div>
+    <div>
+      <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">סטטוס אמצעי משמעת</h3>
+      <div id="chart-disc" class="h-64 md:h-80" role="img" aria-label="תרשים עוגה: סטטוס אמצעי משמעת במעבדות. 7 מעבדות ללא אמצעי משמעת, ו-2 מעבדות עם אמצעי משמעת רשומים."></div>
+    </div>
+  </div>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">רשימת מעבדות שמטפלות באסבסט</p>
+</section>
+
+<script>
+  const chartTypes = echarts.init(document.getElementById("chart-types"));
+  chartTypes.setOption(window.GovEcharts.option({
+    tooltip: { trigger: "axis" },
+    xAxis: { type: "category", data: ["דיגום", "אנליזה", "אנליזה לדגימות אוויר"] },
+    yAxis: { type: "value" },
+    series: [{
+      type: "bar",
+      data: [5, 2, 2]
+    }]
+  }));
+  
+  const chartDisc = echarts.init(document.getElementById("chart-disc"));
+  chartDisc.setOption(window.GovEcharts.option({
+    tooltip: { trigger: "item" },
+    series: [{
+      type: "pie",
+      radius: ["40%", "70%"],
+      data: [
+        { value: 7, name: "ללא אמצעי משמעת", itemStyle: { color: window.GOVIL_PALETTE[0] } },
+        { value: 2, name: "עם אמצעי משמעת", itemStyle: { color: "#dc3545" } }
+      ]
+    }]
+  }));
+
+  window.addEventListener("resize", () => {
+    chartTypes.resize();
+    chartDisc.resize();
+  });
+</script>

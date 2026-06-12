@@ -34,3 +34,12 @@ at 2 charts, or pad?
 - **Self-check**: passed (`OK registry` verified locally); sanitizer
   fired nothing. Render check (Playwright): both charts draw, zero
   agent-code script errors.
+
+## Qwen 3.7 Plus run (`qwen3.7-plus/`, 2026-06-12)
+
+17 iters, 3.1 min, 201K/10K tokens, **$0.0402 actual billed** (OpenRouter).
+`OK registry` first try; KPIs check out (9 labs, 7 without disciplinary
+notes, 5 sampling / 4 analysis permits). Thinnest output of the three
+models (4.7 KB, 2 charts, no curated all-labs table, no `<details>`
+fallbacks) — passes the contract but skips the lab-roster table both M3
+and prod judged worth shipping for a 9-row registry.

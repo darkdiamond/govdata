@@ -45,3 +45,12 @@ semantics, and parameter-group aggregation.
 - **Analytical quality**: insights quantify exceedance leaders (nitrate,
   chloride), name extreme coastal/agricultural drillings, and flag the
   PFAS parameters — all grounded in queries from the transcript.
+
+## Qwen 3.7 Plus run (`qwen3.7-plus/`, 2026-06-12)
+
+41 iters, 5.4 min, 538K/17K tokens, **$0.0796 actual billed** (OpenRouter).
+`OK registry` first try (kind agrees with M3, not prod-era `timeseries`),
+zero splines, and all 29 distinctive chart values verified printed by its
+investigation script before the write (provenance ✓). KPIs spot-check
+clean (59,860 / 4,117 ✓). Leaner than M3 (14.5 KB / 4 h2 / 3 charts vs
+22.9 KB / 8 h2 / 5 charts) — fewer stories told from the same data.

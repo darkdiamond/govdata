@@ -1,0 +1,201 @@
+<h1 class="text-2xl md:text-3xl font-bold text-ink-deep mb-6">נתון אחרון - איכות מים בקידוחים</h1>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle leading-relaxed">
+    המאגר מכיל נתוני איכות מים המבוססים על הריכוז האחרון שנמדד לכל פרמטר בקידוחי הפקה וניטור משנת 2007 ואילך. הנתונים כוללים מדידות של קבוצות פרמטרים עיקריות: כלוריד וחנקה, חומרי הדברה, מתכות וחומרים אורגניים, על פי הנחיות משרד הבריאות והרשות הממשלתית למים ולביוב.
+  </p>
+</section>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">59,860</div>
+    <div class="text-sm text-subtle">מדידות איכות מים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">4,117</div>
+    <div class="text-sm text-subtle">קידוחים ייחודיים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-danger mb-1">659</div>
+    <div class="text-sm text-subtle">מדידות החורגות מהתקן</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">2</div>
+    <div class="text-sm text-subtle">פרמטרים עיקריים בחריגה</div>
+  </div>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>ריכוז המדידות הגבוה ביותר הוא סביב פרמטרים של כלוריד (CL) וחנקה (NO3), המהווים יחד כ-10% מכלל הרשומות במאגר.</li>
+    <li>שיעור החריגה מתקן מי השתייה גבוה משמעותית בחנקה (כ-13.1%) בהשוואה לכלוריד (כ-7.1%).</li>
+    <li>פרמטרים אורגניים נדיפים כמו בנזן (BENZ), טולואן (TOLU) וקסילן (XYLE) נמדדים בהיקף רחב, אך שיעור החריגה בהם נמוך מאוד (פחות מ-0.2%).</li>
+    <li>עיקר המדידות במאגר מתועדות בשנים 2011–2024, עם שיא של מעל 10,000 מדידות משוערכות בשנת 2024.</li>
+  </ul>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">חקר הנתונים</h2>
+  </div>
+  
+  <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">התפלגות מדידות לפי פרמטר כימי (8 הנפוצים ביותר)</h3>
+  <div id="chart-params" class="h-64 md:h-80 mb-4" role="img" aria-label="גרף עמודות: התפלגות מדידות איכות מים לפי פרמטר כימי. הכלוריד (CL) והחנקה (NO3) הם הנפוצים ביותר, עם כ-3,100 מדידות כל אחד."></div>
+  <details class="mb-6">
+    <summary class="text-sm text-brand cursor-pointer hover:underline">הצג כטבלה</summary>
+    <table class="w-full text-sm mt-2 border-collapse">
+      <caption class="sr-only">טבלת התפלגות מדידות לפי פרמטר כימי</caption>
+      <thead>
+        <tr class="border-b border-rule">
+          <th scope="col" class="text-right py-2 px-2 text-subtle">פרמטר</th>
+          <th scope="col" class="text-right py-2 px-2 text-subtle">מספר מדידות</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">כלוריד (CL)</th><td class="text-right py-2 px-2">3,112</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">חנקה (NO3)</th><td class="text-right py-2 px-2">3,103</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">בנזן (BENZ)</th><td class="text-right py-2 px-2">2,674</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">MTBE</th><td class="text-right py-2 px-2">2,670</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">טולואן (TOLU)</th><td class="text-right py-2 px-2">2,661</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">קסילן (XYLE)</th><td class="text-right py-2 px-2">2,645</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">כלורופורם (CHLF)</th><td class="text-right py-2 px-2">1,738</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">טריכלורואתילן (TCEY)</th><td class="text-right py-2 px-2">1,737</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">שיעור החריגה מתקן מי השתייה לפי פרמטר</h3>
+  <div id="chart-exceed" class="h-64 md:h-80 mb-4" role="img" aria-label="גרף עמודות אופקיות: שיעור החריגה מתקן מי השתייה. לחנקה (NO3) שיעור החריגה הגבוה ביותר, העומד על 13.1%."></div>
+  <details class="mb-6">
+    <summary class="text-sm text-brand cursor-pointer hover:underline">הצג כטבלה</summary>
+    <table class="w-full text-sm mt-2 border-collapse">
+      <caption class="sr-only">טבלת שיעור החריגה מתקן מי השתייה לפי פרמטר</caption>
+      <thead>
+        <tr class="border-b border-rule">
+          <th scope="col" class="text-right py-2 px-2 text-subtle">פרמטר</th>
+          <th scope="col" class="text-right py-2 px-2 text-subtle">סך מדידות</th>
+          <th scope="col" class="text-right py-2 px-2 text-subtle">שיעור חריגה</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">חנקה (NO3)</th><td class="text-right py-2 px-2">3,103</td><td class="text-right py-2 px-2 text-danger font-semibold">13.1%</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">כלוריד (CL)</th><td class="text-right py-2 px-2">3,112</td><td class="text-right py-2 px-2 text-warn font-semibold">7.1%</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">טריכלורואתילן (TCEY)</th><td class="text-right py-2 px-2">1,737</td><td class="text-right py-2 px-2">1.0%</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">דיכלורואתילן (DCEY)</th><td class="text-right py-2 px-2">1,717</td><td class="text-right py-2 px-2">0.3%</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">טטרכלורואתילן (TECE)</th><td class="text-right py-2 px-2">1,736</td><td class="text-right py-2 px-2">0.2%</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">MTBE</th><td class="text-right py-2 px-2">2,670</td><td class="text-right py-2 px-2">0.1%</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">בנזן (BENZ)</th><td class="text-right py-2 px-2">2,674</td><td class="text-right py-2 px-2">0.1%</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">דיכלורואתאן (DCET)</th><td class="text-right py-2 px-2">1,692</td><td class="text-right py-2 px-2">0.1%</td></tr>
+      </tbody>
+    </table>
+  </details>
+
+  <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">היקף מדידות משוערך לפי שנה</h3>
+  <div id="chart-years" class="h-64 md:h-80 mb-4" role="img" aria-label="גרף קו: היקף מדידות איכות מים משוערך לפי שנה. שיא המדידות נרשם בשנת 2024 עם כ-10,277 מדידות."></div>
+  <details>
+    <summary class="text-sm text-brand cursor-pointer hover:underline">הצג כטבלה</summary>
+    <table class="w-full text-sm mt-2 border-collapse">
+      <caption class="sr-only">טבלת היקף מדידות משוערך לפי שנה</caption>
+      <thead>
+        <tr class="border-b border-rule">
+          <th scope="col" class="text-right py-2 px-2 text-subtle">שנה</th>
+          <th scope="col" class="text-right py-2 px-2 text-subtle">מספר מדידות משוערך</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2024</th><td class="text-right py-2 px-2">10,277</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2025</th><td class="text-right py-2 px-2">8,039</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2011</th><td class="text-right py-2 px-2">7,805</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2022</th><td class="text-right py-2 px-2">6,387</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2012</th><td class="text-right py-2 px-2">5,608</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2019</th><td class="text-right py-2 px-2">5,267</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2023</th><td class="text-right py-2 px-2">4,507</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2020</th><td class="text-right py-2 px-2">4,034</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2021</th><td class="text-right py-2 px-2">1,807</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="text-right py-2 px-2 font-medium">2015</th><td class="text-right py-2 px-2">1,478</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">מאגר המידע מכיל נתוני איכות מים על פי ריכוז אחרון שנמדד לכל פרמטר משנת 2007 ואילך.
+הקובץ נתוני איכות מים בקידוחים מכיל נתונים של קבוצות הפרמטרים הבאות: כלוריד וחנקה, חומרי הדברה, מתכות וחומרים אורגנים.
+מקור המידע הוא בבדיקות בקידוחי הפקה על פי הנחיות משרד הבריאות, סקרים של רשות המים ובדיקות מזהמים המבוצעים בקידוחי ניטור על פי הנחיות רשות המים.</p>
+</section>
+
+<script>
+  // Chart 1: Parameter Distribution
+  const chartParams = echarts.init(document.getElementById('chart-params'));
+  chartParams.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 40, right: 24, top: 24, bottom: 48, containLabel: true },
+    xAxis: { type: 'category', data: ["כלוריד (CL)", "חנקה (NO3)", "בנזן (BENZ)", "MTBE", "טולואן (TOLU)", "קסילן (XYLE)", "כלורופורם (CHLF)", "טריכלורואתילן (TCEY)"] },
+    yAxis: { type: 'value', name: "מספר מדידות" },
+    series: [{
+      type: 'bar',
+      data: [3112, 3103, 2674, 2670, 2661, 2645, 1738, 1737],
+      itemStyle: { borderRadius: [4, 4, 0, 0] }
+    }]
+  }));
+  window.addEventListener('resize', () => chartParams.resize());
+
+  // Chart 2: Exceedance Rate
+  const chartExceed = echarts.init(document.getElementById('chart-exceed'));
+  chartExceed.setOption(window.GovEcharts.option({
+    tooltip: { 
+      trigger: 'axis', 
+      axisPointer: { type: 'shadow' },
+      formatter: function(params) {
+        const p = params[0];
+        const total = [3103, 3112, 1737, 1717, 1736, 2670, 2674, 1692][p.dataIndex];
+        return p.name + '<br/>סך מדידות: ' + total + '<br/>שיעור חריגה: <b>' + p.value + '%</b>';
+      }
+    },
+    grid: { left: 100, right: 40, top: 24, bottom: 24, containLabel: true },
+    xAxis: { type: 'value', name: "אחוז (%)", max: 15 },
+    yAxis: { type: 'category', data: ["DCET", "BENZ", "MTBE", "TECE", "DCEY", "TCEY", "CL", "NO3"] },
+    series: [{
+      type: 'bar',
+      data: [
+        0.1, 0.1, 0.1, 0.2, 0.3, 1.0, 7.1,
+        { value: 13.1, itemStyle: { color: '#dc3545' } } // NO3 highlighted in danger color
+      ],
+      label: { show: true, position: 'right', formatter: '{c}%', fontFamily: 'Rubik' },
+      itemStyle: { borderRadius: [0, 4, 4, 0] }
+    }]
+  }));
+  window.addEventListener('resize', () => chartExceed.resize());
+
+  // Chart 3: Yearly Volume
+  const chartYears = echarts.init(document.getElementById('chart-years'));
+  chartYears.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'axis' },
+    grid: { left: 60, right: 24, top: 24, bottom: 48, containLabel: true },
+    xAxis: { type: 'category', data: ["2024", "2011", "2025", "2022", "2012", "2019", "2023", "2020", "2021", "2015"] },
+    yAxis: { type: 'value', name: "מדידות משוערות" },
+    series: [{
+      type: 'line',
+      data: [10277, 7805, 8039, 6387, 5608, 5267, 4507, 4034, 1807, 1478],
+      smooth: false,
+      areaStyle: { opacity: 0.2 },
+      lineStyle: { width: 3 },
+      symbol: 'circle',
+      symbolSize: 8
+    }]
+  }));
+  window.addEventListener('resize', () => chartYears.resize());
+</script>

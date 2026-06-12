@@ -1,0 +1,15 @@
+{
+  "summary_he": "רשימת המעבדות המורשות לטיפול באסבסט בישראל, הכוללת פרטי רישוי, סוגי פעילות (דיגום ואנליזה) וסטטוס אמצעי משמעת.",
+  "dataset_kind": "registry",
+  "related_ids": [],
+  "suggested_tags": [
+    "אסבסט",
+    "מעבדות",
+    "רישוי",
+    "איכות הסביבה",
+    "בטיחות"
+  ],
+  "temporal_coverage": null,
+  "spatial_coverage": null,
+  "version": 1
+}

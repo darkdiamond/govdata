@@ -1,0 +1,179 @@
+<h1 class="text-2xl md:text-3xl font-bold text-ink-deep mb-6">תחנות תחבורה ציבורית</h1>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle leading-relaxed">
+    מאגר המכיל מידע גיאוגרפי ומנהלי על למעלה מ-33,900 תחנות תחבורה ציבורית בישראל, כולל אוטובוסים, רכבת קלה ורכבת ישראל. 
+    הנתונים כוללים שיוך מרחבי למטרופולין, יישוב, שכונה ואזור סטטיסטי, לצד קואורדינטות מדויקות (WGS84) לניתוחים גיאוגרפיים ותכנוניים.
+  </p>
+</section>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">33,937</div>
+    <div class="text-sm text-subtle">תחנות סה"כ</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">500</div>
+    <div class="text-sm text-subtle">יישובים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">4</div>
+    <div class="text-sm text-subtle">מטרופולינים עיקריים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-warn mb-1">39%</div>
+    <div class="text-sm text-subtle">תחנות ללא שיוך מטרו</div>
+  </div>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>ירושלים מובילה במספר התחנות בעיר בודדת עם 2,398 תחנות, אחריה חיפה (1,315) ובאר שבע (936).</li>
+    <li>רוב מכריע של התחנות (מעל 94%) מסווג כ"תחנה רגילה", עם ייצוג משני למסופים, מוניות שירות ותחנות רכבת.</li>
+    <li>למעלה מ-13,200 תחנות (כ-39% מהמאגר) טרם שויכו למטרופולין מוגדר ("לא מוגדר" או "לא ידוע"), מה שמעיד על פוטנציאל לשיפור השיוך המנהלי.</li>
+  </ul>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/map-pin.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">פריסה גיאוגרפית</h2>
+  </div>
+  <div id="map-main" class="h-72 md:h-[420px]" role="region" aria-label="מפה אינטראקטיבית של מיקומי תחנות תחבורה ציבורית ברחבי ישראל."></div>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">חקר הנתונים</h2>
+  </div>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+    <div>
+      <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">10 הערים עם מספר התחנות הגבוה ביותר</h3>
+      <div id="chart-cities" class="h-64 md:h-80" role="img" aria-label="גרף עמודות: 10 הערים עם מספר התחנות הגבוה ביותר. ירושלים מובילה עם 2,398 תחנות."></div>
+    </div>
+    <div>
+      <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">חלוקה לפי מטרופולין</h3>
+      <div id="chart-metro" class="h-64 md:h-80" role="img" aria-label="גרף עמודות: חלוקת התחנות לפי מטרופולין. כ-39% מהתחנות לא שויכו למטרופולין מוגדר."></div>
+    </div>
+  </div>
+
+  <div class="mb-6">
+    <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">סוגי תחנות עיקריים</h3>
+    <div id="chart-types" class="h-64 md:h-80" role="img" aria-label="גרף עוגה: חלוקת סוגי התחנות. מעל 94% הן תחנות רגילות."></div>
+  </div>
+
+  <details class="mt-4 border-t border-rule pt-4">
+    <summary class="cursor-pointer text-sm text-brand font-medium select-none">הצג כטבלה</summary>
+    <div class="overflow-x-auto mt-3">
+      <table class="w-full text-sm text-right">
+        <caption class="sr-only">טבלת סיכום: מספר התחנות לפי עיר, מטרופולין וסוג תחנה</caption>
+        <thead>
+          <tr class="bg-surface-alt">
+            <th scope="col" class="p-2 text-ink-deep font-semibold">מדד</th>
+            <th scope="col" class="p-2 text-ink-deep font-semibold">ערך</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-rule">
+          <tr><th scope="row" class="p-2 text-subtle">סה"כ תחנות</th><td class="p-2">33,937</td></tr>
+          <tr><th scope="row" class="p-2 text-subtle">עיר מובילה</th><td class="p-2">ירושלים (2,398)</td></tr>
+          <tr><th scope="row" class="p-2 text-subtle">מטרופולין מוביל</th><td class="p-2">תל אביב (10,517)</td></tr>
+          <tr><th scope="row" class="p-2 text-subtle">סוג תחנה נפוץ</th><td class="p-2">תחנה רגילה (32,234)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">קובץ עזר לשיוך מרחבי של תחנות אוטובוס, רק"ל ורכבת ישראל.
+השיוכים הקיימים במאגר הם למטרופולין, שטח ישוב \ מועצה אזורית, שכונה ואזור סטטיסטי. בנוסף הקובץ מכיל גם קואורדינטות מיקום התחנה בפורמט WGS84 לביצוע ניתוחים גיאוגרפים שונים.</p>
+</section>
+
+<script>
+  const chartCities = echarts.init(document.getElementById("chart-cities"));
+  chartCities.setOption(window.GovEcharts.option({
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    grid: { left: 40, right: 20, top: 20, bottom: 40, containLabel: true },
+    xAxis: { type: "category", data: ["ירושלים", "חיפה", "באר שבע", "בית שמש", "פתח תקווה", "ראשון לציון", "אשקלון", "נתניה", "אשדוד", "חדרה"], axisLabel: { interval: 0, rotate: 30 } },
+    yAxis: { type: "value", name: "מספר תחנות" },
+    series: [{ type: "bar", data: [2398, 1315, 936, 596, 575, 549, 536, 521, 507, 381], itemStyle: { borderRadius: [4, 4, 0, 0] } }]
+  }));
+
+  const chartMetro = echarts.init(document.getElementById("chart-metro"));
+  chartMetro.setOption(window.GovEcharts.option({
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+    grid: { left: 40, right: 20, top: 20, bottom: 40, containLabel: true },
+    xAxis: { type: "category", data: ["לא שויך", "תל אביב", "ירושלים", "חיפה", "באר שבע"], axisLabel: { interval: 0 } },
+    yAxis: { type: "value", name: "מספר תחנות" },
+    series: [{ 
+      type: "bar", 
+      data: [13291, 10517, 4288, 4182, 1659], 
+      itemStyle: { 
+        borderRadius: [4, 4, 0, 0],
+        color: function(params) {
+          return params.name === "לא שויך" ? "#dc3545" : undefined;
+        }
+      }
+    }]
+  }));
+
+  const chartTypes = echarts.init(document.getElementById("chart-types"));
+  chartTypes.setOption(window.GovEcharts.option({
+    tooltip: { trigger: "item", formatter: "{b}: {c} ({d}%)" },
+    legend: { orient: "vertical", right: 10, top: "center", textStyle: { fontFamily: "Rubik" } },
+    series: [{
+      type: "pie",
+      radius: ["40%", "70%"],
+      center: ["40%", "50%"],
+      avoidLabelOverlap: true,
+      itemStyle: { borderRadius: 4, borderColor: "#fff", borderWidth: 2 },
+      label: { show: true, formatter: "{b}\n{d}%", fontFamily: "Rubik" },
+      data: [
+        { value: 32234, name: "תחנה רגילה" },
+        { value: 317, name: "גבול מחנה צבאי" },
+        { value: 295, name: "מוניות שירות" },
+        { value: 196, name: "גבול תחנת רכבת" },
+        { value: 195, name: "מטרונית / BRT" },
+        { value: 156, name: "מסוף" },
+        { value: 150, name: "רכבת קלה" },
+        { value: 121, name: "גבול רק\"ל" }
+      ]
+    }]
+  }));
+
+  window.addEventListener("resize", () => {
+    chartCities.resize();
+    chartMetro.resize();
+    chartTypes.resize();
+  });
+
+  GovMap.create({
+    container: "#map-main",
+    resourceId: "e873e6a2-66c1-494f-a677-f5e77348edb0",
+    latField: "Lat",
+    lngField: "Long",
+    projection: "wgs84",
+    popupFields: [
+      { field: "CityName", label: "עיר" },
+      { field: "MetropolinName", label: "מטרופולין" },
+      { field: "StationTypeName", label: "סוג תחנה" }
+    ],
+    popupTitleField: "CityName",
+    cluster: true,
+    totalCap: 10000
+  });
+</script>

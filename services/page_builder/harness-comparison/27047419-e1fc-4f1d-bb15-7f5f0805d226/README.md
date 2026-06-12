@@ -103,3 +103,22 @@ MINIMAX_API_KEY=... python -m services.page_builder.cli.kimi_test \
   --source 27047419-e1fc-4f1d-bb15-7f5f0805d226 --model MiniMax-M3 -v
 python -m services.page_builder.cli.preview render 27047419-e1fc-4f1d-bb15-7f5f0805d226
 ```
+
+## Qwen 3.7 Plus run (`qwen3.7-plus/`, 2026-06-12)
+
+13 iters, 4.3 min, 152K/14K tokens, **$0.0413 actual billed** (OpenRouter).
+`OK map` first try, kind agrees (`map`), zero splines, and the provenance
+rule held: all chart values trace to printed query output (one derived
+value, 13,291 = 12,974+317, merges the two unassigned-metro categories —
+legitimate arithmetic, arguably cleaner than two bars).
+
+**But two data errors from one silently-truncated query**: its script ran
+`distinct=true&limit=500` on CityName, got exactly 500 rows (the cap),
+and (a) shipped a "500 יישובים" KPI — the true count is 1,199; (b)
+aggregated top cities over that truncated, roughly-alphabetical list, so
+**תל אביב-יפו (true #3, 1,100 stations) is missing from the top-10
+chart** (ת sorts last). Everything it did count matches ground truth
+exactly. Provenance prevents fabrication, not bad upstream queries —
+the distinct-cap trap got an explicit prompt rule after this run.
+Body is much leaner than M3/prod (9.4 KB, 3 charts + map, donut for
+station types).
