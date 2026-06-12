@@ -1,23 +1,23 @@
-"""CLI: preview a kimi_test build inside the actual dataset-page shell.
+"""CLI: preview a model_test build inside the actual dataset-page shell.
 
-The kimi runner writes a body fragment + agent metadata to
-`tmp/kimi_test/<id>/{content.html,agent_data.json}`. Two ways to see it
+The model harness writes a body fragment + agent metadata to
+`tmp/model_test/<id>/{content.html,agent_data.json}`. Two ways to see it
 rendered through the real shell (Tailwind, layouts/default.vue, dataset-libs
 globals, related-datasets sidebar, metadata cards):
 
-  render  — splices the kimi body into the live govil.ai HTML offline.
+  render  — splices the harness body into the live govil.ai HTML offline.
             No dev server needed; just open the generated file. Fastest
             way to eyeball "does this body work in the real shell".
 
-  swap    — drops the kimi files on top of `frontend/public/datasets/<id>/`
+  swap    — drops the harness files on top of `frontend/public/datasets/<id>/`
             so `npm run dev` serves them at localhost:3000. Lets you see
             related-datasets / sidebar / SEO meta updated to match the
-            kimi build (render does not). Pair with restore.
+            harness build (render does not). Pair with restore.
 
 Examples:
 
     python -m services.page_builder.cli.preview render <id>
-    # -> writes tmp/kimi_test/<id>/preview.html, prints file:// URL
+    # -> writes tmp/model_test/<id>/preview.html, prints file:// URL
 
     python -m services.page_builder.cli.preview swap <id>
     cd frontend && npm run dev
@@ -26,7 +26,7 @@ Examples:
 
     python -m services.page_builder.cli.preview status
 
-`--all` applies swap/restore to every dataset under tmp/kimi_test/.
+`--all` applies swap/restore to every dataset under tmp/model_test/.
 This tool never touches Firestore or GCS; it is purely a local-FS swap
 plus an optional outbound fetch for `render`.
 """
@@ -42,7 +42,7 @@ from pathlib import Path
 from typing import Iterable
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
-KIMI_OUT_DIR = REPO_ROOT / "tmp" / "kimi_test"
+HARNESS_OUT_DIR = REPO_ROOT / "tmp" / "model_test"
 PROD_DATASETS_DIR = REPO_ROOT / "frontend" / "public" / "datasets"
 PROD_URL_BASE = "https://govil.ai/datasets"
 LOCAL_URL_BASE = "http://localhost:3000/datasets"
@@ -59,13 +59,13 @@ PREVIEW_BANNER_HTML = (
     '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;'
     'background:#0c3058;color:#fff;font-family:Rubik,system-ui,sans-serif;'
     'font-size:.85rem;padding:.4rem 1rem;text-align:center;direction:ltr">'
-    '⚙ kimi-builder preview — body spliced into prod shell. '
+    '⚙ model-harness preview — body spliced into prod shell. '
     'Sidebar / related-datasets / SEO meta still reflect prod.'
     '</div>'
 )
 
 # Files the page-builder agent owns (per CLAUDE.md). data.json is the scanner's
-# and is identical between kimi and prod runs for the same dataset, so we leave
+# and is identical between harness and prod runs for the same dataset, so we leave
 # it alone — that also keeps the swap minimal and the restore precise.
 SWAP_FILES = ("content.html", "agent_data.json")
 BACKUP_DIRNAME = "prod-backup"
@@ -74,7 +74,7 @@ BACKUP_DIRNAME = "prod-backup"
 @dataclass(frozen=True)
 class Paths:
     dataset_id: str
-    kimi_dir: Path
+    build_dir: Path
     prod_dir: Path
     backup_dir: Path
 
@@ -82,13 +82,13 @@ class Paths:
     def for_id(cls, dataset_id: str) -> "Paths":
         return cls(
             dataset_id=dataset_id,
-            kimi_dir=KIMI_OUT_DIR / dataset_id,
+            build_dir=HARNESS_OUT_DIR / dataset_id,
             prod_dir=PROD_DATASETS_DIR / dataset_id,
-            backup_dir=KIMI_OUT_DIR / dataset_id / BACKUP_DIRNAME,
+            backup_dir=HARNESS_OUT_DIR / dataset_id / BACKUP_DIRNAME,
         )
 
-    def kimi_file(self, name: str) -> Path:
-        return self.kimi_dir / name
+    def build_file(self, name: str) -> Path:
+        return self.build_dir / name
 
     def prod_file(self, name: str) -> Path:
         return self.prod_dir / name
@@ -103,10 +103,10 @@ def _is_swapped(p: Paths) -> bool:
     return p.backup_dir.is_dir() and any(p.backup_file(f).exists() for f in SWAP_FILES)
 
 
-def _all_kimi_ids() -> list[str]:
-    if not KIMI_OUT_DIR.is_dir():
+def _all_build_ids() -> list[str]:
+    if not HARNESS_OUT_DIR.is_dir():
         return []
-    return sorted(d.name for d in KIMI_OUT_DIR.iterdir() if d.is_dir())
+    return sorted(d.name for d in HARNESS_OUT_DIR.iterdir() if d.is_dir())
 
 
 def _print_compare_links(dataset_id: str) -> None:
@@ -115,13 +115,13 @@ def _print_compare_links(dataset_id: str) -> None:
 
 
 def _swap_one(p: Paths) -> bool:
-    if not p.kimi_dir.is_dir():
-        print(f"[{p.dataset_id[:8]}] no kimi build at {p.kimi_dir} — skip", file=sys.stderr)
+    if not p.build_dir.is_dir():
+        print(f"[{p.dataset_id[:8]}] no harness build at {p.build_dir} — skip", file=sys.stderr)
         return False
-    missing = [f for f in SWAP_FILES if not p.kimi_file(f).exists()]
+    missing = [f for f in SWAP_FILES if not p.build_file(f).exists()]
     if missing:
         print(
-            f"[{p.dataset_id[:8]}] kimi dir missing files: {missing} — skip",
+            f"[{p.dataset_id[:8]}] build dir missing files: {missing} — skip",
             file=sys.stderr,
         )
         return False
@@ -145,8 +145,8 @@ def _swap_one(p: Paths) -> bool:
         backup_f = p.backup_file(fname)
         if prod_f.exists():
             shutil.copy2(prod_f, backup_f)
-        kimi_f = p.kimi_file(fname)
-        shutil.copy2(kimi_f, prod_f)
+        build_f = p.build_file(fname)
+        shutil.copy2(build_f, prod_f)
 
     print(f"[{p.dataset_id[:8]}] swapped:")
     _print_compare_links(p.dataset_id)
@@ -182,9 +182,9 @@ def _restore_one(p: Paths) -> bool:
 
 def _resolve_ids(arg_ids: list[str], all_flag: bool) -> list[str]:
     if all_flag:
-        ids = _all_kimi_ids()
+        ids = _all_build_ids()
         if not ids:
-            print(f"no kimi builds under {KIMI_OUT_DIR}", file=sys.stderr)
+            print(f"no harness builds under {HARNESS_OUT_DIR}", file=sys.stderr)
         return ids
     return list(arg_ids)
 
@@ -213,8 +213,8 @@ def _fetch_prod_html(dataset_id: str) -> str:
         return r.read().decode("utf-8")
 
 
-def _splice_body(prod_html: str, kimi_body: str) -> str:
-    """Replace the article.dataset-body innerHTML in prod_html with kimi_body.
+def _splice_body(prod_html: str, harness_body: str) -> str:
+    """Replace the article.dataset-body innerHTML in prod_html with harness_body.
 
     Raises ValueError if the structure isn't what we expect — that means
     the shell template changed and this needs updating.
@@ -231,7 +231,7 @@ def _splice_body(prod_html: str, kimi_body: str) -> str:
     return (
         prod_html[: open_match.end()]
         + "\n"
-        + kimi_body.rstrip()
+        + harness_body.rstrip()
         + "\n"
         + prod_html[close_idx:]
     )
@@ -290,9 +290,9 @@ def _freeze_static(html: str) -> str:
 
 
 def _render_one(p: Paths) -> bool:
-    if not p.kimi_file("content.html").exists():
+    if not p.build_file("content.html").exists():
         print(
-            f"[{p.dataset_id[:8]}] no kimi build at {p.kimi_dir} — skip",
+            f"[{p.dataset_id[:8]}] no harness build at {p.build_dir} — skip",
             file=sys.stderr,
         )
         return False
@@ -305,16 +305,16 @@ def _render_one(p: Paths) -> bool:
             file=sys.stderr,
         )
         return False
-    kimi_body = p.kimi_file("content.html").read_text(encoding="utf-8")
+    harness_body = p.build_file("content.html").read_text(encoding="utf-8")
     try:
-        spliced = _splice_body(prod_html, kimi_body)
+        spliced = _splice_body(prod_html, harness_body)
     except ValueError as e:
         print(f"[{p.dataset_id[:8]}] splice failed: {e}", file=sys.stderr)
         return False
     spliced = _rewrite_root_relative(spliced)
     spliced = _freeze_static(spliced)
     spliced = _inject_preview_banner(spliced)
-    out = p.kimi_dir / "preview.html"
+    out = p.build_dir / "preview.html"
     out.write_text(spliced, encoding="utf-8")
     print(f"[{p.dataset_id[:8]}] wrote {out} ({out.stat().st_size:,} bytes)")
     print(f"  open: file://{out}")
@@ -335,20 +335,20 @@ def _cmd_render(ids: Iterable[str]) -> int:
 def _cmd_status() -> int:
     swapped: list[str] = []
     untouched: list[str] = []
-    for did in _all_kimi_ids():
+    for did in _all_build_ids():
         if _is_swapped(Paths.for_id(did)):
             swapped.append(did)
         else:
             untouched.append(did)
     if swapped:
-        print("currently swapped (prod page replaced by kimi build):")
+        print("currently swapped (prod page replaced by harness build):")
         for did in swapped:
             print(f"  {did}")
             _print_compare_links(did)
     else:
         print("no datasets currently swapped")
     if untouched:
-        print(f"\nkimi builds available but not swapped ({len(untouched)}):")
+        print(f"\nharness builds available but not swapped ({len(untouched)}):")
         for did in untouched:
             print(f"  {did}")
     return 0
@@ -356,20 +356,20 @@ def _cmd_status() -> int:
 
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(
-        description="Swap kimi-built dataset pages into the live Nuxt tree for preview.",
+        description="Swap harness-built dataset pages into the live Nuxt tree for preview.",
     )
     sub = p.add_subparsers(dest="cmd", required=True)
 
     for name, help_ in (
-        ("swap", "replace prod content.html + agent_data.json with the kimi build"),
+        ("swap", "replace prod content.html + agent_data.json with the harness build"),
         ("restore", "put the prod files back from prod-backup/"),
-        ("render", "fetch the live govil.ai page and splice the kimi body into it; "
+        ("render", "fetch the live govil.ai page and splice the harness body into it; "
                    "writes a self-contained preview.html you can open offline"),
     ):
         sp = sub.add_parser(name, help=help_)
         sp.add_argument("ids", nargs="*", help="dataset id(s)")
         sp.add_argument("--all", action="store_true",
-                        help=f"apply to every kimi build under {KIMI_OUT_DIR.relative_to(REPO_ROOT)}/")
+                        help=f"apply to every harness build under {HARNESS_OUT_DIR.relative_to(REPO_ROOT)}/")
 
     sub.add_parser("status", help="list datasets currently swapped + available builds")
 

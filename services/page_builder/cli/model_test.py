@@ -1,15 +1,22 @@
-"""CLI: run Kimi K2.6 (or any other model) against one or more CKAN datasets.
+"""CLI: run any model (via OpenRouter) against one or more CKAN datasets.
 
 Local-only harness. Production Cloud Run / Cloud Build images do not install
 the deps this module needs. To run it:
 
     pip install -r services/page_builder/requirements.txt \\
                 -r services/page_builder/requirements-test.txt
-    python -m services.page_builder._build_kimi_system   # regenerate prompt
-    python -m services.page_builder.cli.kimi_test --source <dataset_id>
+    python -m services.page_builder._build_harness_system   # regenerate prompt
+    export OPENROUTER_API_KEY=...
+    python -m services.page_builder.cli.model_test \\
+        --source <dataset_id> --model minimax/minimax-m3
 
-Outputs land in `tmp/kimi_test/<id>/{content.html,agent_data.json,transcript.json,cost.json}`.
-To preview a kimi build inside the actual Nuxt shell — and compare it visually
+Model ids are OpenRouter ids (`<vendor>/<model>` — browse
+https://openrouter.ai/models), or `anthropic:claude-…` for the native
+calibration path. cost.json reports the actual billed USD for
+OpenRouter runs (usage accounting), not a table estimate.
+
+Outputs land in `tmp/model_test/<id>/{content.html,agent_data.json,transcript.json,cost.json}`.
+To preview a build inside the actual Nuxt shell — and compare it visually
 to the live prod page on govil.ai — use:
 
     python -m services.page_builder.cli.preview render <id>     # offline file://
@@ -19,9 +26,9 @@ to the live prod page on govil.ai — use:
 Read-only on prod Firestore. Writes nothing to GCS or Firestore.
 
 Examples:
-    python -m services.page_builder.cli.kimi_test --source <dataset_id>
-    python -m services.page_builder.cli.kimi_test --batch <id1> <id2> <id3>
-    python -m services.page_builder.cli.kimi_test --auto-trio
+    python -m services.page_builder.cli.model_test --source <id> --model minimax/minimax-m3
+    python -m services.page_builder.cli.model_test --batch <id1> <id2> --model moonshotai/kimi-k2.6
+    python -m services.page_builder.cli.model_test --auto-trio --model anthropic:claude-sonnet-4-6
 """
 from __future__ import annotations
 
@@ -34,12 +41,12 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Optional
 
-from services.page_builder.kimi_runner import TestSessionResult, run_test_session
+from services.page_builder.model_harness import TestSessionResult, run_test_session
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PROD_DATASETS_DIR = REPO_ROOT / "frontend" / "public" / "datasets"
-DEFAULT_OUT_DIR = REPO_ROOT / "tmp" / "kimi_test"
+DEFAULT_OUT_DIR = REPO_ROOT / "tmp" / "model_test"
 
 log = logging.getLogger(__name__)
 
@@ -87,11 +94,12 @@ def _pick_auto_trio() -> list[str]:
 def _print_summary(res) -> None:
     cost = res.cost_usd
     usage = res.usage
-    cost_line = (
-        f"  $: tokens={cost['tokens_usd']:.4f} -> total={cost['total_usd']:.4f}"
-        if cost.get("tokens_usd") is not None
-        else f"  $: unknown ({cost.get('note', '')})"
-    )
+    if cost.get("total_usd") is not None:
+        source = cost.get("cost_source") or "?"
+        tag = "actual billed" if source == "openrouter" else "table estimate"
+        cost_line = f"  $: {cost['total_usd']:.4f} ({tag})"
+    else:
+        cost_line = f"  $: unknown ({cost.get('note', '')})"
     print(
         f"\n=== {res.dataset_id} (model={res.model}) ===\n"
         f"  out: {res.out_dir}\n"
@@ -149,9 +157,11 @@ def main(argv: Optional[list[str]] = None) -> int:
     g.add_argument("--batch", nargs="+", help="multiple dataset ids")
     g.add_argument("--auto-trio", action="store_true",
                    help="auto-pick one map / timeseries / registry from existing prod builds")
-    p.add_argument("--model", default="kimi-k2.6",
-                   help="model id: 'kimi-k2.6', 'anthropic:claude-sonnet-4-6', "
-                        "'anthropic:claude-haiku-4-5', 'openai:gpt-...', etc.")
+    p.add_argument("--model", required=True,
+                   help="OpenRouter model id ('minimax/minimax-m3', "
+                        "'moonshotai/kimi-k2.6', 'x-ai/grok-4.3', "
+                        "'anthropic/claude-sonnet-4-6', ...) or "
+                        "'anthropic:claude-...' for the native calibration path")
     p.add_argument("--out", default=str(DEFAULT_OUT_DIR))
     p.add_argument("--max-iters", type=int, default=30)
     p.add_argument("--project", default=os.environ.get("FIREBASE_PROJECT") or "govdata-il")
