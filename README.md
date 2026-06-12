@@ -9,115 +9,104 @@ ministries and topics.
 ## How it works
 
 ```
-  Scanner (Python)                 Controller (Cloud Function)
-  polls data.gov.il                one HTTP invocation per dataset
-  CKAN API → SQLite → callback ─── POST /build dataset_id
-       │                                   │
-       │ webhook                           │  create Managed Agents session
-       └──────────────────────────────────▶│  sends dataset metadata to the agent
-                                           │  streams events until the agent is idle
-                                           │  downloads content.html + data.json
-                                           │  computes embeddings + related datasets
-                                           │  wraps content into a full HTML page
-                                           │  uploads to gs://govdata-content/datasets/<id>/
-                                           │  rebuilds manifest.json
-                                           │  triggers a Cloudflare Pages rebuild
-                                           ▼
-                                  Managed Agent (Anthropic-hosted)
-                                  claude-sonnet-4-6 in a per-session container
-                                  tools: bash, read, write, edit, glob, grep,
-                                         web_fetch, web_search
-                                  writes: /mnt/session/outputs/content.html
-                                          /mnt/session/outputs/data.json
+Cloud Scheduler (daily 07:00 Asia/Jerusalem)
+        │
+        ▼
+Cloud Run: govdata-builder (1 container, concurrency=1)
+  pipeline.run_pipeline
+    scan CKAN → Firestore sources/*            (scanner)
+    select all never-analyzed + retryable-failed (≤ DAILY_CAP)
+    run sessions concurrently (Semaphore(MAX_CONCURRENT))
+        │  each session: PydanticAI agent ← OpenRouter (OPENROUTER_MODEL,
+        │  default minimax/minimax-m3); tools = bash + python in a private
+        │  subprocess workdir, web_fetch, web_search; self-validates
+        │  (schema → sanitizer → check.py) with up to SESSION_ATTEMPTS
+        │  retries before anything persists
+        ▼
+    content.html → gs://<staging>/datasets/<id>/
+    agent_data + usage/cost → Firestore sources/<id>
+    ≥1 success → trigger Cloud Build govdata-publish
+                   rsync GCS → publish.py (data.json, agent_data.json,
+                   manifest.json from Firestore) → nuxt generate →
+                   firebase deploy        (no new pages → no build)
 ```
 
-Each dataset page is mostly authored by the agent. A Python "page wrapper"
-adds the shared chrome at publish time — site header, breadcrumb, related-
-datasets sidebar (`5·same_ministry + 2·shared_tags + 3·cosine(embedding) +
-4·agent_suggested`), and footer — so every page links back to the home, its
-ministry, and related topics. Nuxt generates the home page plus category
-pages (`/ministries/<slug>/`, `/tags/<slug>/`, `/kinds/<kind>/`) from the
-manifest.
+Each dataset page body is authored by the agent; the Nuxt shell wraps it
+with the shared chrome (header, breadcrumb, metadata sidebar, related
+datasets, data explorer, footer) at `nuxt generate` time. Nuxt also
+generates the home and category pages (`/ministries/<slug>/`,
+`/tags/<slug>/`, `/kinds/<kind>/`) from the manifest.
 
 ## Layout
 
 ```
 services/
-  scanner/                     existing CKAN scanner (unchanged)
-  page_builder/                Managed Agents controller + publish pipeline
-    main.py                      HTTP + CLI entrypoint
-    session_runner.py            session lifecycle + download + wrap + upload
-    page_wrapper.py              renders shared chrome around agent content
-    related.py                   related-dataset scoring
-    embeddings.py                optional Voyage embeddings
-    manifest.py                  aggregate per-dataset data.json → manifest.json
-    schema.py                    Pydantic models
-    templates/dataset_page.html.j2
+  scanner/                     CKAN scanner → Firestore sources/*
+  page_builder/                daily pipeline + agent runtime + publisher
+    main.py                      HTTP entrypoint (functions-framework)
+    pipeline.py                  scan → select → concurrent sessions → publish trigger
+    agent_runner.py              prod session: attempts + validation + GCS/Firestore
+    model_harness.py             shared PydanticAI agent loop (OpenRouter routing)
+    agent_contract.py            user-message builder + CKAN prefetch + output sanitizer
+    local_sandbox.py             prod tool sandbox (subprocess, private workdir)
+    podman_sandbox.py            local-test tool sandbox (rootless Podman)
+    selector.py                  which sources to analyze (incl. failed-retry)
+    publish.py                   Firestore → data.json/agent_data.json/manifest.json
+    related.py / embeddings.py   related-dataset scoring (Voyage optional)
+    cli/model_test.py            manual model A/B harness (see below)
+    cli/preview.py               preview harness builds in the prod shell
 agent/
-  govdata-agent.yaml           Managed Agent config (model, system prompt, tools)
-  govdata-env.yaml             sandbox environment (cloud, unrestricted network)
+  system-prompt.md             canonical agent system prompt (hand-edited)
+  skills/check.py              self-check enforcing the prompt's hard rules
 infra/
-  setup-agent.sh               one-time: creates agent + env via `ant` CLI
-  cloudfunction.deploy.sh      gcloud deploy
+  builder.deploy.sh            Cloud Run deploy (env: OPENROUTER_MODEL, DAILY_CAP, …)
+  scheduler.setup.sh           Cloud Scheduler (0 7 * * *, Asia/Jerusalem)
+  publish-local.sh             manual publish path (same steps as Cloud Build)
   DEPLOY.md                    full runbook
-frontend/                      Nuxt 3 (home + category pages only)
-  pages/
-    index.vue                    home with cards + facets
-    ministries/index.vue         index of ministries
-    ministries/[slug].vue        datasets for one ministry
-    tags/index.vue               index of tags
-    tags/[slug].vue              datasets for one tag
-    kinds/[kind].vue             datasets of one kind
-  components/DatasetCard.vue
-  composables/useManifest.ts
+frontend/                      Nuxt 3 (shell + home + category pages)
 ```
-
-The per-dataset HTML lives on the CDN under `/datasets/<id>/index.html` —
-authored by the agent, wrapped by the controller, not generated by Nuxt.
 
 ## Quick start
 
-Prereqs: Python 3.12, Node 22, an Anthropic API key, the `ant` CLI (see
-[`infra/DEPLOY.md`](infra/DEPLOY.md) step 1), and optionally a `VOYAGE_API_KEY`
+Prereqs: Python 3.12, Node 22, an OpenRouter API key
+(https://openrouter.ai/settings/keys), and optionally a `VOYAGE_API_KEY`
 for embedding-driven relatedness.
 
 ```sh
 # 1. Python env
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-pip install -r services/page_builder/requirements.txt jinja2
+pip install -r services/page_builder/requirements.txt
 
-# 2. Scan (populates data/scanner.db)
-python -m services.scanner.main scan --limit 20 --no-download
+# 2. Scan into the Firestore emulator
+gcloud emulators firestore start --host-port=localhost:8080 &
+export FIRESTORE_EMULATOR_HOST=localhost:8080 FIRESTORE_PROJECT_ID=local-dev
+python -m services.scanner.main scan --limit 20
 
-# 3. One-time Managed Agent setup (needs ANTHROPIC_API_KEY + `ant` on PATH)
-export ANTHROPIC_API_KEY=sk-ant-...
-bash infra/setup-agent.sh              # prints AGENT_ID + ENV_ID
+# 3. Build one dataset end-to-end (agent session + validation)
+export OPENROUTER_API_KEY=sk-or-...
+export GCS_STAGING_BUCKET=<your-staging-bucket>
+python -m services.page_builder.pipeline --source <dataset_id> --no-trigger-publish
 
-# 4. Build one dataset locally
-export ANTHROPIC_AGENT_ID=... ANTHROPIC_ENV_ID=...
-python -m services.page_builder.main 995eb826-c471-4572-8fd3-39d92a3a9603 --out /tmp/gd
-ls /tmp/gd/datasets/995eb826-.../
-# Expected: index.html  content.html  data.json
-
-# 5. Frontend (reads manifest.json at build time)
-cp /tmp/gd/manifest.json frontend/public/data/manifest.json
+# 4. Frontend (reads manifest.json at build time)
+python -m services.page_builder.manifest --from-firestore \
+  --out frontend/public/data/manifest.json
 cd frontend && npm install && npm run generate
 npx serve .output/public
 ```
 
 ## Runtime ingredients
 
-- **Claude Sonnet 4.6** drives the agent. Adaptive thinking is on by default.
-  The system prompt + tool list are cached via the agent config, so
-  per-dataset cost is the user message + tool outputs + page text.
-- **Voyage `voyage-3`** (optional) computes a 1024-dim embedding from
-  title + summary + org + tags. Used by `related.py` to catch
+- **MiniMax M3 via OpenRouter** drives the agent (`OPENROUTER_MODEL` —
+  any OpenRouter model id is a redeploy away). Per-page cost is reported
+  as actual billed USD (usage accounting) in `sources/<id>.last_usage`,
+  typically $0.03–0.10.
+- **Voyage** (optional, `VOYAGE_ENABLED`) computes a 1024-dim embedding
+  from title + summary + org + tags. Used by `related.py` to catch
   semantically-similar datasets that don't share a literal tag.
-- **Cloudflare Pages** hosts everything. Nuxt-generated home + category
-  pages sit next to the agent-authored `/datasets/*/` files.
-- **GCP Cloud Functions Gen 2** runs the controller (60-minute timeout — no
-  client-side time cap on the session).
+- **Firebase Hosting** serves everything. Nuxt-generated shell + home +
+  category pages wrap the agent-authored bodies at generate time.
+- **Cloud Run** runs the daily builder (3600s timeout bounds the whole
+  batch; per-tool commands are capped at 120s).
 
 ## Publishing
 
@@ -155,8 +144,8 @@ https://openrouter.ai/models (`minimax/minimax-m3`,
 `moonshotai/kimi-k2.6`, `x-ai/grok-4.3`, `anthropic/claude-sonnet-4-6`,
 …). `--model anthropic:claude-…` bypasses OpenRouter for native-Anthropic
 calibration runs. The agent runs through PydanticAI's agent loop in a
-rootless Podman+`llm-sandbox` container, bypassing Anthropic Managed
-Agents entirely.
+rootless Podman+`llm-sandbox` container — same agent loop as production,
+stronger isolation, zero prod side effects.
 
 ### Install (local-only)
 
@@ -181,11 +170,8 @@ small static `PRICE_TABLE` in `services/page_builder/model_harness.py`.
 ### Run
 
 ```sh
-# 1. regenerate the system prompt from agent/govdata-agent.yaml
-#    (run this whenever the yaml changes; produces agent/govdata-agent-harness.system.md)
-python -m services.page_builder._build_harness_system
-
-# 2. build one dataset (or --batch <id1> <id2> ... / --auto-trio)
+# build one dataset (or --batch <id1> <id2> ... / --auto-trio); the system
+# prompt is agent/system-prompt.md — same file production uses
 python -m services.page_builder.cli.model_test --source <dataset_id> \
     --model minimax/minimax-m3
 
