@@ -11,41 +11,57 @@ landing pages. Four layers:
    state into **Firestore** (`sources/*`). Runs inside the builder
    container; also usable as a local CLI for debugging.
 2. **Builder** — `services/page_builder/`. **Cloud Run service**
-   (`govdata-builder`). One HTTP invocation per scheduler tick:
-   - `pipeline.run_pipeline` drives scan → select N sources → agent
-     sessions via `asyncio.gather` → mark Firestore → trigger publisher.
+   (`govdata-builder`), invoked by Cloud Scheduler **daily at 07:00
+   Asia/Jerusalem**:
+   - `pipeline.run_pipeline` drives scan → select every never-analyzed
+     (or retryable-failed) source up to `DAILY_CAP` → concurrent agent
+     sessions (`asyncio.gather` + `Semaphore(MAX_CONCURRENT)`) → mark
+     Firestore → trigger the publisher. **No new datasets → no build**
+     (`status: idle`, publish trigger skipped).
    - Pinned to **one container** (`--max-instances=1 --concurrency=1`).
-     Per-source parallelism is `asyncio.gather` inside that container
-     (agent streams are I/O-bound), never Cloud Run autoscaling.
-3. **Managed Agent** — `agent/*.yaml` + `agent/skills/`. Anthropic-hosted,
-   `claude-sonnet-4-6` in a per-session container. Writes `content.html`
-   (body) + `data.json` (manifest entry). Tools: bash, web_search,
-   web_fetch, code_execution, file writing.
-4. **Publisher** — run locally via `infra/publish-local.sh`: rsyncs
-   staged pages from GCS → `frontend/public/datasets/`, regenerates
-   `frontend/public/data/manifest.json` from Firestore, runs
-   `nuxt generate`, then `firebase deploy --only hosting`. The Cloud
-   Build path (`cloudbuild-publish.yaml`, same four steps) is dormant:
-   the prod builder has `PUBLISH_TRIGGER_ID=""` so it no longer fires
-   the trigger after agent runs — re-enable by setting it back to
-   `govdata-publish` on the `govdata-builder` Cloud Run service.
+     Per-source parallelism lives inside that container, never Cloud
+     Run autoscaling.
+3. **Agent runtime** — PydanticAI agent loop
+   (`services/page_builder/model_harness.py::run_agent_session`)
+   calling **OpenRouter** (`OPENROUTER_MODEL`, default
+   `minimax/minimax-m3`). Tools: bash + code_execution (subprocess in a
+   private per-session workdir via `local_sandbox.LocalSandbox`),
+   web_fetch (httpx), web_search (DDG). System prompt:
+   `agent/system-prompt.md` (canonical, hand-edited). Each session
+   self-validates before anything persists: AgentData schema →
+   sanitizer → host-side `agent/skills/check.py` exit 0, with
+   `SESSION_ATTEMPTS` (3) in-run retries on fresh workdirs
+   (`agent_runner.run_production_session`). Outputs: `content.html`
+   → GCS staging, `agent_data` + usage/cost telemetry → Firestore.
+4. **Publisher** — Cloud Build trigger `govdata-publish`
+   (`cloudbuild-publish.yaml`), fired automatically by the builder when
+   ≥1 page succeeded: rsyncs staged pages from GCS →
+   `frontend/public/datasets/`, regenerates artifacts + manifest from
+   Firestore, runs `nuxt generate`, then `firebase deploy`. For manual
+   deploys, `infra/publish-local.sh` runs the same four steps locally.
 
 State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
-(per invocation). No SQLite. No Cloudflare.
+(per invocation). No SQLite. No Cloudflare. No Anthropic Managed
+Agents (migrated to OpenRouter 2026-06-12; sources that fail a whole
+run auto-retry on subsequent days via `failed_attempts`, parked at 3).
 
 ## Critical conventions
 
 - **Hebrew-first, RTL everywhere.** `<html dir="rtl" lang="he">`. Body
   line-height `1.5` (gov.il standard). Tailwind logical properties
   (`ps-*`/`pe-*`) when using Tailwind.
-- **Model**: `claude-sonnet-4-6`. Do not upgrade to Opus without asking.
-  New Claude calls follow the `claude-api` skill: adaptive thinking,
-  prompt caching, no `budget_tokens`, no `temperature`/`top_p`/`top_k`
-  on 4.6+.
+- **Model**: `OPENROUTER_MODEL` env on the builder (default
+  `minimax/minimax-m3`, via OpenRouter — any `<vendor>/<model>` id is a
+  redeploy away). Do not change the production model without asking.
+  Candidate models are evaluated first through the local harness
+  (`cli/model_test.py`) against `harness-comparison/` baselines,
+  including numeric validation of chart data vs CKAN (MiniMax once
+  fabricated a chart; the prompt's CHART-DATA PROVENANCE rule + that
+  validation are the guard).
 - **Design tokens** (aligned with www.gov.il — mirrored across
   `frontend/tailwind.config.ts`,
   `services/page_builder/templates/dataset_page.html.j2`, and
-  the `system:` block of `agent/govdata-agent.yaml`):
+  `agent/system-prompt.md`):
   primary `#0068f5` (hover `#0053c4`), ink `#0c3058`, ink-deep `#0b3668`,
   surface `#f1f7ff`, surface-alt `#f0f4fa`, rule `#c3cfe7`, subtle
   `#6c757d`. Semantic: ok `#198754`, warn `#ffc107`, danger `#dc3545`,
@@ -60,10 +76,12 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   `L.markerClusterGroup`, and `GovExplorer` (in-house;
   `frontend/public/lib/gov-explorer.js`). Agent bodies use them as
   globals and must NOT include `<script src=>` for any of them.
-- **Agent outputs** are a contract:
-  - `/mnt/session/outputs/content.html` — body content only. No
+- **Agent outputs** are a contract (written to the per-session
+  OUTPUTS_DIR the user message provides — see
+  `services/page_builder/agent_contract.py`):
+  - `content.html` — body content only. No
     `<html>`/`<head>`/`<body>`. Inline `<style>` and `<script>` tags OK.
-  - `/mnt/session/outputs/agent_data.json` — an `AgentData`
+  - `agent_data.json` — an `AgentData`
     (`services/page_builder/schema.py`). Holds ONLY interpretive fields
     (`summary_he`, `dataset_kind`, optional `related_ids`). Scanner
     facts (id, title, slug, license, resources, formats, record_count,
@@ -91,7 +109,9 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   archival/abandoned datasets we'd rather not burn agent budget on
   unless CKAN flags them as updated again.
   1. `analysis_status == "never"` AND `metadata_modified >= cutoff` —
-     ordered by `metadata_modified` DESC.
+     ordered by `metadata_modified` DESC. Then (Track 1b) failed
+     sources with `failed_attempts < 3` — transient failures self-heal
+     on later daily runs; 3 whole-run failures park the source.
   2. `change_status in {new, updated}` AND `metadata_modified >= cutoff`
      AND (`last_analyzed_at` null or older than 30 days) — ordered by
      `metadata_modified` DESC.
@@ -112,9 +132,13 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 | Pipeline orchestration | `services/page_builder/pipeline.py` | scan → select → asyncio.gather → mark → trigger publish |
 | Source selection | `services/page_builder/selector.py` | Cooldown + priority query |
 | Firestore layer | `services/shared/firestore.py` | `FirestoreStateStore`, schema, queries |
-| Session orchestration | `services/page_builder/session_runner.py` | Stream agent until idle; download agent_data.json + content.html; persist agent_data on the source doc; stage content.html to GCS |
+| Production session runner | `services/page_builder/agent_runner.py` | Attempt loop (SESSION_ATTEMPTS) → validate (schema + sanitizer + check.py) → upload content.html to GCS + agent_data/usage to Firestore |
+| Agent loop (shared) | `services/page_builder/model_harness.py` | PydanticAI agent + tools + OpenRouter routing + actual-cost extraction; `run_agent_session` used by prod and the test CLI |
+| Agent I/O contract | `services/page_builder/agent_contract.py` | build_user_message (OUTPUTS_DIR/CHECK_SCRIPT), CKAN prefetch, output sanitizer |
+| Prod sandbox | `services/page_builder/local_sandbox.py` | Per-session subprocess workdir, scrubbed env, command timeouts |
 | Publisher | `services/page_builder/publish.py` | Reads each succeeded `sources/<id>` and writes data.json, agent_data.json, manifest.json (single source of truth) |
-| Agent behavior | `agent/govdata-agent.yaml` | Single source of truth for the agent's system prompt — design tokens, output contract, chart palette, RTL snippets, mobile rules, GovMap/GovExplorer recipes. Pushed via `infra/update-agent.py`; the Managed Agents runtime auto-caches it across the agent's tool-loop iterations within a session (~95% of input tokens served from cache, verified 2026-05-05). |
+| Agent behavior | `agent/system-prompt.md` | Canonical system prompt — design tokens, output contract, chart palette, data-fetching rules (incl. CHART-DATA PROVENANCE, no-spline, distinct-cap traps), RTL snippets, mobile rules. Hand-edit directly; ships in the builder image; byte-identical across sessions so providers serve it from prefix cache. |
+| Self-check | `agent/skills/check.py` | Enforces prompt rules statically; runs in-session (agent) AND host-side (agent_runner) on the sanitized body |
 | Dataset page shell | `frontend/pages/datasets/[id].vue` | Reads data.json + agent_data.json + content.html, merges into one entry, wraps in default layout |
 | Page chrome | `frontend/layouts/default.vue` | Header/footer — sole source of truth, inherited by every page including datasets |
 | Schema | `services/page_builder/schema.py` | `DatasetMeta` (scanner) + `AgentData` (agent) + merged `ManifestEntry` — split contract |
@@ -130,8 +154,10 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   is deliberate. Parallelism across sources lives in `asyncio.gather`
   inside the single container. If N_PER_RUN grows past ~20, bump
   `--memory` on that one container, not instance count.
-- **Don't add LLM fallbacks or mock analyzers.** Production must use
-  Managed Agents (the user explicitly asked to remove these earlier).
+- **Don't add mock analyzers or silent model fallbacks.** Production
+  uses one model (`OPENROUTER_MODEL`); every page is produced by a real
+  agent session that passed self-validation. (OpenRouter-level provider
+  failover for the SAME model is fine.)
 - **Don't resurrect the viz taxonomy.** The agent picks libraries per
   dataset. Any code that hardcodes `VizType` / `VizSpec` is obsolete.
 - **Agent output is body-only.** The agent writes `content.html` (no
@@ -159,10 +185,20 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   agent's HARD CONSTRAINTS + self-check enforce it on output, and the
   Nuxt route regex-rewrites the body as a final belt. Don't skip any of
   those layers — defense in depth.
-- **Don't set client-side wall-clock timeouts** on the agent session.
-  Only the Cloud Run timeout (3600 s) bounds it.
+- **Don't add a session wall-clock timeout.** The agent loop runs until
+  the model goes idle; per-tool-command timeouts (120s in LocalSandbox)
+  and the Cloud Run timeout (3600s for the whole daily batch) are the
+  only bounds.
 - **Don't bring back Cloudflare or GCS-as-CDN.** Firebase Hosting is the
   sole deploy target. GCS is an internal staging bucket only.
+- **Sandbox boundary (accepted risk, know it before touching it):** the
+  agent's bash/python tools run as subprocesses in the builder container
+  (Cloud Run can't nest containers). Tool processes get a scrubbed env
+  (no key vars), private workdirs, and 120s timeouts — but they CAN
+  reach the GCP metadata server, i.e. the builder SA token. Keep that SA
+  minimal (Firestore + staging bucket + publish-trigger only) and never
+  widen its roles for convenience. The local test harness keeps the
+  stronger Podman isolation.
 
 ## Gotchas + open issues
 
@@ -194,8 +230,12 @@ State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
   GitHub 2nd-gen connection or a Cloud Source Repositories mirror.
   `infra/bootstrap.sh` prints the exact `gcloud builds triggers create
   manual` command after the connection exists.
-- **Anthropic SDK**: minimum `0.92.0` for
-  `client.beta.files.list(scope_id=...)`.
+- **MiniMax M3 API flakes** (~1 in 3 sessions historically): malformed
+  tool-call JSON (400 on history replay) and `finish_reason: "error"`
+  (HTTP 200, server-side generation error). Both are absorbed by
+  `SESSION_ATTEMPTS` in-run retries + the daily `failed_attempts`
+  retry; if a model's flake rate grows, switch `OPENROUTER_MODEL` or
+  add `openrouter_models` fallback routing in `model_harness`.
 
 ## Running things locally
 
@@ -212,7 +252,7 @@ python -m services.scanner.main scan --limit 5
 # Check selector output (no agent run)
 python -m services.page_builder.pipeline --dry-run
 
-# Full pipeline for a specific dataset (requires ANTHROPIC_* + GCS_STAGING_BUCKET)
+# Full pipeline for a specific dataset (requires OPENROUTER_API_KEY + GCS_STAGING_BUCKET)
 python -m services.page_builder.pipeline --source <dataset_id> --no-trigger-publish
 
 # Rebuild manifest from the emulator
@@ -223,10 +263,11 @@ python -m services.page_builder.manifest --from-firestore \
 cd frontend && npm run generate && npx serve .output/public
 ```
 
-## Publishing (local — the production path)
+## Publishing
 
-The prod builder no longer triggers Cloud Build (`PUBLISH_TRIGGER_ID=""`).
-After agent runs stage pages to GCS, deploy from your machine:
+Automatic: the daily builder run triggers the `govdata-publish` Cloud
+Build after any successful analysis (`PUBLISH_TRIGGER_ID=govdata-publish`);
+no new pages → no build. For manual/emergency deploys from your machine:
 
 ```sh
 source .venv/bin/activate            # publish.py must be importable
