@@ -79,11 +79,15 @@ STDOUT_CAP_BYTES = 100_000
 WEB_FETCH_CAP_BYTES = 200_000
 SEARCH_SNIPPET_CAP = 2_000
 
-# Fallback prices ($/1M tokens) for the native `anthropic:` calibration
-# path only — OpenRouter runs report actual billed cost per response, so
-# they never consult a table. Source:
-#   https://platform.claude.com/docs/en/about-claude/pricing
+# Fallback prices ($/1M tokens). OpenRouter runs normally report actual
+# billed cost per response (cost_source="openrouter"); the table is the
+# backstop for the native `anthropic:` path AND for the occasional
+# OpenRouter response batch that arrives without cost fields (observed
+# in prod 2026-06-12 — same code/versions, one run had per-response
+# cost, the next didn't). Table-derived numbers are marked
+# cost_source="price_table" and may overstate cached-input spend.
 PRICE_TABLE: dict[str, dict[str, float]] = {
+    "minimax/minimax-m3":          {"input": 0.30, "cached": 0.06, "output": 1.20},
     "anthropic:claude-sonnet-4-6": {"input": 3.00, "cached": 0.30, "output": 15.00},
     "anthropic:claude-haiku-4-5":  {"input": 1.00, "cached": 0.10, "output": 5.00},
     "anthropic:claude-opus-4-7":   {"input": 5.00, "cached": 0.50, "output": 25.00},
@@ -471,6 +475,13 @@ def _compute_cost(*, model: str, usage: dict[str, int], messages: list) -> dict[
             "total_usd": actual,
             "cost_source": "openrouter",
         }
+    if "/" in model:
+        # OpenRouter run whose responses carried no cost fields — track
+        # the frequency; the dashboard remains the billing authority.
+        log.warning(
+            "no per-response OpenRouter cost for model=%s — falling back "
+            "to price table estimate", model,
+        )
     prices = PRICE_TABLE.get(model)
     if prices is None:
         return {
