@@ -1,20 +1,10 @@
 <script setup lang="ts">
-import { useManifest } from '~/composables/useManifest'
-
 interface Row { slug: string; title: string; count: number }
 
-const manifest = useManifest()
+// Aggregated + sliced by pages/index.vue's home payload.
+const props = defineProps<{ ministries: Row[] }>()
 
-const top = computed<Row[]>(() => {
-  const by = new Map<string, Row>()
-  for (const d of manifest.value?.datasets ?? []) {
-    if (!d.organization_slug || !d.organization) continue
-    const r = by.get(d.organization_slug)
-    if (r) r.count++
-    else by.set(d.organization_slug, { slug: d.organization_slug, title: d.organization, count: 1 })
-  }
-  return [...by.values()].sort((a, b) => b.count - a.count).slice(0, 6)
-})
+const top = computed<Row[]>(() => props.ministries.slice(0, 6))
 </script>
 
 <template>

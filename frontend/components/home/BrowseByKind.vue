@@ -1,23 +1,15 @@
 <script setup lang="ts">
-import { useManifest } from '~/composables/useManifest'
 import { useKindLabels } from '~/composables/useKindLabels'
 import type { DatasetKind } from '~/types/manifest'
 
-const manifest = useManifest()
-const { KIND_INFO, KIND_ORDER } = useKindLabels()
+// Counted by pages/index.vue's home payload.
+const props = defineProps<{ kindCounts: Partial<Record<DatasetKind, number>> }>()
 
-const counts = computed(() => {
-  const m = new Map<DatasetKind, number>()
-  for (const d of manifest.value?.datasets ?? []) {
-    if (!d.dataset_kind) continue
-    m.set(d.dataset_kind, (m.get(d.dataset_kind) ?? 0) + 1)
-  }
-  return m
-})
+const { KIND_INFO, KIND_ORDER } = useKindLabels()
 
 const tiles = computed(() =>
   KIND_ORDER
-    .map((k) => ({ kind: k, info: KIND_INFO[k], count: counts.value.get(k) ?? 0 }))
+    .map((k) => ({ kind: k, info: KIND_INFO[k], count: props.kindCounts[k] ?? 0 }))
     .filter((t) => t.count > 0),
 )
 </script>

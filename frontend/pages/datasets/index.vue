@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { useFacets, useManifest } from '~/composables/useManifest'
-import type { ManifestEntry } from '~/types/manifest'
+import { useFacets } from '~/composables/useManifest'
+import type { SlimEntry } from '~/types/manifest'
+import { loadSearchIndex } from '~/utils/search-index'
 
 useSeo({
   title: 'כל מאגרי המידע הממשלתיים — חיפוש, סינון ותקצירי AI',
@@ -12,9 +13,14 @@ useSeo({
   ],
 })
 
-const manifest = useManifest()
-const datasets = computed<ManifestEntry[]>(() => manifest.value?.datasets ?? [])
-const { organizations, formats } = useFacets(datasets.value)
+// This page legitimately needs every entry (full-text search + facets), so
+// its prerendered payload inlines the whole slim index — still ~1/6 the old
+// manifest chunk, and no other page pays for it.
+const { data: indexData } = await useAsyncData('search-index', () => loadSearchIndex())
+const datasets = computed<SlimEntry[]>(() => indexData.value?.datasets ?? [])
+const facets = computed(() => useFacets(datasets.value))
+const organizations = computed(() => facets.value.organizations)
+const formats = computed(() => facets.value.formats)
 
 const route = useRoute()
 const router = useRouter()
@@ -47,7 +53,7 @@ watch(debouncedQuery, (q) => {
   router.replace({ query: next })
 })
 
-const filtered = computed<ManifestEntry[]>(() => {
+const filtered = computed<SlimEntry[]>(() => {
   const q = debouncedQuery.value.trim().toLowerCase()
   return datasets.value.filter((d) => {
     if (orgFilter.value && d.organization !== orgFilter.value) return false
@@ -63,7 +69,7 @@ const filtered = computed<ManifestEntry[]>(() => {
 const tsDesc = (a?: string, b?: string) =>
   (b ? Date.parse(b) : 0) - (a ? Date.parse(a) : 0)
 
-const sortedFiltered = computed<ManifestEntry[]>(() => {
+const sortedFiltered = computed<SlimEntry[]>(() => {
   const list = [...filtered.value]
   if (sortKey.value === 'site') {
     list.sort((a, b) => tsDesc(a.last_analyzed_at, b.last_analyzed_at))
@@ -155,7 +161,7 @@ watch(
         </div>
 
         <div v-if="datasets.length === 0" class="card p-6 text-center text-subtle">
-          <p class="m-0">עדיין לא נוצרו דפים. הפעל את הסורק + ה-page-builder כדי להתחיל.</p>
+          <p class="m-0">רשימת המאגרים לא נטענה. נסו לרענן את הדף, או חזרו <NuxtLink to="/">לעמוד הראשי</NuxtLink>.</p>
         </div>
 
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-3">

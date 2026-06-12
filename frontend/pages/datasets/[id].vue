@@ -1,22 +1,20 @@
 <script setup lang="ts">
 import { buildDatasetLd, datasetDescription } from '~/composables/useDatasetLd'
-import { useManifest } from '~/composables/useManifest'
 import { formatBytes, formatNumber } from '~/composables/useRelativeTime'
 import type { AgentData, DatasetMeta, ManifestEntry } from '~/types/manifest'
-import { DATASET_LIB_TAGS } from '~/utils/dataset-libs'
+import { buildDatasetLibTags, detectDatasetLibs, type DatasetLibNeeds } from '~/utils/dataset-libs'
+import { loadFullManifestServer } from '~/utils/search-index'
 import { normalizeAgentBody } from '~/utils/normalize-agent-body'
 
 const route = useRoute()
 const id = String(route.params.id)
 
-// Pre-load the curated viz libraries (Leaflet, MarkerCluster, ECharts) from
-// public/lib/ on the same origin. Agent-emitted content.html may NOT include
-// <script src=> or <link rel=stylesheet>; these head tags are the only
-// external resources a dataset page loads. On SSR/refresh the browser parses
-// these synchronously before the body, so the body's inline init scripts see
-// window.L / window.echarts. On SPA nav useHead appends them dynamically;
-// executeBodyScripts() below waits for the globals before running body scripts.
-useHead(DATASET_LIB_TAGS)
+interface RelatedEntry {
+  id: string
+  title: string
+  organization?: string
+  summary_he?: string
+}
 
 const { data } = await useAsyncData(`dataset-${id}`, async () => {
   // Guard the node imports so Vite's client bundler can tree-shake
@@ -58,7 +56,41 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
     related_ids: [],
   }
 
-  return { entry, rawBody }
+  // Resolve everything this page needs from the full manifest HERE, at
+  // prerender time, so the client never ships or fetches manifest data:
+  // the publisher's deterministic related_ids → 5 sidebar snippets, plus
+  // the tag→slug map for just this page's chips. Both land in the inlined
+  // payload alongside entry/rawBody.
+  let related: RelatedEntry[] = []
+  let tagSlugs: Record<string, string> = {}
+  try {
+    const manifest = await loadFullManifestServer()
+    const me = manifest.datasets.find((d) => d.id === id)
+    const byId = new Map(manifest.datasets.map((d) => [d.id, d]))
+    related = (me?.related_ids ?? [])
+      .map((rid) => byId.get(rid))
+      .filter((d): d is ManifestEntry => Boolean(d))
+      .slice(0, 5)
+      .map((d) => ({
+        id: d.id,
+        title: d.title,
+        organization: d.organization,
+        summary_he: d.summary_he,
+      }))
+    const slugMap = manifest.tag_slugs ?? {}
+    for (const t of [...(entry.suggested_tags ?? []), ...(entry.tags_he ?? [])]) {
+      if (t && slugMap[t]) tagSlugs[t] = slugMap[t]
+    }
+  } catch {
+    // No manifest in this checkout — chips fall back to raw-tag hrefs.
+  }
+
+  // Detect which viz libs the agent body actually references so the page
+  // loads only those (the raw body is the honest signal — a script can't
+  // call a global without naming it).
+  const libs = detectDatasetLibs(rawBody)
+
+  return { entry, rawBody, related, tagSlugs, libs }
 })
 
 if (!data.value) {
@@ -67,19 +99,14 @@ if (!data.value) {
 
 const entry = computed(() => data.value!.entry)
 
-const manifest = useManifest()
-const related = computed<ManifestEntry[]>(() => {
-  const datasets = manifest.value?.datasets ?? []
-  const me = datasets.find((d) => d.id === entry.value.id)
-  const ids = me?.related_ids ?? []
-  const byId = new Map(datasets.map((d) => [d.id, d]))
-  return ids
-    .map((rid) => byId.get(rid))
-    .filter((d): d is ManifestEntry => Boolean(d))
-    .slice(0, 5)
-})
+// Per-page conditional lib tags, derived from the payload's `libs` flags —
+// identical server/client, so unhead dedupes by src on hydration. These
+// head tags are the only external resources a dataset page loads.
+useHead(buildDatasetLibTags(data.value.libs))
 
-const tagSlugs = computed(() => manifest.value?.tag_slugs ?? {})
+const related = computed<RelatedEntry[]>(() => data.value!.related ?? [])
+
+const tagSlugs = computed(() => data.value!.tagSlugs ?? {})
 function tagHref(t: string): string {
   const slug = tagSlugs.value[t] ?? t
   return `/tags/${encodeURI(slug)}/`
@@ -301,24 +328,27 @@ async function executeBodyScripts(container: HTMLElement): Promise<void> {
 // globals before executeBodyScripts runs. On SSR/refresh the libs are
 // parsed synchronously in <head>, so they're already on window by the
 // time the (hydrating) page mounts and we skip this path entirely.
-async function awaitDatasetLibs(timeoutMs = 5000): Promise<void> {
+async function awaitDatasetLibs(needs: DatasetLibNeeds, timeoutMs = 5000): Promise<void> {
+  if (!needs.charts && !needs.map && !needs.explorer) return
   const start = Date.now()
   // eslint-disable-next-line no-constant-condition
   while (true) {
     const w = window as unknown as {
       L?: { markerClusterGroup?: unknown }
       echarts?: unknown
+      GovEcharts?: { option?: unknown }
       GovExplorer?: { create?: unknown }
       GovMap?: { create?: unknown }
     }
     const ready =
-      typeof w.echarts !== 'undefined' &&
-      w.L && typeof w.L.markerClusterGroup === 'function' &&
-      w.GovExplorer && typeof w.GovExplorer.create === 'function' &&
-      w.GovMap && typeof w.GovMap.create === 'function'
+      (!needs.charts ||
+        (typeof w.echarts !== 'undefined' && typeof w.GovEcharts?.option === 'function')) &&
+      (!needs.map ||
+        (typeof w.L?.markerClusterGroup === 'function' && typeof w.GovMap?.create === 'function')) &&
+      (!needs.explorer || typeof w.GovExplorer?.create === 'function')
     if (ready) return
     if (Date.now() - start > timeoutMs) {
-      console.warn('[dataset libs] timed out waiting for window.{L,echarts,GovExplorer,GovMap} after SPA nav')
+      console.warn('[dataset libs] timed out waiting for this page\'s viz globals after SPA nav', needs)
       return
     }
     await new Promise((r) => setTimeout(r, 30))
@@ -327,7 +357,7 @@ async function awaitDatasetLibs(timeoutMs = 5000): Promise<void> {
 
 onMounted(async () => {
   if (nuxtApp.isHydrating) return
-  await awaitDatasetLibs()
+  await awaitDatasetLibs(data.value!.libs)
   if (!bodyEl.value) return
   void executeBodyScripts(bodyEl.value)
   // Bridge container-width changes (orientation, sidebar reflow at lg) into

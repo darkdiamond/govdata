@@ -35,15 +35,15 @@ const year = new Date().getFullYear()
         <nav class="hidden md:flex items-center gap-6 text-sm">
           <NuxtLink
             to="/"
-            class="text-white/85 hover:text-white no-underline hover:no-underline"
+            class="py-2 text-white/85 hover:text-white no-underline hover:no-underline"
             :class="{ 'text-white font-medium': onHome }"
           >ראשי</NuxtLink>
-          <NuxtLink to="/datasets/" class="text-white/85 hover:text-white no-underline hover:no-underline">מאגרים</NuxtLink>
-          <NuxtLink to="/ministries/" class="text-white/85 hover:text-white no-underline hover:no-underline">משרדים</NuxtLink>
-          <NuxtLink to="/tags/" class="text-white/85 hover:text-white no-underline hover:no-underline">נושאים</NuxtLink>
-          <NuxtLink to="/how-it-works/" class="text-white/85 hover:text-white no-underline hover:no-underline">איך זה עובד</NuxtLink>
-          <NuxtLink to="/about/" class="text-white/85 hover:text-white no-underline hover:no-underline">אודות</NuxtLink>
-          <NuxtLink to="/contact/" class="text-white/85 hover:text-white no-underline hover:no-underline">צרו קשר</NuxtLink>
+          <NuxtLink to="/datasets/" class="py-2 text-white/85 hover:text-white no-underline hover:no-underline">מאגרים</NuxtLink>
+          <NuxtLink to="/ministries/" class="py-2 text-white/85 hover:text-white no-underline hover:no-underline">משרדים</NuxtLink>
+          <NuxtLink to="/tags/" class="py-2 text-white/85 hover:text-white no-underline hover:no-underline">נושאים</NuxtLink>
+          <NuxtLink to="/how-it-works/" class="py-2 text-white/85 hover:text-white no-underline hover:no-underline">איך זה עובד</NuxtLink>
+          <NuxtLink to="/about/" class="py-2 text-white/85 hover:text-white no-underline hover:no-underline">אודות</NuxtLink>
+          <NuxtLink to="/contact/" class="py-2 text-white/85 hover:text-white no-underline hover:no-underline">צרו קשר</NuxtLink>
         </nav>
 
         <div class="flex items-center gap-3">

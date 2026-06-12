@@ -101,6 +101,36 @@ export interface ManifestEntry {
   version: number
 }
 
+/** Slim per-dataset projection served as /data/search-index.json.
+ *  Written by services/page_builder/publish.py::_write_search_index —
+ *  the field set there must stay in sync with this interface. Covers
+ *  everything the list/search/home pages render; `ManifestEntry` is
+ *  structurally assignable to `SlimEntry`. */
+export interface SlimEntry {
+  id: string
+  title: string
+  organization?: string
+  organization_slug?: string
+  summary_he?: string
+  dataset_kind?: DatasetKind
+  formats: string[]
+  tags_he: string[]
+  suggested_tags?: string[]
+  record_count?: number
+  spatial_coverage?: string
+  license?: string
+  metadata_modified?: string
+  last_analyzed_at?: string
+}
+
+/** Shape of /data/search-index.json — the runtime-fetchable slim manifest. */
+export interface SearchIndex {
+  version: number
+  generated_at: string
+  datasets: SlimEntry[]
+  tag_slugs?: Record<string, string>
+}
+
 export interface Manifest {
   version: number
   generated_at: string
