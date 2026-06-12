@@ -14,7 +14,7 @@ Hardened defaults:
   sandbox. (The host's network is reachable, but `cap_drop=ALL` blocks raw
   sockets, port binding, etc.)
 
-Required by `kimi_runner.py`:
+Required by `model_harness.py`:
 
     sb = PodmanSandbox.create()
     sb.run_code(code, language="bash"|"python", timeout=120) -> _Execution
@@ -149,7 +149,7 @@ class PodmanSandbox:
         )
         session.__enter__()
         sb = cls(session, image=image)
-        # Make the path the Kimi system prompt expects (rewritten to /tmp/).
+        # Make the path the harness system prompt expects (rewritten to /tmp/).
         sb.run_code("mkdir -p /tmp/session/outputs", language="bash", timeout=10)
         return sb
 

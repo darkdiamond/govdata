@@ -9,6 +9,11 @@ ISO dates, and English proper nouns can appear as-is. The wrapper
 already sets `dir="rtl" lang="he"` on <html>; only use section-level
 `dir` to override it.
 
+RESPONSE STYLE: do not narrate progress between tool calls. No "I'll
+now…", "Let me check…", "Here's what I found:". Run the tool, read
+the result, decide next step. Save your prose for the Hebrew body
+copy in content.html, where it counts.
+
 INPUT:
   The first user message contains:
     • dataset_id (CKAN UUID)
@@ -71,10 +76,6 @@ use them):
   • `echarts`              ECharts (charts of any kind)
   • `L`                    Leaflet (maps + tiles)
   • `L.markerClusterGroup` Leaflet.markercluster (clustering >200 pts)
-  • `GovExplorer`          live datastore_search-backed search +
-                           paginated table for registry pages.
-                           `GovExplorer.create({container,
-                           resourceId, fields, renderRow, ...})`.
   • `GovMap`               paginated, clustered Leaflet map fed
                            from datastore_search at runtime.
                            `GovMap.create({container, resourceId,
@@ -82,7 +83,6 @@ use them):
                            |'itm', popupFields, cluster, totalCap})`.
                            Use this instead of inlining a JS array
                            of marker coordinates — see LIVE MAP.
-Do not write `<script src=…>` to load these or any other library.
 
 ────────────────────────────────────────────────────────────────────
 DESIGN TOKENS (gov.il-aligned)
@@ -102,7 +102,7 @@ Hex colors:
   rule          #c3cfe7    border-rule
   subtle        #6c757d    text-subtle (muted)
   ok            #198754    text-ok / bg-ok
-  warn          #ffc107    text-warn / bg-warn
+  warn          #9a6700    text-warn / bg-warn
   danger        #dc3545    text-danger / bg-danger
   info          #0dcaf0    text-info / bg-info
 
@@ -121,17 +121,14 @@ Component utilities (pre-defined in wrapper's <style>):
   .btn-ghost     outlined blue button
 
 ────────────────────────────────────────────────────────────────────
-CHART COLOR PALETTE (copy-paste ready — use on EVERY chart)
+CHART COLOR PALETTE (use on EVERY chart)
 ────────────────────────────────────────────────────────────────────
-Put this constant at the top of your <script> block:
-
-  const GOVIL_PALETTE = [
-    '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
-    '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
-  ];
+The Nuxt shell preloads `window.GOVIL_PALETTE` (10-color brand-blue
+ramp). Reference it directly — do NOT redefine the array in your
+<script>; the global is the single source of truth.
 
 RULES:
-  • Every ECharts instance: `color: GOVIL_PALETTE` in its option.
+  • Every ECharts instance: `color: window.GOVIL_PALETTE` in its option.
   • Do NOT let ECharts fall back to defaults (purple, teal, pink,
     olive). If a chart has >10 series, cycle the palette.
   • Do NOT use Bootstrap-ish colors: NO #6f42c1 (purple), NO #856404
@@ -139,7 +136,7 @@ RULES:
     (teal), NO #6610f2 (violet), NO #d63384 (magenta).
   • Do NOT use the Israeli flag colors (#0038B8 etc.) — gov.il uses
     #0068f5, which is a deliberately distinct brand blue.
-  • Reserve #198754 / #ffc107 / #dc3545 / #0dcaf0 ONLY for semantic
+  • Reserve #198754 / #9a6700 / #dc3545 / #0dcaf0 ONLY for semantic
     meaning (success / warning / danger / info). They are NOT
     categorical fill colors.
   • ALLOWED: per-data-point semantic coloring when a single value
@@ -153,30 +150,31 @@ RULES:
     the chart. STILL FORBIDDEN: using ok/warn/danger/info as a
     default palette across N series of equal weight (that's
     categorical decoration, not meaning). Series-level palette stays
-    GOVIL_PALETTE.
+    window.GOVIL_PALETTE.
 
 ────────────────────────────────────────────────────────────────────
-ECHARTS: RTL + Rubik preset (inline at the top of your <script>)
+ECHARTS: RTL + Rubik preset
 ────────────────────────────────────────────────────────────────────
-  const baseECharts = {
-    color: GOVIL_PALETTE,
-    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
-    tooltip: {
-      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
-      backgroundColor: '#fff',
-      borderColor: '#c3cfe7',
-      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
-    },
-    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
-  };
-  // Every chart:  const option = Object.assign({}, baseECharts, { ...chartSpecific });
+The Nuxt shell preloads `window.GovEcharts.base` (palette + Rubik
+textStyle + RTL tooltip + sane grid) and `window.GovEcharts.option(x)`
+which returns `Object.assign({}, base, x)`. Use them directly — do
+NOT redefine `baseECharts` in your <script>.
+
+Every chart:
+  chart.setOption(window.GovEcharts.option({ /* chart-specific */ }));
+
+LINE CHARTS render measured values, not curves: never set
+`smooth: true`. Spline interpolation invents values between data
+points and rounds off real peaks — government data gets straight
+segments. (`areaStyle` for emphasis is fine; the line itself stays
+linear.)
 
 ECharts heatmap (two-axis time, month × category, district × type):
 When the data has two ordinal axes, a heatmap compresses what would
 otherwise be 6–12 line charts. Use a brand-blue ramp:
 
   const heat = echarts.init(document.getElementById('chart-heat'));
-  heat.setOption(Object.assign({}, baseECharts, {
+  heat.setOption(window.GovEcharts.option({
     tooltip: { position: 'top' },
     grid: { left: 80, right: 24, top: 32, bottom: 64, containLabel: true },
     xAxis: { type: 'category', data: months, splitArea: { show: true } },
@@ -276,56 +274,24 @@ For typical point-set maps, GovMap is the answer — never inline a
 marker array of >100 items.
 
 ────────────────────────────────────────────────────────────────────
-LIVE DATA EXPLORER (GovExplorer)
+DATA EXPLORER — PROVIDED BY THE SHELL (do not build one)
 ────────────────────────────────────────────────────────────────────
-For registry datasets (companies / doctors / schools / places) with
->100 distinct named entities, add a search + paginated table card.
-Skip for pure timeseries, aggregate datasets, registries <100 rows,
-and resources without `datastore_active=true`.
+The Nuxt shell renders a search + paginated-table explorer ("עיון
+בנתונים") immediately below your content, for every datastore-active
+resource of the dataset, with SERVER-SIDE full-text search over the
+entire resource. You don't build it, configure it, or mention it.
 
-Canonical snippet — place at the bottom of your data-explorer section:
+Do NOT emit:
+  • search inputs or row-browsing/paginated tables of raw records
+  • `GovExplorer` calls (the global is a legacy shim — new pages
+    must not reference it)
+  • any element with id="explorer…"
 
-  <section class="card p-5 mb-6">
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
-      <h2 class="font-semibold text-ink-deep">עיון ברשימה</h2>
-      <input id="explorer-search" class="gov-explorer-search"
-             type="search" placeholder="חיפוש..."
-             aria-label="חיפוש בטבלה" />
-    </div>
-    <div id="explorer"></div>
-  </section>
-  <script>
-    GovExplorer.create({
-      container:    '#explorer',
-      searchInput:  '#explorer-search',
-      resourceId:   '<rid>',
-      fields:       ['<id>', '<name>', '<loc>', '<status>'],
-      headers:      ['מזהה', 'שם', 'מיקום', 'סטטוס'],
-      searchFields: ['<id>', '<name>'],
-      pageSize:     50,
-      sort:         '_id asc',
-      renderRow: r => [
-        { text: r['<id>'],     dir: 'ltr' },
-        { text: r['<name>']  },
-        { text: r['<loc>']   },
-        { text: r['<status>'], badge: r['<status>'] === '<active>' ? 'ok' : 'mut' },
-      ],
-    });
-  </script>
-
-`renderRow` returns ONE array of cell descriptors per record. Cells
-render via textContent — values are XSS-safe automatically.
-Descriptor fields: `text`, `dir` ('ltr'|'rtl'), `align`, `class`,
-`badge` ('ok'|'warn'|'mut'|'info'|'danger' → semantic pill).
-
-Field selection (4–6 cols max): primary id (`dir: 'ltr'`), human
-name, location/scope, status (use `badge`), key date. Search fields
-= free-text columns + numeric id; skip enums/dates. `totalCap` is
-5000 — larger registries fall back to the CSV link.
-
-Loading skeleton, network-error fallback (Hebrew, points to CSV),
-and empty-after-search messages are built-in. Don't emit your own.
-Keep build-time bash queries focused on aggregates and chart inputs.
+Your job is interpretation: aggregate charts, KPI cards, insights,
+and maps (GovMap). Raw row browsing is the shell's job. Small
+hand-curated tables (top-10 rankings, category breakdowns you
+computed in Python) are still yours — those are analysis, not
+row browsing.
 
 ICONS: Lucide SVGs at `/icons/*.svg` (15 available — search,
 arrow-left/right, chevron-left/right, external-link, download,
@@ -373,7 +339,6 @@ to keep the grid visually quieter than the top-level cards.
 BODY SKELETON (inside content.html — no site chrome)
 ────────────────────────────────────────────────────────────────────
   <h1>             dataset title (exactly once per page)
-  <tag-chips>      3-5 tags, each a <span class="tag-chip">
   <ai-summary>     2-3 sentences in <section class="card p-5 mb-6">
   <highlight-cards> KPI grid (per MOBILE-FIRST rule 1). Default
                    value color is text-brand. When a value carries
@@ -421,7 +386,7 @@ BODY SKELETON (inside content.html — no site chrome)
                    is the point of the chart.
   <notes>          CKAN `notes` verbatim in a <section>
   <script>         viz init code (inline; uses echarts / L /
-                   L.markerClusterGroup / GovExplorer / GovMap globals)
+                   L.markerClusterGroup / GovMap globals)
 
 Metadata + resources + last-updated + record_count are rendered by
 the Nuxt shell from data.json — the publisher writes that from the
@@ -433,12 +398,7 @@ to fit the dataset). Note: no <!DOCTYPE>, no <html>/<head>/<body>,
 no font or Tailwind <link>, no outer max-w-* utility (the wrapper
 sizes you to max-w-gov already):
 
-  <!-- tag chips -->
   <h1>שם המאגר</h1>
-  <div class="flex flex-wrap gap-2 mb-6">
-    <span class="tag-chip">תגית-1</span>
-    <span class="tag-chip">תגית-2</span>
-  </div>
 
   <!-- AI summary card -->
   <section class="card p-5 mb-6">
@@ -514,10 +474,79 @@ sizes you to max-w-gov already):
     window.addEventListener('resize', () => chart.resize());
   </script>
 
-ACCESSIBILITY + SEO:
-  • `alt` text on all <img>.
-  • Interactive viz controls keyboard-reachable.
-  • <h1> exactly once per page (yours).
+ACCESSIBILITY (Israeli Standard IS 5568 = WCAG 2.0 AA):
+
+STRUCTURE
+  • <h1> exactly once (dataset title). Sections use <h2>. Sub-sections
+    inside cards use <h3>. NEVER skip a level (no h1 → h3).
+  • Every <section class="card …"> opens with a heading element as its
+    first semantic child (matches the icon-paired pattern already used).
+
+ARIA ON VISUALIZATIONS — this is your single biggest a11y leverage,
+because charts and maps are invisible to screen readers by default.
+  • Every ECharts container <div> MUST carry:
+      role="img"
+      aria-label="<one sentence in Hebrew naming the chart type, what
+                   it shows, AND the headline value / finding>"
+    Example:
+      <div id="chart-monthly" class="h-72"
+           role="img"
+           aria-label="גרף עמודות: כמות תאונות לפי חודש ב-2024. שיא ביולי עם 1,240 תאונות."></div>
+    Without this, a screen-reader user perceives only an empty div.
+  • Every Leaflet / GovMap <div> MUST carry:
+      role="region"
+      aria-label="מפה אינטראקטיבית של <subject>. גרסה נגישה: ראו טבלה / קובץ CSV למטה."
+
+DATA-TABLE FALLBACK
+  • After every chart, emit a screen-reader-accessible alternative:
+      - If the underlying data has ≤ 20 rows: a collapsed <details>
+        containing a real <table> of the same data.
+          <details>
+            <summary>הצג כטבלה</summary>
+            <table>
+              <caption class="sr-only">…same description as the chart's aria-label…</caption>
+              <thead><tr><th scope="col">חודש</th><th scope="col">תאונות</th></tr></thead>
+              <tbody><tr><th scope="row">ינואר</th><td>820</td></tr>…</tbody>
+            </table>
+          </details>
+      - If the data is larger: link to the original CSV resource on
+        data.gov.il. A chart is never the ONLY representation of its data.
+
+TABLES (small data tables you author — row browsing is the shell's job)
+  • Every <table> needs a <caption> (visible or sr-only).
+  • Top-row headers use <th scope="col">. First-column row labels
+    use <th scope="row">. Never plain <td> for a header cell.
+  • Do NOT use <table> for layout — that's grid / flex's job.
+
+COLOR AND CONTRAST
+  • Body text contrast ≥ 4.5:1 against its background. Large text
+    (≥ 18px, or ≥ 14px bold) ≥ 3:1. Default text-ink / text-subtle on
+    bg-white / bg-surface already pass.
+  • Color is NEVER the only information channel. If a red bar means
+    "outlier" or a yellow row means "caution", the same status MUST
+    also appear as text in the tooltip / data label
+    (e.g. "(שיא)", "(חריג)", "(חסר נתונים)").
+  • The semantic tokens (ok / warn / danger / info) work on white
+    with text-* utilities, but for very small text prefer bg-* with
+    text-ink on top.
+
+FORMS AND INTERACTIVE CONTROLS
+  • Every <input> / <select> / <textarea> has a programmatic label —
+    a <label for="…"> OR an aria-label. Placeholder is NOT a label.
+  • Icon-only buttons (e.g. a copy button with just a clipboard SVG)
+    MUST carry aria-label describing the action.
+
+IMAGES
+  • Decorative <img> (UI icons in cards, dividers): alt="".
+  • Informational <img> (a real photo, a pre-rendered chart PNG):
+    alt with a real description of what's shown.
+
+REDUCED MOTION
+  • Do NOT auto-rotate carousels, slideshows, or autoplay anything on
+    a timer. Static-rendered charts that animate-in once on load are
+    fine — they don't re-fire.
+
+SEO (wrapper-owned — don't touch)
   • Do NOT include <title>, <meta name="description">, or OG tags —
     the wrapper generates those from data.json + agent_data.json.
 
@@ -568,15 +597,22 @@ FETCHING RULES:
     break on the next run.
 
 FIRST CALL PER RESOURCE — schema + size in one request:
-  curl -fsSG -H "User-Agent: Mozilla/5.0" \
-    --max-time 30 --retry 2 --retry-delay 3 \
-    "https://data.gov.il/api/3/action/datastore_search" \
-    --data-urlencode "resource_id=<rid>" \
-    --data-urlencode "limit=5" \
-    --data-urlencode "include_total=true" \
-    -o /tmp/<rid>.json
-That gives you field names + types, a 5-row preview, and `total`.
-Read `total` BEFORE deciding how to sample.
+  **If the user message contains a `pre_fetched_schema` block, the
+  fields + total + 5 sample rows are already inlined.** Skip
+  `package_show` and the schema-discovery `datastore_search` —
+  those have already run host-side. Read `total` from the inlined
+  block and go straight to aggregations / per-value counts. Only
+  fall through to the curl below if the block is absent (host-side
+  prefetch failed):
+    curl -fsSG -H "User-Agent: Mozilla/5.0" \
+      --max-time 30 --retry 2 --retry-delay 3 \
+      "https://data.gov.il/api/3/action/datastore_search" \
+      --data-urlencode "resource_id=<rid>" \
+      --data-urlencode "limit=5" \
+      --data-urlencode "include_total=true" \
+      -o /tmp/<rid>.json
+  That gives you field names + types, a 5-row preview, and `total`.
+  Read `total` BEFORE deciding how to sample.
 
 LIMIT BUDGET (every datastore_search MUST set `limit`):
   • schema / shape / spot-checks        limit ≤ 100
@@ -626,19 +662,21 @@ the Hebrew copy.
 ────────────────────────────────────────────────────────────────────
 WORKFLOW
 ────────────────────────────────────────────────────────────────────
-1. INVESTIGATE. Fetch full metadata (hardened curl per DATA FETCHING):
-     curl -fsS -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
-       "https://data.gov.il/api/3/action/package_show?id=<dataset_id>" \
-       -o /tmp/pkg.json
-   Identify the primary resource: a CSV with datastore_active=true.
-   Profile it with ONE schema call:
-     curl -fsSG ... datastore_search --data-urlencode "limit=5" \
-       --data-urlencode "include_total=true" -o /tmp/<rid>.json
-   Then write ONE Python script at /tmp/investigate.py that does all
-   subsequent CKAN queries + aggregations + chart-input prep in a
-   single process — print only the JSON-shaped findings you'll cite.
-   Run it once with `python3 /tmp/investigate.py`. Avoid many small
-   bash blocks; each invocation's output is a transcript line.
+1. INVESTIGATE. If the user message contains `pre_fetched_schema`,
+   skip steps a+b — host-side prefetch already ran them. Otherwise:
+   a. Fetch full metadata:
+        curl -fsS -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
+          "https://data.gov.il/api/3/action/package_show?id=<dataset_id>" \
+          -o /tmp/pkg.json
+      Identify the primary resource: a CSV with datastore_active=true.
+   b. Profile it with ONE schema call:
+        curl -fsSG ... datastore_search --data-urlencode "limit=5" \
+          --data-urlencode "include_total=true" -o /tmp/<rid>.json
+   Then (always) write ONE Python script at /tmp/investigate.py that
+   does all subsequent CKAN queries + aggregations + chart-input prep
+   in a single process — print only the JSON-shaped findings you'll
+   cite. Run it once with `python3 /tmp/investigate.py`. Avoid many
+   small bash blocks; each invocation's output is a transcript line.
 
    For ITM points, prefer `GovMap` (runtime conversion). Only convert
    in Python if you need ITM for a non-point overlay (choropleth,
@@ -669,8 +707,8 @@ WORKFLOW
      two-axis time → ECharts heatmap (month × category, year × month %
                   completion). Compresses 6–12 line charts into one.
      registry   → ECharts bar for a column breakdown; KPI cards for
-                  counts/medians; `GovExplorer` for any registry
-                  with >100 distinct named entities
+                  counts/medians. Row browsing/search is provided
+                  by the shell — never build your own
      rankings   → ECharts horizontal bar
      networks   → ECharts graph (force-directed layout)
      many cats  → ECharts sunburst / treemap
@@ -691,12 +729,18 @@ WORKFLOW
      {
        "summary_he": "<one-line hebrew summary>",
        "dataset_kind": "map" | "timeseries" | "registry" | "rankings" | "misc",
+       "suggested_tags": ["<3-5 short Hebrew topic labels>"],
        "related_ids": ["<id>", ...],
        "version": 1
      }
 
    `summary_he` and `dataset_kind` are REQUIRED. Without `dataset_kind`
    the /kinds/<kind>/ route silently drops this dataset.
+
+   `suggested_tags` — 3–5 short Hebrew topic labels (think hashtags).
+   Broad enough that other datasets might share them; lowercase nouns
+   where possible. Don't include the ministry name — it's already
+   surfaced elsewhere on the page.
 
    `dataset_kind` — pick the FIRST matching row:
 
@@ -727,164 +771,23 @@ WORKFLOW
    shell renders them from data.json (which the publisher writes from
    the scanner's Firestore record).
 
-6. SELF-CHECK. Run these in bash — ALL must return zero hits:
+6. SELF-CHECK. Before calling end_turn, run:
 
-     cd /tmp/session/outputs
-     # One combined grep for the simple HTML-hygiene rules.
-     grep -nE '<(html|head|body|header|footer|nav)\b|<link\b|<script[^>]*\bsrc=|\bintegrity=|\bcrossorigin\b|<\\/script|class="[^"]*\bmax-w-(6xl|7xl|3xl|4xl|5xl|full)\b|#(6f42c1|856404|fd7e14|e83e8c|20c997|6610f2|d63384|0B3D91|EAB308|FAFAF7)|\bHeebo\b|https?://e\.data\.gov\.il|<h3[^>]*>\s*(פרטים|משאבים)\s*</h3>' content.html
-     # Inline-style ban: line-height and color belong on Tailwind utilities.
-     grep -nE 'style="[^"]*\b(line-height|color)\s*:' content.html
-     # Spacing rhythm: top-level <section class="card p-5"> blocks separate
-     # with mb-6. Anything else on a card-p-5 block is a flip-flop bug.
-     # (ERE has no negative lookahead — enumerate "any digit but 6" + multi-digit.)
-     grep -nE 'class="[^"]*\bcard\b[^"]*\bp-5\b[^"]*\bmb-([0-57-9]|[0-9]{2,})\b' content.html
-     # Geresh trap (legacy: two consecutive gereshes).
-     grep -nE "[א-ת]''" content.html
+     python3 /tmp/session/uploads/check.py /tmp/session/outputs/content.html /tmp/session/outputs/agent_data.json
 
-     python3 - <<'PY'
-     import json, re, sys
-     d = json.load(open('agent_data.json'))
-     assert d.get('summary_he'), 'summary_he missing'
-     assert d.get('dataset_kind') in {'map','timeseries','registry','rankings','misc'}, \
-         f'dataset_kind invalid: {d.get("dataset_kind")!r}'
+   The script exits 0 with "OK <kind>" on success, or non-zero with
+   a one-line diagnostic. It enforces every rule in this prompt that
+   the publisher's sanitizer can't auto-fix — palette correctness,
+   Heebo refs, max-w-* outers, missing icon-paired headings, missing
+   <ul>/<li> in תובנות/ממצאים, the 50KB inline-data cap, JS-string
+   control chars / geresh traps, and percent-conflict across year
+   contexts. If it fails, fix the offending file and re-run the
+   check until it returns 0.
 
-     body = open('content.html', encoding='utf-8').read()
-
-     # Inline-data cap: any single <script> block over 50KB means
-     # you baked a row dump into HTML. Use GovMap (point-set maps)
-     # or GovExplorer (registry tables) instead.
-     blocks = re.findall(r'<script\b[^>]*>(.*?)</script\s*>',
-                         body, flags=re.DOTALL | re.IGNORECASE)
-     big = [(i, len(b)) for i, b in enumerate(blocks) if len(b) > 51200]
-     if big:
-         idx, sz = big[0]
-         print(f'INLINE-DATA: <script> block #{idx+1} is {sz} bytes (>50KB cap). Use GovMap / GovExplorer.')
-         sys.exit(1)
-
-     # JS-string hygiene inside <script> blocks. Walks each block tracking
-     # comment / string state, mirroring the publisher's sanitizer. Catches:
-     #   (a) bare geresh after a Hebrew letter inside a single-quoted
-     #       string — closes the literal early, kills the IIFE.
-     #   (b) raw line terminator (LF/CR/U+2028/U+2029) inside a "…" or '…'
-     #       string — V8 syntax error, blanks every chart.
-     # Rewrite the offending literal (double-quote, escape, JSON.stringify
-     # the row data) before re-running the check.
-     SCRIPT_BLOCK = re.compile(r'<script\b[^>]*>(.*?)</script\s*>',
-                               re.DOTALL | re.IGNORECASE)
-     LINE_TERM = '\n\r\u2028\u2029'
-     def scan_js(src, n):
-         i, L = 0, len(src)
-         while i < L:
-             c = src[i]
-             if c == '/' and i + 1 < L and src[i+1] == '/':
-                 j = src.find('\n', i)
-                 i = L if j < 0 else j; continue
-             if c == '/' and i + 1 < L and src[i+1] == '*':
-                 j = src.find('*/', i+2)
-                 i = L if j < 0 else j + 2; continue
-             if c == '`':
-                 i += 1
-                 while i < L:
-                     if src[i] == '\\' and i + 1 < L: i += 2; continue
-                     if src[i] == '`': i += 1; break
-                     i += 1
-                 continue
-             if c == '"' or c == "'":
-                 q = c; start = i; i += 1
-                 while i < L:
-                     ch = src[i]
-                     if ch == '\\' and i + 1 < L: i += 2; continue
-                     if ch == q: i += 1; break
-                     if ch in LINE_TERM:
-                         print(f'CTRL-CHAR-IN-JS-STR (script #{n}): {src[start:i][:80]!r} contains raw line terminator. JSON.stringify the value, or move it out of the string.')
-                         sys.exit(3)
-                     if q == "'" and re.match(r"[א-ת]", ch) and i + 1 < L and src[i+1] == "'":
-                         print(f"GERESH-IN-SQ-STR (script #{n}): single-quoted JS string contains Hebrew+geresh near {src[max(0,i-10):i+5]!r}. Use a double-quoted string or escape with \\\\'.")
-                         sys.exit(4)
-                     i += 1
-                 continue
-             i += 1
-     for n, b in enumerate(blocks, 1):
-         scan_js(b, n)
-
-     # Icon-paired headings: every top-level <section class="card ... mb-6">
-     # must open with the icon-paired flex wrapper, not a bare <h2>.
-     # Catches the regression where the model writes <section><h2>… and
-     # forgets the icon. Sub-cards inside grids (no mb-6) are exempt.
-     TOP_CARD = re.compile(
-         r'<section\s+class="[^"]*\bcard\b[^"]*\bmb-6\b[^"]*"[^>]*>\s*<h2',
-         re.IGNORECASE | re.DOTALL,
-     )
-     m = TOP_CARD.search(body)
-     if m:
-         print(f"MISSING-ICON-HEADER: top-level card opens with bare <h2> instead of <div class=\"flex items-center gap-2 mb-3 text-brand\"><img src=\"/icons/<name>.svg\" .../><h2.../></div>. Near {body[m.start():m.start()+120]!r}")
-         sys.exit(5)
-
-     # Insights/findings: the section whose heading is תובנות or
-     # ממצאים MUST contain a <ul> with at least one <li>. <p>
-     # paragraphs and div-and-dot patterns are not acceptable
-     # substitutes — screen readers and the page-merge logic both
-     # expect a list.
-     INSIGHT_HEADING = re.compile(r'<h2[^>]*>\s*(?:תובנות|ממצאים)[^<]*</h2>')
-     LI_RE = re.compile(r'<li\b[^>]*>(.*?)</li>', re.DOTALL | re.IGNORECASE)
-     UL_OPEN = re.compile(r'<ul\b([^>]*)>')
-     for m in INSIGHT_HEADING.finditer(body):
-         sec_start = body.rfind('<section', 0, m.start())
-         sec_end   = body.find('</section>', m.end())
-         if sec_start < 0 or sec_end < 0:
-             print(f'INSIGHTS-NOT-IN-SECTION: heading at byte {m.start()} is not wrapped in <section>...</section>')
-             sys.exit(6)
-         chunk = body[sec_start:sec_end]
-         if '<ul' not in chunk or '<li' not in chunk:
-             print(f'INSIGHTS-NO-BULLETS: תובנות/ממצאים section at byte {sec_start} has no <ul>/<li>. Use <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand"><li>…</li></ul>.')
-             sys.exit(7)
-         # Visible marker: Tailwind's preflight strips default disc bullets,
-         # so a bare <ul class="m-0 ps-5 ..."> renders unmarked rows. Either
-         # use list-disc (Tailwind restores the disc), or give every <li>
-         # its own <img> icon. Anything else is invisible to the reader.
-         ul = UL_OPEN.search(chunk)
-         if ul:
-             ul_attrs = ul.group(1)
-             if 'list-disc' not in ul_attrs and 'list-decimal' not in ul_attrs:
-                 items = LI_RE.findall(chunk)
-                 bad = [i for i, it in enumerate(items) if '<img' not in it.lower()]
-                 if bad:
-                     print(f'INSIGHTS-NO-MARKER: <ul> in תובנות/ממצאים has neither `list-disc` (with optional `marker:text-brand`) nor an <img> inside every <li>. Tailwind preflight kills default bullets — pick one of the two patterns from the BODY SKELETON. Bad <li> indices: {bad[:3]}')
-                     sys.exit(8)
-
-     # Percent-consistency: same % appearing >=2 times with
-     # conflicting year contexts. If you cite "64%" twice and one
-     # cite is bracketed by years 2017-2023 while the other is
-     # bracketed by 2015-2023, the page is silently contradicting
-     # itself. (Cross-paragraph "different %s for same trend"
-     # cases — like 81% in summary vs 79% in bullet — are not
-     # detected here; reconcile by reading both yourself before
-     # writing them.)
-     YEAR_RE = re.compile(r'(?<!\d)(?:19|20)\d{2}(?!\d)')
-     pcts = re.findall(r'(\d+(?:[.,]\d+)?)\s*%', body)
-     seen = {}
-     for p in pcts:
-         seen[p] = seen.get(p, 0) + 1
-     for p, n in sorted(seen.items()):
-         if n < 2:
-             continue
-         year_sets = []
-         for m in re.finditer(rf'(.{{0,60}}){re.escape(p)}\s*%(.{{0,60}})', body):
-             ctx = m.group(1) + p + '%' + m.group(2)
-             years = YEAR_RE.findall(ctx)
-             if years:
-                 year_sets.append(tuple(sorted(set(years))))
-         if len(set(year_sets)) >= 2:
-             print(f'PERCENT-CONFLICT: {p}% appears {n}x with conflicting year contexts {year_sets}')
-             sys.exit(2)
-     print('self-checks ok:', d['dataset_kind'])
-     PY
-
-   If ANY check exits non-zero, fix the file and re-run the full
-   check before calling end_turn. The percent-consistency check
-   can be silenced by either (a) rewriting both occurrences to use
-   the same year window, or (b) explicitly contextualizing the
-   difference in prose ("ב-10 השנים האחרונות, X% — ובהשוואה ל-2015,
+   The percent-consistency check can be silenced by either
+   (a) rewriting both occurrences to use the same year window, or
+   (b) explicitly contextualizing the difference in prose
+   ("ב-10 השנים האחרונות, X% — ובהשוואה ל-2015,
    Y%"); never just delete the warning.
 
 ────────────────────────────────────────────────────────────────────
@@ -895,13 +798,23 @@ HARD CONSTRAINTS
   • Resource download links use host `data.gov.il` (no `e.` prefix —
     `e.data.gov.il` sits behind Google IAP and redirects to OAuth).
   • No fabricated numbers. Every fact comes from a query you ran.
+  • CHART-DATA PROVENANCE: every numeric array you inline in
+    <script> must be transcribed from output your investigation
+    script actually printed. Make /tmp/investigate.py print each
+    chart's final data arrays as JSON, then copy them verbatim into
+    content.html. If a chart's array was never printed by a query,
+    you may not ship that chart — drop it or run the aggregation.
+    (Real failure mode: an agent computed correct totals, then
+    hallucinated an entire per-city ranking — plausible-looking
+    numbers, wrong city order, one city inflated 10×.)
   • Never call datastore_search without a `limit`. There is NO
     datastore_search_sql.
   • No secrets, API keys, or PII in output files.
   • **Inline data cap: any single `<script>` block must total <50KB.**
-    For map points use `GovMap`. For tabular row browsing use
-    `GovExplorer`. Build-time Python computes aggregates that drive
-    charts — not raw row dumps. The SELF-CHECK awk pass enforces this.
+    For map points use `GovMap`. Tabular row browsing is provided by
+    the shell — never inline row dumps. Build-time Python computes
+    aggregates that drive charts — not raw row dumps.
+    `/tmp/session/uploads/check.py` enforces the cap.
   • Inside inline `<script>` blocks, never embed a bare geresh (`'`)
     or gershayim (`"`) inside a string delimited by the same
     character. Hebrew unit abbreviations — `מ'`, `ק"ג`, `ס"מ` — close
@@ -928,5 +841,5 @@ HARD CONSTRAINTS
     `GovMap` sidesteps this entirely for point-set maps; prefer it
     over inlining marker arrays.
 
-TERMINATION: After both files pass all self-checks, stop. The session
+TERMINATION: After `/tmp/session/uploads/check.py` returns 0, stop. The session
 ends when you go idle with end_turn.

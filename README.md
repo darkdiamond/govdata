@@ -146,14 +146,17 @@ Prereqs for the local path: `gcloud auth application-default login`,
 See [`infra/DEPLOY.md`](infra/DEPLOY.md) for the full deployment runbook and
 [`CLAUDE.md`](CLAUDE.md) for repository conventions.
 
-## Manual-run model harness (Kimi K2.6 / Sonnet / Haiku / GPT)
+## Manual-run model harness (any model via OpenRouter)
 
 A local CLI lets you A/B page quality across models without touching the
-live pipeline. Default model is **Kimi K2.6** via Moonshot's OpenAI-compat
-endpoint; `--model grok-4.3` (xAI), `--model anthropic:claude-sonnet-4-6 /
-haiku-4-5`, and `--model openai:gpt-...` also work. The agent runs through
-PydanticAI's agent loop in a rootless Podman+`llm-sandbox` container,
-bypassing Anthropic Managed Agents entirely.
+live pipeline. Models route through **OpenRouter** — one
+`OPENROUTER_API_KEY`, any `<vendor>/<model>` id from
+https://openrouter.ai/models (`minimax/minimax-m3`,
+`moonshotai/kimi-k2.6`, `x-ai/grok-4.3`, `anthropic/claude-sonnet-4-6`,
+…). `--model anthropic:claude-…` bypasses OpenRouter for native-Anthropic
+calibration runs. The agent runs through PydanticAI's agent loop in a
+rootless Podman+`llm-sandbox` container, bypassing Anthropic Managed
+Agents entirely.
 
 ### Install (local-only)
 
@@ -168,23 +171,25 @@ pip install -r services/page_builder/requirements.txt \
             -r services/page_builder/requirements-test.txt
 ```
 
-Set the API key for whichever model you'll run (`MOONSHOT_API_KEY` for Kimi,
-`XAI_API_KEY` for Grok, `ANTHROPIC_API_KEY` for Sonnet/Haiku,
-`OPENAI_API_KEY` for GPT). Cost reporting requires a price entry in
-`PRICE_TABLE` (see `services/page_builder/kimi_runner.py`); models without
-one log `cost: unknown` but still run end-to-end.
+Set `OPENROUTER_API_KEY` (or `ANTHROPIC_API_KEY` for the `anthropic:`
+calibration path). For OpenRouter runs, `cost.json` reports the **actual
+billed USD** from OpenRouter usage accounting — including provider-side
+cache discounts that vendors' own compat endpoints often hide (MiniMax
+direct under-reported by ~6×). The `anthropic:` path falls back to the
+small static `PRICE_TABLE` in `services/page_builder/model_harness.py`.
 
 ### Run
 
 ```sh
 # 1. regenerate the system prompt from agent/govdata-agent.yaml
-#    (run this whenever the yaml changes; produces agent/govdata-agent-kimi.system.md)
-python -m services.page_builder._build_kimi_system
+#    (run this whenever the yaml changes; produces agent/govdata-agent-harness.system.md)
+python -m services.page_builder._build_harness_system
 
 # 2. build one dataset (or --batch <id1> <id2> ... / --auto-trio)
-python -m services.page_builder.cli.kimi_test --source <dataset_id>
+python -m services.page_builder.cli.model_test --source <dataset_id> \
+    --model minimax/minimax-m3
 
-# outputs land in tmp/kimi_test/<id>/
+# outputs land in tmp/model_test/<id>/
 #   content.html       agent body
 #   agent_data.json    summary_he, dataset_kind, related_ids
 #   transcript.json    full message log
@@ -197,16 +202,16 @@ output size.
 
 ### Preview against the live prod page
 
-Two ways to see a kimi build rendered through the real dataset shell:
+Two ways to see a harness build rendered through the real dataset shell:
 
 ```sh
-# Offline — splices the kimi body into a fetched copy of the live govil.ai
+# Offline — splices the harness body into a fetched copy of the live govil.ai
 # page, strips Nuxt hydration so the splice survives, rewrites root-relative
 # URLs to absolute. Open the printed file:// URL.
 python -m services.page_builder.cli.preview render <id>
 
 # Full Nuxt-shell — backs up frontend/public/datasets/<id>/{content.html,
-# agent_data.json}, drops the kimi build in their place, then `npm run dev`
+# agent_data.json}, drops the harness build in their place, then `npm run dev`
 # serves it at localhost:3000. Restores the prod files when you're done.
 python -m services.page_builder.cli.preview swap <id>
 cd frontend && npm run dev
@@ -220,12 +225,12 @@ python -m services.page_builder.cli.preview status   # what's swapped right now
 
 - **No Cloud Run / Cloud Build image change.** Test-only deps live in
   `requirements-test.txt`, never copied by the production Dockerfiles.
-- **No imports leak.** `kimi_runner` / `podman_sandbox` / `cli/*` are
+- **No imports leak.** `model_harness` / `podman_sandbox` / `cli/*` are
   only referenced by themselves; `pipeline.py`, `publish.py`, `scanner/`,
   and `session_runner.run_session` never load them.
 - **No Firestore / GCS writes.** The harness reads source records from
   Firestore (so it picks up real CKAN metadata) but writes nothing back;
-  outputs land under `tmp/kimi_test/`, which is gitignored.
+  outputs land under `tmp/model_test/`, which is gitignored.
 - **No production page change.** `swap` backs up the prod files first;
   `restore` returns them byte-identical.
 
