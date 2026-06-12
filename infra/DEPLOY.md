@@ -104,13 +104,25 @@ gcloud scheduler jobs resume govdata-pipeline-daily --location=me-west1
 
 ## Publishing
 
-Automatic: the builder fires the `govdata-publish` Cloud Build trigger
-(`cloudbuild-publish.yaml`) after any run with ≥1 successful page;
-idle runs (no new datasets) trigger nothing. The trigger must be
-registered against a connected repo; `infra/bootstrap.sh` prints the
-exact registration command.
+Automatic via GitHub Actions (`.github/workflows/publish.yml`, $0 on
+free-tier minutes):
 
-Manual/emergency path — same four steps on your machine:
+- the builder dispatches it after any run with ≥1 successful page
+  (`PUBLISH_VIA=github` + the `github-dispatch-token` secret); idle
+  runs dispatch nothing.
+- pushing to main with changes under `frontend/**` (or the publisher
+  code) deploys automatically; rapid pushes cancel the in-flight run
+  so a burst costs one build.
+
+One-time setup: `infra/github-ci.setup.sh` (WIF + govdata-ci SA + repo
+variables) plus a fine-grained PAT (this repo, Actions read+write)
+stored as the `github-dispatch-token` secret — see the script header.
+
+Fallback #1 — Cloud Build: the `govdata-publish` trigger
+(`cloudbuild-publish.yaml`) stays registered; switch with
+`PUBLISH_VIA=cloudbuild` on the builder.
+
+Fallback #2 — manual, same four steps on your machine:
 
 ```sh
 source .venv/bin/activate
@@ -122,7 +134,7 @@ To pause auto-publishing (e.g. while reworking the frontend):
 
 ```sh
 gcloud run services update govdata-builder --region=me-west1 \
-  --update-env-vars=PUBLISH_TRIGGER_ID=""
+  --update-env-vars=PUBLISH_VIA=""
 ```
 
 ### Pre-baked publisher image

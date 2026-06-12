@@ -33,12 +33,18 @@ landing pages. Four layers:
    `SESSION_ATTEMPTS` (3) in-run retries on fresh workdirs
    (`agent_runner.run_production_session`). Outputs: `content.html`
    → GCS staging, `agent_data` + usage/cost telemetry → Firestore.
-4. **Publisher** — Cloud Build trigger `govdata-publish`
-   (`cloudbuild-publish.yaml`), fired automatically by the builder when
-   ≥1 page succeeded: rsyncs staged pages from GCS →
-   `frontend/public/datasets/`, regenerates artifacts + manifest from
-   Firestore, runs `nuxt generate`, then `firebase deploy`. For manual
-   deploys, `infra/publish-local.sh` runs the same four steps locally.
+4. **Publisher** — GitHub Actions workflow
+   `.github/workflows/publish.yml` ($0 — free-tier minutes; keyless GCP
+   auth via WIF, `infra/github-ci.setup.sh`). Fired two ways: the
+   builder's `workflow_dispatch` after ≥1 page succeeded
+   (`PUBLISH_VIA=github` + `github-dispatch-token` secret), and
+   **push-to-deploy** — any push to main touching `frontend/**` or the
+   publisher code auto-deploys, with rapid pushes collapsing to one run
+   (`concurrency: cancel-in-progress`). Steps: rsync staged pages from
+   GCS (delta via actions/cache) → regenerate artifacts + manifest from
+   Firestore → `nuxt generate` → `firebase deploy`. Fallbacks: Cloud
+   Build trigger `govdata-publish` (`PUBLISH_VIA=cloudbuild`) and
+   `infra/publish-local.sh` (same steps, your machine).
 
 State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
 (per invocation). No SQLite. No Cloudflare. No Anthropic Managed
@@ -265,9 +271,11 @@ cd frontend && npm run generate && npx serve .output/public
 
 ## Publishing
 
-Automatic: the daily builder run triggers the `govdata-publish` Cloud
-Build after any successful analysis (`PUBLISH_TRIGGER_ID=govdata-publish`);
-no new pages → no build. For manual/emergency deploys from your machine:
+Automatic, two paths into one GitHub Actions workflow (free tier):
+the daily builder run dispatches it after any successful analysis
+(no new pages → no dispatch), and pushing frontend/publisher changes
+to main deploys them (bursts collapse to one run). For
+manual/emergency deploys from your machine:
 
 ```sh
 source .venv/bin/activate            # publish.py must be importable
