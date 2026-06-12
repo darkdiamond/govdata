@@ -1,22 +1,22 @@
-"""Tests for the agent-output sanitizer in session_runner.
+"""Tests for the agent-output sanitizer in agent_contract.
 
 Catches the recurring LLM hallucination modes that broke
 dataset 27b4b40e-…: fabricated SRI hashes on Leaflet, JSON-escaped
 script-end tags (`<\\/script>`), and any `<script src=CDN>` /
 `<link href=CDN>` references the agent prompt now forbids.
 
-Run directly: `python -m services.page_builder.tests.test_session_runner_sanitize`
+Run directly: `python -m services.page_builder.tests.test_sanitize`
 Or via pytest if available.
 """
 from __future__ import annotations
 
 import logging
 
-from services.page_builder.session_runner import _sanitize_content_html
+from services.page_builder.agent_contract import sanitize_content_html
 
 
 def _logs(caplog_or_none, *, dataset_id="x", body):
-    logger = logging.getLogger("services.page_builder.session_runner")
+    logger = logging.getLogger("services.page_builder.agent_contract")
     records: list[logging.LogRecord] = []
 
     class H(logging.Handler):
@@ -26,7 +26,7 @@ def _logs(caplog_or_none, *, dataset_id="x", body):
     h = H()
     logger.addHandler(h)
     try:
-        return _sanitize_content_html(body, dataset_id=dataset_id), records
+        return sanitize_content_html(body, dataset_id=dataset_id), records
     finally:
         logger.removeHandler(h)
 
@@ -178,7 +178,7 @@ def test_excess_unclosed_scripts_raises() -> None:
     import pytest  # type: ignore
     src = "<script>a\n<script>b\n<script>c\n<script>d\n<script>e\n<script>f\n"
     try:
-        _sanitize_content_html(src)
+        sanitize_content_html(src)
     except ValueError as e:
         assert "exceeds auto-repair cap" in str(e)
     else:

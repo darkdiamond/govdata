@@ -1,8 +1,10 @@
 """Pick which source(s) the builder should process on this tick.
 
 Priority (first non-empty track wins):
-    1. `analysis_status == "never"`.
-       Ordered by `metadata_modified` DESC.
+    1. `analysis_status == "never"`, then `analysis_status == "failed"`
+       with `failed_attempts < 3` (transient-failure auto-retry on
+       subsequent daily runs; after 3 whole-run failures a source is
+       parked until manually reset). Ordered by `metadata_modified` DESC.
     2. `change_status in {new, updated}` AND
        `metadata_modified` newer than `analyzed_metadata_modified`
        (null marker = legacy doc, treated as eligible) AND
@@ -82,6 +84,20 @@ def pick_next(
         seen.add(src.id)
         if len(picks) >= n:
             return picks
+
+    # Track 1b — failed sources still under the retry budget (transient
+    # API flakes self-heal on the next daily run; 3 whole-run failures
+    # park the source). Same age cutoff and ordering as Track 1.
+    if len(picks) < n:
+        for src in store.list_failed_retryable(limit=n - len(picks)):
+            if src.id in seen:
+                continue
+            if src.metadata_modified is None or _as_utc(src.metadata_modified) < age_cutoff:
+                break
+            picks.append(src)
+            seen.add(src.id)
+            if len(picks) >= n:
+                return picks
 
     # Track 2 — already analyzed, CKAN-updated, past cooldown, within max_age.
     # `reanalyze=False` (env REANALYZE_ENABLED) pauses this track: until

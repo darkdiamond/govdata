@@ -5,7 +5,6 @@ the deps this module needs. To run it:
 
     pip install -r services/page_builder/requirements.txt \\
                 -r services/page_builder/requirements-test.txt
-    python -m services.page_builder._build_harness_system   # regenerate prompt
     export OPENROUTER_API_KEY=...
     python -m services.page_builder.cli.model_test \\
         --source <dataset_id> --model minimax/minimax-m3

@@ -12,6 +12,11 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app \
     PORT=8080
 
+# The agent's bash tool investigates CKAN with curl (slim lacks it).
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 # Install deps first so the layer is cached across code changes.
@@ -23,6 +28,9 @@ COPY services/__init__.py ./services/__init__.py
 COPY services/shared ./services/shared
 COPY services/scanner ./services/scanner
 COPY services/page_builder ./services/page_builder
+# Agent runtime assets: canonical system prompt + self-check script.
+COPY agent/system-prompt.md ./agent/system-prompt.md
+COPY agent/skills/check.py ./agent/skills/check.py
 
 EXPOSE 8080
 
