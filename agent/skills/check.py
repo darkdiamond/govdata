@@ -124,6 +124,24 @@ def check_inline_data_cap(blocks: list[str]) -> None:
             )
 
 
+_SMOOTH_TRUE = re.compile(r"\bsmooth\s*:\s*true\b")
+
+
+def check_no_spline(blocks: list[str]) -> None:
+    # Line charts render measured values, not curves: spline smoothing
+    # interpolates values that were never measured and rounds off real
+    # peaks. The prompt forbids `smooth: true`; enforce it here.
+    for i, b in enumerate(blocks, 1):
+        m = _SMOOTH_TRUE.search(b)
+        if m:
+            fail(
+                f"SPLINE: <script> block #{i} sets `smooth: true` — line "
+                "charts must use straight segments (remove the smooth "
+                "option entirely).",
+                code=1,
+            )
+
+
 def check_js_string_hygiene(blocks: list[str]) -> None:
     # Walks each script block tracking comment / string state, mirroring
     # the publisher's sanitizer. Catches:
@@ -301,6 +319,7 @@ def main(argv: list[str]) -> int:
 
     blocks = SCRIPT_BLOCK_RE.findall(body)
     check_inline_data_cap(blocks)
+    check_no_spline(blocks)
     check_js_string_hygiene(blocks)
 
     check_icon_headers(body)
