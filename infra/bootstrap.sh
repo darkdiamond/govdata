@@ -145,12 +145,12 @@ gcloud artifacts repositories add-iam-policy-binding "$AR_REPO" \
   --role=roles/artifactregistry.writer --quiet >/dev/null
 
 # ---- 6. Secret Manager -----------------------------------------------------
-if ! gcloud secrets describe anthropic-api-key --project "$PROJECT" >/dev/null 2>&1; then
-  echo "==> creating Secret Manager secret 'anthropic-api-key' (empty; populate via: "
-  echo "    printf '%s' \"\$ANTHROPIC_API_KEY\" | gcloud secrets versions add anthropic-api-key --data-file=-)"
-  gcloud secrets create anthropic-api-key --replication-policy=automatic --project "$PROJECT" >/dev/null
+if ! gcloud secrets describe openrouter-api-key --project "$PROJECT" >/dev/null 2>&1; then
+  echo "==> creating Secret Manager secret 'openrouter-api-key' (empty; populate via: "
+  echo "    printf '%s' \"\$OPENROUTER_API_KEY\" | gcloud secrets versions add openrouter-api-key --data-file=-)"
+  gcloud secrets create openrouter-api-key --replication-policy=automatic --project "$PROJECT" >/dev/null
 fi
-gcloud secrets add-iam-policy-binding anthropic-api-key \
+gcloud secrets add-iam-policy-binding openrouter-api-key \
   --member="serviceAccount:$BUILDER_SA" --role=roles/secretmanager.secretAccessor --quiet >/dev/null || true
 
 if ! gcloud secrets describe voyage-api-key --project "$PROJECT" >/dev/null 2>&1; then
