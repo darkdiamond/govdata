@@ -22,18 +22,25 @@ if (urls.length === 0) {
   process.exit(0)
 }
 
-try {
-  const res = await fetch('https://api.indexnow.org/indexnow', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json; charset=utf-8' },
-    body: JSON.stringify({
-      host: HOST,
-      key: KEY,
-      keyLocation: `https://${HOST}/${KEY}.txt`,
-      urlList: urls.slice(0, 10000), // protocol cap per request
-    }),
-  })
-  console.log(`[indexnow] pinged ${urls.length} URLs -> HTTP ${res.status}`)
-} catch (err) {
-  console.warn('[indexnow] ping failed (non-fatal):', err.message)
+// One retry after a pause: right after a deploy the key file can lag CDN
+// propagation, and IndexNow answers 403 until it can fetch the key.
+for (let attempt = 1; attempt <= 2; attempt++) {
+  try {
+    const res = await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({
+        host: HOST,
+        key: KEY,
+        keyLocation: `https://${HOST}/${KEY}.txt`,
+        urlList: urls.slice(0, 10000), // protocol cap per request
+      }),
+    })
+    console.log(`[indexnow] pinged ${urls.length} URLs -> HTTP ${res.status} (attempt ${attempt})`)
+    if (res.ok || attempt === 2) break
+  } catch (err) {
+    console.warn(`[indexnow] ping failed (attempt ${attempt}, non-fatal):`, err.message)
+    if (attempt === 2) break
+  }
+  await new Promise((r) => setTimeout(r, 30_000))
 }
