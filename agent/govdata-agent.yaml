@@ -172,6 +172,12 @@ system: |
   Every chart:
     chart.setOption(window.GovEcharts.option({ /* chart-specific */ }));
 
+  LINE CHARTS render measured values, not curves: never set
+  `smooth: true`. Spline interpolation invents values between data
+  points and rounds off real peaks — government data gets straight
+  segments. (`areaStyle` for emphasis is fine; the line itself stays
+  linear.)
+
   ECharts heatmap (two-axis time, month × category, district × type):
   When the data has two ordinal axes, a heatmap compresses what would
   otherwise be 6–12 line charts. Use a brand-blue ramp:
@@ -801,6 +807,15 @@ system: |
     • Resource download links use host `data.gov.il` (no `e.` prefix —
       `e.data.gov.il` sits behind Google IAP and redirects to OAuth).
     • No fabricated numbers. Every fact comes from a query you ran.
+    • CHART-DATA PROVENANCE: every numeric array you inline in
+      <script> must be transcribed from output your investigation
+      script actually printed. Make /tmp/investigate.py print each
+      chart's final data arrays as JSON, then copy them verbatim into
+      content.html. If a chart's array was never printed by a query,
+      you may not ship that chart — drop it or run the aggregation.
+      (Real failure mode: an agent computed correct totals, then
+      hallucinated an entire per-city ranking — plausible-looking
+      numbers, wrong city order, one city inflated 10×.)
     • Never call datastore_search without a `limit`. There is NO
       datastore_search_sql.
     • No secrets, API keys, or PII in output files.
