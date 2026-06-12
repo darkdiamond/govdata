@@ -1,35 +1,36 @@
 <script setup lang="ts">
 import { buildDatasetLdSummary } from '~/composables/useDatasetLd'
-import { useManifest } from '~/composables/useManifest'
+import { loadSearchIndex } from '~/utils/search-index'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
-const manifest = useManifest()
 
-// Resolve the URL slug back to its Hebrew tag via the publisher-built map.
-// The map lives at the manifest top level; reverse-iterate to find the
-// Hebrew key whose value matches our URL slug. Both directions are O(N) in
-// the number of tags, which is small (low hundreds) so a precomputed
-// reverse Map would be premature here.
-const hebrewTag = computed<string | null>(() => {
-  const map = manifest.value?.tag_slugs ?? {}
+// Resolve the URL slug back to its Hebrew tag via the publisher-built map,
+// then bake only this tag's slim entries into the page payload (the key
+// must include the slug — colliding keys would cross-pollinate payloads).
+const { data } = await useAsyncData(`tag-${slug.value}`, async () => {
+  const index = await loadSearchIndex()
+  const map = index.tag_slugs ?? {}
+  let hebrewTag: string | null = null
   for (const [he, latin] of Object.entries(map)) {
-    if (latin === slug.value) return he
+    if (latin === slug.value) {
+      hebrewTag = he
+      break
+    }
   }
-  return null
-})
-
-const entries = computed(() => {
-  const tag = hebrewTag.value
-  if (!tag) return []
-  return (manifest.value?.datasets ?? []).filter(
-    (d) => d.tags_he.includes(tag) || (d.suggested_tags ?? []).includes(tag),
+  if (!hebrewTag) return null
+  const entries = index.datasets.filter(
+    (d) => d.tags_he.includes(hebrewTag!) || (d.suggested_tags ?? []).includes(hebrewTag!),
   )
+  return { hebrewTag, entries }
 })
 
-if (!hebrewTag.value || entries.value.length === 0) {
+if (!data.value || data.value.entries.length === 0) {
   throw createError({ statusCode: 404, statusMessage: 'Tag not found', fatal: true })
 }
+
+const hebrewTag = computed(() => data.value!.hebrewTag)
+const entries = computed(() => data.value!.entries)
 
 const SITE_URL = 'https://govil.ai'
 const tagDescription = computed(

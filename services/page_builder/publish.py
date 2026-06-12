@@ -183,6 +183,50 @@ def _write_agent_data(out_root: Path, dataset_id: str, agent: AgentData) -> Path
     return target
 
 
+# Field set must stay in sync with frontend/types/manifest.ts::SlimEntry —
+# it has to cover every list-page consumer: DatasetCard, useFacets, the
+# HeaderSearch Fuse keys, utils/insights.ts, the kind/ministry/tag filters,
+# buildDatasetLdSummary (collection JSON-LD) and the Hero count/date.
+_SEARCH_INDEX_FIELDS = {
+    "id",
+    "title",
+    "organization",
+    "organization_slug",
+    "summary_he",
+    "dataset_kind",
+    "formats",
+    "tags_he",
+    "suggested_tags",
+    "record_count",
+    "spatial_coverage",
+    "license",
+    "metadata_modified",
+    "last_analyzed_at",
+}
+
+
+def _write_search_index(out_root: Path, manifest: Manifest) -> Path:
+    """Slim, runtime-fetchable projection of the manifest (~⅙ the size).
+
+    The full manifest.json never ships to browsers — list/search pages
+    `$fetch` this index on demand instead (frontend/utils/search-index.ts),
+    and dataset pages resolve related/tag data server-side at prerender.
+    Compact separators: this file is fetched at runtime, so bytes matter.
+    """
+    target = out_root / "data" / "search-index.json"
+    body = manifest.model_dump_json(
+        exclude_none=True,
+        include={
+            "version": True,
+            "generated_at": True,
+            "tag_slugs": True,
+            "datasets": {"__all__": _SEARCH_INDEX_FIELDS},
+        },
+    ).encode("utf-8")
+    _write_json(target, body)
+    return target
+
+
 def _write_manifest(out_root: Path, manifest: Manifest) -> Path:
     target = out_root / "data" / "manifest.json"
     # Embeddings live on Firestore + interim entries for top_related scoring;
@@ -286,12 +330,14 @@ def publish(
         tag_slugs=_build_tag_slugs(final_entries),
     )
     manifest_path = _write_manifest(out_root, manifest)
+    search_index_path = _write_search_index(out_root, manifest)
     log.info(
-        "publish: wrote manifest=%s data.json=%d agent_data.json=%d",
-        manifest_path, written_meta, written_agent,
+        "publish: wrote manifest=%s search_index=%s data.json=%d agent_data.json=%d",
+        manifest_path, search_index_path, written_meta, written_agent,
     )
     return {
         "manifest_path": str(manifest_path),
+        "search_index_path": str(search_index_path),
         "datasets": len(final_entries),
         "wrote_data_json": written_meta,
         "wrote_agent_data_json": written_agent,

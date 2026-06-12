@@ -9,7 +9,7 @@
 // Category routes (ministries/tags/kinds) are enumerated from manifest.json
 // (the merged view) the same way.
 
-import { copyFileSync, existsSync, readFileSync } from 'node:fs'
+import { copyFileSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createLogger } from 'vite'
@@ -68,6 +68,43 @@ function datasetRoutes(): string[] {
   }
 }
 
+// Belt for dev checkouts / builds that predate the publisher writing
+// data/search-index.json (services/page_builder/publish.py is the canonical
+// writer — field list mirrors its _SEARCH_INDEX_FIELDS). The slim index is
+// fetched at runtime by HeaderSearch and inlined into list-page payloads,
+// so it must exist in public/ before `nuxt generate` copies public/ out.
+function ensureSearchIndex(): void {
+  const idxPath = resolve(__dirname, 'public/data/search-index.json')
+  if (existsSync(idxPath)) return
+  const SLIM_FIELDS = [
+    'id', 'title', 'organization', 'organization_slug', 'summary_he',
+    'dataset_kind', 'formats', 'tags_he', 'suggested_tags', 'record_count',
+    'spatial_coverage', 'license', 'metadata_modified', 'last_analyzed_at',
+  ]
+  try {
+    const m = JSON.parse(
+      readFileSync(resolve(__dirname, 'public/data/manifest.json'), 'utf-8'),
+    ) as Manifest & { version?: number; generated_at?: string }
+    const datasets = (m.datasets ?? []).map((d) => {
+      const rec = d as unknown as Record<string, unknown>
+      const slim: Record<string, unknown> = {}
+      for (const k of SLIM_FIELDS) {
+        if (rec[k] !== undefined && rec[k] !== null) slim[k] = rec[k]
+      }
+      return slim
+    })
+    writeFileSync(idxPath, JSON.stringify({
+      version: m.version,
+      generated_at: m.generated_at,
+      tag_slugs: m.tag_slugs,
+      datasets,
+    }))
+  } catch {
+    // No manifest in this checkout — runtime loader has its own fallback.
+  }
+}
+ensureSearchIndex()
+
 export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2025-01-01',
@@ -103,11 +140,15 @@ export default defineNuxtConfig({
         { rel: 'icon', href: '/favicon.ico', sizes: 'any' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
         { rel: 'manifest', href: '/site.webmanifest' },
-        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
-        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
+        // Rubik is self-hosted (assets/css/tailwind.css @font-face, files in
+        // public/fonts/). Preload the Hebrew subset — it's on every page's
+        // critical path; latin loads on demand via unicode-range.
         {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700&display=swap',
+          rel: 'preload',
+          href: '/fonts/rubik-var-hebrew.woff2',
+          as: 'font',
+          type: 'font/woff2',
+          crossorigin: '',
         },
       ],
       meta: [
@@ -122,13 +163,12 @@ export default defineNuxtConfig({
         { name: 'keywords', content: 'מידע ממשלתי, data.gov.il, בינה מלאכותית, AI, סוכן AI, agentic, אג׳נטי, open data Israel' },
         { name: 'google-adsense-account', content: 'ca-pub-9066544714340882' },
       ],
-      script: [
-        {
-          async: true,
-          src: 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9066544714340882',
-          crossorigin: 'anonymous',
-        },
-      ],
+      // AdSense (Auto Ads) is injected post-hydration by
+      // plugins/adsense.client.ts — NOT from head. Auto Ads mutates the DOM
+      // (inserts <ins> slots) as soon as the script runs; doing that during
+      // Vue hydration produced "Hydration completed but contains mismatches"
+      // on production dataset pages. Deferring also keeps its ~54KB off the
+      // first-paint critical path.
     },
   },
 

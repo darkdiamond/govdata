@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { buildInsightPool } from '~/utils/insights'
+import type { DatasetKind, SlimEntry } from '~/types/manifest'
+import { loadSearchIndex } from '~/utils/search-index'
 
 useSeo({
   title: 'מאגרי מידע ממשלתיים — מוסבר, מחובר ומובן ע״י AI · govil.ai',
@@ -14,19 +16,66 @@ useSeo({
   ],
 })
 
-const manifest = useManifest()
-const insightPool = computed(() => buildInsightPool(manifest.value?.datasets ?? []))
+interface MinistryRow {
+  slug: string
+  title: string
+  count: number
+}
+
+// One fetcher bakes everything the home sections render into the page
+// payload — the slim index itself never ships to the client from here.
+const { data } = await useAsyncData('home', async () => {
+  const index = await loadSearchIndex()
+  const datasets = index.datasets
+
+  const latest = [...datasets]
+    .sort((a, b) => {
+      const ta = a.last_analyzed_at ? Date.parse(a.last_analyzed_at) : 0
+      const tb = b.last_analyzed_at ? Date.parse(b.last_analyzed_at) : 0
+      return tb - ta
+    })
+    .slice(0, 6)
+
+  const byMinistry = new Map<string, MinistryRow>()
+  for (const d of datasets) {
+    if (!d.organization_slug || !d.organization) continue
+    const r = byMinistry.get(d.organization_slug)
+    if (r) r.count++
+    else byMinistry.set(d.organization_slug, { slug: d.organization_slug, title: d.organization, count: 1 })
+  }
+  const ministries = [...byMinistry.values()].sort((a, b) => b.count - a.count).slice(0, 6)
+
+  const kindCounts: Partial<Record<DatasetKind, number>> = {}
+  for (const d of datasets) {
+    if (!d.dataset_kind) continue
+    kindCounts[d.dataset_kind] = (kindCounts[d.dataset_kind] ?? 0) + 1
+  }
+
+  return {
+    insightPool: buildInsightPool(datasets),
+    latest,
+    ministries,
+    kindCounts,
+    generatedAt: index.generated_at,
+  }
+})
+
+const insightPool = computed(() => data.value?.insightPool ?? [])
+const latest = computed<SlimEntry[]>(() => data.value?.latest ?? [])
+const ministries = computed<MinistryRow[]>(() => data.value?.ministries ?? [])
+const kindCounts = computed(() => data.value?.kindCounts ?? {})
+const generatedAt = computed(() => data.value?.generatedAt)
 </script>
 
 <template>
   <div class="max-w-gov mx-auto px-4 py-8 space-y-16">
-    <Hero />
+    <Hero :generated-at="generatedAt" />
     <InsightCarousel :pool="insightPool" />
     <WhatYouGet />
     <HowItWorks />
-    <BrowseByMinistry />
-    <BrowseByKind />
-    <LatestDatasets />
+    <BrowseByMinistry :ministries="ministries" />
+    <BrowseByKind :kind-counts="kindCounts" />
+    <LatestDatasets :latest="latest" />
     <CallToAction />
   </div>
 </template>

@@ -68,10 +68,12 @@ frontend/.data/
 # frontend/scripts/copy-libs.mjs.
 frontend/public/lib/
 # Publisher-generated artifacts. Materialized at build time from Firestore
-# (data.json, agent_data.json, manifest.json) and rsynced from GCS staging
-# (content.html). Single source of truth lives upstream — git stays code-only.
+# (data.json, agent_data.json, manifest.json, search-index.json) and rsynced
+# from GCS staging (content.html). Single source of truth lives upstream —
+# git stays code-only.
 frontend/public/datasets/
 frontend/public/data/manifest.json
+frontend/public/data/search-index.json
 
 # Infra secrets
 infra/pages.build-hook.txt

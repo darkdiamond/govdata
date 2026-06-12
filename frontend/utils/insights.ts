@@ -1,4 +1,4 @@
-import type { DatasetKind, ManifestEntry } from '~/types/manifest'
+import type { DatasetKind, SlimEntry } from '~/types/manifest'
 
 export interface InsightSlide {
   id: string
@@ -36,7 +36,7 @@ const KIND_MIN_COUNT: Record<Exclude<DatasetKind, 'misc'>, number> = {
 
 const FRESH_WINDOW_MS = 7 * 86_400_000
 
-function buildStat(e: ManifestEntry): { value: string; unit: string } | null {
+function buildStat(e: SlimEntry): { value: string; unit: string } | null {
   const k = e.dataset_kind
   if (!k || k === 'misc') return null
   const count = e.record_count
@@ -44,7 +44,7 @@ function buildStat(e: ManifestEntry): { value: string; unit: string } | null {
   return { value: count.toLocaleString('he-IL'), unit: KIND_UNIT_HE[k] }
 }
 
-function buildPrimaryTag(e: ManifestEntry): string | null {
+function buildPrimaryTag(e: SlimEntry): string | null {
   const org = e.organization?.trim() || null
   for (const raw of e.tags_he ?? []) {
     const t = raw.trim()
@@ -62,7 +62,7 @@ function buildIsFresh(iso?: string | null): boolean {
   return Date.now() - t < FRESH_WINDOW_MS
 }
 
-export function buildInsightPool(entries: ManifestEntry[]): InsightSlide[] {
+export function buildInsightPool(entries: SlimEntry[]): InsightSlide[] {
   const pool: InsightSlide[] = []
   for (const e of entries) {
     if (!e.summary_he || !e.dataset_kind || e.dataset_kind === 'misc') continue

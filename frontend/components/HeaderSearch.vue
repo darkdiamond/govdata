@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import type FuseT from 'fuse.js'
-import { useManifest } from '~/composables/useManifest'
-import type { ManifestEntry } from '~/types/manifest'
+import type { SlimEntry } from '~/types/manifest'
+import { loadSearchIndex } from '~/utils/search-index'
 
 const router = useRouter()
-const manifest = useManifest()
 const open = ref(false)
 const query = ref('')
 const highlight = ref(-1)
@@ -12,33 +11,37 @@ const buttonEl = ref<HTMLElement | null>(null)
 const inputEl = ref<HTMLInputElement | null>(null)
 const panelEl = ref<HTMLElement | null>(null)
 
-// Fuse.js is ~24KB min+gz and only fires when the user opens the search popover,
-// so we load it on first toggle/input rather than bundling it into the layout chunk.
-const fuse = shallowRef<FuseT<ManifestEntry> | null>(null)
+// Fuse.js (~24KB min+gz) and the slim search index (~60KB gz) only fire when
+// the user opens the search popover, so both load on first toggle rather than
+// being bundled into the layout chunk. This runs client-side only — the
+// popover is never part of prerendered HTML.
+const fuse = shallowRef<FuseT<SlimEntry> | null>(null)
 let fusePromise: Promise<void> | null = null
 
 function ensureFuse(): Promise<void> {
   if (fusePromise) return fusePromise
-  fusePromise = import('fuse.js').then(({ default: Fuse }) => {
-    fuse.value = new Fuse<ManifestEntry>(manifest.value?.datasets ?? [], {
-      keys: [
-        { name: 'title', weight: 0.5 },
-        { name: 'summary_he', weight: 0.25 },
-        { name: 'organization', weight: 0.15 },
-        { name: 'tags_he', weight: 0.1 },
-        { name: 'suggested_tags', weight: 0.1 },
-      ],
-      threshold: 0.4,
-      distance: 100,
-      includeScore: false,
-      minMatchCharLength: 2,
-      ignoreLocation: true,
-    })
-  })
+  fusePromise = Promise.all([import('fuse.js'), loadSearchIndex()]).then(
+    ([{ default: Fuse }, index]) => {
+      fuse.value = new Fuse<SlimEntry>(index.datasets, {
+        keys: [
+          { name: 'title', weight: 0.5 },
+          { name: 'summary_he', weight: 0.25 },
+          { name: 'organization', weight: 0.15 },
+          { name: 'tags_he', weight: 0.1 },
+          { name: 'suggested_tags', weight: 0.1 },
+        ],
+        threshold: 0.4,
+        distance: 100,
+        includeScore: false,
+        minMatchCharLength: 2,
+        ignoreLocation: true,
+      })
+    },
+  )
   return fusePromise
 }
 
-const results = computed<ManifestEntry[]>(() => {
+const results = computed<SlimEntry[]>(() => {
   const q = query.value.trim()
   if (q.length < 2 || !fuse.value) return []
   return fuse.value.search(q, { limit: 6 }).map((r) => r.item)
@@ -62,7 +65,7 @@ function close() {
   buttonEl.value?.focus()
 }
 
-function go(entry: ManifestEntry) {
+function go(entry: SlimEntry) {
   open.value = false
   query.value = ''
   // Full-page nav (not router.push) — dataset pages are SSG documents that

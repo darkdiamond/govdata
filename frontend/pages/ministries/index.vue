@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useManifest } from '~/composables/useManifest'
+import { loadSearchIndex } from '~/utils/search-index'
 
 useSeo({
   title: 'מאגרי מידע לפי משרד ממשלתי — סקירה מלאה',
@@ -11,17 +11,17 @@ useSeo({
   ],
 })
 
-const manifest = useManifest()
-
 interface MinistryRow {
   slug: string
   title: string
   count: number
 }
 
-const ministries = computed<MinistryRow[]>(() => {
+// Bake only the aggregated rows into the payload — not the index itself.
+const { data } = await useAsyncData('ministries-index', async () => {
+  const index = await loadSearchIndex()
   const by = new Map<string, MinistryRow>()
-  for (const d of manifest.value?.datasets ?? []) {
+  for (const d of index.datasets) {
     if (!d.organization_slug || !d.organization) continue
     const row = by.get(d.organization_slug)
     if (row) row.count++
@@ -31,6 +31,8 @@ const ministries = computed<MinistryRow[]>(() => {
   }
   return [...by.values()].sort((a, b) => b.count - a.count)
 })
+
+const ministries = computed<MinistryRow[]>(() => data.value ?? [])
 </script>
 
 <template>

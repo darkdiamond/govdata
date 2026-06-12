@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useManifest } from '~/composables/useManifest'
+const props = defineProps<{
+  /** manifest/search-index generated_at ISO timestamp, baked into the home payload */
+  generatedAt?: string
+}>()
 
-const manifest = useManifest()
-
-const lastUpdatedMs = computed(() => {
-  const generated = manifest.value?.generated_at
-  return generated ? Date.parse(generated) : null
-})
+const lastUpdatedMs = computed(() =>
+  props.generatedAt ? Date.parse(props.generatedAt) : null,
+)
 
 // Computed against `Date.now()` in SSR/SSG would bake the build-time delta into
 // the static HTML and mismatch the client clock at hydration. Keep it empty for
@@ -54,7 +54,7 @@ onMounted(() => {
         :aria-label="`סוכן AI מנתח מאגרים ממשלתיים, עדכון אחרון ${relativeAgo}`"
       >
         <span class="relative flex h-2.5 w-2.5" aria-hidden="true">
-          <span class="absolute inline-flex h-full w-full rounded-full bg-ok opacity-60 animate-ping"></span>
+          <span class="absolute inline-flex h-full w-full rounded-full bg-ok opacity-60 motion-safe:animate-ping"></span>
           <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-ok"></span>
         </span>
         <span class="text-[11px] font-semibold tracking-wider text-ok uppercase" aria-hidden="true">LIVE</span>

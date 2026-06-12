@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { ManifestEntry } from '~/types/manifest'
+import type { SlimEntry } from '~/types/manifest'
 
-defineProps<{ entry: ManifestEntry }>()
+defineProps<{ entry: SlimEntry }>()
 </script>
 
 <template>
