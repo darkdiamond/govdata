@@ -86,13 +86,53 @@ async def _build_one(
         }
 
 
+async def _trigger_publish_github(repo: str, workflow: str, branch: str) -> Optional[str]:
+    """Fire the GitHub Actions publish workflow (workflow_dispatch).
+
+    Fire-and-forget — the API returns 204 with no run id, so we return a
+    synthetic marker for the summary. Needs GITHUB_DISPATCH_TOKEN (a
+    fine-grained PAT with Actions:write on this repo, from Secret Manager).
+    """
+    token = os.environ.get("GITHUB_DISPATCH_TOKEN", "").strip()
+    if not token:
+        log.error("PUBLISH_VIA=github but GITHUB_DISPATCH_TOKEN is not set")
+        return None
+
+    def _run() -> Optional[str]:
+        import httpx
+
+        r = httpx.post(
+            f"https://api.github.com/repos/{repo}/actions/workflows/{workflow}/dispatches",
+            json={"ref": branch},
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github+json",
+                "X-GitHub-Api-Version": "2022-11-28",
+            },
+            timeout=30.0,
+        )
+        if r.status_code != 204:
+            log.error(
+                "github workflow_dispatch failed: %s %s", r.status_code, r.text[:300]
+            )
+            return None
+        return f"gh-actions:{repo}/{workflow}@{branch}"
+
+    try:
+        return await asyncio.to_thread(_run)
+    except Exception:
+        log.exception("trigger_publish (github) failed")
+        return None
+
+
 async def _trigger_publish(
     project_id: str, trigger_id: str, branch: str, region: str = "me-west1"
 ) -> Optional[str]:
-    """Fire the Cloud Build publisher. Fire-and-forget — don't wait for the build.
+    """Fire the Cloud Build publisher (fallback path, PUBLISH_VIA=cloudbuild).
 
-    Uses the regional Cloud Build endpoint; triggers created with
-    `--region=me-west1` are not reachable via the global endpoint.
+    Fire-and-forget — don't wait for the build. Uses the regional Cloud
+    Build endpoint; triggers created with `--region=me-west1` are not
+    reachable via the global endpoint.
     """
 
     def _run() -> Optional[str]:
@@ -155,6 +195,11 @@ async def run_pipeline(
         or os.environ.get("GOOGLE_CLOUD_PROJECT")
         or "govdata-il"
     )
+    # Publish mechanism: "github" (Actions workflow_dispatch, default),
+    # "cloudbuild" (legacy trigger, fallback), or "" to disable publishing.
+    publish_via = os.environ.get("PUBLISH_VIA", "github").strip().lower()
+    publish_repo = os.environ.get("PUBLISH_GITHUB_REPO", "darkdiamond/govdata")
+    publish_workflow = os.environ.get("PUBLISH_GITHUB_WORKFLOW", "publish.yml")
     trigger_id = os.environ.get("PUBLISH_TRIGGER_ID", "govdata-publish")
     publish_branch = os.environ.get("PUBLISH_BRANCH", "main")
     publish_region = os.environ.get("PUBLISH_REGION", "me-west1")
@@ -214,10 +259,17 @@ async def run_pipeline(
 
     # [4] trigger publisher if any page was written
     build_id = None
-    if succeeded_ids and trigger_id and not skip_publish:
-        build_id = await _trigger_publish(
-            project_id, trigger_id, publish_branch, region=publish_region
-        )
+    if succeeded_ids and not skip_publish:
+        if publish_via == "github":
+            build_id = await _trigger_publish_github(
+                publish_repo, publish_workflow, publish_branch
+            )
+        elif publish_via == "cloudbuild" and trigger_id:
+            build_id = await _trigger_publish(
+                project_id, trigger_id, publish_branch, region=publish_region
+            )
+        elif publish_via:
+            log.error("unknown PUBLISH_VIA=%r — publish skipped", publish_via)
     summary["build_id"] = build_id
     summary["status"] = "ok" if succeeded_ids else "all_failed"
     return summary

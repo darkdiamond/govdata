@@ -162,6 +162,11 @@ export default defineNuxtConfig({
     },
     prerender: {
       crawlLinks: false,
+      // Routes render serially by default; 4-way concurrency roughly
+      // halves `nuxt generate` wall time on 2-4 vCPU CI runners. Safe
+      // with payloadExtraction:false (the Hebrew-tag-URL constraint —
+      // see the comment above experimental.payloadExtraction).
+      concurrency: 4,
       routes: [
         '/',
         '/404/',
