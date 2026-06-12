@@ -25,10 +25,12 @@ Cloud Run: govdata-builder (1 container, concurrency=1)
         ▼
     content.html → gs://<staging>/datasets/<id>/
     agent_data + usage/cost → Firestore sources/<id>
-    ≥1 success → trigger Cloud Build govdata-publish
+    ≥1 success → dispatch GitHub Actions publish workflow
                    rsync GCS → publish.py (data.json, agent_data.json,
                    manifest.json from Firestore) → nuxt generate →
                    firebase deploy        (no new pages → no build)
+    (the same workflow also runs on every push to main touching
+     frontend/** — push-to-deploy, bursts collapse to one run)
 ```
 
 Each dataset page body is authored by the agent; the Nuxt shell wraps it
