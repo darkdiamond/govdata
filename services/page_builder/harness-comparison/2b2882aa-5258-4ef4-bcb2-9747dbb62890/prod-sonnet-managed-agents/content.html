@@ -1,0 +1,311 @@
+<!-- tag chips -->
+<h1>נתון אחרון - איכות מים בקידוחים</h1>
+<div class="flex flex-wrap gap-2 mb-6">
+  <span class="tag-chip">איכות מים</span>
+  <span class="tag-chip">קידוחים</span>
+  <span class="tag-chip">רשות המים</span>
+  <span class="tag-chip">זיהום תת-קרקעי</span>
+  <span class="tag-chip">ניטור סביבתי</span>
+</div>
+
+<!-- AI summary card -->
+<section class="card p-5 mb-6">
+  <h2 class="m-0 mb-2 text-base font-semibold text-ink-deep">תקציר</h2>
+  <p class="m-0 text-subtle leading-relaxed">
+    המאגר מכיל 59,860 מדידות איכות מים מ-4,117 קידוחים ברחבי ישראל, החל משנת 2007. עבור כל קידוח ופרמטר נשמר הריכוז האחרון שנמדד (כלוריד, חנקה, ממסים אורגניים, PFAS, מתכות, חומרי הדברה ועוד) יחד עם אחוז החריגה מתקן מי השתייה הישראלי. הנתונים מבוססים על בדיקות קידוחי הפקה לפי הנחיות משרד הבריאות, סקרי רשות המים, ובדיקות קידוחי ניטור ייעודיים.
+  </p>
+</section>
+
+<!-- KPI grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">59,860</div>
+    <div class="text-sm text-subtle">מדידות במאגר</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">4,117</div>
+    <div class="text-sm text-subtle">קידוחים מנוטרים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-danger mb-1">3,959</div>
+    <div class="text-sm text-subtle">חריגות מהתקן (מעל 100%)</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">62</div>
+    <div class="text-sm text-subtle">פרמטרים נבדקים</div>
+  </div>
+</div>
+
+<!-- Insights -->
+<section class="card p-5 mb-6">
+  <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">תובנות עיקריות</h2>
+  <ul class="m-0 ps-5 space-y-2 text-sm">
+    <li>6.7% מכלל המדידות חורגות מתקן מי השתייה (3,959 מתוך 59,002 מדידות עם ערך תקן).</li>
+    <li>קבוצת כלוריד וחנקה מציגה שיעור החריגה הגבוה ביותר — 24.5% מהמדידות בקבוצה זו חורגות מהתקן; כלוריד (CL) לבדו עם 914 חריגות (29.4% מהמדידות שלו).</li>
+    <li>PFAS הם הקבוצה עם שיעור החריגה השני בגובהו — 7.5%; TPFAS (סכום PFAS) מציג ממוצע של כ-11,000% מהתקן.</li>
+    <li>ממסים אורגניים כוללים את מרבית המדידות (31,776) ו-1,699 חריגות; MTBE ובנזן — אינדיקטורים לזיהום דלק — אחראים יחד ל-900 חריגות.</li>
+    <li>שנת 2025 מציגה את שיעור החריגה הגבוה מאז 2013 — 15.0% (1,030 חריגות מתוך 6,856 מדידות); 2024 רשמה 997 חריגות (7.5%).</li>
+    <li>86.3% מהמדידות נמצאות ב-0–25% מהתקן; רק 1.2% נמצאות ב-80–100% (סף אזהרה).</li>
+    <li>חברת מקורות ועמדות פרטיות מהוות יחד כ-73% מסך המדידות (22,875 ו-20,858 בהתאמה).</li>
+  </ul>
+</section>
+
+<!-- Charts row 1: yearly trend + donut -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">מדידות ושיעור חריגה לפי שנה</h2>
+    <div id="chart-year" class="h-64 md:h-80"></div>
+  </section>
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">התפלגות אחוז מתקן מי השתייה</h2>
+    <div id="chart-pct" class="h-64 md:h-80"></div>
+  </section>
+</div>
+
+<!-- Chart: top parameters by violation count -->
+<section class="card p-5 mb-6">
+  <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">12 הפרמטרים עם מספר החריגות הגבוה ביותר</h2>
+  <div id="chart-params" class="h-64 md:h-80"></div>
+</section>
+
+<!-- Charts row 2: group violations + usage -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">חריגות לפי קבוצת פרמטרים</h2>
+    <div id="chart-groups" class="h-64 md:h-80"></div>
+  </section>
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">מדידות לפי שימוש בקידוח</h2>
+    <div id="chart-usage" class="h-64 md:h-80"></div>
+  </section>
+</div>
+
+<!-- GovExplorer -->
+<section class="card p-5 mb-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <h2 class="font-semibold text-ink-deep">עיון בנתוני הקידוחים</h2>
+    <input id="explorer-search" class="gov-explorer-search"
+           type="search" placeholder="חיפוש לפי שם קידוח או פרמטר..."
+           aria-label="חיפוש בטבלה" />
+  </div>
+  <div id="explorer"></div>
+</section>
+
+<!-- Original notes -->
+<section class="card p-5 mb-6">
+  <h2 class="m-0 mb-2 text-base font-semibold text-ink-deep">תיאור מקורי</h2>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">מאגר המידע מכיל נתוני איכות מים על פי ריכוז אחרון שנמדד לכל פרמטר משנת 2007 ואילך.
+הקובץ נתוני איכות מים בקידוחים מכיל נתונים של קבוצות הפרמטרים הבאות: כלוריד וחנקה, חומרי הדברה, מתכות וחומרים אורגנים.
+מקור המידע הוא בבדיקות בקידוחי הפקה על פי הנחיות משרד הבריאות, סקרים של רשות המים ובדיקות מזהמים המבוצעות בקידוחי ניטור על פי הנחיות רשות המים.</p>
+</section>
+
+<script>
+const GOVIL_PALETTE = [
+  '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+  '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+];
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+};
+
+/* ── Chart 1: yearly measurements + violation rate ── */
+const years      = ['2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+const totals     = [2912,2478,772,1354,1446,1304,999,1344,3488,3918,5372,5543,7606,13260,6856];
+const violRates  = [1.6,2.3,12.2,7.0,5.2,6.1,5.3,8.9,7.0,3.5,5.5,4.9,4.6,7.5,15.0];
+
+const chartYear = echarts.init(document.getElementById('chart-year'));
+chartYear.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'cross' },
+    formatter: function(params) {
+      let s = "<div style='direction:rtl'><b>" + params[0].axisValue + "</b><br/>";
+      params.forEach(function(p) { s += p.marker + " " + p.seriesName + ": " + p.value + (p.seriesIndex === 1 ? "%" : "") + "<br/>"; });
+      return s + "</div>";
+    },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff', borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  legend: { data: ["מדידות", "שיעור חריגה (%)"], top: 8, textStyle: { fontFamily: 'Rubik', color: '#0c3058' } },
+  xAxis: { type: 'category', data: years, axisLabel: { fontFamily: 'Rubik', color: '#0c3058' } },
+  yAxis: [
+    { type: 'value', name: "מדידות", nameTextStyle: { fontFamily: 'Rubik', color: '#0c3058' }, axisLabel: { fontFamily: 'Rubik', color: '#0c3058' } },
+    { type: 'value', name: "חריגה %", min: 0, max: 20, nameTextStyle: { fontFamily: 'Rubik', color: '#0c3058' }, axisLabel: { fontFamily: 'Rubik', color: '#0c3058', formatter: '{value}%' } }
+  ],
+  series: [
+    { name: "מדידות", type: 'bar', data: totals, itemStyle: { color: '#6c9fd8' } },
+    { name: "שיעור חריגה (%)", type: 'line', yAxisIndex: 1, data: violRates,
+      symbol: 'circle', symbolSize: 6,
+      lineStyle: { color: '#dc3545', width: 2 }, itemStyle: { color: '#dc3545' } }
+  ]
+}));
+window.addEventListener('resize', () => chartYear.resize());
+
+/* ── Chart 2: PCT distribution donut ── */
+const chartPct = echarts.init(document.getElementById('chart-pct'));
+chartPct.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    trigger: 'item',
+    formatter: function(p) {
+      return "<div style='direction:rtl'>" + p.name + "<br/>" + p.value.toLocaleString() + " מדידות (" + p.percent + "%)</div>";
+    },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff', borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  legend: {
+    orient: 'vertical', right: 8, top: 'center',
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 }
+  },
+  series: [{
+    type: 'pie', radius: ['38%','65%'], center: ['38%','50%'],
+    avoidLabelOverlap: true,
+    label: { show: false },
+    emphasis: { label: { show: true, fontFamily: 'Rubik', fontSize: 13, fontWeight: 'bold' } },
+    data: [
+      { value: 50926, name: "0–25% מהתקן",    itemStyle: { color: '#dbe8fb' } },
+      { value: 2229,  name: "25–50% מהתקן",   itemStyle: { color: '#6c9fd8' } },
+      { value: 1206,  name: "50–80% מהתקן",   itemStyle: { color: '#3d70b0' } },
+      { value: 682,   name: "80–100% מהתקן",  itemStyle: { color: '#0068f5' } },
+      { value: 3959,  name: "מעל 100% (חריגה)",itemStyle: { color: '#dc3545' } }
+    ]
+  }]
+}));
+window.addEventListener('resize', () => chartPct.resize());
+
+/* ── Chart 3: top 12 params by violation count ── */
+const topParams = ['CL','NO3','MTBE','BENZ','TBA','TPFAS','XYLE','TCEY','NAPT','ETBN','PFOS','TOLU'];
+const topViol   = [914,656,455,445,165,106,102,101,96,85,79,68];
+const topRates  = [29.4,21.1,17.0,16.6,38.8,15.8,3.9,5.8,11.3,3.2,12.1,2.6];
+
+const chartParams = echarts.init(document.getElementById('chart-params'));
+chartParams.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: function(params) {
+      let s = "<div style='direction:rtl'><b>" + params[0].axisValue + "</b><br/>";
+      s += params[0].marker + " חריגות: " + params[0].value + "<br/>";
+      s += "<span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#0b3668;margin-left:4px'></span> שיעור חריגה: " + topRates[params[0].dataIndex] + "%<br/>";
+      return s + "</div>";
+    },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff', borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 56, right: 32, top: 24, bottom: 48, containLabel: true },
+  xAxis: { type: 'category', data: topParams, axisLabel: { fontFamily: 'Rubik', color: '#0c3058', interval: 0, rotate: 20 } },
+  yAxis: { type: 'value', name: "מספר חריגות", nameTextStyle: { fontFamily: 'Rubik', color: '#0c3058' }, axisLabel: { fontFamily: 'Rubik', color: '#0c3058' } },
+  series: [{
+    type: 'bar',
+    data: topViol.map(function(v, i) {
+      return { value: v, itemStyle: { color: GOVIL_PALETTE[i % GOVIL_PALETTE.length] } };
+    }),
+    label: { show: true, position: 'top', fontFamily: 'Rubik', color: '#0c3058', fontSize: 11, formatter: '{c}' }
+  }]
+}));
+window.addEventListener('resize', () => chartParams.resize());
+
+/* ── Chart 4: violations by parameter group ── */
+const groups      = ["ממסים\nאורגניים","מתכות","PFAS","כלוריד\nוחנקה","חומרי\nהדברה","נפץ\nותחמושת"];
+const groupLabels = ["ממסים אורגניים","מתכות","PFAS","כלוריד וחנקה","חומרי הדברה","נפץ ותחמושת"];
+const groupViol   = [1699,122,520,1594,5,3];
+const groupRates  = [5.3,1.3,7.5,24.5,0.1,1.7];
+
+const chartGroups = echarts.init(document.getElementById('chart-groups'));
+chartGroups.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: { type: 'shadow' },
+    formatter: function(params) {
+      let s = "<div style='direction:rtl'><b>" + groupLabels[params[0].dataIndex] + "</b><br/>";
+      s += params[0].marker + " חריגות: " + params[0].value + "<br/>";
+      s += "<span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:#0b3668;margin-left:4px'></span> שיעור: " + groupRates[params[0].dataIndex] + "%<br/>";
+      return s + "</div>";
+    },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff', borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 16, right: 32, top: 24, bottom: 56, containLabel: true },
+  xAxis: {
+    type: 'category',
+    data: groupLabels,
+    axisLabel: { fontFamily: 'Rubik', color: '#0c3058', interval: 0, overflow: 'truncate', width: 72, fontSize: 11 }
+  },
+  yAxis: { type: 'value', name: "חריגות", nameTextStyle: { fontFamily: 'Rubik', color: '#0c3058' }, axisLabel: { fontFamily: 'Rubik', color: '#0c3058' } },
+  series: [{
+    type: 'bar',
+    data: groupViol.map(function(v, i) {
+      return { value: v, itemStyle: { color: GOVIL_PALETTE[i] } };
+    }),
+    label: { show: true, position: 'top', fontFamily: 'Rubik', color: '#0c3058', fontSize: 11, formatter: '{c}' }
+  }]
+}));
+window.addEventListener('resize', () => chartGroups.resize());
+
+/* ── Chart 5: usage breakdown ── */
+const usageLabels = ["חברת מקורות","פרטי","ניטור דלק","אחר","מחקר","יוזום","ניטור פסולת"];
+const usageVals   = [22875,20858,10072,4256,824,755,220];
+
+const chartUsage = echarts.init(document.getElementById('chart-usage'));
+chartUsage.setOption(Object.assign({}, baseECharts, {
+  tooltip: {
+    trigger: 'item',
+    formatter: function(p) {
+      return "<div style='direction:rtl'>" + p.name + "<br/>" + p.value.toLocaleString() + " מדידות (" + p.percent + "%)</div>";
+    },
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff', borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  legend: {
+    orient: 'vertical', right: 8, top: 'center',
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058', fontSize: 11 }
+  },
+  series: [{
+    type: 'pie', radius: ['38%','65%'], center: ['38%','50%'],
+    avoidLabelOverlap: true,
+    label: { show: false },
+    emphasis: { label: { show: true, fontFamily: 'Rubik', fontSize: 13, fontWeight: 'bold' } },
+    data: usageLabels.map(function(l, i) {
+      return { value: usageVals[i], name: l, itemStyle: { color: GOVIL_PALETTE[i] } };
+    })
+  }]
+}));
+window.addEventListener('resize', () => chartUsage.resize());
+
+/* ── GovExplorer ── */
+GovExplorer.create({
+  container:    "#explorer",
+  searchInput:  "#explorer-search",
+  resourceId:   "61dd012f-0523-41b3-9c0e-ad4de7b3ce8c",
+  fields:       ["זיהוי","שם","פרמטר","ריכוז אחרון","אחוז מתקן מי השתיה","תאריך דיגום אחרון"],
+  headers:      ["מזהה","שם קידוח","פרמטר","ריכוז אחרון","% מהתקן","תאריך דיגום"],
+  searchFields: ["שם","פרמטר"],
+  pageSize:     50,
+  sort:         "_id asc",
+  renderRow: function(r) {
+    var pct = parseFloat(r["אחוז מתקן מי השתיה"]);
+    var badge = isNaN(pct) ? "mut" : (pct > 100 ? "danger" : (pct > 80 ? "warn" : "ok"));
+    var pctText = isNaN(pct) ? (r["אחוז מתקן מי השתיה"] || "") : pct.toFixed(1) + "%";
+    return [
+      { text: String(r["זיהוי"] || ""), dir: "ltr" },
+      { text: r["שם"] || "" },
+      { text: r["פרמטר"] || "", dir: "ltr" },
+      { text: r["ריכוז אחרון"] || "", dir: "ltr" },
+      { text: pctText, badge: badge },
+      { text: r["תאריך דיגום אחרון"] || "" },
+    ];
+  },
+});
+</script>

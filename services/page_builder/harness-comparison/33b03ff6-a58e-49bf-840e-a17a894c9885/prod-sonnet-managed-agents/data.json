@@ -1,0 +1,29 @@
+{
+  "id": "33b03ff6-a58e-49bf-840e-a17a894c9885",
+  "slug": "33b03ff6-a58e-49bf-840e-a17a894c9885",
+  "title": "מעבדות אסבסט",
+  "organization": "המשרד להגנת הסביבה",
+  "organization_slug": "ministry_of_the_environment",
+  "tags_he": [
+    "אסבסט"
+  ],
+  "primary_resource_id": "e854dc1d-a9dc-4dd5-b73b-995f7ed5da98",
+  "formats": [
+    "XLSX"
+  ],
+  "metadata_modified": "2026-04-12T11:49:30.645342Z",
+  "license": "אחר (פתוח)",
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/33b03ff6-a58e-49bf-840e-a17a894c9885/resource/e854dc1d-a9dc-4dd5-b73b-995f7ed5da98/download/asbestos-lab.xlsx",
+      "format": "XLSX",
+      "name": "asbestos-lab.xlsx",
+      "size_bytes": 25631,
+      "id": "e854dc1d-a9dc-4dd5-b73b-995f7ed5da98",
+      "datastore_active": true
+    }
+  ],
+  "notes": "רשימת מעבדות שמטפלות באסבסט",
+  "last_analyzed_at": "2026-05-05T09:07:23.464819Z",
+  "version": 1
+}

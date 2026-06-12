@@ -1,0 +1,289 @@
+<h1 class="text-2xl font-bold text-ink-deep mb-2">תחנות תחבורה ציבורית</h1>
+<div class="flex flex-wrap gap-2 mb-6">
+  <span class="tag-chip">אוטובוסים</span>
+  <span class="tag-chip">תחבורה ציבורית</span>
+  <span class="tag-chip">תחבורה</span>
+  <span class="tag-chip">גיאוגרפיה</span>
+  <span class="tag-chip">משרד התחבורה</span>
+</div>
+
+<!-- AI Summary -->
+<section class="card p-5 mb-6">
+  <div class="flex gap-3 items-start">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5 mt-1 text-brand shrink-0" />
+    <p class="leading-relaxed text-ink">
+      המאגר כולל <strong>33,911 תחנות תחבורה ציבורית</strong> ברחבי ישראל — תחנות אוטובוס, רכבת קלה, רכבת ישראל ורכבל — עם קואורדינטות WGS84 לכל תחנה.
+      לכל תחנה מצורף שיוך מרחבי: מטרופולין, עיר ויישוב, שכונה ואזור סטטיסטי.
+      הנתונים מאפשרים ניתוח גיאוגרפי של כיסוי התחבורה הציבורית ברמה עירונית ואזורית.
+    </p>
+  </div>
+</section>
+
+<!-- KPI Cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">33,911</div>
+    <div class="text-subtle text-sm">תחנות סה״כ</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">1,196</div>
+    <div class="text-subtle text-sm">ערים ויישובים</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">4</div>
+    <div class="text-subtle text-sm">מטרופולינים מוגדרים</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">17</div>
+    <div class="text-subtle text-sm">סוגי תחנות</div>
+  </div>
+</div>
+
+<!-- Insights -->
+<section class="card p-5 mb-6">
+  <h2 class="font-semibold text-ink-deep mb-3">ממצאים עיקריים</h2>
+  <ul class="list-disc list-inside space-y-2 text-ink leading-relaxed">
+    <li>מתוך 33,911 התחנות, <strong>32,212 (95%)</strong> הן תחנות אוטובוס רגילות; יתר הסוגים (רכבת, רכבת קלה, BRT, רכבל ועוד) מהווים את 5% הנותרים.</li>
+    <li>מטרופולין <strong>תל אביב</strong> מוביל עם 10,493 תחנות (31% מהסך), ואחריו ירושלים (4,290) וחיפה (4,168).</li>
+    <li><strong>ירושלים</strong> היא העיר עם מספר התחנות הגבוה ביותר — 2,404 תחנות — בהפרש ניכר מחיפה (1,315) ותל אביב-יפו (1,100).</li>
+    <li><strong>98.3%</strong> מהתחנות מופעלות על ידי מפעילי אוטובוסים; תחנות רכבת קלה, רכבת ישראל ורכבל מונות יחד 275 תחנות.</li>
+    <li><strong>12,984 תחנות (38%)</strong> אינן משויכות לאף מטרופולין מוגדר ומתפרסות ביישובים ומועצות אזוריות ברחבי הארץ.</li>
+  </ul>
+</section>
+
+<!-- Map -->
+<section class="card p-5 mb-6">
+  <h2 class="font-semibold text-ink-deep mb-3">
+    <img src="/icons/map-pin.svg" alt="" class="inline w-5 h-5 ml-1" />
+    מפת תחנות התחבורה הציבורית
+  </h2>
+  <p class="text-subtle text-sm mb-3">33,911 תחנות על פני כל הארץ. לחצו על אשכול לפירוט.</p>
+  <div id="map-main" class="h-72 md:h-[480px]"></div>
+</section>
+
+<!-- Two charts: Metropolin bar + Operator donut -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <section class="card p-5">
+    <h2 class="font-semibold text-ink-deep mb-3">תחנות לפי מטרופולין</h2>
+    <div id="chart-metro" class="h-64 md:h-80"></div>
+  </section>
+  <section class="card p-5">
+    <h2 class="font-semibold text-ink-deep mb-3">התפלגות לפי סוג מפעיל</h2>
+    <div id="chart-operator" class="h-64 md:h-80"></div>
+  </section>
+</div>
+
+<!-- Top 15 Cities -->
+<section class="card p-5 mb-6">
+  <h2 class="font-semibold text-ink-deep mb-3">15 הערים עם מספר התחנות הגבוה ביותר</h2>
+  <div id="chart-cities" class="h-80 md:h-[460px]"></div>
+</section>
+
+<!-- Station type breakdown (minor types) -->
+<section class="card p-5 mb-6">
+  <h2 class="font-semibold text-ink-deep mb-3">סוגי תחנות — מעבר לתחנות הרגילות</h2>
+  <p class="text-subtle text-sm mb-3">95% מהתחנות הן תחנות אוטובוס רגילות. להלן פירוט 16 הסוגים הנוספים.</p>
+  <div id="chart-types" class="h-80 md:h-[460px]"></div>
+</section>
+
+<!-- Data Explorer -->
+<section class="card p-5 mb-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <h2 class="font-semibold text-ink-deep">
+      <img src="/icons/list.svg" alt="" class="inline w-5 h-5 ml-1" />
+      עיון ברשימת התחנות
+    </h2>
+    <input id="explorer-search" class="gov-explorer-search"
+           type="search" placeholder="חיפוש לפי מזהה, עיר..."
+           aria-label="חיפוש בטבלה" />
+  </div>
+  <div id="explorer"></div>
+</section>
+
+<!-- Notes -->
+<section class="card p-5 mb-6">
+  <h2 class="font-semibold text-ink-deep mb-3">אודות המאגר</h2>
+  <p class="leading-relaxed text-ink">
+    קובץ עזר לשיוך מרחבי של תחנות אוטובוס, רכבת קלה ורכבת ישראל.
+    השיוכים הקיימים במאגר הם למטרופולין, שטח ישוב ומועצה אזורית, שכונה ואזור סטטיסטי.
+    בנוסף הקובץ מכיל קואורדינטות מיקום התחנה בפורמט WGS84 לביצוע ניתוחים גיאוגרפיים שונים.
+  </p>
+</section>
+
+<script>
+const GOVIL_PALETTE = [
+  '#0068f5','#0b3668','#6c9fd8','#0053c4','#0c3058',
+  '#3d70b0','#b7d2f7','#2658a0','#dbe8fb','#0c1f3d'
+];
+
+const baseECharts = {
+  color: GOVIL_PALETTE,
+  textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+  tooltip: {
+    textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+    backgroundColor: '#fff',
+    borderColor: '#c3cfe7',
+    extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+  },
+  grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true }
+};
+
+// ── Chart data (generated from CKAN full population) ──────────────
+const METRO_NAMES = ["לא מוגדר / אחר","תל אביב","ירושלים","חיפה","באר שבע"];
+const METRO_VALS  = [12984,10493,4290,4168,1660];
+
+const MINOR_NAMES = ["גבול מחנה צבאי","מוניות שירות","מטרונית / BRT","גבול תחנת רכבת","מסוף","רכבת קלה","גבול רק\u05f4ל","רכבת ישראל","גבול תחנה מרכזית","מרכזית רציפים","רכבת קלה - רציפים","תחנת התרעננות","תחנה תפעולית","רכבל","רכבת ישראל - רציפים","רכבל - רציפים"];
+const MINOR_VALS  = [317,295,195,191,156,150,121,69,54,50,34,27,18,12,7,3];
+
+const OP_PIE = [
+  {name:"מפעילי אוטובוסים", value:33341},
+  {name:"מוניות",            value:295},
+  {name:"רכבת קלה",          value:184},
+  {name:"רכבת ישראל",        value:76},
+  {name:"רכבל",              value:15}
+];
+
+const CITY_NAMES = ["רחובות","נצרת","רהט","מודיעין-מכבים-רעות","חדרה","אשדוד","נתניה","אשקלון","ראשון לציון","פתח תקווה","בית שמש","באר שבע","תל אביב-יפו","חיפה","ירושלים"];
+const CITY_VALS  = [344,348,369,373,379,507,521,536,549,570,596,937,1100,1315,2404];
+
+// ── Metropolin Bar ─────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('chart-metro');
+  if (!el || !window.echarts) return;
+  const chart = echarts.init(el);
+  const option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: p => p[0].name + "<br/>" + p[0].value.toLocaleString() + " תחנות"
+    }),
+    xAxis: { type: 'value', axisLabel: { formatter: v => v.toLocaleString() } },
+    yAxis: { type: 'category', data: METRO_NAMES, axisLabel: { fontFamily: 'Rubik' } },
+    series: [{
+      type: 'bar',
+      data: METRO_VALS,
+      itemStyle: { borderRadius: [0, 4, 4, 0] },
+      label: { show: true, position: 'right', formatter: p => p.value.toLocaleString(), fontFamily: 'Rubik', fontSize: 11 }
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+// ── Operator Donut ─────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('chart-operator');
+  if (!el || !window.echarts) return;
+  const chart = echarts.init(el);
+  const option = Object.assign({}, baseECharts, {
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'item',
+      formatter: p => p.name + "<br/>" + p.value.toLocaleString() + " תחנות (" + p.percent + "%)"
+    }),
+    legend: { orient: 'vertical', right: 0, top: 'center', textStyle: { fontFamily: 'Rubik', fontSize: 12 } },
+    series: [{
+      type: 'pie',
+      radius: ['38%', '68%'],
+      center: ['38%', '50%'],
+      data: OP_PIE,
+      label: { show: false },
+      emphasis: { label: { show: true, fontFamily: 'Rubik', fontSize: 13 } }
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+// ── Top 15 Cities ─────────────────────────────────────────────────
+(function() {
+  const el = document.getElementById('chart-cities');
+  if (!el || !window.echarts) return;
+  const chart = echarts.init(el);
+  const option = Object.assign({}, baseECharts, {
+    grid: { left: 16, right: 80, top: 16, bottom: 16, containLabel: true },
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: p => p[0].name + "<br/>" + p[0].value.toLocaleString() + " תחנות"
+    }),
+    xAxis: { type: 'value', axisLabel: { formatter: v => v.toLocaleString() } },
+    yAxis: { type: 'category', data: CITY_NAMES, axisLabel: { fontFamily: 'Rubik', fontSize: 12 } },
+    series: [{
+      type: 'bar',
+      data: CITY_VALS,
+      itemStyle: { borderRadius: [0, 4, 4, 0] },
+      label: { show: true, position: 'right', formatter: p => p.value.toLocaleString(), fontFamily: 'Rubik', fontSize: 11 }
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+// ── Minor Station Types ───────────────────────────────────────────
+(function() {
+  const el = document.getElementById('chart-types');
+  if (!el || !window.echarts) return;
+  const chart = echarts.init(el);
+  // Pair names/vals sorted ascending for visual (already desc, reverse for horiz bar top-to-bottom)
+  const names = [...MINOR_NAMES].reverse();
+  const vals  = [...MINOR_VALS].reverse();
+  const option = Object.assign({}, baseECharts, {
+    grid: { left: 16, right: 80, top: 16, bottom: 16, containLabel: true },
+    tooltip: Object.assign({}, baseECharts.tooltip, {
+      trigger: 'axis',
+      formatter: p => p[0].name + "<br/>" + p[0].value.toLocaleString() + " תחנות"
+    }),
+    xAxis: { type: 'value', axisLabel: { formatter: v => v.toLocaleString() } },
+    yAxis: { type: 'category', data: names, axisLabel: { fontFamily: 'Rubik', fontSize: 11 } },
+    series: [{
+      type: 'bar',
+      data: vals,
+      itemStyle: { color: GOVIL_PALETTE[2], borderRadius: [0, 4, 4, 0] },
+      label: { show: true, position: 'right', formatter: p => p.value.toLocaleString(), fontFamily: 'Rubik', fontSize: 11 }
+    }]
+  });
+  chart.setOption(option);
+  window.addEventListener('resize', () => chart.resize());
+})();
+
+// ── GovMap ────────────────────────────────────────────────────────
+GovMap.create({
+  container:      "#map-main",
+  resourceId:     "e873e6a2-66c1-494f-a677-f5e77348edb0",
+  latField:       "Lat",
+  lngField:       "Long",
+  projection:     "wgs84",
+  popupFields: [
+    { field: "StationId",            label: "מזהה תחנה" },
+    { field: "CityName",             label: "עיר" },
+    { field: "MetropolinName",       label: "מטרופולין" },
+    { field: "StationTypeName",      label: "סוג תחנה" },
+    { field: "StationOperatorTypeName", label: "מפעיל" }
+  ],
+  popupTitleField: "CityName",
+  cluster:        true,
+  totalCap:       5000
+});
+
+// ── GovExplorer ───────────────────────────────────────────────────
+GovExplorer.create({
+  container:    "#explorer",
+  searchInput:  "#explorer-search",
+  resourceId:   "e873e6a2-66c1-494f-a677-f5e77348edb0",
+  fields:       ["StationId","CityName","MetropolinName","StationTypeName","StationOperatorTypeName"],
+  headers:      ["מזהה תחנה","עיר / יישוב","מטרופולין","סוג תחנה","מפעיל"],
+  searchFields: ["StationId","CityName"],
+  pageSize:     50,
+  sort:         "StationId asc",
+  renderRow: r => [
+    { text: String(r["StationId"]),               dir: "ltr" },
+    { text: r["CityName"]         || "" },
+    { text: r["MetropolinName"]   || "" },
+    { text: r["StationTypeName"]  || "" },
+    { text: r["StationOperatorTypeName"] || "",
+      badge: r["StationOperatorTypeName"] === "מפעילי אוטובוסים" ? "ok"
+           : r["StationOperatorTypeName"] === "רכבת קלה"         ? "info"
+           : r["StationOperatorTypeName"] === "רכבת ישראל"       ? "info"
+           : r["StationOperatorTypeName"] === "רכבל"             ? "mut"
+           : "mut" }
+  ]
+});
+</script>

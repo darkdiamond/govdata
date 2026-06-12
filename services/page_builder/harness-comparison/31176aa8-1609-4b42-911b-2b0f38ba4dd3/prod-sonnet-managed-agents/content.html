@@ -1,0 +1,400 @@
+<h1>נתונים תקופתיים – תכנית דירה בהנחה</h1>
+
+<!-- ── Summary ── -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle leading-relaxed">
+    מאגר זה מכיל נתוני הגרלות מפורטים של תכנית <strong>דירה בהנחה</strong> (מחיר למשתכן), הפועלת מ-2016 תחת משרד הבינוי והשיכון.
+    בסך הכול 2,352 הגרלות, 162,563 יחידות דיור ו-15.5 מיליון נרשמים — ממוצע של 118 נרשמים על כל זוכה.
+    שיעור הביקוש עלה בחדות בשנים האחרונות: ב-2025 עמד על 288 נרשמים לכל יחידה, עלייה פי 10 לעומת 2018.
+  </p>
+</section>
+
+<!-- ── KPI cards ── -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">2,352</div>
+    <div class="text-sm text-subtle">הגרלות במאגר</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">162,563</div>
+    <div class="text-sm text-subtle">יחידות דיור</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-ok mb-1">15.5M</div>
+    <div class="text-sm text-subtle">סך נרשמים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-danger mb-1">×118</div>
+    <div class="text-sm text-subtle">ביקוש ממוצע (נרשמים לזוכה)</div>
+  </div>
+</div>
+
+<!-- ── Insights ── -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">ממצאים עיקריים</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>שנת 2017 הייתה שיא ההיצע: 40,054 יחידות ב-355 הגרלות — יותר מפי שניים מכל שנה אחרת.</li>
+    <li>הביקוש הממוצע ירד עד 28.5× ב-2018 (שיא היצע), ואז טיפס בעקביות ל-287.6× ב-2025 (שפל ההיצע) — סימן לפער גדל בין ביקוש להיצע.</li>
+    <li>כפר סבא ורחובות הן הערים התחרותיות ביותר: 504× ו-484× בהתאמה — מאות נרשמים על כל דירה.</li>
+    <li>אשקלון מובילה בהיצע מוחלט: 10,976 יחידות ב-205 הגרלות.</li>
+    <li>98.7% מהיחידות שווקו בשיטת <em>מחיר למשתכן</em>; 1,154 הגרלות (49%) נמצאות בשלב "בתהליכי הגרלה".</li>
+    <li>ממוצע המחיר למ"ר עומד על 8,389 ₪, עם פיזור בין 0 ל-25,252 ₪ בהתאם לאזור.</li>
+  </ul>
+</section>
+
+<!-- ── Year chart: units + demand ── -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">יחידות דיור וביקוש לפי שנה</h2>
+  </div>
+  <div id="chart-year"
+       class="h-64 md:h-80"
+       role="img"
+       aria-label="גרף עמודות ועקום: יחידות דיור לפי שנה (2016–2025) ומדד ביקוש (נרשמים לזוכה). שיא היצע: 40,054 יחידות ב-2017. שיא ביקוש: 287.6× ב-2025."></div>
+  <details class="mt-3 text-sm text-subtle">
+    <summary class="cursor-pointer">הצג כטבלה</summary>
+    <table class="mt-2 w-full text-right border-collapse text-xs">
+      <caption class="sr-only">יחידות דיור, הגרלות ויחס ביקוש לפי שנה (2016–2025)</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="border border-rule px-2 py-1">שנה</th>
+          <th scope="col" class="border border-rule px-2 py-1">הגרלות</th>
+          <th scope="col" class="border border-rule px-2 py-1">יחידות</th>
+          <th scope="col" class="border border-rule px-2 py-1">ביקוש (×)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2016</th><td class="border border-rule px-2 py-1">47</td><td class="border border-rule px-2 py-1">6,041</td><td class="border border-rule px-2 py-1">105.6</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2017</th><td class="border border-rule px-2 py-1">355</td><td class="border border-rule px-2 py-1">40,054</td><td class="border border-rule px-2 py-1">72.7</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2018</th><td class="border border-rule px-2 py-1">383</td><td class="border border-rule px-2 py-1">25,844</td><td class="border border-rule px-2 py-1">28.5</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2019</th><td class="border border-rule px-2 py-1">506</td><td class="border border-rule px-2 py-1">25,166</td><td class="border border-rule px-2 py-1">31.5</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2020</th><td class="border border-rule px-2 py-1">241</td><td class="border border-rule px-2 py-1">7,697</td><td class="border border-rule px-2 py-1">56.6</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2021</th><td class="border border-rule px-2 py-1">85</td><td class="border border-rule px-2 py-1">2,186</td><td class="border border-rule px-2 py-1">147.7</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2022</th><td class="border border-rule px-2 py-1">355</td><td class="border border-rule px-2 py-1">20,609</td><td class="border border-rule px-2 py-1">168.5</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2023</th><td class="border border-rule px-2 py-1">135</td><td class="border border-rule px-2 py-1">14,743</td><td class="border border-rule px-2 py-1">188.3</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2024</th><td class="border border-rule px-2 py-1">186</td><td class="border border-rule px-2 py-1">16,298</td><td class="border border-rule px-2 py-1">229.5</td></tr>
+        <tr><th scope="row" class="border border-rule px-2 py-1">2025</th><td class="border border-rule px-2 py-1">58</td><td class="border border-rule px-2 py-1">3,925</td><td class="border border-rule px-2 py-1">287.6</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<!-- ── Two-column: cities by units + cities by demand ── -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">12 ערים מובילות – יחידות דיור</h2>
+    <div id="chart-cities-units"
+         class="h-64 md:h-80"
+         role="img"
+         aria-label="גרף עמודות אופקי: 12 ערים מובילות לפי מספר יחידות דיור בתכנית. אשקלון בראש עם 10,976 יחידות."></div>
+    <details class="mt-3 text-sm text-subtle">
+      <summary class="cursor-pointer">הצג כטבלה</summary>
+      <table class="mt-2 w-full text-right border-collapse text-xs">
+        <caption class="sr-only">12 ערים מובילות לפי יחידות דיור</caption>
+        <thead><tr>
+          <th scope="col" class="border border-rule px-2 py-1">עיר</th>
+          <th scope="col" class="border border-rule px-2 py-1">יחידות</th>
+        </tr></thead>
+        <tbody>
+          <tr><th scope="row" class="border border-rule px-2 py-1">אשקלון</th><td class="border border-rule px-2 py-1">10,976</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">בית שמש</th><td class="border border-rule px-2 py-1">8,491</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">באר שבע</th><td class="border border-rule px-2 py-1">7,218</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">ראש העין</th><td class="border border-rule px-2 py-1">6,157</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">ראשון לציון</th><td class="border border-rule px-2 py-1">5,991</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">קרית גת</th><td class="border border-rule px-2 py-1">5,973</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">טירת כרמל</th><td class="border border-rule px-2 py-1">5,057</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">חיפה</th><td class="border border-rule px-2 py-1">4,747</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">אופקים</th><td class="border border-rule px-2 py-1">4,441</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">חריש</th><td class="border border-rule px-2 py-1">4,253</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">ירושלים</th><td class="border border-rule px-2 py-1">4,252</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">נהריה</th><td class="border border-rule px-2 py-1">4,226</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">10 ערים תחרותיות ביותר – ביקוש</h2>
+    <div id="chart-cities-demand"
+         class="h-64 md:h-80"
+         role="img"
+         aria-label="גרף עמודות אופקי: 10 ערים עם יחס ביקוש גבוה ביותר בתכנית. כפר סבא בראש עם 504 נרשמים לכל יחידה."></div>
+    <details class="mt-3 text-sm text-subtle">
+      <summary class="cursor-pointer">הצג כטבלה</summary>
+      <table class="mt-2 w-full text-right border-collapse text-xs">
+        <caption class="sr-only">10 ערים עם יחס ביקוש גבוה ביותר (נרשמים לזוכה)</caption>
+        <thead><tr>
+          <th scope="col" class="border border-rule px-2 py-1">עיר</th>
+          <th scope="col" class="border border-rule px-2 py-1">ביקוש (×)</th>
+        </tr></thead>
+        <tbody>
+          <tr><th scope="row" class="border border-rule px-2 py-1">כפר סבא</th><td class="border border-rule px-2 py-1">503.9</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">רחובות</th><td class="border border-rule px-2 py-1">483.7</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">צור הדסה</th><td class="border border-rule px-2 py-1">407.6</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">פתח תקוה</th><td class="border border-rule px-2 py-1">288.2</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">אלפי מנשה</th><td class="border border-rule px-2 py-1">267.2</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">קדימה-צורן</th><td class="border border-rule px-2 py-1">250.9</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">ראשון לציון</th><td class="border border-rule px-2 py-1">238.7</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">בני עייש</th><td class="border border-rule px-2 py-1">226.3</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">בית דגן</th><td class="border border-rule px-2 py-1">209.2</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">יהוד</th><td class="border border-rule px-2 py-1">207.5</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+</div>
+
+<!-- ── Project status + Lottery status ── -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">מצב פרויקטים</h2>
+    <div id="chart-pstatus"
+         class="h-64 md:h-72"
+         role="img"
+         aria-label="תרשים עוגה: התפלגות הגרלות לפי מצב פרויקט. בתהליכי הגרלה: 1,154; בחירת דירות: 1,087; בקרת חוזים: 109; בקרה לאחר אכלוס: 2."></div>
+    <details class="mt-3 text-sm text-subtle">
+      <summary class="cursor-pointer">הצג כטבלה</summary>
+      <table class="mt-2 w-full text-right border-collapse text-xs">
+        <caption class="sr-only">התפלגות הגרלות לפי מצב פרויקט</caption>
+        <thead><tr>
+          <th scope="col" class="border border-rule px-2 py-1">מצב</th>
+          <th scope="col" class="border border-rule px-2 py-1">הגרלות</th>
+        </tr></thead>
+        <tbody>
+          <tr><th scope="row" class="border border-rule px-2 py-1">בתהליכי הגרלה</th><td class="border border-rule px-2 py-1">1,154</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">בחירת דירות</th><td class="border border-rule px-2 py-1">1,087</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">בקרת חוזים</th><td class="border border-rule px-2 py-1">109</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">בקרה לאחר אכלוס</th><td class="border border-rule px-2 py-1">2</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">סטטוס הגרלות</h2>
+    <div id="chart-lstatus"
+         class="h-64 md:h-72"
+         role="img"
+         aria-label="תרשים עוגה: התפלגות לפי סטטוס הגרלה. פורסמו תוצאות: 2,320; חידוש הרשמה במשרדי הקבלן: 31; הגרלה נסגרה לרישום: 1."></div>
+    <details class="mt-3 text-sm text-subtle">
+      <summary class="cursor-pointer">הצג כטבלה</summary>
+      <table class="mt-2 w-full text-right border-collapse text-xs">
+        <caption class="sr-only">התפלגות הגרלות לפי סטטוס</caption>
+        <thead><tr>
+          <th scope="col" class="border border-rule px-2 py-1">סטטוס</th>
+          <th scope="col" class="border border-rule px-2 py-1">הגרלות</th>
+        </tr></thead>
+        <tbody>
+          <tr><th scope="row" class="border border-rule px-2 py-1">פורסמו תוצאות</th><td class="border border-rule px-2 py-1">2,320</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">חידוש הרשמה במשרדי הקבלן</th><td class="border border-rule px-2 py-1">31</td></tr>
+          <tr><th scope="row" class="border border-rule px-2 py-1">הגרלה נסגרה לרישום</th><td class="border border-rule px-2 py-1">1</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+</div>
+
+<!-- ── GovExplorer ── -->
+<section class="card p-5 mb-6">
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+    <div class="flex items-center gap-2 text-brand">
+      <img src="/icons/search.svg" alt="" class="w-5 h-5" />
+      <h2 class="m-0 text-lg font-semibold text-ink-deep">עיון בהגרלות</h2>
+    </div>
+    <input id="explorer-search" class="gov-explorer-search"
+           type="search" placeholder="חיפוש לפי עיר, פרויקט..."
+           aria-label="חיפוש בטבלת הגרלות" />
+  </div>
+  <div id="explorer"></div>
+</section>
+
+<!-- ── Original notes ── -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle leading-relaxed whitespace-pre-line">במאגר זה מתפרסמים נתונים סטטיסטיים תקופתיים בנושא תכנית דירה בהנחה.
+
+קישור לדף נתונים סטטיסטיים שבועיים נוספים:
+https://www.gov.il/he/Departments/publications/reports/mishtaken_statistics</p>
+</section>
+
+<script>
+(function () {
+  /* ── Year chart: bars (units) + line (demand ratio) ── */
+  var yearLabels  = ['2016','2017','2018','2019','2020','2021','2022','2023','2024','2025'];
+  var yearUnits   = [6041,40054,25844,25166,7697,2186,20609,14743,16298,3925];
+  var yearDemand  = [105.6,72.7,28.5,31.5,56.6,147.7,168.5,188.3,229.5,287.6];
+
+  /* mark 2017 (peak supply) green, 2025 (peak demand / low supply) red */
+  var unitsData = yearUnits.map(function(v, i) {
+    if (i === 1) return { value: v, itemStyle: { color: '#198754' } };
+    if (i === 9) return { value: v, itemStyle: { color: '#dc3545' } };
+    return v;
+  });
+
+  var chartYear = echarts.init(document.getElementById('chart-year'));
+  chartYear.setOption(window.GovEcharts.option({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function(params) {
+        var yr = params[0].axisValue;
+        var lines = '<strong>' + yr + '</strong><br/>';
+        params.forEach(function(p) {
+          lines += p.marker + ' ' + p.seriesName + ': ' + p.value.toLocaleString() + '<br/>';
+        });
+        return lines;
+      }
+    },
+    legend: { data: ['יחידות דיור','ביקוש (×)'], right: 0, top: 0 },
+    grid: { left: 48, right: 60, top: 36, bottom: 32, containLabel: true },
+    xAxis: { type: 'category', data: yearLabels },
+    yAxis: [
+      { type: 'value', name: 'יחידות', nameTextStyle: { fontFamily: 'Rubik' } },
+      { type: 'value', name: 'ביקוש (×)', nameTextStyle: { fontFamily: 'Rubik' }, alignTicks: true }
+    ],
+    series: [
+      {
+        name: 'יחידות דיור',
+        type: 'bar',
+        data: unitsData,
+        yAxisIndex: 0,
+        color: window.GOVIL_PALETTE[0]
+      },
+      {
+        name: 'ביקוש (×)',
+        type: 'line',
+        data: yearDemand,
+        yAxisIndex: 1,
+        color: window.GOVIL_PALETTE[3],
+        lineStyle: { width: 2.5 },
+        symbol: 'circle',
+        symbolSize: 6
+      }
+    ]
+  }));
+  window.addEventListener('resize', function() { chartYear.resize(); });
+
+  /* ── Cities – units (horizontal bar) ── */
+  var citiesNames  = ['נהריה','ירושלים','חריש','אופקים','חיפה','טירת כרמל','קרית גת','ראשון לציון','ראש העין','באר שבע','בית שמש','אשקלון'];
+  var citiesUnits  = [4226,4252,4253,4441,4747,5057,5973,5991,6157,7218,8491,10976];
+
+  var chartCU = echarts.init(document.getElementById('chart-cities-units'));
+  chartCU.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 90, right: 24, top: 8, bottom: 8, containLabel: true },
+    xAxis: { type: 'value' },
+    yAxis: { type: 'category', data: citiesNames },
+    series: [{
+      type: 'bar',
+      data: citiesUnits.map(function(v, i) {
+        return i === 11 ? { value: v, itemStyle: { color: '#198754' } } : v;
+      }),
+      color: window.GOVIL_PALETTE[0],
+      label: { show: true, position: 'right', formatter: function(p) { return p.value.toLocaleString(); }, fontFamily: 'Rubik', fontSize: 11 }
+    }]
+  }));
+  window.addEventListener('resize', function() { chartCU.resize(); });
+
+  /* ── Cities – demand ratio (horizontal bar) ── */
+  var demandCities = ['יהוד','בית דגן','בני עייש','ראשון לציון','קדימה-צורן','אלפי מנשה','פתח תקוה','צור הדסה','רחובות','כפר סבא'];
+  var demandRatios = [207.5,209.2,226.3,238.7,250.9,267.2,288.2,407.6,483.7,503.9];
+
+  var chartCD = echarts.init(document.getElementById('chart-cities-demand'));
+  chartCD.setOption(window.GovEcharts.option({
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function(params) {
+        return params[0].name + ': ' + params[0].value.toFixed(1) + '\u00d7 (\u05e0\u05e8\u05e9\u05de\u05d9\u05dd \u05dc\u05d6\u05d5\u05db\u05d4)';
+      }
+    },
+    grid: { left: 90, right: 40, top: 8, bottom: 8, containLabel: true },
+    xAxis: { type: 'value', name: '\u00d7' },
+    yAxis: { type: 'category', data: demandCities },
+    series: [{
+      type: 'bar',
+      data: demandRatios.map(function(v, i) {
+        return i === 9 ? { value: v, itemStyle: { color: '#dc3545' } } : v;
+      }),
+      color: window.GOVIL_PALETTE[2],
+      label: { show: true, position: 'right', formatter: function(p) { return p.value.toFixed(0) + '\u00d7'; }, fontFamily: 'Rubik', fontSize: 11 }
+    }]
+  }));
+  window.addEventListener('resize', function() { chartCD.resize(); });
+
+  /* ── Project status donut ── */
+  var chartPS = echarts.init(document.getElementById('chart-pstatus'));
+  chartPS.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    legend: { orient: 'vertical', right: 8, top: 'center', textStyle: { fontFamily: 'Rubik', fontSize: 12 } },
+    series: [{
+      type: 'pie',
+      radius: ['40%','68%'],
+      center: ['38%','50%'],
+      label: { show: false },
+      data: [
+        { value: 1154, name: '\u05d1\u05ea\u05d4\u05dc\u05d9\u05db\u05d9 \u05d4\u05d2\u05e8\u05dc\u05d4' },
+        { value: 1087, name: '\u05d1\u05d7\u05d9\u05e8\u05ea \u05d3\u05d9\u05e8\u05d5\u05ea' },
+        { value: 109,  name: '\u05d1\u05e7\u05e8\u05ea \u05d7\u05d5\u05d6\u05d9\u05dd' },
+        { value: 2,    name: '\u05d1\u05e7\u05e8\u05d4 \u05dc\u05d0\u05d7\u05e8 \u05d0\u05db\u05dc\u05d5\u05e1' }
+      ]
+    }]
+  }));
+  window.addEventListener('resize', function() { chartPS.resize(); });
+
+  /* ── Lottery status donut ── */
+  var chartLS = echarts.init(document.getElementById('chart-lstatus'));
+  chartLS.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+    legend: { orient: 'vertical', right: 8, top: 'center', textStyle: { fontFamily: 'Rubik', fontSize: 12 } },
+    series: [{
+      type: 'pie',
+      radius: ['40%','68%'],
+      center: ['38%','50%'],
+      label: { show: false },
+      data: [
+        { value: 2320, name: '\u05e4\u05d5\u05e8\u05e1\u05de\u05d5 \u05ea\u05d5\u05e6\u05d0\u05d5\u05ea', itemStyle: { color: '#198754' } },
+        { value: 31,   name: '\u05d7\u05d9\u05d3\u05d5\u05e9 \u05d4\u05e8\u05e9\u05de\u05d4 \u05d1\u05de\u05e9\u05e8\u05d3\u05d9 \u05d4\u05e7\u05d1\u05dc\u05df' },
+        { value: 1,    name: '\u05e0\u05e1\u05d2\u05e8\u05d4 \u05dc\u05e8\u05d9\u05e9\u05d5\u05dd' }
+      ]
+    }]
+  }));
+  window.addEventListener('resize', function() { chartLS.resize(); });
+
+  /* ── GovExplorer ── */
+  GovExplorer.create({
+    container:    '#explorer',
+    searchInput:  '#explorer-search',
+    resourceId:   '7c8255d0-49ef-49db-8904-4cf917586031',
+    fields:       ['LotteryId','ProjectName','LamasName','LotteryHousingUnits','Subscribers','LotteryStatusValue'],
+    headers:      ['מזהה הגרלה','שם פרויקט','עיר','יחידות','נרשמים','סטטוס'],
+    searchFields: ['ProjectName','LamasName'],
+    pageSize:     50,
+    sort:         'LotteryId desc',
+    renderRow: function(r) {
+      var statusBadge = 'mut';
+      if (r['LotteryStatusValue'] === '\u05e4\u05d5\u05e8\u05e1\u05de\u05d5 \u05ea\u05d5\u05e6\u05d0\u05d5\u05ea') statusBadge = 'ok';
+      else if (r['LotteryStatusValue'] === '\u05d7\u05d9\u05d3\u05d5\u05e9 \u05d4\u05e8\u05e9\u05de\u05d4 \u05d1\u05de\u05e9\u05e8\u05d3\u05d9 \u05d4\u05e7\u05d1\u05dc\u05df') statusBadge = 'warn';
+      return [
+        { text: String(r['LotteryId'] || ''), dir: 'ltr' },
+        { text: r['ProjectName'] || '' },
+        { text: r['LamasName'] || '' },
+        { text: (r['LotteryHousingUnits'] || 0).toLocaleString(), dir: 'ltr' },
+        { text: (r['Subscribers'] || 0).toLocaleString(), dir: 'ltr' },
+        { text: r['LotteryStatusValue'] || '', badge: statusBadge }
+      ];
+    }
+  });
+})();
+</script>

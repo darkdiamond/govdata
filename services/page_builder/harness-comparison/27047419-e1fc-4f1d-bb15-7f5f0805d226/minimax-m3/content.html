@@ -1,0 +1,274 @@
+<h1>תחנות תחבורה ציבורית</h1>
+
+<!-- תקציר -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle">קובץ עזר של משרד התחבורה המרכז 33,937 תחנות תחבורה ציבורית — אוטובוסים, רכבת ישראל, רכבת קלה, מוניות שירות, מטרונית ורכבל — ב-1,199 יישובים ברחבי הארץ. לכל תחנה שיוך מרחבי למטרופולין, יישוב/מועצה אזורית, שכונה ואזור סטטיסטי, וכן קואורדינטות WGS84 לניתוחים גיאוגרפיים. 95% מהרשומות הן תחנות אוטובוס רגילות; רכבת, רכבת קלה ורכבל מהווים יחד פחות מאחוז אחד.</p>
+</section>
+
+<!-- KPI -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">33,937</div>
+    <div class="text-sm text-subtle">תחנות במאגר</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">1,199</div>
+    <div class="text-sm text-subtle">יישובים עם תחנה</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-ok mb-1">95.0%</div>
+    <div class="text-sm text-subtle">תחנות אוטובוס רגילות</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-danger mb-1">38.2%</div>
+    <div class="text-sm text-subtle">ללא שיוך מטרופולין</div>
+  </div>
+</div>
+
+<!-- מפה -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/map-pin.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">מפת המאגר</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">כל נקודה היא תחנה אחת מהמאגר. בקירוב ראשוני מוצגות עד 10,000 תחנות מתוך 33,937; הקלדה על אשכול מגדילה אותו ומציגה את התחנות הבודדות.</p>
+  <div id="map-main" class="h-72 md:h-[420px]" role="region" aria-label="מפה אינטראקטיבית של תחנות תחבורה ציבורית בישראל. גרסה נגישה: ראו טבלת היישובים המובילים להלן."></div>
+</section>
+
+<!-- תובנות -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>המאגר מכסה 1,199 יישובים; 276 מהם (23%) עומדים על תחנה בודדת בלבד, ו-715 (60%) — על חמש תחנות או פחות.</li>
+    <li>33,367 תחנות (98.3%) מופעלות על-ידי מפעילי אוטובוסים. היתר: 295 מוניות שירות, 184 רכבת קלה, 76 רכבת ישראל ו-15 רכבל.</li>
+    <li>95.0% מהרשומות הן תחנה רגילה (32,234); 1,703 תחנות הן מיוחדות — מסופים, רציפי רכבת, תחנות מטרונית, גבולות של מחנות צבאיים ועוד.</li>
+    <li>38.2% מהתחנות (12,974) חסרות שיוך למטרופולין — הנתון הגדול ביותר במאגר. תל אביב מובילה מבין המטרופולינים המשויכים עם 10,517 תחנות.</li>
+    <li>ירושלים היא היישוב המוביל במספר תחנות (2,398), לפני חיפה (1,315) ותל אביב-יפו (1,100). 15 היישובים המובילים מרכזים 32% מהמאגר.</li>
+    <li>רכבת ישראל פרוסה על 47 יישובים; רכבת קלה (הקו האדום) מרוכזת בירושלים; הרכבל מונה 15 תחנות בלבד.</li>
+  </ul>
+</section>
+
+<!-- תרשים 1: מטרופולין -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">התפלגות לפי מטרופולין</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">העמודה האדומה מסמנת תחנות ללא שיוך מטרופולין — כשליש מהמאגר. מקור: <span dir="ltr">datastore_search</span> על כלל 33,937 הרשומות.</p>
+  <div id="chart-metro" class="h-64 md:h-80" role="img" aria-label="גרף עמודות: מספר תחנות לפי מטרופולין. לא מוגדר 12,974, תל אביב 10,517, ירושלים 4,288, חיפה 4,182, באר שבע 1,659, לא ידוע 317."></div>
+  <details class="mt-3">
+    <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="w-full text-sm border-collapse mt-2">
+      <caption class="sr-only">מספר תחנות לפי מטרופולין</caption>
+      <thead><tr class="border-b border-rule"><th scope="col" class="text-start py-1 ps-2">מטרופולין</th><th scope="col" class="text-start py-1">תחנות</th></tr></thead>
+      <tbody>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">לא מוגדר</th><td class="py-1 text-danger font-semibold">12,974</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">תל אביב</th><td class="py-1">10,517</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">ירושלים</th><td class="py-1">4,288</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">חיפה</th><td class="py-1">4,182</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">באר שבע</th><td class="py-1">1,659</td></tr>
+        <tr><th scope="row" class="ps-2 py-1 font-normal">לא ידוע</th><td class="py-1">317</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<!-- תרשים 2: 15 היישובים -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">15 היישובים המובילים</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">תל אביב-יפו נמצאת רק במקום השלישי במספר התחנות, אף שמטרופולין תל אביב כולו מוביל — סימן לכך שהמטרופולין מאגד יישובים רבים.</p>
+  <div id="chart-cities" class="h-80 md:h-[420px]" role="img" aria-label="גרף עמודות אופקי: 15 היישובים עם מספר התחנות הגדול ביותר. ירושלים מובילה עם 2,398, אחריה חיפה 1,315 ותל אביב-יפו 1,100."></div>
+  <details class="mt-3">
+    <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="w-full text-sm border-collapse mt-2">
+      <caption class="sr-only">15 היישובים עם מספר התחנות הגדול ביותר</caption>
+      <thead><tr class="border-b border-rule"><th scope="col" class="text-start py-1 ps-2">יישוב</th><th scope="col" class="text-start py-1">תחנות</th></tr></thead>
+      <tbody>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">ירושלים</th><td class="py-1">2,398</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">חיפה</th><td class="py-1">1,315</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">תל אביב -יפו</th><td class="py-1">1,100</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">באר שבע</th><td class="py-1">936</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">בית שמש</th><td class="py-1">596</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">פתח תקווה</th><td class="py-1">575</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">ראשון לציון</th><td class="py-1">549</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">אשקלון</th><td class="py-1">536</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">נתניה</th><td class="py-1">521</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">אשדוד</th><td class="py-1">507</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">חדרה</th><td class="py-1">381</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">מודיעין-מכבים-רעות*</th><td class="py-1">373</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">רהט</th><td class="py-1">369</td></tr>
+        <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">נצרת</th><td class="py-1">348</td></tr>
+        <tr><th scope="row" class="ps-2 py-1 font-normal">רחובות</th><td class="py-1">344</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<!-- תרשים 3+4: סוגי תחנות + מפעילים -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">סוגי תחנות — 10 הנפוצים</h2>
+    <div id="chart-type" class="h-72 md:h-80" role="img" aria-label="גרף עמודות: 10 סוגי התחנות הנפוצים ביותר. תחנה רגילה מובילה עם 32,234 תחנות; כל יתר הסוגים זעומים יחסית."></div>
+    <details class="mt-3">
+      <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+      <table class="w-full text-sm border-collapse mt-2">
+        <caption class="sr-only">10 סוגי התחנות הנפוצים ביותר</caption>
+        <thead><tr class="border-b border-rule"><th scope="col" class="text-start py-1 ps-2">סוג</th><th scope="col" class="text-start py-1">תחנות</th></tr></thead>
+        <tbody>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">תחנה רגילה</th><td class="py-1 text-brand font-semibold">32,234</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">גבול מחנה צבאי</th><td class="py-1">317</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">מוניות שירות</th><td class="py-1">295</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">גבול תחנת רכבת</th><td class="py-1">196</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">מטרונית / BRT</th><td class="py-1">195</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">מסוף</th><td class="py-1">156</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">רכבת קלה</th><td class="py-1">150</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">גבול רקל&quot;</th><td class="py-1">121</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">רכבת ישראל</th><td class="py-1">69</td></tr>
+          <tr><th scope="row" class="ps-2 py-1 font-normal">גבול תחנה מרכזית</th><td class="py-1">53</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+  <section class="card p-5">
+    <h2 class="m-0 mb-3 text-base font-semibold text-ink-deep">התפלגות לפי מפעיל</h2>
+    <div id="chart-op" class="h-72 md:h-80" role="img" aria-label="גרף עמודות אופקי: מספר תחנות לפי סוג מפעיל. מפעילי אוטובוסים מובילים עם 33,367 תחנות; אחריהם מוניות 295, רכבת קלה 184, רכבת 76, רכבל 15."></div>
+    <details class="mt-3">
+      <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+      <table class="w-full text-sm border-collapse mt-2">
+        <caption class="sr-only">מספר תחנות לפי סוג מפעיל</caption>
+        <thead><tr class="border-b border-rule"><th scope="col" class="text-start py-1 ps-2">מפעיל</th><th scope="col" class="text-start py-1">תחנות</th></tr></thead>
+        <tbody>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">מפעילי אוטובוסים</th><td class="py-1">33,367</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">מוניות</th><td class="py-1">295</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">רכבת קלה</th><td class="py-1">184</td></tr>
+          <tr class="border-b border-rule"><th scope="row" class="ps-2 py-1 font-normal">רכבת</th><td class="py-1">76</td></tr>
+          <tr><th scope="row" class="ps-2 py-1 font-normal">רכבל</th><td class="py-1">15</td></tr>
+        </tbody>
+      </table>
+    </details>
+  </section>
+</div>
+
+<!-- תיאור מקורי -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">קובץ עזר לשיוך מרחבי של תחנות אוטובוס, רק"ל ורכבת ישראל.
+השיוכים הקיימים במאגר הם למטרופולין, שטח ישוב \ מועצה אזורית, שכונה ואזור סטטיסטי. בנוסף הקובץ מכיל גם קואורדינטות מיקום התחנה בפורמט WGS84 לביצוע ניתוחים גיאוגרפים שונים.</p>
+</section>
+
+<script>
+(function () {
+  // גרף 1: תחנות לפי מטרופולין
+  var chartMetro = echarts.init(document.getElementById('chart-metro'));
+  chartMetro.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 80, right: 32, top: 24, bottom: 64, containLabel: true },
+    xAxis: { type: 'category', inverse: true,
+      data: ["לא מוגדר", "תל אביב", "ירושלים", "חיפה", "באר שבע", "לא ידוע"],
+      axisLabel: { interval: 0 } },
+    yAxis: { type: 'value', name: "תחנות" },
+    series: [{
+      type: 'bar',
+      data: [
+        { value: 12974, itemStyle: { color: '#dc3545' } },
+        10517, 4288, 4182, 1659, 317
+      ],
+      label: { show: true, position: 'top', fontFamily: 'Rubik' }
+    }]
+  }));
+
+  // גרף 2: 15 היישובים המובילים (אופקי)
+  var cities = [
+    "ירושלים","חיפה","תל אביב -יפו","באר שבע","בית שמש",
+    "פתח תקווה","ראשון לציון","אשקלון","נתניה","אשדוד",
+    "חדרה",'מודיעין-מכבים-רעות*',"רהט","נצרת","רחובות"
+  ];
+  var cityCounts = [2398, 1315, 1100, 936, 596, 575, 549, 536, 521, 507, 381, 373, 369, 348, 344];
+  var chartCities = echarts.init(document.getElementById('chart-cities'));
+  chartCities.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 16, right: 56, top: 16, bottom: 32, containLabel: true },
+    xAxis: { type: 'value', name: "תחנות" },
+    yAxis: { type: 'category', inverse: true, data: cities.slice().reverse(),
+      axisLabel: { fontSize: 11 } },
+    series: [{
+      type: 'bar',
+      data: cityCounts.slice().reverse(),
+      label: { show: true, position: 'right', fontFamily: 'Rubik' }
+    }]
+  }));
+
+  // גרף 3: סוגי תחנות
+  var types = [
+    "תחנה רגילה","גבול מחנה צבאי","מוניות שירות","גבול תחנת רכבת",'מטרונית / BRT',
+    "מסוף","רכבת קלה",'גבול רקל"',"רכבת ישראל","גבול תחנה מרכזית"
+  ];
+  var typeCounts = [32234, 317, 295, 196, 195, 156, 150, 121, 69, 53];
+  var chartType = echarts.init(document.getElementById('chart-type'));
+  chartType.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 96, right: 24, top: 16, bottom: 88, containLabel: true },
+    xAxis: { type: 'category', inverse: true, data: types,
+      axisLabel: { interval: 0, rotate: 28, fontSize: 10 } },
+    yAxis: { type: 'value', name: "תחנות" },
+    series: [{
+      type: 'bar',
+      data: typeCounts,
+      label: { show: true, position: 'top', fontFamily: 'Rubik', fontSize: 11 }
+    }]
+  }));
+
+  // גרף 4: מפעילים
+  var ops = ["מפעילי אוטובוסים","מוניות","רכבת קלה","רכבת","רכבל"];
+  var opCounts = [33367, 295, 184, 76, 15];
+  var chartOp = echarts.init(document.getElementById('chart-op'));
+  chartOp.setOption(window.GovEcharts.option({
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 16, right: 56, top: 16, bottom: 32, containLabel: true },
+    xAxis: { type: 'value', name: "תחנות" },
+    yAxis: { type: 'category', inverse: true, data: ops.slice().reverse(),
+      axisLabel: { fontSize: 11 } },
+    series: [{
+      type: 'bar',
+      data: opCounts.slice().reverse(),
+      label: { show: true, position: 'right', fontFamily: 'Rubik' }
+    }]
+  }));
+
+  // מפה: תחנות תחבורה ציבורית
+  GovMap.create({
+    container: '#map-main',
+    resourceId: 'e873e6a2-66c1-494f-a677-f5e77348edb0',
+    latField: 'Lat',
+    lngField: 'Long',
+    projection: 'wgs84',
+    popupFields: [
+      { field: 'MetropolinName', label: "מטרופולין" },
+      { field: 'StationTypeName', label: "סוג תחנה" },
+      { field: 'StationOperatorTypeName', label: "מפעיל" }
+    ],
+    popupTitleField: 'CityName',
+    cluster: true,
+    totalCap: 10000
+  });
+
+  // ריסייז
+  var charts = [chartMetro, chartCities, chartType, chartOp];
+  window.addEventListener('resize', function () {
+    charts.forEach(function (c) { c.resize(); });
+  });
+})();
+</script>

@@ -1,0 +1,315 @@
+<h1>נתון אחרון - איכות מים בקידוחים</h1>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle leading-relaxed">מאגר של הרשות הממשלתית למים ולביוב הכולל את <strong>הריכוז האחרון שנמדד</strong> לכל פרמטר בכל קידוח — 59,860 מדידות עבור 4,117 קידוחים ו-62 פרמטרים שונים (כלוריד וחנקה, חומרי הדברה, מתכות, PFAS וחומרים אורגניים). כל שורה מציגה את תאריך הדיגום האחרון, הריכוז שנמדד, ערך התקן והאחוז מתקן מי השתייה — מה שמאפשר להשוות כל מדידה לתקן הישראלי (תקן מותר או מומלץ).</p>
+</section>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">59,860</div>
+    <div class="text-sm text-subtle">מדידות (קידוח × פרמטר)</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">4,117</div>
+    <div class="text-sm text-subtle">קידוחים ייחודיים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">62</div>
+    <div class="text-sm text-subtle">פרמטרים נבדקים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-warn mb-1">~4%</div>
+    <div class="text-sm text-subtle">מהמדידות חורגות מהתקן</div>
+  </div>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>שני פרמטרים אחראים לרוב החריגות: <strong>חנקה (NO3)</strong> — כ-<span dir="ltr">42%</span> מהמדידות חורגות מהתקן, ו<strong>כלוריד (CL)</strong> — כ-<span dir="ltr">31%</span> חורגות. יתר הפרמטרים נמצאים ברובם המוחלט מתחת לתקן.</li>
+    <li><span dir="ltr">95.2%</span> מהמדידות מסווגות תחת "תקן ישראלי מותר" (56,995 מדידות) ו-<span dir="ltr">2.8%</span> תחת "תקן ישראלי מומלץ" (1,670 מדידות). היתרה (כ-<span dir="ltr">2%</span>) ללא סיווג תקן.</li>
+    <li>חריגות קיצוניות בכלוריד מופיעות בעיקר בקידוחי חוף — קידוח "מעגן מיכאל" (תא 410) נמדד ב-<span dir="ltr">5,900%</span> מהתקן, וקידוחי חיפה (תא 330) מציגים ריכוזי כלוריד של אלפי אחוזים מהתקן — תופעה הקשורה לחדירת מי ים לאקוויפר החוף.</li>
+    <li>בחנקה (NO3) החריגות הגבוהות ביותר במדגם: אבן יהודה אג פלגי <span dir="ltr">468%</span>, משמר העמק קב ו <span dir="ltr">413%</span>, באר יעקב אשגיב <span dir="ltr">405%</span> — ריכוזים המעידים על זיהום חקלאי בקידוחי השפלה והצפון.</li>
+    <li>PFAS ורוב חומרי ההדברה נמדדים ב-<span dir="ltr">0%</span> מהתקן ברוב הדגימות. חריגה אחת בולטת: <span dir="ltr">TPFAS</span> (סך PFAS) הגיע ל-<span dir="ltr">285%</span> מהתקן. גם TCEY (טריכלוראתילן), NI (ניקל), AS (ארסן), RDX (חומר נפץ) ו-14DIX (1,4-דיאוקסן) רשמו חריגות בודדות.</li>
+    <li>תאריך הדיגום האחרון נע בין 2011 ל-2025 (מדגם 5,000); שנת 2025 היא השנה השכיחה ביותר לדגימות אחרונות (~20% מהמדגם), מה שמעיד על כיסוי עדכני.</li>
+  </ul>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">אחוז חריגות מהתקן לפי פרמטר</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">האחוז של מדידות שחרגו מתקן מי השתייה, מתוך מדגם של 5,000 שורות. רק פרמטרים עם לפחות 15 דגימות מוצגים.</p>
+  <div id="chart-params" class="h-80 md:h-[28rem]" role="img" aria-label="גרף עמודות אופקי: אחוז החריגות מתקן מי השתייה לפי פרמטר. חנקה (NO3) בראש עם 42.2% חריגות, אחריה כלוריד (CL) עם 30.9%, 1,4-דיאוקסן 8.3%, RDX 5.3%, סך PFAS 3.4%, ניקל 1.9% ו-TCEY 1.5%."></div>
+  <details class="mt-3">
+    <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="text-xs mt-2 w-full">
+      <caption class="sr-only">אחוז חריגות מתקן מי השתייה לפי פרמטר (מדגם)</caption>
+      <thead><tr><th scope="col" class="text-start pb-1">פרמטר</th><th scope="col" class="text-end pb-1">% חריגות</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" class="font-normal">NO3 (חנקה)</th><td class="text-end" dir="ltr">42.2%</td></tr>
+        <tr><th scope="row" class="font-normal">CL (כלוריד)</th><td class="text-end" dir="ltr">30.9%</td></tr>
+        <tr><th scope="row" class="font-normal">14DIX (1,4-דיאוקסן)</th><td class="text-end" dir="ltr">8.3%</td></tr>
+        <tr><th scope="row" class="font-normal">RDX</th><td class="text-end" dir="ltr">5.3%</td></tr>
+        <tr><th scope="row" class="font-normal">TPFAS (סך PFAS)</th><td class="text-end" dir="ltr">3.4%</td></tr>
+        <tr><th scope="row" class="font-normal">NI (ניקל)</th><td class="text-end" dir="ltr">1.9%</td></tr>
+        <tr><th scope="row" class="font-normal">TCEY (טריכלוראתילן)</th><td class="text-end" dir="ltr">1.5%</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">התפלגות עמידה בתקן</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">חלוקת המדידות לפי רמת הריכוז כאחוז מתקן מי השתייה (מדגם 5,000 שורות). הרוב המוחלט של המדידות בטווח התחתון.</p>
+  <div id="chart-buckets" class="h-64 md:h-80" role="img" aria-label="גרף עמודות: התפלגות 4,825 מדידות לפי אחוז מהתקן. 0-25%: 4,308. 25-50%: 171. 50-75%: 95. 75-100%: 42. 100-150%: 87. 150-200%: 49. 200-500%: 62. מעל 500%: 11."></div>
+  <details class="mt-3">
+    <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="text-xs mt-2 w-full">
+      <caption class="sr-only">התפלגות מדידות לפי אחוז מתקן מי השתייה</caption>
+      <thead><tr><th scope="col" class="text-start pb-1">טווח</th><th scope="col" class="text-end pb-1">מספר מדידות</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" class="font-normal">0-25%</th><td class="text-end" dir="ltr">4,308</td></tr>
+        <tr><th scope="row" class="font-normal">25-50%</th><td class="text-end" dir="ltr">171</td></tr>
+        <tr><th scope="row" class="font-normal">50-75%</th><td class="text-end" dir="ltr">95</td></tr>
+        <tr><th scope="row" class="font-normal">75-100%</th><td class="text-end" dir="ltr">42</td></tr>
+        <tr><th scope="row" class="font-normal">100-150%</th><td class="text-end" dir="ltr">87</td></tr>
+        <tr><th scope="row" class="font-normal">150-200%</th><td class="text-end" dir="ltr">49</td></tr>
+        <tr><th scope="row" class="font-normal">200-500%</th><td class="text-end" dir="ltr">62</td></tr>
+        <tr><th scope="row" class="font-normal">מעל 500%</th><td class="text-end" dir="ltr">11</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-danger">
+    <img src="/icons/triangle-alert.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">עשרת הקידוחים עם חריגת החנקה הגבוהה ביותר</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">הקידוחים שבהם ריכוז החנקה (NO3) היה הגבוה ביותר כאחוז מהתקן (תקן מותר: <span dir="ltr">70 מ"ג/ל'</span>).</p>
+  <div id="chart-no3" class="h-80 md:h-[26rem]" role="img" aria-label="גרף עמודות אופקי: עשרת הקידוחים עם ריכוז חנקה הגבוה ביותר כאחוז מהתקן. פ אבן יהודה אג פלגי בראש עם 468.6% (328 מיליגרם לליטר), אחריו משמר העמק 413%, באר יעקב אשגיב 405.5%, בית חנן 371.7%, אבן יהודה 332.3%, חדרה וינמן 310%, שבי ציון 304.6%."></div>
+  <details class="mt-3">
+    <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="text-xs mt-2 w-full">
+      <caption class="sr-only">עשרת הקידוחים עם ריכוז חנקה הגבוה ביותר (מדגם)</caption>
+      <thead><tr><th scope="col" class="text-start pb-1">שם הקידוח</th><th scope="col" class="text-end pb-1">ריכוז (מ"ג/ל')</th><th scope="col" class="text-end pb-1">% מהתקן</th><th scope="col" class="text-end pb-1">תאריך דיגום</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" class="font-normal">פ אבן יהודה אג פלגי</th><td class="text-end" dir="ltr">328.0</td><td class="text-end" dir="ltr">468.6%</td><td class="text-end" dir="ltr">14/08/2019</td></tr>
+        <tr><th scope="row" class="font-normal">פ משמר העמק קב ו</th><td class="text-end" dir="ltr">289.1</td><td class="text-end" dir="ltr">413.0%</td><td class="text-end" dir="ltr">01/07/2024</td></tr>
+        <tr><th scope="row" class="font-normal">פ באר יעקב אשגיב</th><td class="text-end" dir="ltr">283.9</td><td class="text-end" dir="ltr">405.5%</td><td class="text-end" dir="ltr">07/07/2019</td></tr>
+        <tr><th scope="row" class="font-normal">פ בית חנן קירשנברג</th><td class="text-end" dir="ltr">260.2</td><td class="text-end" dir="ltr">371.7%</td><td class="text-end" dir="ltr">28/07/2024</td></tr>
+        <tr><th scope="row" class="font-normal">פ אבן יהודה ב החקלאי</th><td class="text-end" dir="ltr">232.6</td><td class="text-end" dir="ltr">332.3%</td><td class="text-end" dir="ltr">21/05/2025</td></tr>
+        <tr><th scope="row" class="font-normal">פ חדרה וינמן גניה</th><td class="text-end" dir="ltr">217.0</td><td class="text-end" dir="ltr">310.0%</td><td class="text-end" dir="ltr">08/09/2025</td></tr>
+        <tr><th scope="row" class="font-normal">פ שבי ציון 3</th><td class="text-end" dir="ltr">213.2</td><td class="text-end" dir="ltr">304.6%</td><td class="text-end" dir="ltr">20/09/2018</td></tr>
+        <tr><th scope="row" class="font-normal">פ גן יהודה 2 שותפות</th><td class="text-end" dir="ltr">197.6</td><td class="text-end" dir="ltr">282.3%</td><td class="text-end" dir="ltr">23/05/2024</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">שנת הדיגום האחרון</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">התפלגות מועד הדיגום האחרון לכל מדידה (מדגם 5,000 שורות). מעיד עד כמה המאגר עדכני.</p>
+  <div id="chart-years" class="h-64 md:h-80" role="img" aria-label="גרף עמודות: שנת הדיגום האחרון לפי מספר מדידות. 2025 היא השנה השכיחה ביותר עם 992 מדידות, אחריה 2024 עם 736, 2011 עם 609, 2012 עם 457, 2020 עם 338, 2022 עם 341, 2023 עם 304."></div>
+  <details class="mt-3">
+    <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="text-xs mt-2 w-full">
+      <caption class="sr-only">התפלגות שנת הדיגום האחרון (מדגם)</caption>
+      <thead><tr><th scope="col" class="text-start pb-1">שנה</th><th scope="col" class="text-end pb-1">מספר מדידות</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" class="font-normal">2011</th><td class="text-end" dir="ltr">609</td></tr>
+        <tr><th scope="row" class="font-normal">2012</th><td class="text-end" dir="ltr">457</td></tr>
+        <tr><th scope="row" class="font-normal">2013</th><td class="text-end" dir="ltr">48</td></tr>
+        <tr><th scope="row" class="font-normal">2014</th><td class="text-end" dir="ltr">56</td></tr>
+        <tr><th scope="row" class="font-normal">2015</th><td class="text-end" dir="ltr">143</td></tr>
+        <tr><th scope="row" class="font-normal">2016</th><td class="text-end" dir="ltr">134</td></tr>
+        <tr><th scope="row" class="font-normal">2017</th><td class="text-end" dir="ltr">103</td></tr>
+        <tr><th scope="row" class="font-normal">2018</th><td class="text-end" dir="ltr">23</td></tr>
+        <tr><th scope="row" class="font-normal">2019</th><td class="text-end" dir="ltr">521</td></tr>
+        <tr><th scope="row" class="font-normal">2020</th><td class="text-end" dir="ltr">338</td></tr>
+        <tr><th scope="row" class="font-normal">2021</th><td class="text-end" dir="ltr">193</td></tr>
+        <tr><th scope="row" class="font-normal">2022</th><td class="text-end" dir="ltr">341</td></tr>
+        <tr><th scope="row" class="font-normal">2023</th><td class="text-end" dir="ltr">304</td></tr>
+        <tr><th scope="row" class="font-normal">2024</th><td class="text-end" dir="ltr">736</td></tr>
+        <tr><th scope="row" class="font-normal">2025</th><td class="text-end" dir="ltr">992</td></tr>
+        <tr><th scope="row" class="font-normal">2026</th><td class="text-end" dir="ltr">2</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/tag.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">סוג התקן להשוואה</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">חלוקת 59,860 המדידות בין שני סוגי התקן הישראלי (תקן מותר = חובה; תקן מומלץ = יעד איכות).</p>
+  <div id="chart-stdtype" class="h-64 md:h-80" role="img" aria-label="גרף טבעת: חלוקת המדידות לפי סוג תקן. תקן ישראלי מותר: 95.2% (56,995). תקן ישראלי מומלץ: 2.8% (1,670). ללא סיווג: 2.0% (1,195)."></div>
+  <details class="mt-3">
+    <summary class="text-sm text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="text-xs mt-2 w-full">
+      <caption class="sr-only">חלוקת מדידות לפי סוג תקן (אוכלוסייה מלאה)</caption>
+      <thead><tr><th scope="col" class="text-start pb-1">סוג תקן</th><th scope="col" class="text-end pb-1">מדידות</th><th scope="col" class="text-end pb-1">%</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" class="font-normal">תקן ישראלי מותר</th><td class="text-end" dir="ltr">56,995</td><td class="text-end" dir="ltr">95.2%</td></tr>
+        <tr><th scope="row" class="font-normal">תקן ישראלי מומלץ</th><td class="text-end" dir="ltr">1,670</td><td class="text-end" dir="ltr">2.8%</td></tr>
+        <tr><th scope="row" class="font-normal">ללא סיווג</th><td class="text-end" dir="ltr">1,195</td><td class="text-end" dir="ltr">2.0%</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle leading-relaxed whitespace-pre-line">מאגר המידע מכיל נתוני איכות מים על פי ריכוז אחרון שנמדד לכל פרמטר משנת 2007 ואילך.
+הקובץ נתוני איכות מים בקידוחים מכיל נתונים של קבוצות הפרמטרים הבאות: כלוריד וחנקה, חומרי הדברה, מתכות וחומרים אורגנים.
+מקור המידע הוא בבדיקות בקידוחי הפקה על פי הנחיות משרד הבריאות, סקרים של רשות המים ובדיקות מזהמים המבוצעות בקידוחי ניטור על פי הנחיות רשות המים.</p>
+</section>
+
+<script>
+(function () {
+  // Chart A: top parameters by exceedance rate (horizontal bar)
+  var chartParams = echarts.init(document.getElementById('chart-params'));
+  chartParams.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, valueFormatter: function (v) { return v.toFixed(1) + '%'; } },
+    grid: { left: 120, right: 60, top: 16, bottom: 30, containLabel: false },
+    xAxis: { type: 'value', name: "% חריגות", nameLocation: 'middle', nameGap: 24, axisLabel: { formatter: '{value}%' }, max: 50 },
+    yAxis: { type: 'category', data: ['TCEY','NI','TPFAS','RDX','14DIX','CL','NO3'].reverse(), axisLabel: { fontWeight: 500 } },
+    series: [{
+      type: 'bar',
+      data: [1.5, 1.9, 3.4, 5.3, 8.3,
+        { value: 30.9, itemStyle: { color: '#dc3545' } },
+        { value: 42.2, itemStyle: { color: '#dc3545' } }
+      ].reverse(),
+      label: { show: true, position: 'right', formatter: '{c}%', fontSize: 11 },
+      barWidth: '62%',
+    }],
+  }));
+
+  // Chart B: distribution of % of standard (column)
+  var chartBuckets = echarts.init(document.getElementById('chart-buckets'));
+  var bucketLabels = ['0-25%','25-50%','50-75%','75-100%','100-150%','150-200%','200-500%','500%+'];
+  var bucketValues = [4308, 171, 95, 42, 87, 49, 62, 11];
+  // mark buckets above 100% in red
+  var bucketData = bucketValues.map(function (v, i) {
+    if (i >= 4) return { value: v, itemStyle: { color: '#dc3545' } };
+    return v;
+  });
+  chartBuckets.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 50, right: 24, top: 16, bottom: 40, containLabel: true },
+    xAxis: { type: 'category', data: bucketLabels, axisLabel: { interval: 0, fontSize: 11 } },
+    yAxis: { type: 'value', name: "מדידות", nameLocation: 'middle', nameGap: 30 },
+    series: [{
+      type: 'bar',
+      data: bucketData,
+      label: { show: true, position: 'top', fontSize: 11, formatter: function (p) { return p.value.toLocaleString('en-US'); } },
+      barWidth: '72%',
+    }],
+  }));
+
+  // Chart C: top 8 NO3 wells
+  var chartNo3 = echarts.init(document.getElementById('chart-no3'));
+  var no3Names = [
+    "פ גן יהודה 2 שותפות",
+    "פ שבי ציון 3",
+    "פ חדרה וינמן גניה",
+    "פ אבן יהודה ב החקלאי",
+    "פ בית חנן קירשנברג",
+    "פ באר יעקב אשגיב",
+    "פ משמר העמק קב ו",
+    "פ אבן יהודה אג פלגי"
+  ];
+  var no3Pct = [282.3, 304.6, 310.0, 332.3, 371.7, 405.5, 413.0, 468.6];
+  chartNo3.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    tooltip: {
+      trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: function (params) {
+        var p = params[0];
+        return p.name + '<br/>' + p.value.toFixed(1) + "% מהתקן";
+      }
+    },
+    grid: { left: 200, right: 60, top: 16, bottom: 30, containLabel: false },
+    xAxis: { type: 'value', name: "% מהתקן", nameLocation: 'middle', nameGap: 24, axisLabel: { formatter: '{value}%' } },
+    yAxis: { type: 'category', data: no3Names, axisLabel: { fontSize: 11 } },
+    series: [{
+      type: 'bar',
+      data: no3Pct.map(function (v) { return { value: v, itemStyle: { color: '#dc3545' } }; }),
+      label: { show: true, position: 'right', formatter: '{c}%', fontSize: 11 },
+      barWidth: '62%',
+    }],
+  }));
+
+  // Chart D: year of last measurement (column, 2025 marked as latest)
+  var chartYears = echarts.init(document.getElementById('chart-years'));
+  var yearLabels = ['2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2025','2026'];
+  var yearValues = [609, 457, 48, 56, 143, 134, 103, 23, 521, 338, 193, 341, 304, 736, 992, 2];
+  // 2025 is the most recent full year; mark it text-ok as the freshness peak
+  var yearData = yearValues.map(function (v, i) {
+    if (yearLabels[i] === '2025') return { value: v, itemStyle: { color: '#198754' } };
+    return v;
+  });
+  chartYears.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    grid: { left: 50, right: 24, top: 16, bottom: 40, containLabel: true },
+    xAxis: { type: 'category', data: yearLabels, axisLabel: { fontSize: 11 } },
+    yAxis: { type: 'value', name: "מדידות", nameLocation: 'middle', nameGap: 30 },
+    series: [{
+      type: 'bar',
+      data: yearData,
+      label: { show: true, position: 'top', fontSize: 10, formatter: function (p) { return p.value.toLocaleString('en-US'); } },
+      barWidth: '72%',
+    }],
+  }));
+
+  // Chart E: standard type (donut)
+  var chartStd = echarts.init(document.getElementById('chart-stdtype'));
+  chartStd.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    tooltip: { trigger: 'item', valueFormatter: function (v) { return v.toLocaleString('en-US') + " מדידות"; } },
+    legend: { bottom: 0, icon: 'circle' },
+    series: [{
+      type: 'pie',
+      radius: ['45%', '72%'],
+      center: ['50%', '45%'],
+      avoidLabelOverlap: true,
+      label: { show: true, formatter: '{b}\n{d}%' },
+      data: [
+        { value: 56995, name: "תקן ישראלי מותר" },
+        { value: 1670,  name: "תקן ישראלי מומלץ" },
+        { value: 1195,  name: "ללא סיווג" },
+      ],
+    }],
+  }));
+
+  window.addEventListener('resize', function () {
+    chartParams.resize();
+    chartBuckets.resize();
+    chartNo3.resize();
+    chartYears.resize();
+    chartStd.resize();
+  });
+})();
+</script>

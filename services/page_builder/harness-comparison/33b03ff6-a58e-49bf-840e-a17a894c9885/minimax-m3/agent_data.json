@@ -1,0 +1,20 @@
+{
+  "summary_he": "רשימת תשע מעבדות מורשות בישראל לטיפול באסבסט, כולל סוג ההרשאה, דוגמים, תוקף רישיון והערות משמעת",
+  "dataset_kind": "registry",
+  "related_ids": [
+    "7f1a7496-c3d9-498f-ade2-2ebb8e602916",
+    "19c40947-95f1-4ea0-8a04-ad56526726af",
+    "e06c1871-73b9-4f31-8513-d5f38cefb8eb",
+    "55daaf9b-ccb9-4cc1-bf3a-80a682d13fbd"
+  ],
+  "suggested_tags": [
+    "אסבסט",
+    "מעבדות",
+    "רישוי עסקים",
+    "איכות סביבה",
+    "רגולציה"
+  ],
+  "temporal_coverage": null,
+  "spatial_coverage": null,
+  "version": 1
+}

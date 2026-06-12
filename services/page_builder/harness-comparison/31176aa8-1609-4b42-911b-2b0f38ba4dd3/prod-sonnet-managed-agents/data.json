@@ -1,0 +1,41 @@
+{
+  "id": "31176aa8-1609-4b42-911b-2b0f38ba4dd3",
+  "slug": "ntvnym-tkvptyym-tknyt-dyrh-bhnchh",
+  "title": "נתונים תקופתיים - תכנית דירה בהנחה",
+  "organization": "משרד הבינוי והשיכון",
+  "organization_slug": "ministry_of_housing",
+  "tags_he": [
+    "בינוי",
+    "דיור",
+    "דירה בהנחה",
+    "מחיר למשתכן",
+    "שיכון"
+  ],
+  "primary_resource_id": "7c8255d0-49ef-49db-8904-4cf917586031",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-06-09T09:30:12.334867Z",
+  "license": "",
+  "record_count": 2352,
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/31176aa8-1609-4b42-911b-2b0f38ba4dd3/resource/7c8255d0-49ef-49db-8904-4cf917586031/download/hng_hagralotmechirlmishtaken.csv",
+      "format": "CSV",
+      "name": "מעקב אחר הגרלות דירה בהנחה",
+      "size_bytes": 600321,
+      "id": "7c8255d0-49ef-49db-8904-4cf917586031"
+    },
+    {
+      "url": "https://data.gov.il/dataset/31176aa8-1609-4b42-911b-2b0f38ba4dd3/resource/ea93b3c9-15e2-4b74-a632-097ee53737e4/download/hng_hagralotdirotpnuyot4sale.csv",
+      "format": "CSV",
+      "name": "דירות למכירה ללא הגרלה",
+      "size_bytes": 118,
+      "id": "ea93b3c9-15e2-4b74-a632-097ee53737e4"
+    }
+  ],
+  "notes": "במאגר זה מתפרסמים נתונים סטטיסטיים תקופתיים בנושא תכנית דירה בהנחה.\r\n\r\nקישור לדף נתונים סטטיסטיים שבועיים נוספים:\r\n\r\nhttps://www.gov.il/he/Departments/publications/reports/mishtaken_statistics",
+  "last_analyzed_at": "2026-06-07T04:09:10.276504Z",
+  "analyzed_metadata_modified": "2026-06-07T03:40:12.183835Z",
+  "version": 1
+}

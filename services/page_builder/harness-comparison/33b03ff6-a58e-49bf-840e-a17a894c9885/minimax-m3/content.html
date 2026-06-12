@@ -1,0 +1,243 @@
+<h1>מעבדות אסבסט</h1>
+
+<!-- תקציר -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle leading-relaxed">רשימת המעבדות המורשות בישראל לטיפול באסבסט, כפי שמפרסם המשרד להגנת הסביבה. הרשומה כוללת את שם המעבדה, מספר הרישיון, סוג ההרשאה (דיגום או אנליזה), שמות הדוגמים/העובדים, פרטי התקשרות, תאריך תפוגת הרישיון והערות משמעת. המאגר מכיל תשע מעבדות פעילות בלבד.</p>
+</section>
+
+<!-- KPI cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">9</div>
+    <div class="text-sm text-subtle">מעבדות מורשות</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-warn mb-1">2</div>
+    <div class="text-sm text-subtle">מעבדות עם הערות משמעת</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">3</div>
+    <div class="text-sm text-subtle">סוגי הרשאה שונים</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">22</div>
+    <div class="text-sm text-subtle">דוגמים ועובדי מעבדה</div>
+  </div>
+</div>
+
+<!-- תובנות -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>רוב המעבדות (5 מתוך 9) מורשות ל<strong>דיגום</strong> בלבד; 2 מורשות לאנליזה כללית ו-2 נוספות לאנליזה של דגימות אוויר בלבד.</li>
+    <li>שתי מעבדות (כ-22%) רשומות עם <strong>הערות משמעת</strong>: "המבדקה הכימית על שם אליוף ובנטור" (נזיפה, התליית רישיון המעבדה לחודשיים והתליית דוגם לחצי שנה, 2019) ו"החברה לשירותי איכות הסביבה" בבאר שבע (התליה לחודשיים, 2016).</li>
+    <li>תוקף הרישיונות מתפזר על פני חמש שנים: רישיון אחד פג ב-<span dir="ltr">2026</span>, שלושה ב-<span dir="ltr">2027</span>, שלושה ב-<span dir="ltr">2028</span>, אחד ב-<span dir="ltr">2029</span> ואחד ב-<span dir="ltr">2030</span>. רוב הרישיונות (6 מתוך 9) יחודשו בשנים 2027–2028.</li>
+    <li>סך הכל רשומים <strong>22 עובדים</strong> מוסמכים ברחבי המעבדות; המעבדה הגדולה ביותר מעסיקה 5 עובדים ("המבדקה הכימית", בית העמק).</li>
+    <li>המעבדות פרוסות מנהרייה בצפון ועד באר שבע בדרום, כולל ריכוז בגוש דן (תל אביב, רחובות, יבנה, הוד השרון).</li>
+  </ul>
+</section>
+
+<!-- חקר הנתונים: שני גרפים זה לצד זה -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">חקר הנתונים</h2>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">התפלגות לפי סוג הרשאה</h3>
+      <div id="chart-types" class="h-64 md:h-72" role="img" aria-label="גרף עמודות: מספר מעבדות לפי סוג הרשאה. דיגום - 5, אנליזה - 2, אנליזה לדגימות אוויר בלבד - 2."></div>
+      <details class="mt-2">
+        <summary class="text-xs text-subtle cursor-pointer">הצג כטבלה</summary>
+        <table class="w-full text-xs mt-2 border-collapse">
+          <caption class="sr-only">מספר מעבדות לפי סוג הרשאה</caption>
+          <thead><tr class="text-right"><th scope="col" class="border-b border-rule py-1">סוג הרשאה</th><th scope="col" class="border-b border-rule py-1 text-left">מספר מעבדות</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" class="font-normal py-1">דיגום</th><td class="text-left">5</td></tr>
+            <tr><th scope="row" class="font-normal py-1">אנליזה</th><td class="text-left">2</td></tr>
+            <tr><th scope="row" class="font-normal py-1">אנליזה לדגימות אוויר בלבד</th><td class="text-left">2</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </div>
+    <div>
+      <h3 class="m-0 mb-3 text-base font-semibold text-ink-deep">שנת תפוגת רישיון</h3>
+      <div id="chart-expiry" class="h-64 md:h-72" role="img" aria-label="גרף עמודות: מספר מעבדות לפי שנת תפוגת רישיון. 2026 - 1, 2027 - 3, 2028 - 3, 2029 - 1, 2030 - 1."></div>
+      <details class="mt-2">
+        <summary class="text-xs text-subtle cursor-pointer">הצג כטבלה</summary>
+        <table class="w-full text-xs mt-2 border-collapse">
+          <caption class="sr-only">מספר מעבדות לפי שנת תפוגת רישיון</caption>
+          <thead><tr class="text-right"><th scope="col" class="border-b border-rule py-1">שנה</th><th scope="col" class="border-b border-rule py-1 text-left">מספר מעבדות</th></tr></thead>
+          <tbody>
+            <tr><th scope="row" class="font-normal py-1"><span dir="ltr">2026</span></th><td class="text-left">1</td></tr>
+            <tr><th scope="row" class="font-normal py-1"><span dir="ltr">2027</span></th><td class="text-left">3</td></tr>
+            <tr><th scope="row" class="font-normal py-1"><span dir="ltr">2028</span></th><td class="text-left">3</td></tr>
+            <tr><th scope="row" class="font-normal py-1"><span dir="ltr">2029</span></th><td class="text-left">1</td></tr>
+            <tr><th scope="row" class="font-normal py-1"><span dir="ltr">2030</span></th><td class="text-left">1</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- רשימת המעבדות המלאה -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">כל המעבדות הרשומות</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <caption class="sr-only">רשימת כל תשע המעבדות המורשות לטיפול באסבסט</caption>
+      <thead>
+        <tr class="text-right bg-surface-alt">
+          <th scope="col" class="py-2 px-2 border-b border-rule">שם המעבדה</th>
+          <th scope="col" class="py-2 px-2 border-b border-rule">סוג הרשאה</th>
+          <th scope="col" class="py-2 px-2 border-b border-rule">כתובת</th>
+          <th scope="col" class="py-2 px-2 border-b border-rule text-left">תוקף רישיון</th>
+          <th scope="col" class="py-2 px-2 border-b border-rule text-center">עובדים</th>
+          <th scope="col" class="py-2 px-2 border-b border-rule text-center">משמעת</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">ברוש</th>
+          <td class="py-2 px-2 border-b border-rule">דיגום</td>
+          <td class="py-2 px-2 border-b border-rule">ת"ד 478 הוד השרון 45200</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2028-10-16</td>
+          <td class="py-2 px-2 border-b border-rule text-center">2</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge">אין</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">החברה לשירותי איכות הסביבה (ת"א)</th>
+          <td class="py-2 px-2 border-b border-rule">דיגום</td>
+          <td class="py-2 px-2 border-b border-rule">יצחק שדה 40, תל אביב</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2028-04-23</td>
+          <td class="py-2 px-2 border-b border-rule text-center">2</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge">אין</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">המבדקה הכימית על שם אליוף ובנטור (בית העמק)</th>
+          <td class="py-2 px-2 border-b border-rule">דיגום</td>
+          <td class="py-2 px-2 border-b border-rule">בית העמק 25115</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2026-11-28</td>
+          <td class="py-2 px-2 border-b border-rule text-center">5</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge text-warn">נזיפה והתליות (2019)</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">מעבדות אקולוגיה א.פ בע"מ</th>
+          <td class="py-2 px-2 border-b border-rule">דיגום</td>
+          <td class="py-2 px-2 border-b border-rule">הפרת 2, יבנה</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2027-02-22</td>
+          <td class="py-2 px-2 border-b border-rule text-center">4</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge">אין</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">המעבדה לגהות וסביבה בע"מ (נהרייה)</th>
+          <td class="py-2 px-2 border-b border-rule">דיגום</td>
+          <td class="py-2 px-2 border-b border-rule">היוצרים 2, נהרייה</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2027-05-22</td>
+          <td class="py-2 px-2 border-b border-rule text-center">2</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge">אין</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">המעבדה לאיכות סביבה, אוניברסיטת בן-גוריון</th>
+          <td class="py-2 px-2 border-b border-rule">אנליזה</td>
+          <td class="py-2 px-2 border-b border-rule">השלום 1, באר שבע</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2028-11-08</td>
+          <td class="py-2 px-2 border-b border-rule text-center">2</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge">אין</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">החברה לשירותי איכות הסביבה (באר שבע)</th>
+          <td class="py-2 px-2 border-b border-rule">אנליזה לדגימות אוויר בלבד</td>
+          <td class="py-2 px-2 border-b border-rule">ת"ד 5743 באר שבע</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2029-07-24</td>
+          <td class="py-2 px-2 border-b border-rule text-center">3</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge text-warn">התליה לחודשיים (2016)</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">המבדקה הכימית על שם אליוף ובנטור (רחובות)</th>
+          <td class="py-2 px-2 border-b border-rule">אנליזה לדגימות אוויר בלבד</td>
+          <td class="py-2 px-2 border-b border-rule">האלוף יעקב פרי 11, רחובות</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2027-05-22</td>
+          <td class="py-2 px-2 border-b border-rule text-center">1</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge">אין</span></td>
+        </tr>
+        <tr>
+          <th scope="row" class="font-normal py-2 px-2 border-b border-rule">המעבדה לגהות וסביבה בע"מ (נהריה)</th>
+          <td class="py-2 px-2 border-b border-rule">אנליזה</td>
+          <td class="py-2 px-2 border-b border-rule">היוצרים 2, נהריה</td>
+          <td class="py-2 px-2 border-b border-rule text-left" dir="ltr">2030-12-25</td>
+          <td class="py-2 px-2 border-b border-rule text-center">1</td>
+          <td class="py-2 px-2 border-b border-rule text-center"><span class="badge">אין</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- תיאור מקורי -->
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line">רשימת מעבדות שמטפלות באסבסט</p>
+</section>
+
+<script>
+  (function () {
+    const typesChart = echarts.init(document.getElementById("chart-types"));
+    typesChart.setOption(window.GovEcharts.option({
+      grid: { left: 24, right: 24, top: 24, bottom: 64, containLabel: true },
+      xAxis: {
+        type: "category",
+        data: ["דיגום", "אנליזה", "אנליזה לדגימות אוויר בלבד"],
+        axisLabel: { fontFamily: "Rubik", color: "#0c3058", interval: 0, fontSize: 11, formatter: function (v) { return v.length > 14 ? v.slice(0, 13) + "…" : v; } },
+      },
+      yAxis: { type: "value", minInterval: 1 },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      series: [{
+        type: "bar",
+        data: [
+          { value: 5, itemStyle: { color: "#0068f5" } },
+          { value: 2, itemStyle: { color: "#0068f5" } },
+          { value: 2, itemStyle: { color: "#0068f5" } },
+        ],
+        barMaxWidth: 60,
+        label: { show: true, position: "top", fontFamily: "Rubik", color: "#0c3058" },
+      }],
+    }));
+
+    const expChart = echarts.init(document.getElementById("chart-expiry"));
+    expChart.setOption(window.GovEcharts.option({
+      grid: { left: 24, right: 24, top: 24, bottom: 40, containLabel: true },
+      xAxis: { type: "category", data: ["2026", "2027", "2028", "2029", "2030"], axisLabel: { fontFamily: "Rubik", color: "#0c3058" } },
+      yAxis: { type: "value", minInterval: 1 },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" } },
+      series: [{
+        type: "bar",
+        data: [
+          { value: 1, itemStyle: { color: "#9a6700" } },
+          { value: 3, itemStyle: { color: "#0068f5" } },
+          { value: 3, itemStyle: { color: "#0068f5" } },
+          { value: 1, itemStyle: { color: "#0068f5" } },
+          { value: 1, itemStyle: { color: "#0068f5" } },
+        ],
+        barMaxWidth: 60,
+        label: { show: true, position: "top", fontFamily: "Rubik", color: "#0c3058" },
+      }],
+    }));
+
+    window.addEventListener("resize", function () { typesChart.resize(); expChart.resize(); });
+  })();
+</script>

@@ -1,0 +1,221 @@
+<h1 class="text-2xl font-bold text-ink-deep mb-2">מעבדות אסבסט</h1>
+
+<div class="flex flex-wrap gap-2 mb-6">
+  <span class="tag-chip">אסבסט</span>
+  <span class="tag-chip">רישוי מעבדות</span>
+  <span class="tag-chip">ניטור איכות אוויר</span>
+  <span class="tag-chip">חומרים מסוכנים</span>
+  <span class="tag-chip">המשרד להגנת הסביבה</span>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex gap-2 items-start mb-3">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5 mt-0.5 text-brand" />
+    <h2 class="font-semibold text-ink-deep">אודות המאגר</h2>
+  </div>
+  <p class="leading-relaxed text-ink">
+    מאגר זה מפרסם את רשימת המעבדות המורשות על-ידי המשרד להגנת הסביבה לטיפול באסבסט בישראל.
+    ל-9 הרישיונות הפעילים ניתנות הרשאות לדיגום (איסוף דגימות בשטח) או לאנליזה (בדיקה מעבדתית),
+    כולל אנליזה לדגימות אוויר בלבד.
+    הרשימה כוללת פרטי קשר, כתובות, תאריכי תפוגה ואמצעים משמעתיים שננקטו כלפי מעבדות.
+  </p>
+</section>
+
+<!-- KPI cards -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">9</div>
+    <div class="text-sm text-subtle">רישיונות פעילים</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">6</div>
+    <div class="text-sm text-subtle">גורמים ייחודיים</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">5</div>
+    <div class="text-sm text-subtle">רישיונות דיגום</div>
+  </div>
+  <div class="card p-5 text-center">
+    <div class="text-3xl font-bold text-danger mb-1">2</div>
+    <div class="text-sm text-subtle">עם אמצעים משמעתיים</div>
+  </div>
+</div>
+
+<!-- Insights -->
+<section class="card p-5 mb-6">
+  <div class="flex gap-2 items-center mb-3">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5 text-brand" />
+    <h2 class="font-semibold text-ink-deep">ממצאים עיקריים</h2>
+  </div>
+  <ul class="list-disc list-inside space-y-2 leading-relaxed text-ink">
+    <li>בישראל פועלות <strong>9 רישיונות</strong> ל-<strong>6 גורמים</strong> העוסקים באסבסט — חלקם מחזיקים גם ברישיון דיגום וגם ברישיון אנליזה.</li>
+    <li>מתוך 9 הרישיונות, <strong>5 הם לדיגום</strong> (איסוף דגימות בשטח), <strong>2 לאנליזה</strong> כללית ו-<strong>2 לאנליזה לדגימות אוויר בלבד</strong>.</li>
+    <li><strong>2 מעבדות</strong> קיבלו אמצעים משמעתיים בעבר: המבדקה הכימית על שם אליוף ובנטור (נזיפה והתליה) והחברה לשירותי איכות הסביבה (התליה).</li>
+    <li>תוקפי הרישיונות מפוזרים בין 2026 ל-2030; רישיון אחד פג <strong>בנובמבר 2026</strong> — הקרוב ביותר לתאריך עדכון המאגר.</li>
+    <li>המעבדות פרוסות ברחבי הארץ: הוד השרון, תל אביב, בית העמק, יבנה, נהרייה, באר שבע ורחובות.</li>
+  </ul>
+</section>
+
+<!-- Charts row -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+  <section class="card p-5">
+    <h2 class="font-semibold text-ink-deep mb-3">התפלגות רישיונות לפי סוג</h2>
+    <div id="chart-type" class="h-64 md:h-80"></div>
+  </section>
+  <section class="card p-5">
+    <h2 class="font-semibold text-ink-deep mb-3">תוקף רישיונות לפי שנה</h2>
+    <div id="chart-expiry" class="h-64 md:h-80"></div>
+  </section>
+</div>
+
+<!-- Full lab table -->
+<section class="card p-5 mb-6">
+  <div class="flex gap-2 items-center mb-3">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5 text-brand" />
+    <h2 class="font-semibold text-ink-deep">רשימת המעבדות המורשות</h2>
+  </div>
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-surface-alt border-b border-rule text-ink-deep">
+          <th class="text-right py-2 px-3 font-semibold">שם המעבדה</th>
+          <th class="text-right py-2 px-3 font-semibold">מספר רישיון</th>
+          <th class="text-right py-2 px-3 font-semibold">סוג</th>
+          <th class="text-right py-2 px-3 font-semibold">כתובת</th>
+          <th class="text-right py-2 px-3 font-semibold">תוקף</th>
+          <th class="text-right py-2 px-3 font-semibold">משמעת</th>
+        </tr>
+      </thead>
+      <tbody id="lab-table-body"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- Notes -->
+<section class="card p-5 mb-6">
+  <div class="flex gap-2 items-center mb-3">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5 text-brand" />
+    <h2 class="font-semibold text-ink-deep">אודות הנתונים</h2>
+  </div>
+  <p class="leading-relaxed text-ink">רשימת מעבדות שמטפלות באסבסט</p>
+</section>
+
+<script>
+  const GOVIL_PALETTE = [
+    '#0068f5', '#0b3668', '#6c9fd8', '#0053c4', '#0c3058',
+    '#3d70b0', '#b7d2f7', '#2658a0', '#dbe8fb', '#0c1f3d'
+  ];
+
+  const baseECharts = {
+    color: GOVIL_PALETTE,
+    textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058' },
+    tooltip: {
+      textStyle: { fontFamily: 'Rubik', color: '#0c3058' },
+      backgroundColor: '#fff',
+      borderColor: '#c3cfe7',
+      extraCssText: 'direction: rtl; box-shadow: 0 6px 24px -8px rgba(0,104,245,.18);'
+    },
+    grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
+  };
+
+  // ── Chart 1: Donut — lab type distribution ──
+  (function () {
+    const el = document.getElementById('chart-type');
+    const chart = echarts.init(el, null, { renderer: 'svg' });
+    const option = Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'item',
+        formatter: '{b}: {c} ({d}%)'
+      }),
+      legend: {
+        orient: 'vertical',
+        right: '5%',
+        top: 'center',
+        textStyle: { fontFamily: 'Rubik, sans-serif', color: '#0c3058', fontSize: 12 }
+      },
+      series: [{
+        name: "סוג רישיון",
+        type: 'pie',
+        radius: ['40%', '70%'],
+        center: ['38%', '50%'],
+        avoidLabelOverlap: true,
+        label: { show: false },
+        emphasis: {
+          label: { show: true, fontSize: 14, fontWeight: 'bold', fontFamily: 'Rubik' }
+        },
+        data: [
+          { value: 5, name: "\u05d3\u05d9\u05d2\u05d5\u05dd" },
+          { value: 2, name: "\u05d0\u05e0\u05dc\u05d9\u05d6\u05d4" },
+          { value: 2, name: "\u05d0\u05e0\u05dc\u05d9\u05d6\u05d4 \u2014 \u05d0\u05d5\u05d5\u05d9\u05e8 \u05d1\u05dc\u05d1\u05d3" }
+        ]
+      }]
+    });
+    chart.setOption(option);
+    window.addEventListener('resize', () => chart.resize());
+  })();
+
+  // ── Chart 2: Bar — expiry year distribution ──
+  (function () {
+    const el = document.getElementById('chart-expiry');
+    const chart = echarts.init(el, null, { renderer: 'svg' });
+    const option = Object.assign({}, baseECharts, {
+      tooltip: Object.assign({}, baseECharts.tooltip, {
+        trigger: 'axis',
+        formatter: function (params) {
+          return params[0].axisValue + ": " + params[0].value + " \u05e8\u05d9\u05e9\u05d9\u05d5\u05e0\u05d5\u05ea";
+        }
+      }),
+      xAxis: {
+        type: 'category',
+        data: ['2026', '2027', '2028', '2029', '2030'],
+        axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+      },
+      yAxis: {
+        type: 'value',
+        minInterval: 1,
+        axisLabel: { fontFamily: 'Rubik', color: '#0c3058' }
+      },
+      series: [{
+        name: "\u05e8\u05d9\u05e9\u05d9\u05d5\u05e0\u05d5\u05ea",
+        type: 'bar',
+        barMaxWidth: 48,
+        data: [1, 3, 3, 1, 1],
+        itemStyle: { borderRadius: [4, 4, 0, 0] },
+        label: {
+          show: true,
+          position: 'top',
+          fontFamily: 'Rubik',
+          color: '#0c3058',
+          formatter: '{c}'
+        }
+      }]
+    });
+    chart.setOption(option);
+    window.addEventListener('resize', () => chart.resize());
+  })();
+
+  // ── Lab table ──
+  (function () {
+    const labs = [{"license": 19278, "name": "\u05d1\u05e8\u05d5\u05e9", "type": "\u05d3\u05d9\u05d2\u05d5\u05dd", "address": "\u05ea\"\u05d3 478 \u05d4\u05d5\u05d3 \u05d4\u05e9\u05e8\u05d5\u05df 45200", "phone": "09-7486293,  052-5111132", "email": "nachumba@gmail.com", "expiry": "2028-10-16", "disciplinary": false}, {"license": 19276, "name": "\u05d4\u05d7\u05d1\u05e8\u05d4 \u05dc\u05e9\u05d9\u05e8\u05d5\u05ea\u05d9 \u05d0\u05d9\u05db\u05d5\u05ea \u05d4\u05e1\u05d1\u05d9\u05d1\u05d4", "type": "\u05d3\u05d9\u05d2\u05d5\u05dd", "address": "\u05d9\u05e6\u05d7\u05e7 \u05e9\u05d3\u05d4 40, \u05ea\u05dc \u05d0\u05d1\u05d9\u05d1", "phone": "03-5374850, 050-6920014", "email": "bennym@escil.co.il", "expiry": "2028-04-23", "disciplinary": false}, {"license": 19281, "name": "\u05d4\u05de\u05d1\u05d3\u05e7\u05d4 \u05d4\u05db\u05d9\u05de\u05d9\u05ea \u05e2\u05dc \u05e9\u05dd \u05d0\u05dc\u05d9\u05d5\u05e3 \u05d5\u05d1\u05e0\u05d8\u05d5\u05e8 \u05d1\u05e2\"\u05de", "type": "\u05d3\u05d9\u05d2\u05d5\u05dd", "address": "\u05d1\u05d9\u05ea \u05d4\u05e2\u05de\u05e7 25115", "phone": "04-9111830", "email": "david@ct-lab.co.il", "expiry": "2026-11-28", "disciplinary": true}, {"license": 19284, "name": "\u05de\u05e2\u05d1\u05d3\u05d5\u05ea \u05d0\u05e7\u05d5\u05dc\u05d5\u05d2\u05d9\u05d4 \u05d0.\u05e4 \u05d1\u05e2\"\u05de", "type": "\u05d3\u05d9\u05d2\u05d5\u05dd", "address": "\u05d4\u05e4\u05e8\u05ea 2 \u05d9\u05d1\u05e0\u05d4", "phone": "08-9322116", "email": "ih@ecologicalab.com", "expiry": "2027-02-22", "disciplinary": false}, {"license": 83954, "name": "\u05d4\u05de\u05e2\u05d1\u05d3\u05d4 \u05dc\u05d2\u05d4\u05d5\u05ea \u05d5\u05e1\u05d1\u05d9\u05d1\u05d4 \u05d1\u05e2\"\u05de", "type": "\u05d3\u05d9\u05d2\u05d5\u05dd", "address": "\u05d4\u05d9\u05d5\u05e6\u05e8\u05d9\u05dd 2, \u05e0\u05d4\u05e8\u05d9\u05d9\u05d4", "phone": "052-6458355", "email": "office@svivalab.com", "expiry": "2027-05-22", "disciplinary": false}, {"license": 19266, "name": "\u05d4\u05de\u05e2\u05d1\u05d3\u05d4 \u05dc\u05d0\u05d9\u05db\u05d5\u05ea \u05e1\u05d1\u05d9\u05d1\u05d4, \u05d0\u05d5\u05e0\u05d9\u05d1\u05e8\u05e1\u05d9\u05d8\u05ea \u05d1\u05df-\u05d2\u05d5\u05e8\u05d9\u05d5\u05df \u05d1\u05e0\u05d2\u05d1", "type": "\u05d0\u05e0\u05dc\u05d9\u05d6\u05d4", "address": "\u05d4\u05e9\u05dc\u05d5\u05dd 1 \u05d1\u05d0\u05e8 \u05e9\u05d1\u05e2", "phone": "08-6461981", "email": "witenko@bgu.ac.il", "expiry": "2028-11-08", "disciplinary": false}, {"license": 46788, "name": "\u05d4\u05d7\u05d1\u05e8\u05d4 \u05dc\u05e9\u05d9\u05e8\u05d5\u05ea\u05d9 \u05d0\u05d9\u05db\u05d5\u05ea \u05d4\u05e1\u05d1\u05d9\u05d1\u05d4", "type": "\u05d0\u05e0\u05dc\u05d9\u05d6\u05d4 \u05dc\u05d3\u05d2\u05d9\u05de\u05d5\u05ea \u05d0\u05d5\u05d5\u05d9\u05e8 \u05d1\u05dc\u05d1\u05d3", "address": "\u05ea\"\u05d3 5743 \u05d1\u05d0\u05e8 \u05e9\u05d1\u05e2, 8415701", "phone": "08-6503707", "email": "eyal@escil.co.il", "expiry": "2029-07-24", "disciplinary": true}, {"license": 83953, "name": "\u05d4\u05de\u05d1\u05d3\u05e7\u05d4 \u05d4\u05db\u05d9\u05de\u05d9\u05ea \u05e2\u05dc \u05e9\u05dd \u05d0\u05dc\u05d9\u05d5\u05e3 \u05d5\u05d1\u05e0\u05d8\u05d5\u05e8 \u05d1\u05e2\"\u05de", "type": "\u05d0\u05e0\u05dc\u05d9\u05d6\u05d4 \u05dc\u05d3\u05d2\u05d9\u05de\u05d5\u05ea \u05d0\u05d5\u05d5\u05d9\u05e8 \u05d1\u05dc\u05d1\u05d3", "address": "\u05d4\u05d0\u05dc\u05d5\u05e3 \u05d9\u05e2\u05e7\u05d1 \u05e4\u05e8\u05d9 11, \u05e8\u05d7\u05d5\u05d1\u05d5\u05ea", "phone": "04-9111830", "email": "arielak@ct-lab.co.ill", "expiry": "2027-05-22", "disciplinary": false}, {"license": 86273, "name": "\u05d4\u05de\u05e2\u05d1\u05d3\u05d4 \u05dc\u05d2\u05d4\u05d5\u05ea \u05d5\u05e1\u05d1\u05d9\u05d1\u05d4 \u05d1\u05e2\"\u05de", "type": "\u05d0\u05e0\u05dc\u05d9\u05d6\u05d4", "address": "\u05d4\u05d9\u05d5\u05e6\u05e8\u05d9\u05dd 2, \u05e0\u05d4\u05e8\u05d9\u05d4", "phone": "052-6458355", "email": "office@svivalab.com", "expiry": "2030-12-25", "disciplinary": false}];
+
+    const tbody = document.getElementById('lab-table-body');
+    labs.forEach(function (lab, idx) {
+      const tr = document.createElement('tr');
+      tr.className = (idx % 2 === 0 ? 'bg-white' : 'bg-surface-alt') + ' border-b border-rule hover:bg-surface transition-colors';
+
+      const discCell = lab.disciplinary
+        ? '<span class="badge bg-danger/10 text-danger text-xs px-2 py-0.5 rounded-gov-pill">כן</span>'
+        : '<span class="badge bg-ok/10 text-ok text-xs px-2 py-0.5 rounded-gov-pill">לא</span>';
+
+      tr.innerHTML =
+        '<td class="py-2 px-3 font-medium text-ink">' + lab.name + '</td>' +
+        '<td class="py-2 px-3 text-subtle" dir="ltr">' + lab.license + '</td>' +
+        '<td class="py-2 px-3 text-ink">' + lab.type + '</td>' +
+        '<td class="py-2 px-3 text-ink">' + lab.address + '</td>' +
+        '<td class="py-2 px-3 text-subtle" dir="ltr">' + lab.expiry + '</td>' +
+        '<td class="py-2 px-3">' + discCell + '</td>';
+
+      tbody.appendChild(tr);
+    });
+  })();
+</script>

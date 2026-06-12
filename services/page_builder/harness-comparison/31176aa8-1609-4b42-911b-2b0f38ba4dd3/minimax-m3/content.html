@@ -1,0 +1,453 @@
+<h1>נתונים תקופתיים - תכנית דירה בהנחה</h1>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/info.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תקציר</h2>
+  </div>
+  <p class="m-0 text-subtle leading-relaxed">
+    מאגר של משרד הבינוי והשיכון המתעד את כל הגרלות תכנית "דירה בהנחה" (מחיר למשתכן ומחיר מטרה) מ-2016 ועד 2025: 2,352 הגרלות פרויקט, 162,563 יחידות דיור שהוצעו, 15.5 מיליון נרשמים ו-131,442 זוכים. הנתונים כוללים לכל הגרלה את מועד ההרשמה וההגרלה, מספר היחידות והנרשמים, מחיר למ"ר, עיר ושכונה, קבלן, סטטוס היתר בנייה ושלב הפרויקט. רוב הפרויקטים עדיין בשלב ההגרלה או בחירת דירות.
+  </p>
+</section>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">2,352</div>
+    <div class="text-sm text-subtle">הגרלות פרויקט</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">162,563</div>
+    <div class="text-sm text-subtle">יחידות דיור שהוצעו</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">15.52M</div>
+    <div class="text-sm text-subtle">נרשמים להגרלות</div>
+  </div>
+  <div class="card p-4 text-center">
+    <div class="text-3xl font-bold text-brand mb-1">131,442</div>
+    <div class="text-sm text-subtle">זוכים</div>
+  </div>
+</div>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/circle-check.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תובנות עיקריות</h2>
+  </div>
+  <ul class="list-disc ps-5 m-0 space-y-2 text-sm marker:text-brand">
+    <li>הביקוש ליחידה זינק פי 12 תוך עשור: ממוצע של 89 נרשמים ליחידה ב-2016 ל-287 ב-2025, עם שיא של 2,421 נרשמים ליחידה ביוני 2022.</li>
+    <li>מחיר המטרה החציוני עלה מ-7,500 ₪/מ"ר ב-2017-2022 ל-12,100 ₪/מ"ר ב-2023-2024 - קפיצה של כ-60% עם כניסת תכנית מחיר מטרה.</li>
+    <li>ריכוז הביקוש במרכז: רחובות (559 נרשמים/יחידה), כפר סבא (509) וצור הדסה (385) מובילות; בעכו, נהריה וקריית ים פחות מ-10 נרשמים ליחידה.</li>
+    <li>הפער הגיאוגרפי במחיר: קדימה-צורן ויהוד 18,500 ₪/מ"ר מול 3,800 ₪/מ"ר בנחף ובטרעאן - פער של פי 5 בין המרכז לפריפריה.</li>
+    <li>רק 13% מהזוכים הם "בני מקום" (תושבי הרשות המקומית), למרות ש-25% מהזוכים בפועל הם בני מקום - יתרון יחסי משמעותי לתושבים המקומיים.</li>
+    <li>רוב הפרויקטים (96%) עדיין בשלב מוקדם: 1,154 בתהליכי הגרלה, 1,087 בבחירת דירות. רק 2 פרויקטים (0.1%) השלימו בקרה לאחר אכלוס.</li>
+  </ul>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">היצע וביקוש לאורך זמן</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">יחידות שהוצעו, נרשמים וזוכים לפי שנת ביצוע ההגרלה, 2016-2025.</p>
+  <div id="chart-year" class="h-72 md:h-96" role="img" aria-label="גרף עמודות מוערמות: יחידות שהוצעו, נרשמים וזוכים לפי שנה, 2016 עד 2025. הנרשמים עולים מ-538 אלף ב-2016 ל-3.74 מיליון ב-2024. היחידות נעות סביב 15-40 אלף לשנה למעט 2021 שיא שלילי של 2,186 יחידות."></div>
+  <details class="mt-3">
+    <summary class="text-xs text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="w-full text-xs mt-2">
+      <caption class="sr-only">יחידות שהוצעו, נרשמים וזוכים לפי שנה</caption>
+      <thead><tr class="text-right"><th scope="col" class="py-1 pe-2">שנה</th><th scope="col" class="py-1 pe-2">יחידות</th><th scope="col" class="py-1 pe-2">נרשמים</th><th scope="col" class="py-1 pe-2">זוכים</th><th scope="col" class="py-1 pe-2">הגרלות</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2016</th><td class="py-1 pe-2">6,041</td><td class="py-1 pe-2">538,848</td><td class="py-1 pe-2">5,103</td><td class="py-1 pe-2">47</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2017</th><td class="py-1 pe-2">40,054</td><td class="py-1 pe-2">1,688,434</td><td class="py-1 pe-2">23,210</td><td class="py-1 pe-2">355</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2018</th><td class="py-1 pe-2">25,844</td><td class="py-1 pe-2">428,261</td><td class="py-1 pe-2">15,043</td><td class="py-1 pe-2">383</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2019</th><td class="py-1 pe-2">25,166</td><td class="py-1 pe-2">576,651</td><td class="py-1 pe-2">18,325</td><td class="py-1 pe-2">506</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2020</th><td class="py-1 pe-2">7,697</td><td class="py-1 pe-2">583,762</td><td class="py-1 pe-2">10,320</td><td class="py-1 pe-2">241</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2021</th><td class="py-1 pe-2">2,186</td><td class="py-1 pe-2">461,201</td><td class="py-1 pe-2">3,122</td><td class="py-1 pe-2">85</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2022</th><td class="py-1 pe-2">20,609</td><td class="py-1 pe-2">3,641,846</td><td class="py-1 pe-2">21,611</td><td class="py-1 pe-2">355</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2023</th><td class="py-1 pe-2">14,743</td><td class="py-1 pe-2">2,726,174</td><td class="py-1 pe-2">14,479</td><td class="py-1 pe-2">135</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2024</th><td class="py-1 pe-2">16,298</td><td class="py-1 pe-2">3,742,279</td><td class="py-1 pe-2">16,304</td><td class="py-1 pe-2">186</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2025</th><td class="py-1 pe-2">3,925</td><td class="py-1 pe-2">1,128,738</td><td class="py-1 pe-2">3,925</td><td class="py-1 pe-2">58</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">יחס ביקוש-היצע: נרשמים ליחידה</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">מספר הנרשמים הממוצע לכל יחידת דיור שהוצעה, לפי שנה. הקו עולה בהתמדה מ-2018 ומצביע על מחנק היצע מתמשך.</p>
+  <div id="chart-ratio" class="h-64 md:h-80" role="img" aria-label="גרף קו: נרשמים ליחידה לפי שנה, 2016 עד 2025. הקו יורד מ-89 ב-2016 ל-17 ב-2018 (שיא של יחידות), ואז עולה בהתמדה ל-287 ב-2025 - קפיצה של פי 3.3 תוך שבע שנים."></div>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">מחיר למ"ר לאורך זמן</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">מחיר חציוני למטר רבוע בהגרלות שבוצעו בכל שנה. הקפיצה ב-2023 משקפת את המעבר לתכנית מחיר מטרה במקום מחיר למשתכן.</p>
+  <div id="chart-price" class="h-64 md:h-80" role="img" aria-label="גרף עמודות וקו: מחיר חציוני למטר רבוע לפי שנה, 2016 עד 2025. יציב סביב 7,500 שקלים ב-2016-2022, קופץ ל-12,113 שקלים ב-2023 ו-12,206 ב-2024. ירידה ל-10,253 ב-2025."></div>
+  <details class="mt-3">
+    <summary class="text-xs text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="w-full text-xs mt-2">
+      <caption class="sr-only">מחיר חציוני למטר רבוע לפי שנה</caption>
+      <thead><tr class="text-right"><th scope="col" class="py-1 pe-2">שנה</th><th scope="col" class="py-1 pe-2">חציון (₪/מ"ר)</th><th scope="col" class="py-1 pe-2">ממוצע (₪/מ"ר)</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2016</th><td class="py-1 pe-2">7,590</td><td class="py-1 pe-2">7,471</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2017</th><td class="py-1 pe-2">7,683</td><td class="py-1 pe-2">7,925</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2018</th><td class="py-1 pe-2">7,016</td><td class="py-1 pe-2">7,316</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2019</th><td class="py-1 pe-2">7,345</td><td class="py-1 pe-2">7,678</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2020</th><td class="py-1 pe-2">7,538</td><td class="py-1 pe-2">7,581</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2021</th><td class="py-1 pe-2">7,776</td><td class="py-1 pe-2">8,100</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2022</th><td class="py-1 pe-2">7,577</td><td class="py-1 pe-2">8,232</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2023</th><td class="py-1 pe-2">12,113</td><td class="py-1 pe-2">11,653</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2024</th><td class="py-1 pe-2">12,206</td><td class="py-1 pe-2">12,125</td></tr>
+        <tr><th scope="row" class="py-1 pe-2 font-normal">2025</th><td class="py-1 pe-2">10,253</td><td class="py-1 pe-2">10,183</td></tr>
+      </tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תחרותיות בין ערים</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">10 הערים התחרותיות ביותר (חציון נרשמים ליחידה) מול 10 הערים עם הביקוש הנמוך ביותר - מינימום 3 פרויקטים לעיר.</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <h3 class="m-0 mb-2 text-base font-semibold text-ink-deep">הכי תחרותיות</h3>
+      <div id="chart-comp" class="h-80" role="img" aria-label="בר אופקי: 10 הערים התחרותיות ביותר לפי חציון נרשמים ליחידה. רחובות מובילה עם 559, אחריה כפר סבא 509, צור הדסה 385, באר יעקב 340, בני עייש 294."></div>
+    </div>
+    <div>
+      <h3 class="m-0 mb-2 text-base font-semibold text-ink-deep">הכי פחות תחרותיות</h3>
+      <div id="chart-easy" class="h-80" role="img" aria-label="בר אופקי: 10 הערים עם הביקוש הנמוך ביותר. נחף עם 1.5 נרשמים ליחידה, כפר מנדא 2.1, סחנין 2.8, קריית ים 3.9, עכו 4.1."></div>
+    </div>
+  </div>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">פער מחירים גיאוגרפי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">8 הערים היקרות מול 8 הערים הזולות לפי מחיר חציוני למ"ר (₪). מינימום 3 פרויקטים לעיר.</p>
+  <div id="chart-price-city" class="h-80 md:h-96" role="img" aria-label="בר אופקי: 8 הערים היקרות ו-8 הזולות לפי מחיר חציוני למטר רבוע. היקרות: קדימה-צורן 18,576 שקלים, יהוד 18,156, כפר סבא 17,408. הזולות: נחף 3,800 שקלים, טרעאן 3,777, בית שאן 4,080. פער של פי 5 בין הקצוות."></div>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">15 הערים המובילות ביחידות דיור</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">סך יחידות דיור שהוצעו בתכנית בכל עיר, 2016-2025. ראשון לציון מובילה עם 14,065 יחידות ב-89 פרויקטים.</p>
+  <div id="chart-top-cities" class="h-96" role="img" aria-label="בר אופקי: 15 הערים המובילות במספר יחידות דיור שהוצעו. ראשון לציון 14,065 יחידות, ירושלים 9,860, נצרת 6,230, חיפה 5,840, באר שבע 5,510."></div>
+  <details class="mt-3">
+    <summary class="text-xs text-subtle cursor-pointer">הצג כטבלה</summary>
+    <table class="w-full text-xs mt-2">
+      <caption class="sr-only">15 הערים המובילות במספר יחידות שהוצעו</caption>
+      <thead><tr class="text-right"><th scope="col" class="py-1 pe-2">עיר</th><th scope="col" class="py-1 pe-2">יחידות</th><th scope="col" class="py-1 pe-2">נרשמים</th><th scope="col" class="py-1 pe-2">פרויקטים</th></tr></thead>
+      <tbody id="tbody-top-cities"></tbody>
+    </table>
+  </details>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/database.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">מצב הפרויקטים</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle mb-3">שלב הפרויקט הנוכחי (מתוך 2,352 הגרלות) והיתר הבנייה. רוב מוחלט של הפרויקטים עדיין בשלב ההגרלה או בחירת הדירות, ורובם בעלי היתר בנייה מלא.</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+    <div>
+      <h3 class="m-0 mb-2 text-base font-semibold text-ink-deep">שלב הפרויקט</h3>
+      <div id="chart-status" class="h-64" role="img" aria-label="דונאט: שלב הפרויקט. בתהליכי הגרלה 1,154 פרויקטים (49%), בחירת דירות 1,087 (46%), בקרת חוזים 109 (4.6%), בקרה לאחר אכלוס 2 (0.1%)."></div>
+    </div>
+    <div>
+      <h3 class="m-0 mb-2 text-base font-semibold text-ink-deep">היתר בנייה</h3>
+      <div id="chart-permit" class="h-64" role="img" aria-label="בר אופקי: סטטוס היתר בנייה. היתר מלא 1,796 פרויקטים, החלטת ועדה 192, טרם הוגשה בקשה 183, הוגשה בקשה 123, היתר מלא לחלק מהמגרשים 51."></div>
+    </div>
+  </div>
+</section>
+
+<section class="card p-5 mb-6">
+  <div class="flex items-center gap-2 mb-3 text-brand">
+    <img src="/icons/list.svg" alt="" class="w-5 h-5" />
+    <h2 class="m-0 text-lg font-semibold text-ink-deep">תיאור מקורי</h2>
+  </div>
+  <p class="m-0 text-sm text-subtle whitespace-pre-line leading-relaxed">במאגר זה מתפרסמים נתונים סטטיסטיים תקופתיים בנושא תכנית דירה בהנחה.
+
+קישור לדף נתונים סטטיסטיים שבועיים נוספים:
+
+https://www.gov.il/he/Departments/publications/reports/mishtaken_statistics</p>
+</section>
+
+<script>
+(function () {
+  const years          = [2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+  const unitsByYear    = [6041,40054,25844,25166,7697,2186,20609,14743,16298,3925];
+  const subsByYear     = [538848,1688434,428261,576651,583762,461201,3641846,2726174,3742279,1128738];
+  const winnersByYear  = [5103,23210,15043,18325,10320,3122,21611,14479,16304,3925];
+  const ratioByYear    = [89.2,42.2,16.6,22.9,75.8,211.0,176.7,184.9,229.6,287.6];
+  const priceYears     = [2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
+  const priceMedian    = [7590,7683,7016,7345,7538,7776,7577,12113,12206,10253];
+  const priceMean      = [7471,7925,7316,7678,7581,8100,8232,11653,12125,10183];
+
+  const topComp = [
+    ["רחובות",559.2,13],["כפר סבא",509.2,8],["צור הדסה",385.3,8],
+    ["באר יעקב",339.6,26],["בני עי\u0022ש",293.7,19],["יהוד",251.3,5],
+    ["ראשון לציון",247.3,89],["קדימה-צורן",245.3,3],["פתח תקוה",238.9,13],["צפת",204.7,8]
+  ];
+  const easy = [
+    ["נחף",1.5,4],["כפר מנדא",2.1,4],["סח\u0022נין",2.8,6],
+    ["קרית ים",3.9,45],["עכו",4.1,51],["שלומי",4.7,4],
+    ["נהריה",5.9,79],["עראבה",6.5,5],["כרמיאל",6.9,34],["טירת כרמל",7.3,53]
+  ];
+  const cheapCities = [
+    ["טרעאן",3777,3],["נחף",3800,5],["בית שאן",4080,22],["סח\u0022נין",4700,4],
+    ["עראבה",4800,5],["כפר מנדא",4900,4],["קרית שמונה",4976,25],["שלומי",5175,4]
+  ];
+  const expCities = [
+    ["קדימה-צורן",18576,3],["יהוד",18156,5],["כפר סבא",17408,8],["תל אביב -יפו",15500,3],
+    ["רחובות",15290,13],["פתח תקוה",14780,10],["אלעד",14679,24],["הרצליה",14574,10]
+  ];
+
+  const topCities = [
+    ["ראשון לציון",14065,1140349,89],["ירושלים",9860,1071256,51],["נצרת",6230,478123,18],
+    ["חיפה",5840,189354,18],["באר שבע",5510,212478,15],["רחובות",5438,3041676,13],
+    ["אשדוד",4860,392018,21],["באר יעקב",4286,1285953,26],["פתח תקוה",3912,890433,13],
+    ["רמלה",3748,289056,12],["יהוד",3631,909798,5],["נתניה",3438,398177,12],
+    ["אשקלון",3380,162037,9],["הרצליה",3280,541920,10],["רעננה",3126,201870,5]
+  ];
+
+  const projectStatus = [
+    {n:"בתהליכי הגרלה", v:1154},
+    {n:"בחירת דירות", v:1087},
+    {n:"בקרת חוזים", v:109},
+    {n:"בקרה לאחר אכלוס", v:2}
+  ];
+
+  const constructionPermit = [
+    {n:"היתר מלא", v:1796},
+    {n:"החלטת ועדה (היתר בתנאים)", v:192},
+    {n:"טרם הוגשה בקשה", v:183},
+    {n:"הוגשה בקשה", v:123},
+    {n:"היתר מלא לחלק מהמגרשים", v:51},
+    {n:"הוגשה בקשה לחלק מהמגרשים", v:4},
+    {n:"החלטת ועדה (היתר בתנאים) לחלק מהמגרשים", v:3}
+  ];
+
+  const tb = document.getElementById("tbody-top-cities");
+  if (tb) {
+    topCities.forEach(function (c) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = "<th scope=\"row\" class=\"py-1 pe-2 font-normal\">" + c[0] + "</th>"
+        + "<td class=\"py-1 pe-2\">" + c[1].toLocaleString() + "</td>"
+        + "<td class=\"py-1 pe-2\">" + c[2].toLocaleString() + "</td>"
+        + "<td class=\"py-1 pe-2\">" + c[3] + "</td>";
+      tb.appendChild(tr);
+    });
+  }
+
+  function axisCat(data) {
+    return { type: "category", data: data, axisLine: { lineStyle: { color: "#c3cfe7" } },
+      axisLabel: { color: "#0c3058", fontFamily: "Rubik" } };
+  }
+  function axisVal(formatter) {
+    return { type: "value",
+      axisLabel: { color: "#0c3058", fontFamily: "Rubik", formatter: formatter || null },
+      splitLine: { lineStyle: { color: "#e5edf8" } } };
+  }
+  function intFmt(v) { return v.toLocaleString("en-US"); }
+
+  const c1 = echarts.init(document.getElementById("chart-year"));
+  c1.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    grid: { left: 64, right: 64, top: 32, bottom: 56, containLabel: true },
+    legend: { bottom: 0, textStyle: { fontFamily: "Rubik", color: "#0c3058" } },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" },
+      valueFormatter: function (v) { return Number(v).toLocaleString("en-US"); } },
+    xAxis: axisCat(years),
+    yAxis: [ axisVal(intFmt), { type: "value", position: "right",
+      axisLabel: { color: "#0c3058", fontFamily: "Rubik", formatter: intFmt },
+      splitLine: { show: false } } ],
+    series: [
+      { name: "יחידות שהוצעו", type: "bar", stack: "sd", data: unitsByYear, yAxisIndex: 0,
+        itemStyle: { borderRadius: [4,4,0,0] } },
+      { name: "זוכים", type: "bar", stack: "sd", data: winnersByYear, yAxisIndex: 0 },
+      { name: "נרשמים", type: "line", smooth: true, symbol: "circle", symbolSize: 8,
+        yAxisIndex: 1, data: subsByYear, lineStyle: { width: 3 },
+        itemStyle: { color: "#0068f5" }, z: 5 }
+    ]
+  }));
+  window.addEventListener("resize", function () { c1.resize(); });
+
+  const ratioData = ratioByYear.map(function (v, i) {
+    const obj = { value: v };
+    if (i === ratioByYear.length - 1) obj.itemStyle = { color: "#dc3545" };
+    return obj;
+  });
+  const c2 = echarts.init(document.getElementById("chart-ratio"));
+  c2.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    grid: { left: 64, right: 24, top: 32, bottom: 56, containLabel: true },
+    tooltip: { trigger: "axis", valueFormatter: function (v) { return Number(v).toFixed(1) + " נרשמים/יחידה"; } },
+    xAxis: axisCat(years),
+    yAxis: axisVal(function (v) { return v.toFixed(0); }),
+    series: [{
+      name: "נרשמים ליחידה",
+      type: "line", smooth: true, symbol: "circle", symbolSize: 10,
+      data: ratioData, lineStyle: { width: 3 },
+      areaStyle: { opacity: 0.18, color: "#0068f5" },
+      label: { show: true, position: "top", fontFamily: "Rubik", color: "#0c3058",
+        formatter: function (p) { return p.value.toFixed(0); } },
+      markPoint: { symbol: "pin", symbolSize: 60,
+        data: [{ type: "max", name: "שיא" }],
+        label: { fontFamily: "Rubik", color: "#fff" } }
+    }]
+  }));
+  window.addEventListener("resize", function () { c2.resize(); });
+
+  const priceBars = priceMedian.map(function (v, i) {
+    const obj = { value: v };
+    if (priceYears[i] === 2023) obj.itemStyle = { color: "#dc3545" };
+    if (priceYears[i] === 2024) obj.itemStyle = { color: "#9a6700" };
+    return obj;
+  });
+  const c3 = echarts.init(document.getElementById("chart-price"));
+  c3.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    grid: { left: 64, right: 24, top: 32, bottom: 56, containLabel: true },
+    legend: { bottom: 0, textStyle: { fontFamily: "Rubik", color: "#0c3058" } },
+    tooltip: { trigger: "axis", valueFormatter: function (v) { return "₪" + Number(v).toLocaleString("en-US"); } },
+    xAxis: axisCat(priceYears),
+    yAxis: axisVal(function (v) { return "₪" + (v/1000) + "K"; }),
+    series: [
+      { name: "חציון (₪/מ\u0022ר)", type: "bar", data: priceBars, barMaxWidth: 38,
+        itemStyle: { borderRadius: [4,4,0,0] },
+        label: { show: true, position: "top", fontFamily: "Rubik", color: "#0c3058",
+          formatter: function (p) { return (p.value/1000).toFixed(1) + "K"; } } },
+      { name: "ממוצע (₪/מ\u0022ר)", type: "line", smooth: true, data: priceMean, symbol: "circle", symbolSize: 8,
+        lineStyle: { width: 3, type: "dashed" } }
+    ]
+  }));
+  window.addEventListener("resize", function () { c3.resize(); });
+
+  function hbar(containerId, data, formatter) {
+    const cats = data.map(function (d) { return d[0]; });
+    const vals = data.map(function (d) { return d[1]; });
+    const chart = echarts.init(document.getElementById(containerId));
+    chart.setOption(window.GovEcharts.option({
+      color: window.GOVIL_PALETTE,
+      grid: { left: 8, right: 64, top: 8, bottom: 24, containLabel: true },
+      tooltip: { trigger: "axis", axisPointer: { type: "shadow" },
+        valueFormatter: function (v) { return formatter(v); } },
+      xAxis: { type: "value", axisLabel: { color: "#0c3058", fontFamily: "Rubik" },
+        splitLine: { lineStyle: { color: "#e5edf8" } } },
+      yAxis: { type: "category", data: cats.slice().reverse(),
+        axisLine: { lineStyle: { color: "#c3cfe7" } },
+        axisLabel: { color: "#0c3058", fontFamily: "Rubik" } },
+      series: [{
+        type: "bar", data: vals.slice().reverse().map(function (v) { return { value: v }; }),
+        itemStyle: { borderRadius: [0,4,4,0] },
+        label: { show: true, position: "right", fontFamily: "Rubik", color: "#0c3058",
+          formatter: function (p) { return formatter(p.value); } }
+      }]
+    }));
+    window.addEventListener("resize", function () { chart.resize(); });
+  }
+  hbar("chart-comp", topComp, function (v) { return v.toFixed(0) + " נרשמים/יחידה"; });
+  hbar("chart-easy", easy,    function (v) { return v.toFixed(1) + " נרשמים/יחידה"; });
+
+  const priceCities = cheapCities.concat(expCities);
+  const priceCats   = priceCities.map(function (d) { return d[0]; });
+  const priceVals   = priceCities.map(function (d) { return d[1]; });
+  const priceColor  = priceCities.map(function (_, i) {
+    return i < cheapCities.length ? "#0dcaf0" : "#0068f5";
+  });
+  const c5 = echarts.init(document.getElementById("chart-price-city"));
+  c5.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    grid: { left: 8, right: 72, top: 24, bottom: 24, containLabel: true },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" },
+      valueFormatter: function (v) { return "₪" + Number(v).toLocaleString("en-US") + " למ\u0022ר"; } },
+    xAxis: { type: "value", axisLabel: { color: "#0c3058", fontFamily: "Rubik",
+        formatter: function (v) { return "₪" + (v/1000) + "K"; } },
+      splitLine: { lineStyle: { color: "#e5edf8" } } },
+    yAxis: { type: "category", data: priceCats,
+      axisLine: { lineStyle: { color: "#c3cfe7" } },
+      axisLabel: { color: "#0c3058", fontFamily: "Rubik" } },
+    series: [{
+      type: "bar", data: priceVals.map(function (v, i) {
+        return { value: v, itemStyle: { color: priceColor[i], borderRadius: [0,4,4,0] } };
+      }),
+      label: { show: true, position: "right", fontFamily: "Rubik", color: "#0c3058",
+        formatter: function (p) { return "₪" + p.value.toLocaleString("en-US"); } }
+    }]
+  }));
+  window.addEventListener("resize", function () { c5.resize(); });
+
+  const topCats = topCities.map(function (d) { return d[0]; }).reverse();
+  const topVals = topCities.map(function (d) { return d[1]; }).reverse();
+  const c6 = echarts.init(document.getElementById("chart-top-cities"));
+  c6.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    grid: { left: 8, right: 88, top: 24, bottom: 24, containLabel: true },
+    legend: { show: false },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" },
+      valueFormatter: function (v) { return Number(v).toLocaleString("en-US"); } },
+    xAxis: { type: "value", axisLabel: { color: "#0c3058", fontFamily: "Rubik" },
+      splitLine: { lineStyle: { color: "#e5edf8" } } },
+    yAxis: { type: "category", data: topCats,
+      axisLine: { lineStyle: { color: "#c3cfe7" } },
+      axisLabel: { color: "#0c3058", fontFamily: "Rubik" } },
+    series: [{
+      name: "יחידות", type: "bar", data: topVals,
+      itemStyle: { borderRadius: [0,4,4,0] },
+      label: { show: true, position: "right", fontFamily: "Rubik", color: "#0c3058",
+        formatter: function (p) { return p.value.toLocaleString("en-US"); } }
+    }]
+  }));
+  window.addEventListener("resize", function () { c6.resize(); });
+
+  const statusData = projectStatus.map(function (d) { return { name: d.n, value: d.v }; });
+  const c7 = echarts.init(document.getElementById("chart-status"));
+  c7.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    tooltip: { trigger: "item",
+      valueFormatter: function (v) { return Number(v).toLocaleString("en-US") + " פרויקטים"; } },
+    legend: { bottom: 0, textStyle: { fontFamily: "Rubik", color: "#0c3058" } },
+    series: [{
+      type: "pie", radius: ["45%", "70%"], center: ["50%", "45%"],
+      data: statusData,
+      label: { fontFamily: "Rubik", color: "#0c3058", formatter: "{b}\n{d}%" },
+      labelLine: { lineStyle: { color: "#c3cfe7" } }
+    }]
+  }));
+  window.addEventListener("resize", function () { c7.resize(); });
+
+  const permitData = constructionPermit.map(function (d) { return [d.n, d.v]; });
+  const permitCats = permitData.map(function (d) { return d[0]; }).reverse();
+  const permitVals = permitData.map(function (d) { return d[1]; }).reverse();
+  const c8 = echarts.init(document.getElementById("chart-permit"));
+  c8.setOption(window.GovEcharts.option({
+    color: window.GOVIL_PALETTE,
+    grid: { left: 8, right: 64, top: 8, bottom: 24, containLabel: true },
+    tooltip: { trigger: "axis", axisPointer: { type: "shadow" },
+      valueFormatter: function (v) { return Number(v).toLocaleString("en-US") + " פרויקטים"; } },
+    xAxis: { type: "value", axisLabel: { color: "#0c3058", fontFamily: "Rubik" },
+      splitLine: { lineStyle: { color: "#e5edf8" } } },
+    yAxis: { type: "category", data: permitCats,
+      axisLine: { lineStyle: { color: "#c3cfe7" } },
+      axisLabel: { color: "#0c3058", fontFamily: "Rubik" } },
+    series: [{
+      type: "bar", data: permitVals,
+      itemStyle: { borderRadius: [0,4,4,0] },
+      label: { show: true, position: "right", fontFamily: "Rubik", color: "#0c3058",
+        formatter: function (p) { return p.value.toLocaleString("en-US"); } }
+    }]
+  }));
+  window.addEventListener("resize", function () { c8.resize(); });
+})();
+</script>

@@ -1,0 +1,25 @@
+{
+  "model": "MiniMax-M3",
+  "elapsed_seconds": 487.16,
+  "usage": {
+    "input_tokens": 408233,
+    "output_tokens": 34575,
+    "total_tokens": 442808,
+    "cache_read_tokens": 0,
+    "cache_write_tokens": 0
+  },
+  "cost_usd": {
+    "tokens_usd": 0.16396,
+    "total_usd": 0.16396
+  },
+  "tool_calls": {
+    "bash": 14,
+    "code_execution": 0,
+    "web_fetch": 0,
+    "web_search": 0
+  },
+  "sandbox_files": [
+    "agent_data.json",
+    "content.html"
+  ]
+}

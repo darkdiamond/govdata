@@ -1,0 +1,33 @@
+{
+  "id": "27047419-e1fc-4f1d-bb15-7f5f0805d226",
+  "slug": "tchnvt-tchbvrh-tzybvryt",
+  "title": "תחנות תחבורה ציבורית",
+  "organization": "משרד התחבורה והבטיחות בדרכים",
+  "organization_slug": "ministry_of_transport",
+  "tags_he": [
+    "אוטובוסים",
+    "משרד התחבורה",
+    "תחבורה",
+    "תחבורה ציבורית"
+  ],
+  "primary_resource_id": "e873e6a2-66c1-494f-a677-f5e77348edb0",
+  "formats": [
+    "CSV"
+  ],
+  "metadata_modified": "2026-06-01T03:04:46.678617Z",
+  "license": "אחר (פתוח)",
+  "record_count": 33937,
+  "resources": [
+    {
+      "url": "https://data.gov.il/dataset/27047419-e1fc-4f1d-bb15-7f5f0805d226/resource/e873e6a2-66c1-494f-a677-f5e77348edb0/download/e873e6a2-66c1-494f-a677-f5e77348edb0.csv",
+      "format": "CSV",
+      "name": "תחנות תחבורה ציבורית",
+      "size_bytes": 4811353,
+      "id": "e873e6a2-66c1-494f-a677-f5e77348edb0",
+      "datastore_active": true
+    }
+  ],
+  "notes": "קובץ עזר לשיוך מרחבי של תחנות אוטובוס, רק\"ל ורכבת ישראל.\r\nהשיוכים הקיימים במאגר הם למטרופולין, שטח ישוב \\ מועצה אזורית, שכונה ואזור סטטיסטי. בנוסף הקובץ מכיל גם קואורדינטות מיקום התחנה בפורמט WGS84 לביצוע ניתוחים גיאוגרפים שונים.",
+  "last_analyzed_at": "2026-05-04T21:08:56.449320Z",
+  "version": 1
+}
