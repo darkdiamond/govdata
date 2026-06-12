@@ -1,7 +1,7 @@
 """Model-agnostic page-builder test harness (manual-run only).
 
-Drives a Kimi / Claude / OpenAI model through the Managed-Agents tool surface
-(`bash`, `code_execution`, `web_fetch`, `web_search`) using **PydanticAI** for
+Drives any model through the Managed-Agents tool surface (`bash`,
+`code_execution`, `web_fetch`, `web_search`) using **PydanticAI** for
 the agent loop and **Podman + llm-sandbox** for the bash/python sandbox.
 
 **Local-only install.** The dependencies for this module live in a separate
@@ -19,14 +19,19 @@ Single implementation per concern (per `feedback_one_path_default` memory):
 - web_search  : `duckduckgo-search` (DDG)
 - Output FS   : `/tmp/session/outputs/` inside the container
 
-The `model` parameter accepts:
-- `kimi-k2.6` (default) — routes to Moonshot's OpenAI-compat endpoint;
-  needs `MOONSHOT_API_KEY`.
-- `grok-4.3` (and any other `grok-*`) — routes to xAI's OpenAI-compat
-  endpoint at https://api.x.ai/v1; needs `XAI_API_KEY`.
-- `anthropic:claude-sonnet-4-6` / `anthropic:claude-haiku-4-5` — routes
-  through PydanticAI's native Anthropic provider; needs `ANTHROPIC_API_KEY`.
-- `openai:gpt-...` — needs `OPENAI_API_KEY`.
+The `model` parameter accepts two forms:
+- `<vendor>/<model>` — an OpenRouter model id (`minimax/minimax-m3`,
+  `moonshotai/kimi-k2.6`, `x-ai/grok-4.3`, `anthropic/claude-sonnet-4-6`,
+  …; browse https://openrouter.ai/models). Routed via PydanticAI's
+  `OpenRouterModel`; needs `OPENROUTER_API_KEY`. Usage accounting is on,
+  so `cost.json` carries the **actual billed USD** (incl. provider cache
+  discounts — the hand-priced estimates were ~6× off for MiniMax direct
+  because its compat endpoint hides cache reads). `reasoning_details`
+  round-trip on history replay, which interleaved-thinking models
+  (MiniMax, Kimi) need for stable tool loops.
+- `anthropic:claude-…` — PydanticAI's native Anthropic provider; needs
+  `ANTHROPIC_API_KEY`. Kept for harness-vs-Managed-Agents calibration;
+  cost falls back to the static Anthropic price table.
 
 Test-only path. Writes outputs to a local directory for visual comparison
 against the live govil.ai pages. Does NOT touch Firestore or GCS, and is
@@ -51,7 +56,9 @@ from .session_runner import _sanitize_content_html, build_user_message
 log = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-SYSTEM_PROMPT_PATH = REPO_ROOT / "agent" / "govdata-agent-kimi.system.md"
+SYSTEM_PROMPT_PATH = REPO_ROOT / "agent" / "govdata-agent-harness.system.md"
+CHECK_SCRIPT_PATH = REPO_ROOT / "agent" / "skills" / "check.py"
+CHECK_SCRIPT_IN_SANDBOX = "/tmp/session/uploads/check.py"
 
 CONTENT_FILENAME = "content.html"
 AGENT_DATA_FILENAME = "agent_data.json"
@@ -68,17 +75,11 @@ STDOUT_CAP_BYTES = 100_000
 WEB_FETCH_CAP_BYTES = 200_000
 SEARCH_SNIPPET_CAP = 2_000
 
-# Per-model token prices in $/1M tokens. Sources:
-#   Anthropic: https://platform.claude.com/docs/en/about-claude/pricing
-#   Moonshot:  https://platform.kimi.ai/docs/pricing
-#   xAI:       https://console.x.ai (per-team; not in public docs)
-# Add a row here to make a model's cost trackable; otherwise the runner
-# logs `cost: unknown` and the cost.json `tokens_usd` / `total_usd`
-# fields stay null (the batch summary handles unpriced runs gracefully).
+# Fallback prices ($/1M tokens) for the native `anthropic:` calibration
+# path only — OpenRouter runs report actual billed cost per response, so
+# they never consult a table. Source:
+#   https://platform.claude.com/docs/en/about-claude/pricing
 PRICE_TABLE: dict[str, dict[str, float]] = {
-    "kimi-k2.6":                  {"input": 0.60, "cached": 0.15, "output": 2.50},
-    "kimi-k2.5":                  {"input": 0.44, "cached": 0.11, "output": 2.00},
-    "grok-4.3":                   {"input": 1.25, "cached": 0.20, "output": 2.50},
     "anthropic:claude-sonnet-4-6": {"input": 3.00, "cached": 0.30, "output": 15.00},
     "anthropic:claude-haiku-4-5":  {"input": 1.00, "cached": 0.10, "output": 5.00},
     "anthropic:claude-opus-4-7":   {"input": 5.00, "cached": 0.50, "output": 25.00},
@@ -150,68 +151,99 @@ class TestSessionResult:
     sandbox_files: list[str] = field(default_factory=list)
 
 
+def _provision_check_script(sandbox) -> None:
+    """Copy agent/skills/check.py into the sandbox at the path the system
+    prompt references (/tmp/session/uploads/check.py — the harness mirror of
+    Managed Agents' /mnt/session/uploads/ mount). check.py is argv-driven,
+    so the same file works at either path. Base64 round-trip because the
+    Podman session has no file-write API (see _Files.read for the inverse).
+    """
+    import base64
+
+    if not CHECK_SCRIPT_PATH.exists():
+        raise FileNotFoundError(
+            f"{CHECK_SCRIPT_PATH} missing — the system prompt's self-check "
+            "step depends on it"
+        )
+    b64 = base64.b64encode(CHECK_SCRIPT_PATH.read_bytes()).decode("ascii")
+    target_dir = CHECK_SCRIPT_IN_SANDBOX.rsplit("/", 1)[0]
+    exe = sandbox.run_code(
+        f"mkdir -p {target_dir} && "
+        f"echo {b64} | base64 -d > {CHECK_SCRIPT_IN_SANDBOX} && "
+        f"python3 -c \"import ast; ast.parse(open('{CHECK_SCRIPT_IN_SANDBOX}').read())\"",
+        language="bash",
+        timeout=30,
+    )
+    if exe.error:
+        raise RuntimeError(
+            f"failed to provision check.py in sandbox: {exe.error.value}: "
+            f"{exe.logs.stderr}"
+        )
+
+
 def _load_system_prompt() -> str:
     if not SYSTEM_PROMPT_PATH.exists():
         raise FileNotFoundError(
             f"{SYSTEM_PROMPT_PATH} missing — run "
-            "`python -m services.page_builder._build_kimi_system` first"
+            "`python -m services.page_builder._build_harness_system` first"
         )
     return SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 
 
-_OPENAI_COMPAT_PROVIDERS: dict[str, dict[str, str]] = {
-    # Each entry maps a model-id prefix to the OpenAI-compat endpoint that
-    # serves it. The model id is forwarded verbatim — the provider treats
-    # the OpenAI SDK as a transport.
-    "kimi-": {
-        "base_url": "https://api.moonshot.ai/v1",
-        "env_var": "MOONSHOT_API_KEY",
-        "label":   "Moonshot",
-    },
-    "grok-": {
-        "base_url": "https://api.x.ai/v1",
-        "env_var": "XAI_API_KEY",
-        "label":   "xAI",
-    },
-}
+def _build_pydantic_model(model_id: str) -> tuple[Any, dict[str, Any]]:
+    """Resolve a model id to (PydanticAI model handle, model_settings).
 
+    Two accepted forms:
+    - `<vendor>/<model>` — OpenRouter id, routed via `OpenRouterModel`
+      with usage accounting enabled (actual billed cost lands in each
+      response's `provider_details['cost']`). Needs OPENROUTER_API_KEY.
+    - `anthropic:<model>` — PydanticAI's native Anthropic provider,
+      kept for harness-vs-Managed-Agents calibration runs.
 
-def _build_pydantic_model(model_id: str):
-    """Resolve a model id to a PydanticAI model handle.
-
-    `kimi-*` and `grok-*` route to their respective OpenAI-compat endpoints
-    (Moonshot / xAI) via PydanticAI's `OpenAIChatModel`. Everything else
-    is passed through as-is so PydanticAI's provider-prefix shorthand
-    (`anthropic:...`, `openai:...`, etc.) can resolve it. Each provider
-    reads its own standard env var.
+    The settings dict always carries the load-bearing `max_tokens`
+    ceiling (see _build_agent) plus any provider-specific keys.
     """
-    for prefix, cfg in _OPENAI_COMPAT_PROVIDERS.items():
-        if not model_id.startswith(prefix):
-            continue
-        from pydantic_ai.models.openai import OpenAIChatModel
-        from pydantic_ai.providers.openai import OpenAIProvider
-        api_key = os.environ.get(cfg["env_var"])
+    base_settings: dict[str, Any] = {"max_tokens": 16384}
+
+    if "/" in model_id:
+        from pydantic_ai.models.openrouter import OpenRouterModel
+        from pydantic_ai.providers.openrouter import OpenRouterProvider
+
+        api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
             raise RuntimeError(
-                f"model={model_id!r} ({cfg['label']}) but "
-                f"{cfg['env_var']} not set"
+                f"model={model_id!r} is an OpenRouter id but "
+                "OPENROUTER_API_KEY is not set"
             )
-        return OpenAIChatModel(
-            model_id,
-            provider=OpenAIProvider(
-                base_url=cfg["base_url"],
-                api_key=api_key,
-            ),
+        # `usage.include` asks OpenRouter for usage accounting: the final
+        # response carries billed cost + cached-token counts, which the
+        # OpenRouterModel maps into provider_details / RequestUsage.
+        base_settings["openrouter_usage"] = {"include": True}
+        return (
+            OpenRouterModel(model_id, provider=OpenRouterProvider(api_key=api_key)),
+            base_settings,
         )
-    return model_id
+
+    if model_id.startswith("anthropic:"):
+        return model_id, base_settings
+
+    raise RuntimeError(
+        f"model={model_id!r} not recognized. Use an OpenRouter id "
+        "(<vendor>/<model>, e.g. minimax/minimax-m3 — browse "
+        "https://openrouter.ai/models) or anthropic:<model> for the "
+        "native calibration path."
+    )
 
 
-def _build_agent(*, model, system_prompt: str) -> Agent[Deps, str]:
-    # retries=5 + an explicit max_tokens ceiling. The token bump is a real
-    # bug-fix, not a defensive knob: Anthropic's streaming adapter (and the
-    # corresponding PydanticAI parser path) drops tool_use input arguments
-    # when the response hits max_tokens mid-stream, leaving the tool call
-    # with `input={}`. Pre-1.91 PydanticAI silently surfaced the truncated
+def _build_agent(
+    *, model, system_prompt: str, model_settings: dict[str, Any]
+) -> Agent[Deps, str]:
+    # retries=5 + an explicit max_tokens ceiling (in model_settings, set by
+    # _build_pydantic_model). The token bump is a real bug-fix, not a
+    # defensive knob: Anthropic's streaming adapter (and the corresponding
+    # PydanticAI parser path) drops tool_use input arguments when the
+    # response hits max_tokens mid-stream, leaving the tool call with
+    # `input={}`. Pre-1.91 PydanticAI silently surfaced the truncated
     # call to the agent loop, which then looked like the model emitting
     # empty bash calls. Sonnet's bash heredocs (multi-KB python scripts in
     # `cat <<PY ... PY`) routinely push past 4096 — the previous default.
@@ -221,7 +253,7 @@ def _build_agent(*, model, system_prompt: str) -> Agent[Deps, str]:
         deps_type=Deps,
         system_prompt=system_prompt,
         retries=5,
-        model_settings={"max_tokens": 16384},
+        model_settings=model_settings,
     )
 
     @agent.tool
@@ -409,10 +441,40 @@ def _extract_usage(result_usage) -> dict[str, int]:
     }
 
 
-def _compute_cost(*, model: str, usage: dict[str, int]) -> dict[str, Any]:
+def _extract_openrouter_cost(messages: list) -> Optional[float]:
+    """Sum the actual billed USD across all model responses in a run.
+
+    With usage accounting enabled, OpenRouter reports per-request cost in
+    credits (1 credit = 1 USD); PydanticAI's OpenRouterModel surfaces it
+    as `ModelResponse.provider_details['cost']`. Returns None when no
+    response carried a cost (e.g. non-OpenRouter run).
+    """
+    total = 0.0
+    seen = False
+    for m in messages:
+        details = getattr(m, "provider_details", None)
+        if isinstance(details, dict) and details.get("cost") is not None:
+            total += float(details["cost"])
+            seen = True
+    return round(total, 6) if seen else None
+
+
+def _compute_cost(*, model: str, usage: dict[str, int], messages: list) -> dict[str, Any]:
+    actual = _extract_openrouter_cost(messages)
+    if actual is not None:
+        return {
+            "tokens_usd": actual,
+            "total_usd": actual,
+            "cost_source": "openrouter",
+        }
     prices = PRICE_TABLE.get(model)
     if prices is None:
-        return {"tokens_usd": None, "total_usd": None, "note": "model not in PRICE_TABLE"}
+        return {
+            "tokens_usd": None,
+            "total_usd": None,
+            "cost_source": None,
+            "note": "no OpenRouter cost in responses and model not in PRICE_TABLE",
+        }
     cached = usage["cache_read_tokens"]
     uncached_input = max(usage["input_tokens"] - cached, 0)
     tokens_usd = (
@@ -423,6 +485,7 @@ def _compute_cost(*, model: str, usage: dict[str, int]) -> dict[str, Any]:
     return {
         "tokens_usd": round(tokens_usd, 6),
         "total_usd": round(tokens_usd, 6),  # only cost component
+        "cost_source": "price_table",
     }
 
 
@@ -434,7 +497,7 @@ def run_test_session(
     org_title: str,
     primary_resource_id: Optional[str],
     out_dir: Path,
-    model: str = "kimi-k2.6",
+    model: str,
     max_iters: int = 30,  # noqa: ARG001 - PydanticAI controls retries; kept for caller parity
 ) -> TestSessionResult:
     """Run a model+sandbox session for one CKAN dataset; write outputs to `out_dir`."""
@@ -460,8 +523,11 @@ def run_test_session(
 
     started = time.monotonic()
     try:
-        py_model = _build_pydantic_model(model)
-        agent = _build_agent(model=py_model, system_prompt=system_prompt)
+        _provision_check_script(sandbox)
+        py_model, model_settings = _build_pydantic_model(model)
+        agent = _build_agent(
+            model=py_model, system_prompt=system_prompt, model_settings=model_settings
+        )
         log.info("test[%s]: agent.run_sync", dataset_id[:8])
         result = agent.run_sync(user_msg, deps=deps)
         elapsed = time.monotonic() - started
@@ -519,7 +585,7 @@ def run_test_session(
     )
 
     usage = _extract_usage(result.usage())
-    cost = _compute_cost(model=model, usage=usage)
+    cost = _compute_cost(model=model, usage=usage, messages=messages)
     cost_path.write_text(
         json.dumps(
             {
@@ -562,8 +628,3 @@ def run_test_session(
         cost_usd=cost,
         sandbox_files=sandbox_files,
     )
-
-
-# Back-compat aliases for callers that already imported the old names.
-KimiSessionResult = TestSessionResult
-run_kimi_session = run_test_session
