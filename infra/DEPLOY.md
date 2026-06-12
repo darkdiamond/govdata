@@ -1,12 +1,14 @@
 # Deployment
 
-Four one-time setups, then the runtime flow is: Cloud Scheduler → Cloud Run
-builder (scan CKAN → one Managed Agents session → stage to GCS) → Cloud Build
-publisher (generate Nuxt site → deploy to Firebase Hosting).
+Three one-time setups, then the runtime flow is: Cloud Scheduler (daily
+07:00 Asia/Jerusalem) → Cloud Run builder (scan CKAN → concurrent
+self-validating agent sessions via OpenRouter → stage to GCS +
+Firestore) → Cloud Build publisher (generate Nuxt site → deploy to
+Firebase Hosting), which fires only when ≥1 new page succeeded.
 
 Container count is pinned to **one** (`--max-instances=1 --concurrency=1`).
-Per-source parallelism lives inside that container via `asyncio.gather`;
-scale by bumping `N_PER_RUN`, not instance count.
+Per-source parallelism lives inside that container via `asyncio.gather`
+bounded by `MAX_CONCURRENT`; the per-run volume fuse is `DAILY_CAP`.
 
 ## 1. Project bootstrap — `infra/bootstrap.sh`
 
@@ -31,9 +33,14 @@ Prereqs:
 
 ```sh
 bash infra/bootstrap.sh
-# populate the Anthropic API key secret
-printf '%s' "$ANTHROPIC_API_KEY" \
-  | gcloud secrets versions add anthropic-api-key --data-file=- --project=govdata-il
+# populate the OpenRouter API key secret (one-time)
+gcloud secrets create openrouter-api-key --data-file=$HOME/.config/openrouter/key \
+  --project=govdata-il 2>/dev/null || \
+  gcloud secrets versions add openrouter-api-key --data-file=$HOME/.config/openrouter/key \
+    --project=govdata-il
+gcloud secrets add-iam-policy-binding openrouter-api-key \
+  --member="serviceAccount:govdata-builder@govdata-il.iam.gserviceaccount.com" \
+  --role=roles/secretmanager.secretAccessor --project=govdata-il
 ```
 
 The script prints the service account emails it created and ends with
@@ -41,29 +48,18 @@ instructions for registering the Cloud Build trigger (needs a connected
 repo — either a GitHub 2nd-gen connection or a Cloud Source Repositories
 mirror).
 
-## 2. Managed Agent — `infra/setup-agent.sh`
+## 2. Cloud Run builder — `infra/builder.deploy.sh`
 
-Unchanged from the previous architecture.
-
-Prereqs:
-
-- `ANTHROPIC_API_KEY` exported
-- [`ant` CLI](https://platform.claude.com/docs/en/api/sdks/cli.md) on `$PATH`
+Builds the Docker image from the repo root and deploys the service. The
+agent runtime ships inside the image: `agent/system-prompt.md` (system
+prompt), `agent/skills/check.py` (self-check), and the PydanticAI loop
+calling OpenRouter.
 
 ```sh
-bash infra/setup-agent.sh
-```
-
-Writes `ANTHROPIC_AGENT_ID` + `ANTHROPIC_ENV_ID` to stdout; export them
-before running `builder.deploy.sh`.
-
-## 3. Cloud Run builder — `infra/builder.deploy.sh`
-
-Builds the Docker image from the repo root and deploys the service.
-
-```sh
-export ANTHROPIC_AGENT_ID=... ANTHROPIC_ENV_ID=...
 bash infra/builder.deploy.sh
+# model/scale knobs (defaults shown):
+#   OPENROUTER_MODEL=minimax/minimax-m3 DAILY_CAP=50 MAX_CONCURRENT=8 \
+#   SESSION_ATTEMPTS=3 bash infra/builder.deploy.sh
 ```
 
 Notable flags (see script for the full list):
@@ -72,8 +68,8 @@ Notable flags (see script for the full list):
 | ------------------- | ---------------------------------------- |
 | `--max-instances`   | 1 (never more than one container)        |
 | `--concurrency`     | 1 (one request in flight; no queueing)   |
-| `--cpu / --memory`  | 2 / 1Gi (bump memory if `N_PER_RUN > 20`)|
-| `--timeout`         | 3600 s (Managed Agents decide when done) |
+| `--cpu / --memory`  | 2 / 1Gi (bump memory if `MAX_CONCURRENT > 16`) |
+| `--timeout`         | 3600 s (bounds the whole daily batch)    |
 | `--no-allow-unauthenticated` | Scheduler SA + your own ID token only |
 
 Manual smoke after deploy:
@@ -95,7 +91,7 @@ curl -X POST "$URL" \
   -d '{"dataset_id": "<ckan-id>"}'
 ```
 
-## 4. Cloud Scheduler — `infra/scheduler.setup.sh`
+## 3. Cloud Scheduler — `infra/scheduler.setup.sh`
 
 Creates the scheduler job **PAUSED**. Enable it only after the manual
 invokes have produced real pages.
@@ -103,16 +99,18 @@ invokes have produced real pages.
 ```sh
 bash infra/scheduler.setup.sh
 # ... when ready to flip on:
-gcloud scheduler jobs resume govdata-pipeline-6h --location=me-west1
+gcloud scheduler jobs resume govdata-pipeline-daily --location=me-west1
 ```
 
 ## Publishing
 
-Publishing runs **locally** via `infra/publish-local.sh` — same four
-steps as the Cloud Build pipeline (rsync agent artifacts → rebuild
-manifest + per-dataset JSON from Firestore → `nuxt generate` →
-`firebase deploy --only hosting`), just on your machine. Run it whenever
-agent runs have staged new pages:
+Automatic: the builder fires the `govdata-publish` Cloud Build trigger
+(`cloudbuild-publish.yaml`) after any run with ≥1 successful page;
+idle runs (no new datasets) trigger nothing. The trigger must be
+registered against a connected repo; `infra/bootstrap.sh` prints the
+exact registration command.
+
+Manual/emergency path — same four steps on your machine:
 
 ```sh
 source .venv/bin/activate
@@ -120,22 +118,11 @@ source .venv/bin/activate
 ./infra/publish-local.sh --serve     # local preview, no deploy
 ```
 
-## Cloud Build publisher trigger (dormant)
-
-`cloudbuild-publish.yaml` in the repo root contains the same pipeline
-for Cloud Build. The trigger must be registered against a connected
-repo; `infra/bootstrap.sh` prints the exact
-`gcloud builds triggers create manual …` invocation after printing the
-connection options.
-
-The auto-fire from the builder is **disabled**: the `govdata-builder`
-Cloud Run service has `PUBLISH_TRIGGER_ID=""`, which makes
-`services/page_builder/pipeline.py::_trigger_publish` a no-op. To go
-back to Cloud Build publishing:
+To pause auto-publishing (e.g. while reworking the frontend):
 
 ```sh
 gcloud run services update govdata-builder --region=me-west1 \
-  --update-env-vars=PUBLISH_TRIGGER_ID=govdata-publish
+  --update-env-vars=PUBLISH_TRIGGER_ID=""
 ```
 
 ### Pre-baked publisher image
@@ -178,7 +165,7 @@ python -m services.scanner.main scan --limit 5
 # Dry run the pipeline against the emulator
 python -m services.page_builder.pipeline --dry-run
 
-# Full pipeline for one source (needs ANTHROPIC_* + GCS_STAGING_BUCKET if running for real)
+# Full pipeline for one source (needs OPENROUTER_API_KEY + GCS_STAGING_BUCKET)
 python -m services.page_builder.pipeline --source <ckan-id> --no-trigger-publish
 ```
 

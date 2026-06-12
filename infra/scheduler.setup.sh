@@ -13,7 +13,7 @@ set -euo pipefail
 PROJECT=${FIREBASE_PROJECT:-govdata-il}
 REGION=${REGION:-me-west1}
 SERVICE=${CLOUD_RUN_SERVICE:-govdata-builder}
-JOB_NAME=${SCHEDULER_JOB:-govdata-pipeline-6h}
+JOB_NAME=${SCHEDULER_JOB:-govdata-pipeline-daily}
 SCHEDULE=${SCHEDULE:-"0 7 * * *"}
 TIMEZONE=${SCHEDULE_TZ:-"Asia/Jerusalem"}
 
