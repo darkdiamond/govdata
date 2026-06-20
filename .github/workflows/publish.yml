@@ -86,7 +86,7 @@ jobs:
           FIRESTORE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT }}
           GOOGLE_CLOUD_PROJECT: ${{ vars.FIREBASE_PROJECT }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: npm
