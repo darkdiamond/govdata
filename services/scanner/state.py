@@ -28,6 +28,13 @@ class StateDB:
     def get_dataset_metadata_modified(self, dataset_id: str) -> Optional[datetime]:
         return self.store.get_dataset_metadata_modified(dataset_id)
 
+    # Combined read (metadata_modified + analysis_status) for the change
+    # detector — lets it also notice a `restricted` doc reappearing in CKAN.
+    def get_scan_state(
+        self, dataset_id: str
+    ) -> tuple[Optional[datetime], Optional[str]]:
+        return self.store.get_scan_state(dataset_id)
+
     def save_dataset(self, dataset: Dataset, status: DatasetStatus) -> None:
         """Upsert a source document and record its detected `change_status`."""
         self.store.save_dataset(dataset, change_status=str(status.value if hasattr(status, "value") else status))

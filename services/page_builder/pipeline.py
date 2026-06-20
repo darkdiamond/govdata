@@ -28,6 +28,7 @@ from services.shared.firestore import FirestoreStateStore, SourceRecord
 from services.shared.resources import pick_primary_resource_id
 
 from . import selector
+from .agent_contract import ResourceRestrictedError
 from .agent_runner import run_production_session
 
 log = logging.getLogger("page_builder.pipeline")
@@ -61,6 +62,17 @@ async def _build_one(
                 gcs_bucket=staging_bucket,
                 store=store,
             )
+        except ResourceRestrictedError as e:
+            # The primary resource's data is 403-restricted upstream — raised
+            # by the CKAN prefetch before any agent session ran (no model
+            # cost). Park the source as `restricted` (a deliberate exclusion,
+            # not a retryable failure): it's skipped by the selector and the
+            # publisher until it reappears in CKAN search. `restricted` is
+            # neither `succeeded` nor `failed`, so it won't trigger a publish
+            # or burn the failed-retry budget.
+            log.warning("build skipped for %s — data restricted: %s", src.id, e)
+            await asyncio.to_thread(store.mark_analysis_restricted, src.id, str(e))
+            return {"id": src.id, "status": "restricted", "error": str(e)}
         except Exception as e:
             log.exception("build failed for %s", src.id)
             await asyncio.to_thread(store.mark_analysis_failed, src.id, str(e))
