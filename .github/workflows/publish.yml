@@ -44,19 +44,19 @@ jobs:
       PROJECT: ${{ vars.FIREBASE_PROJECT }}
       STAGING_BUCKET: ${{ vars.GCS_STAGING_BUCKET }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v3
         with:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_CI_SA }}
 
-      - uses: google-github-actions/setup-gcloud@v2
+      - uses: google-github-actions/setup-gcloud@v3
 
       # Delta fetch: the cache carries the previous run's pages, so rsync
       # only moves new/changed objects. Cache key always misses (run id) —
       # restore-keys pulls the most recent snapshot, then we save ours.
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         with:
           path: frontend/public/datasets
           key: datasets-${{ github.run_id }}
@@ -70,7 +70,7 @@ jobs:
             -x '.*/(data|agent_data)\.json$|.*/index\.html$' \
             "gs://${STAGING_BUCKET}/datasets/" frontend/public/datasets/
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
           cache: pip
@@ -86,7 +86,7 @@ jobs:
           FIRESTORE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT }}
           GOOGLE_CLOUD_PROJECT: ${{ vars.FIREBASE_PROJECT }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
           cache: npm
