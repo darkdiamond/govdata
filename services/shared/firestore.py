@@ -136,6 +136,22 @@ class FirestoreStateStore:
             return None
         return (snap.to_dict() or {}).get("metadata_modified")
 
+    def get_scan_state(
+        self, dataset_id: str
+    ) -> tuple[Optional[datetime], Optional[str]]:
+        """Return `(metadata_modified, analysis_status)` in a single read.
+
+        Used by the scanner's ChangeDetector so it can both decide
+        new/updated/unchanged AND notice a `restricted` doc that has
+        reappeared in CKAN search — without a second Firestore read per
+        dataset. A missing doc returns `(None, None)`.
+        """
+        snap = self.client.collection(SOURCES_COLL).document(dataset_id).get()
+        if not snap.exists:
+            return None, None
+        data = snap.to_dict() or {}
+        return data.get("metadata_modified"), data.get("analysis_status")
+
     def save_dataset(self, dataset, change_status: str) -> None:
         """Upsert a `sources/{id}` document. Preserves analyzer fields."""
         now = datetime.now(timezone.utc)
@@ -190,6 +206,16 @@ class FirestoreStateStore:
             payload["last_analyzed_at"] = None
             payload["last_error"] = None
             payload["page_path"] = None
+        elif (snap.to_dict() or {}).get("analysis_status") == "restricted":
+            # The dataset is back in CKAN's public search after having been
+            # access-restricted (datastore 403 → `mark_analysis_restricted`).
+            # Re-enable it: clear the exclusion so the selector's never-track
+            # picks it up again. The scanner's change detector forces a re-save
+            # for restricted docs (see ChangeDetector.detect_status), so this
+            # branch fires even when CKAN's metadata_modified is unchanged.
+            payload["analysis_status"] = "never"
+            payload["last_error"] = None
+            payload["failed_attempts"] = 0
 
         ref.set(payload, merge=True)
 
@@ -423,6 +449,25 @@ class FirestoreStateStore:
             {"embedding": embedding}, merge=True
         )
 
+    def mark_analysis_restricted(self, dataset_id: str, error: str) -> None:
+        """Park a source whose primary-resource data is 403-restricted upstream.
+
+        Unlike `mark_analysis_failed`, this is a deliberate *exclusion*, not a
+        retryable failure: it does NOT bump `failed_attempts`, and the
+        `restricted` status is queried by neither the selector (never/failed/
+        changed tracks) nor the publisher (succeeded only) — so the source is
+        skipped for builds and dropped from the next publish. It self-heals
+        only when the dataset reappears in CKAN search (see `save_dataset` /
+        ChangeDetector), which resets it to `never`.
+        """
+        self.client.collection(SOURCES_COLL).document(dataset_id).set(
+            {
+                "analysis_status": "restricted",
+                "last_error": (error or "")[:1000],
+            },
+            merge=True,
+        )
+
     def mark_analysis_failed(self, dataset_id: str, error: str) -> None:
         # `failed_attempts` counts whole pipeline-run failures (each one
         # already burned SESSION_ATTEMPTS in-run retries). The selector
@@ -441,7 +486,7 @@ class FirestoreStateStore:
     def get_stats(self) -> dict[str, int]:
         coll = self.client.collection(SOURCES_COLL)
         counts: dict[str, int] = {"total": _count(coll)}
-        for status in ("never", "succeeded", "failed", "pending"):
+        for status in ("never", "succeeded", "failed", "pending", "restricted"):
             counts[status] = _count(
                 coll.where(filter=FieldFilter("analysis_status", "==", status))
             )
