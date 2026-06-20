@@ -89,6 +89,9 @@ deadsea.png
 # model_test harness scratch dir (tmp/model_test/<id>/...)
 tmp/
 
+# Code-graph tool output (local analysis artifact, not part of the project)
+graphify-out/
+
 # Nuxt build output + stray dirs
 frontend/dist
 frontend/3000/

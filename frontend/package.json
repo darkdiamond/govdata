@@ -2,6 +2,14 @@
   "name": "govdata-frontend",
   "version": "0.1.0",
   "private": true,
+  "description": "Nuxt 3 frontend for govil.ai — Hebrew-RTL landing pages for Israeli open data",
+  "license": "MIT",
+  "homepage": "https://govil.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/darkdiamond/govdata.git",
+    "directory": "frontend"
+  },
   "type": "module",
   "scripts": {
     "dev": "nuxt dev --host",

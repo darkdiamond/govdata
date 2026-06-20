@@ -1,0 +1,47 @@
+name: Bug report
+description: Report a problem with the pipeline, agent, or frontend
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. Please search existing
+        issues first to avoid duplicates.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Scanner (CKAN → Firestore)
+        - Builder / pipeline
+        - Agent runtime / system prompt
+        - Publisher
+        - Frontend (Nuxt site)
+        - Infra / deploy
+        - Other / not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: A clear description of the bug, including the dataset id or page URL if relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: Commands run, env vars set, and any relevant output or logs.
+      render: shell
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, Python version, Node version, and whether you ran against the Firestore emulator or a real project.

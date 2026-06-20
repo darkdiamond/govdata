@@ -287,9 +287,3 @@ source .venv/bin/activate            # publish.py must be importable
 Needs `gcloud auth application-default login` + `firebase login` once.
 
 For cloud smoke + deploy, see `infra/DEPLOY.md`.
-
-## Memory
-
-Feedback memories live under `~/.claude/projects/-mnt-d-workdir-govdata/memory/`.
-If the user gives feedback that changes approach, save it as a feedback
-memory so future sessions don't re-litigate.
