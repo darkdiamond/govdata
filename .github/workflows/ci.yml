@@ -1,0 +1,117 @@
+# CI gate for pull requests (and pushes to main). Validates that a change —
+# notably the grouped Dependabot bumps — doesn't break the two things that
+# actually ship: the Python services and the static Nuxt build.
+#
+# Cost-efficient by construction:
+#   - `changes` filter runs each job only when its files moved, so an
+#     actions-only or pip-only PR never pays for a Node build (and vice versa).
+#   - concurrency cancels superseded runs on rapid pushes (one PR, one run).
+#   - pip + npm caches keyed on the lockfiles make repeat installs cheap.
+#   - the `ci` aggregate job is one stable status name to require in branch
+#     protection / Dependabot auto-merge, and it passes correctly when a path
+#     job is skipped.
+#
+# Both checks mirror production exactly: `pytest services/` is the suite, and
+# `npm run generate` is the same command the publisher runs (nuxt generate +
+# sitemap). The build degrades gracefully without Firestore data (nuxt.config
+# returns [] routes, build-sitemap emits a static-only map), so a bare PR
+# checkout still exercises Vite, Tailwind, vue-router and TypeScript — enough
+# to catch a breaking dependency bump before it reaches main.
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      python: ${{ steps.filter.outputs.python }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            python:
+              - 'services/**'
+              - 'requirements.txt'
+              - '.github/workflows/ci.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+
+  python:
+    needs: changes
+    if: needs.changes.outputs.python == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            services/page_builder/requirements.txt
+      - name: Install dependencies
+        # requirements-test.txt is intentionally omitted: it only pulls
+        # llm-sandbox[podman] for the manual harness, needs Podman, and is
+        # unused by the unit suite (every test mocks Firestore).
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r services/page_builder/requirements.txt
+      - name: Run tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: pytest services/ -q
+
+  frontend:
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install
+        working-directory: frontend
+        run: npm ci --prefer-offline --no-audit --no-fund
+      - name: Build (production parity)
+        working-directory: frontend
+        run: npm run generate
+
+  # Single required status check. `if: always()` so it still evaluates when a
+  # path job was skipped; fails if any needed job failed or was cancelled.
+  ci:
+    if: always()
+    needs: [python, frontend]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify no job failed
+        # RESULTS is a space-joined list of GitHub-controlled job results
+        # (success/failure/skipped/cancelled), passed via env rather than
+        # interpolated into the script per workflow-injection guidance.
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          if echo "$RESULTS" | grep -qE 'failure|cancelled'; then
+            echo "A required CI job failed or was cancelled."
+            exit 1
+          fi
+          echo "All CI jobs passed (or were skipped)."
