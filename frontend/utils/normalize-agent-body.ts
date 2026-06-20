@@ -1,5 +1,5 @@
 // Normalizes agent-authored content.html before it hits v-html in
-// pages/datasets/[id].vue. Single ingress point so every dataset page
+// pages/datasets/[slug].vue. Single ingress point so every dataset page
 // gets the same defenses regardless of which day the agent ran.
 //
 // Five transforms:

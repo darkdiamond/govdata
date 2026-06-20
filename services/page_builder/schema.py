@@ -57,6 +57,9 @@ class DatasetMeta(BaseModel):
 
     id: str
     slug: str                                    # deterministic Hebrew→Latin slug
+    # URL segment for /datasets/<page_slug>/ — Hebrew title slug + a slice of
+    # the CKAN id. Filled by the publisher (_build_page_slugs); empty until then.
+    page_slug: str = ""
     title: str
     organization: Optional[str] = None           # human-readable ministry title
     organization_slug: Optional[str] = None      # stable key for /ministries/<slug>/
@@ -135,6 +138,7 @@ class ManifestEntry(BaseModel):
     # DatasetMeta fields
     id: str
     slug: str
+    page_slug: str = ""
     title: str
     organization: Optional[str] = None
     organization_slug: Optional[str] = None

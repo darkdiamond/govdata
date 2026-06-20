@@ -37,7 +37,7 @@ function slimEntry(e: ManifestEntry): SlimEntry {
 
 async function readPublicJson<T>(rel: string): Promise<T> {
   // Guard the node imports so Vite's client bundler can tree-shake them out —
-  // same pattern as pages/datasets/[id].vue's server-only fetcher.
+  // same pattern as pages/datasets/[slug].vue's server-only fetcher.
   const fs = await import('node:fs/promises')
   const path = await import('node:path')
   const p = path.resolve(process.cwd(), 'public', rel)

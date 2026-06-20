@@ -33,6 +33,7 @@ from typing import Iterable, Optional
 
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 from services.shared.resources import pick_primary_resource_id
+from services.shared.slug import hebrew_slugify
 
 from .embeddings import voyage_enabled, embed, embedding_input
 from .related import top_related
@@ -145,6 +146,37 @@ def _build_tag_slugs(entries: Iterable[ManifestEntry]) -> dict[str, str]:
     return out
 
 
+def _build_page_slugs(metas: dict[str, DatasetMeta]) -> dict[str, str]:
+    """Map each dataset id to its URL segment for /datasets/<page_slug>/.
+
+    The segment is the Hebrew title slug + a slice of the CKAN id, e.g.
+    `רישיונות-עסק-0b3e1f2a`. Keeping a slice of the (globally unique) id
+    makes the slug unique with trivial reverse resolution. The id slice
+    starts at the first UUID group (8 hex chars); on the astronomically
+    unlikely collision (same title slug AND same id prefix) we widen the
+    slice deterministically. Iterates in sorted id order so the output is
+    stable across runs.
+    """
+    seen: dict[str, str] = {}        # page_slug -> the id that owns it
+    out: dict[str, str] = {}
+    for sid in sorted(metas):
+        base = hebrew_slugify(metas[sid].title)
+        compact = sid.replace("-", "")
+        n = 8
+        while True:
+            suffix = compact[:n] or sid
+            slug = f"{base}-{suffix}" if base else suffix
+            if slug not in seen or seen[slug] == sid:
+                break
+            n += 4
+            if n > len(compact):       # exhausted — fall back to the full id
+                slug = f"{base}-{sid}" if base else sid
+                break
+        seen[slug] = sid
+        out[sid] = slug
+    return out
+
+
 def _merged_entry(
     meta: DatasetMeta,
     agent: Optional[AgentData],
@@ -189,6 +221,7 @@ def _write_agent_data(out_root: Path, dataset_id: str, agent: AgentData) -> Path
 # buildDatasetLdSummary (collection JSON-LD) and the Hero count/date.
 _SEARCH_INDEX_FIELDS = {
     "id",
+    "page_slug",
     "title",
     "organization",
     "organization_slug",
@@ -286,6 +319,13 @@ def publish(
             if emb is not None:
                 store.set_embedding(src.id, emb)
         embeddings[src.id] = emb
+
+    # Assign the URL slug for each dataset now that every meta is loaded —
+    # uniqueness is computed over the whole corpus. Flows into the manifest
+    # entries (via meta.model_dump) and data.json below.
+    page_slugs = _build_page_slugs(metas)
+    for sid, slug in page_slugs.items():
+        metas[sid].page_slug = slug
 
     # Second pass: compute related_ids over the full corpus. We build an
     # interim ManifestEntry for each so `top_related()` can use embeddings

@@ -30,6 +30,9 @@ export interface ResourceEntry {
 export interface DatasetMeta {
   id: string
   slug: string
+  /** URL segment for /datasets/<page_slug>/ — Hebrew title slug + id slice.
+   *  Written by the publisher (_build_page_slugs). */
+  page_slug?: string
   title: string
   organization?: string
   organization_slug?: string
@@ -74,6 +77,7 @@ export interface ManifestEntry {
   // DatasetMeta fields
   id: string
   slug: string
+  page_slug?: string
   title: string
   organization?: string
   organization_slug?: string
@@ -108,6 +112,7 @@ export interface ManifestEntry {
  *  structurally assignable to `SlimEntry`. */
 export interface SlimEntry {
   id: string
+  page_slug?: string
   title: string
   organization?: string
   organization_slug?: string

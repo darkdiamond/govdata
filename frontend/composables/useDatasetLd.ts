@@ -146,7 +146,7 @@ export function buildDatasetLdSummary(entry: LdSource): DatasetLdSummary {
   return {
     '@type': 'Dataset',
     name: entry.title,
-    url: `${SITE_URL}/datasets/${entry.id}/`,
+    url: `${SITE_URL}/datasets/${encodeURI(entry.page_slug || entry.id)}/`,
     description: datasetDescription(entry),
     license: buildLicenseLd(entry.license),
     creator: datasetCreator(entry),
