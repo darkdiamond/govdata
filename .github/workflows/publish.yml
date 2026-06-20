@@ -51,7 +51,7 @@ jobs:
           workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ vars.GCP_CI_SA }}
 
-      - uses: google-github-actions/setup-gcloud@v2
+      - uses: google-github-actions/setup-gcloud@v3
 
       # Delta fetch: the cache carries the previous run's pages, so rsync
       # only moves new/changed objects. Cache key always misses (run id) —
