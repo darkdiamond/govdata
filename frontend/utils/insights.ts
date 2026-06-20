@@ -83,7 +83,7 @@ export function buildInsightPool(entries: SlimEntry[]): InsightSlide[] {
       stat: buildStat(e),
       primary_tag: buildPrimaryTag(e),
       is_fresh: buildIsFresh(e.metadata_modified),
-      href: `/datasets/${e.id}/`,
+      href: `/datasets/${encodeURI(e.page_slug || e.id)}/`,
     })
   }
   return pool
