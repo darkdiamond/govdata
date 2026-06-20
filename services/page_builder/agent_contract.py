@@ -28,6 +28,16 @@ from urllib.parse import urlencode
 
 log = logging.getLogger(__name__)
 
+
+class ResourceRestrictedError(Exception):
+    """The primary resource's CKAN datastore returns a 403 Authorization
+    Error — the dataset's data is access-restricted upstream (private /
+    de-listed). A build can't produce a real data page, and the 403 is
+    deterministic (retrying won't help), so the caller marks the source
+    `restricted` instead of burning an agent session or counting it as a
+    transient failure."""
+
+
 # CKAN schema prefetch — skip the agent's first 5–10 schema-discovery curls
 # by inlining `fields + total + sample_rows` into the user message. The WAF
 # 403s requests without a browser User-Agent (see scanner notes), and the
@@ -46,6 +56,32 @@ def _truncate_value(v: Any) -> Any:
     if isinstance(v, str) and len(v) > _PREFETCH_VALUE_TRUNC:
         return v[: _PREFETCH_VALUE_TRUNC - 1] + "…"
     return v
+
+
+def _payload_is_authorization_error(payload: dict) -> bool:
+    """True when a CKAN JSON envelope carries an Authorization Error.
+
+    CKAN reports a restricted resource as `{"success": false, "error":
+    {"__type": "Authorization Error", …}}` — surfaced either with HTTP 403
+    or (rarely) HTTP 200.
+    """
+    err = payload.get("error") or {}
+    return "Authorization" in str(err.get("__type") or "")
+
+
+def _http_403_is_restriction(e: urllib_error.HTTPError) -> bool:
+    """Decide whether a 403 from datastore_search is an access restriction.
+
+    We send a browser User-Agent, so the gov.il WAF won't 403 us — a 403 here
+    is the CKAN datastore Authorization Error. Confirm via the JSON body when
+    it parses; if it doesn't, treat a bare 403 as a restriction anyway
+    (rate-limiting is 429/503, never 403).
+    """
+    try:
+        body = json.loads(e.read().decode("utf-8", errors="replace"))
+    except Exception:
+        return True
+    return _payload_is_authorization_error(body)
 
 
 def fetch_resource_preview(resource_id: str) -> Optional[dict]:
@@ -68,11 +104,24 @@ def fetch_resource_preview(resource_id: str) -> Optional[dict]:
     url = f"{_CKAN_DATASTORE_URL}?{qs}"
     req = urllib_request.Request(url, headers={"User-Agent": _CKAN_BROWSER_UA})
     last_err: Optional[BaseException] = None
+    payload: Optional[dict] = None
     for attempt in (1, 2):
         try:
             with urllib_request.urlopen(req, timeout=_PREFETCH_TIMEOUT_S) as resp:
                 payload = json.loads(resp.read().decode("utf-8", errors="replace"))
             break
+        except urllib_error.HTTPError as e:
+            # A 403 here is a CKAN datastore Authorization Error — the data is
+            # access-restricted upstream. Deterministic, so don't retry: signal
+            # the caller to mark the source `restricted` rather than fall through
+            # to an agent session that will only 403 again.
+            if e.code == 403 and _http_403_is_restriction(e):
+                raise ResourceRestrictedError(
+                    f"CKAN datastore 403 (Authorization Error) for resource {resource_id}"
+                ) from e
+            last_err = e
+            if attempt == 1:
+                continue
         except (urllib_error.URLError, TimeoutError, json.JSONDecodeError) as e:
             last_err = e
             if attempt == 1:
@@ -82,7 +131,13 @@ def fetch_resource_preview(resource_id: str) -> Optional[dict]:
             "ckan prefetch %s failed after retry: %s", resource_id[:8], last_err
         )
         return None
-    if not payload.get("success"):
+    if not payload or not payload.get("success"):
+        # A 200 carrying the same Authorization Error is the restriction
+        # surfaced differently — treat it identically to the 403 path.
+        if payload and _payload_is_authorization_error(payload):
+            raise ResourceRestrictedError(
+                f"CKAN datastore Authorization Error for resource {resource_id}"
+            )
         log.warning("ckan prefetch %s success=false", resource_id[:8])
         return None
     result = payload.get("result") or {}
