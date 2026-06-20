@@ -1,1 +1,0 @@
-{"nodes": [], "edges": [], "hyperedges": [{"id": "hyper_firestore_sources_writers", "label": "writers of Firestore sources/* doc", "members": ["cls_scanner", "page_builder_session_runner_py", "ext_firestore_sources_coll"], "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "CLAUDE.md"}]}
