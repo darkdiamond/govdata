@@ -7,16 +7,17 @@ import { loadFullManifestServer } from '~/utils/search-index'
 import { normalizeAgentBody } from '~/utils/normalize-agent-body'
 
 const route = useRoute()
-const id = String(route.params.id)
+const slug = String(route.params.slug)
 
 interface RelatedEntry {
   id: string
+  page_slug?: string
   title: string
   organization?: string
   summary_he?: string
 }
 
-const { data } = await useAsyncData(`dataset-${id}`, async () => {
+const { data } = await useAsyncData(`dataset-${slug}`, async () => {
   // Guard the node imports so Vite's client bundler can tree-shake
   // them out — they're SSR/prerender-only. Without the guard Vite
   // emits a "Module 'node:fs/promises' has been externalized for
@@ -25,6 +26,15 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
   if (!import.meta.server) return null
   const fs = await import('node:fs/promises')
   const path = await import('node:path')
+
+  // The URL carries the page_slug; on-disk artifacts are keyed by the CKAN
+  // id (single writer per file — see CLAUDE.md). Resolve slug → id via the
+  // manifest, which this page loads anyway for related/tag data below. An
+  // unknown slug (or a checkout with no manifest) falls through to 404.
+  const manifest = await loadFullManifestServer()
+  const me = manifest.datasets.find((d) => d.page_slug === slug)
+  if (!me) return null
+  const id = me.id
   const dir = path.resolve(process.cwd(), 'public/datasets', id)
 
   // Three artifacts, two writers:
@@ -64,15 +74,14 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
   let related: RelatedEntry[] = []
   let tagSlugs: Record<string, string> = {}
   try {
-    const manifest = await loadFullManifestServer()
-    const me = manifest.datasets.find((d) => d.id === id)
     const byId = new Map(manifest.datasets.map((d) => [d.id, d]))
-    related = (me?.related_ids ?? [])
+    related = (me.related_ids ?? [])
       .map((rid) => byId.get(rid))
       .filter((d): d is ManifestEntry => Boolean(d))
       .slice(0, 5)
       .map((d) => ({
         id: d.id,
+        page_slug: d.page_slug,
         title: d.title,
         organization: d.organization,
         summary_he: d.summary_he,
@@ -82,7 +91,7 @@ const { data } = await useAsyncData(`dataset-${id}`, async () => {
       if (t && slugMap[t]) tagSlugs[t] = slugMap[t]
     }
   } catch {
-    // No manifest in this checkout — chips fall back to raw-tag hrefs.
+    // Defensive — manifest is already loaded above, so this rarely trips.
   }
 
   // Detect which viz libs the agent body actually references so the page
@@ -211,7 +220,10 @@ function formatClass(fmt?: string | null): string {
 }
 
 const SITE_URL = 'https://govil.ai'
-const datasetUrl = `${SITE_URL}/datasets/${entry.value.id}/`
+// page_slug is the URL segment (Hebrew title slug + id slice); encode for the
+// wire since it contains Hebrew. Fall back to id for any legacy entry missing it.
+const pagePath = `/datasets/${encodeURI(entry.value.page_slug || entry.value.id)}/`
+const datasetUrl = `${SITE_URL}${pagePath}`
 
 const seoDescription = datasetDescription(entry.value)
 
@@ -240,7 +252,7 @@ const seoTitle = (() => {
 useSeo({
   title: seoTitle,
   description: seoDescription,
-  path: `/datasets/${entry.value.id}/`,
+  path: pagePath,
   author: entry.value.organization,
   breadcrumbs,
   extraJsonLd: datasetLd,
@@ -466,7 +478,7 @@ onMounted(async () => {
           <ul class="list-none m-0 p-0 space-y-2">
             <li v-for="r in related" :key="r.id">
               <a
-                :href="`/datasets/${r.id}/`"
+                :href="`/datasets/${encodeURI(r.page_slug || r.id)}/`"
                 class="block card-hover p-2 rounded-gov-md hover:bg-brand-50 no-underline hover:no-underline"
               >
                 <div class="text-sm font-medium text-ink">{{ r.title }}</div>

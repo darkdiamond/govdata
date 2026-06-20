@@ -73,7 +73,7 @@ function go(entry: SlimEntry) {
   // useAsyncData callback. With payloadExtraction disabled (Hebrew tag
   // prerender fix), Nuxt re-runs the callback on SPA nav and node:fs throws
   // in the browser. DatasetCard uses <a href> for the same reason.
-  window.location.assign(`/datasets/${entry.id}/`)
+  window.location.assign(`/datasets/${encodeURI(entry.page_slug || entry.id)}/`)
 }
 
 function submit() {

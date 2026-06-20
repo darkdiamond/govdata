@@ -2,7 +2,7 @@
 // Generates .output/public/sitemap.xml from public/data/manifest.json after
 // `nuxt generate` completes. Listed URLs: the static routes, every
 // /ministries/<slug>/, /tags/<encoded-tag>/, /kinds/<kind>/, and every
-// agent-authored /datasets/<id>/. Each URL gets <priority>, <changefreq>,
+// agent-authored /datasets/<page_slug>/. Each URL gets <priority>, <changefreq>,
 // and (where known) <lastmod>.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs'
@@ -47,9 +47,10 @@ add('/terms/', '0.3', 'monthly')
 // Dynamic dataset + category routes
 const tagSlugs = manifest.tag_slugs ?? {}
 for (const d of manifest.datasets ?? []) {
-  if (d.id) {
+  const pageSlug = d.page_slug || d.id
+  if (pageSlug) {
     const lastmod = (d.last_analyzed_at ?? d.metadata_modified ?? '').slice(0, 10) || undefined
-    add(`/datasets/${d.id}/`, '0.8', 'weekly', lastmod)
+    add(`/datasets/${encodeURI(pageSlug)}/`, '0.8', 'weekly', lastmod)
   }
   if (d.organization_slug) {
     add(`/ministries/${d.organization_slug}/`, '0.6', 'weekly', manifestLastmod)

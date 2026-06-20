@@ -189,6 +189,47 @@ def test_publish_passes_resource_id_and_datastore_active(tmp_path: Path, monkeyp
     assert "datastore_active" not in by_id["rid-legacy"]
 
 
+def test_publish_writes_page_slug(tmp_path: Path, monkeypatch):
+    """page_slug = Hebrew title slug + id slice, written to data.json and
+    carried into the manifest entry."""
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    src = _src(dataset_id="0b3e1f2a-9c4d-4e5f", with_agent=True, title="רישיונות עסק")
+    store = _store_mock([src])
+
+    publish.publish(tmp_path, store=store)
+
+    data = json.loads(
+        (tmp_path / "datasets/0b3e1f2a-9c4d-4e5f/data.json").read_text()
+    )
+    assert data["page_slug"] == "רישיונות-עסק-0b3e1f2a"
+
+    manifest = json.loads((tmp_path / "data/manifest.json").read_text())
+    entry = next(d for d in manifest["datasets"] if d["id"] == "0b3e1f2a-9c4d-4e5f")
+    assert entry["page_slug"] == "רישיונות-עסק-0b3e1f2a"
+
+    # And it's in the slim search index (list/search pages build links from it).
+    index = json.loads((tmp_path / "data/search-index.json").read_text())
+    assert index["datasets"][0]["page_slug"] == "רישיונות-עסק-0b3e1f2a"
+
+
+def test_page_slugs_unique_even_with_identical_titles(tmp_path: Path, monkeypatch):
+    """Two datasets with the same title still get distinct page_slugs because
+    the id slice disambiguates them."""
+    monkeypatch.setattr(publish, "embed", lambda _text: None)
+    records = [
+        _src(dataset_id="11111111-aaaa", with_agent=False, title="טבלת נתונים"),
+        _src(dataset_id="22222222-bbbb", with_agent=False, title="טבלת נתונים"),
+    ]
+    store = _store_mock(records)
+
+    publish.publish(tmp_path, store=store)
+
+    manifest = json.loads((tmp_path / "data/manifest.json").read_text())
+    slugs = [d["page_slug"] for d in manifest["datasets"]]
+    assert len(slugs) == len(set(slugs)), "page_slug collision"
+    assert all(s.startswith("טבלת-נתונים-") for s in slugs)
+
+
 def test_publish_propagates_captured_analyzed_metadata_modified(
     tmp_path: Path, monkeypatch
 ):

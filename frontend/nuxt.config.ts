@@ -18,6 +18,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 interface ManifestEntry {
   id: string
+  page_slug?: string
   organization_slug?: string
   tags_he?: string[]
   suggested_tags?: string[]
@@ -62,7 +63,11 @@ function datasetRoutes(): string[] {
   const path = resolve(__dirname, 'public/data/manifest.json')
   try {
     const data = JSON.parse(readFileSync(path, 'utf-8')) as Manifest
-    return (data.datasets ?? []).map((d) => `/datasets/${d.id}/`)
+    // Route by page_slug (Hebrew title slug + id slice). Pass it decoded —
+    // Nitro's prerender expects decoded routes and writes Unicode-named
+    // directories from them (same as the Hebrew tag routes above). Legacy
+    // entries without a page_slug fall back to the id.
+    return (data.datasets ?? []).map((d) => `/datasets/${d.page_slug || d.id}/`)
   } catch {
     return []
   }
@@ -77,7 +82,7 @@ function ensureSearchIndex(): void {
   const idxPath = resolve(__dirname, 'public/data/search-index.json')
   if (existsSync(idxPath)) return
   const SLIM_FIELDS = [
-    'id', 'title', 'organization', 'organization_slug', 'summary_he',
+    'id', 'page_slug', 'title', 'organization', 'organization_slug', 'summary_he',
     'dataset_kind', 'formats', 'tags_he', 'suggested_tags', 'record_count',
     'spatial_coverage', 'license', 'metadata_modified', 'last_analyzed_at',
   ]

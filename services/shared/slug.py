@@ -1,7 +1,13 @@
-"""Deterministic Hebrew-aware slug helper.
+"""Deterministic Hebrew-aware slug helpers.
 
-URLs are routed by UUID, so the slug is purely for display/SEO and does
-not need to be globally unique. Goal: stable, readable, no LLM call.
+Two flavours, both stable and LLM-free:
+
+  * ``slugify`` — romanizes Hebrew to Latin. Display/SEO only; carried on
+    ``DatasetMeta.slug`` and not used for routing.
+  * ``hebrew_slugify`` — keeps the Hebrew letters and only strips
+    punctuation/whitespace. The publisher combines its output with a slice
+    of the CKAN id to form ``page_slug`` — the segment that appears in
+    ``/datasets/<slug>/`` URLs (same approach as the Hebrew tag slugs).
 """
 from __future__ import annotations
 
@@ -60,3 +66,29 @@ def slugify(text: str, *, fallback: str) -> str:
     slug = _NON_SLUG_RE.sub("-", slug)
     slug = _MULTI_HYPHEN_RE.sub("-", slug).strip("-")
     return slug or fallback
+
+
+# Keep Hebrew letters + ASCII alphanumerics + hyphen; everything else
+# (whitespace, punctuation, URL-reserved chars) becomes a hyphen. The
+# Hebrew block is U+0590–U+05FF; niktud/cantillation inside that block is
+# dropped first via _NIKTUD_RE so vocalized and bare spellings agree.
+_NON_HEB_SLUG_RE = re.compile(r"[^0-9A-Za-zא-ת-]+")
+
+
+def hebrew_slugify(text: str) -> str:
+    """Return a stable, readable slug that keeps the Hebrew characters.
+
+    Unlike :func:`slugify`, Hebrew letters are preserved (not romanized) so
+    the slug reads like the title. The output is decoded Unicode (no
+    percent-encoding) — Nitro writes those as native Unicode directory names
+    during ``nuxt generate`` and the link side encodes for the wire. Returns
+    an empty string when nothing slug-worthy survives (the caller appends an
+    id slice, so an empty base is fine).
+    """
+    if not text:
+        return ""
+    s = unicodedata.normalize("NFC", text)
+    s = _NIKTUD_RE.sub("", s)
+    s = _NON_HEB_SLUG_RE.sub("-", s)
+    s = _MULTI_HYPHEN_RE.sub("-", s).strip("-")
+    return s

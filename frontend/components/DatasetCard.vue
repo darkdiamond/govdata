@@ -6,7 +6,7 @@ defineProps<{ entry: SlimEntry }>()
 
 <template>
   <a
-    :href="`/datasets/${entry.id}/`"
+    :href="`/datasets/${encodeURI(entry.page_slug || entry.id)}/`"
     class="card card-hover p-4 no-underline hover:no-underline block"
   >
     <div class="flex gap-2 flex-wrap mb-2 text-xs">
