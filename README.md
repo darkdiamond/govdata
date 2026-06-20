@@ -1,10 +1,19 @@
 # govil.ai — Landing pages for Israeli open data
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
+[![Nuxt 3](https://img.shields.io/badge/Nuxt-3-00DC82.svg)](https://nuxt.com/)
+
 Each week the Israeli government publishes new datasets on
 [data.gov.il](https://data.gov.il). This repo turns each dataset into a
 polished Hebrew, right-to-left landing page with an AI-written summary,
 real visualizations, and navigation that connects related datasets across
-ministries and topics.
+ministries and topics. The live site is [govil.ai](https://govil.ai).
+
+**Docs:** [Architecture](docs/ARCHITECTURE.md) ·
+[Contributing](CONTRIBUTING.md) · [Security](SECURITY.md) ·
+[Code of Conduct](CODE_OF_CONDUCT.md) · [Conventions](CLAUDE.md)
 
 ## How it works
 
@@ -109,6 +118,27 @@ npx serve .output/public
   category pages wrap the agent-authored bodies at generate time.
 - **Cloud Run** runs the daily builder (3600s timeout bounds the whole
   batch; per-tool commands are capped at 120s).
+
+## Configuration / self-hosting
+
+The defaults baked into the infra scripts (GCP project `govdata-il`,
+staging bucket `govdata-il-staging`, region `me-west1`, publish target
+`darkdiamond/govdata`) are **just defaults** — none are secrets. To run
+your own instance, override them via environment variables. Copy
+[`.env.example`](.env.example) to `.env` and set the ones you need:
+
+| Variable | Purpose |
+|----------|---------|
+| `OPENROUTER_API_KEY` | Drives the agent (required to build pages) |
+| `OPENROUTER_MODEL` | Model id, e.g. `minimax/minimax-m3` |
+| `FIRESTORE_PROJECT_ID` | Firestore project (or use `FIRESTORE_EMULATOR_HOST` locally) |
+| `GCS_STAGING_BUCKET` | Bucket the agent's `content.html` lands in |
+| `FIREBASE_PROJECT` | Firebase Hosting / GCP project for deploys |
+| `PUBLISH_GITHUB_REPO` | `owner/repo` the builder dispatches the publish workflow to |
+| `VOYAGE_API_KEY` / `VOYAGE_ENABLED` | Optional embedding-driven relatedness |
+
+`.env` is gitignored — never commit secrets. See
+[`infra/DEPLOY.md`](infra/DEPLOY.md) for the full provisioning runbook.
 
 ## Publishing
 
@@ -222,6 +252,13 @@ python -m services.page_builder.cli.preview status   # what's swapped right now
 - **No production page change.** `swap` backs up the prod files first;
   `restore` returns them byte-identical.
 
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for
+dev setup, tests, and the PR process, and please follow the
+[Code of Conduct](CODE_OF_CONDUCT.md). Report security issues privately
+per [SECURITY.md](SECURITY.md).
+
 ## License
 
-MIT.
+Released under the [MIT License](LICENSE).
