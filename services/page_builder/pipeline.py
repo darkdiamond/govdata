@@ -19,6 +19,7 @@ import asyncio
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 from typing import Optional
 
 from services.scanner.config import ScannerSettings
@@ -200,7 +201,28 @@ async def run_pipeline(
         "0",
         "no",
     )
-    scan_limit = int(os.environ.get("SCAN_LIMIT", "500"))
+    # SCAN_LIMIT bounds how many CKAN datasets (sorted metadata_modified
+    # desc) the daily scan ingests into Firestore. The selector can only
+    # pick what's been scanned, so this must cover the eligible window:
+    # 2026 (~433) + 2025 (~92) → 800 with headroom. Raise it in lockstep
+    # when MIN_MODIFIED_FLOOR drops to admit an older year.
+    scan_limit = int(os.environ.get("SCAN_LIMIT", "800"))
+    # Selection date gates, env-overridable so widening coverage one year
+    # at a time is a `gcloud run` env change, not a redeploy. Unset →
+    # selector.DEFAULT_* (floor 2026-01-01, rolling window 365d).
+    # Prod currently runs MIN_MODIFIED_FLOOR=2025-01-01 with MAX_AGE_DAYS
+    # large enough to disable the rolling window, so the floor is the sole
+    # gate while we expand coverage.
+    selector_gates: dict = {}
+    floor_env = os.environ.get("MIN_MODIFIED_FLOOR", "").strip()
+    if floor_env:
+        floor_dt = datetime.fromisoformat(floor_env)
+        if floor_dt.tzinfo is None:
+            floor_dt = floor_dt.replace(tzinfo=timezone.utc)
+        selector_gates["min_modified_floor"] = floor_dt
+    max_age_env = os.environ.get("MAX_AGE_DAYS", "").strip()
+    if max_age_env:
+        selector_gates["max_age_days"] = int(max_age_env)
     staging_bucket = os.environ.get("GCS_STAGING_BUCKET", "")
     project_id = (
         os.environ.get("FIREBASE_PROJECT")
@@ -235,7 +257,7 @@ async def run_pipeline(
         to_process = [src]
     else:
         to_process = await asyncio.to_thread(
-            selector.pick_next, store, n, reanalyze=reanalyze
+            selector.pick_next, store, n, reanalyze=reanalyze, **selector_gates
         )
 
     summary: dict = {
