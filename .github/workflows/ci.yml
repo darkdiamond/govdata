@@ -30,6 +30,9 @@ concurrency:
 
 permissions:
   contents: read
+  # dorny/paths-filter calls the PR listFiles API on pull_request events;
+  # without this it fails with "Resource not accessible by integration".
+  pull-requests: read
 
 jobs:
   changes:
