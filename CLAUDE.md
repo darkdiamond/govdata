@@ -106,14 +106,20 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
   rsyncs `data.json` from GCS — single writer per file is the whole point.
 - **Selection priority** (`services/page_builder/selector.py`):
   Both tracks are gated by an effective cutoff =
-  `max(min_modified_floor, now - max_age_days)`. Defaults:
-  `min_modified_floor = 2026-01-01 UTC`, `max_age_days = 365`. A source
-  is only eligible if its CKAN `metadata_modified` is on/after that
-  cutoff. Today the floor wins (we publish only 2026+ datasets);
-  starting some time in 2027 the rolling 365-day window overtakes the
-  floor and early-2026 pages age out naturally. gov.il has ~700
-  archival/abandoned datasets we'd rather not burn agent budget on
-  unless CKAN flags them as updated again.
+  `max(min_modified_floor, now - max_age_days)`. A source is only
+  eligible if its CKAN `metadata_modified` is on/after that cutoff. Both
+  bounds are **env-overridable** (the pipeline reads `MIN_MODIFIED_FLOOR`
+  (ISO date) and `MAX_AGE_DAYS` and passes them to `pick_next`); code
+  defaults when unset are `min_modified_floor = 2026-01-01 UTC`,
+  `max_age_days = 365`. We're expanding coverage backward one year at a
+  time: **prod currently runs `MIN_MODIFIED_FLOOR=2025-01-01` with
+  `MAX_AGE_DAYS` set large enough to disable the rolling window**, so the
+  floor is the sole gate (otherwise `now - 365d` would clip early-2025).
+  `SCAN_LIMIT` (default 800) must stay ≥ the count of datasets at/after
+  the floor so the scanner actually ingests them — bump it in lockstep
+  when the floor drops to admit an older year. gov.il still has ~660
+  pre-2025 archival/abandoned datasets we're deliberately leaving out for
+  now.
   1. `analysis_status == "never"` AND `metadata_modified >= cutoff` —
      ordered by `metadata_modified` DESC. Then (Track 1b) failed
      sources with `failed_attempts < 3` — transient failures self-heal

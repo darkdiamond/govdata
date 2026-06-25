@@ -109,3 +109,46 @@ def test_track2_cooldown_still_applies_to_genuinely_updated_source():
         last_analyzed_days_ago=5,
     )
     assert pick_next(_store([src]), n=5) == []
+
+
+# The `min_modified_floor` / `max_age_days` gates are env-driven (the
+# pipeline reads MIN_MODIFIED_FLOOR / MAX_AGE_DAYS and passes them in).
+# These lock in the floor: a 2025 never-analyzed source is eligible once
+# the floor drops to 2025-01-01, while a 2024 one stays excluded. A large
+# max_age_days disables the rolling window so the floor is the sole gate
+# (otherwise now-365d would clip early-2025 too).
+FLOOR_2025 = datetime(2025, 1, 1, tzinfo=timezone.utc)
+
+
+def _never_src(dataset_id: str, metadata_modified: datetime) -> SourceRecord:
+    return SourceRecord(
+        id=dataset_id,
+        title="מאגר חדש",
+        metadata_modified=metadata_modified,
+        analysis_status="never",
+        change_status="new",
+    )
+
+
+def test_floor_admits_2025_source_when_lowered():
+    src = _never_src("y2025", datetime(2025, 3, 1, tzinfo=timezone.utc))
+    store = MagicMock()
+    store.list_never_analyzed.return_value = [src]
+    store.list_failed_retryable.return_value = []
+    store.list_changed_sources.return_value = []
+    picks = pick_next(
+        store, n=5, min_modified_floor=FLOOR_2025, max_age_days=100000
+    )
+    assert [s.id for s in picks] == ["y2025"]
+
+
+def test_floor_still_excludes_2024_source():
+    src = _never_src("y2024", datetime(2024, 12, 1, tzinfo=timezone.utc))
+    store = MagicMock()
+    store.list_never_analyzed.return_value = [src]
+    store.list_failed_retryable.return_value = []
+    store.list_changed_sources.return_value = []
+    picks = pick_next(
+        store, n=5, min_modified_floor=FLOOR_2025, max_age_days=100000
+    )
+    assert picks == []

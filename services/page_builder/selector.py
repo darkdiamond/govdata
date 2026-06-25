@@ -28,10 +28,19 @@ Two gates compose:
     for over a year is usually archival/abandoned, expensive to analyze,
     and unlikely to interest readers.
 
-Today the floor wins (2026-01-01 is more recent than now-365d). As time
-moves on, the rolling window will eventually overtake the floor and
-become the binding constraint — at which point pages from early 2026
-start aging out naturally.
+Both are overridable per run — the pipeline reads `MIN_MODIFIED_FLOOR`
+(ISO date) and `MAX_AGE_DAYS` from the environment and passes them in, so
+widening coverage one year at a time is a `gcloud run` env change rather
+than a code redeploy. The defaults below are the fallback when unset.
+Prod currently runs `MIN_MODIFIED_FLOOR=2025-01-01` with `MAX_AGE_DAYS`
+set large enough to disable the rolling window, making the floor the sole
+gate while we expand coverage incrementally.
+
+With the default floor the floor wins (2026-01-01 is more recent than
+now-365d). As time moves on, the rolling window would eventually overtake
+the floor and become the binding constraint — at which point pages from
+early 2026 start aging out naturally (unless the env overrides change the
+calculus, as they do today).
 
 Backlog of (recent) never-analyzed sources is drained first — re-analyzing
 already-published pages because CKAN flagged them as `updated` waits
