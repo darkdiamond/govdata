@@ -262,8 +262,8 @@ GovMap.create() config — full parameter reference:
   latField         string            For ITM: northing (Y). For WGS84: latitude.
   lngField         string            For ITM: easting (X). For WGS84: longitude.
   projection       'wgs84'|'itm'     default 'wgs84'. ITM uses an inline Snyder TM
-                                     inverse (~50m accuracy across Israel, well
-                                     below marker scale).
+                                     inverse + Israel 1993->WGS84 datum shift
+                                     (~1-2m accuracy, well below marker scale).
   popupFields      [{field, label}]  rows in the RTL popup. textContent-only.
   popupTitleField  string            optional larger title at top of popup.
   cluster          boolean           default true; false for sparse maps.
