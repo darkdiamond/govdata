@@ -16,9 +16,10 @@
 //
 // Projections: many CKAN datasets store coordinates in Israeli
 // Transverse Mercator (ITM, EPSG:2039) rather than WGS84 lat/lng. Pass
-// `projection: 'itm'` and the lib applies the inverse transform inline.
-// Accuracy is sub-meter inside Israel's bounding box — far below marker
-// rendering scale.
+// `projection: 'itm'` and the lib applies the inverse transform inline,
+// including the Israel 1993 -> WGS84 datum shift (without it points land
+// ~78 m to the south-west). Accuracy is ~1-2 m inside Israel's bounding
+// box — far below marker rendering scale.
 //
 // Safety: popup rendering is structured (descriptors {field, label} →
 // textContent only), so untrusted CKAN values cannot inject markup.
@@ -47,6 +48,41 @@
       - (35 * ITM_E6 / 3072) * Math.sin(6 * lat)
     );
   })();
+
+  // Datum shift: the TM inverse above yields geodetic coords on the Israel
+  // 1993 datum (GRS80). OSM/WGS84 tiles need a Helmert transform to WGS84 —
+  // skipping it leaves every point ~78 m to the south-west. Params are the
+  // PROJ +towgs84 7-parameter (Position Vector) set for EPSG:2039.
+  var DATUM_TX = -24.0024, DATUM_TY = -17.1032, DATUM_TZ = -17.1032; // metres
+  var DATUM_RX = -0.33077, DATUM_RY = -1.85269, DATUM_RZ = 1.66902;  // arc-sec
+  var DATUM_DS = 5.4262;                                             // ppm
+  var DATUM_ARC = Math.PI / 180 / 3600;
+  var WGS84_F = 1 / 298.257223563;
+  var WGS84_E2 = 2 * WGS84_F - WGS84_F * WGS84_F;
+
+  // geodetic (rad, h=0 on GRS80) -> WGS84 [lat, lng] in degrees
+  function israel93ToWgs84(latRad, lngRad) {
+    var sin = Math.sin(latRad), cos = Math.cos(latRad);
+    var N = ITM_A / Math.sqrt(1 - ITM_E2 * sin * sin);
+    var X = N * cos * Math.cos(lngRad);
+    var Y = N * cos * Math.sin(lngRad);
+    var Z = N * (1 - ITM_E2) * sin;
+    var rx = DATUM_RX * DATUM_ARC, ry = DATUM_RY * DATUM_ARC, rz = DATUM_RZ * DATUM_ARC;
+    var s = 1 + DATUM_DS * 1e-6;
+    var Xp = DATUM_TX + s * (X - rz * Y + ry * Z);
+    var Yp = DATUM_TY + s * (rz * X + Y - rx * Z);
+    var Zp = DATUM_TZ + s * (-ry * X + rx * Y + Z);
+    var lng = Math.atan2(Yp, Xp);
+    var p = Math.sqrt(Xp * Xp + Yp * Yp);
+    var lat = Math.atan2(Zp, p * (1 - WGS84_E2));
+    for (var i = 0; i < 5; i++) {
+      var s2 = Math.sin(lat);
+      var Nw = ITM_A / Math.sqrt(1 - WGS84_E2 * s2 * s2);
+      var h = p / Math.cos(lat) - Nw;
+      lat = Math.atan2(Zp, p * (1 - WGS84_E2 * Nw / (Nw + h)));
+    }
+    return [lat * 180 / Math.PI, lng * 180 / Math.PI];
+  }
 
   function itmToWgs84(easting, northing) {
     var Mp = ITM_M0 + (northing - ITM_FN) / ITM_K0;
@@ -77,7 +113,7 @@
       - (1 + 2 * T1 + C1) * D3 / 6
       + (5 - 2 * C1 + 28 * T1 - 3 * C1 * C1 + 8 * ep2 + 24 * T1 * T1) * D5 / 120
     ) / cosPhi1;
-    return [lat * 180 / Math.PI, lng * 180 / Math.PI];
+    return israel93ToWgs84(lat, lng);
   }
 
   function ensureStyles() {
