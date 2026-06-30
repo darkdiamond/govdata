@@ -88,7 +88,11 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '22'
+          # Pin exact patch: Node 22.23.0 shipped a keep-alive socket-reuse
+          # regression (nodejs/node#63989) that breaks WIF/ADC token exchange,
+          # surfacing as "Failed to authenticate" on firebase deploy. 22.22.3
+          # is the last good release. Revisit when a 22.x patch fixes it.
+          node-version: '22.22.3'
           cache: npm
           cache-dependency-path: frontend/package-lock.json
 
@@ -100,7 +104,7 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         run: |
-          npx --yes firebase-tools@14.x.x deploy --only hosting \
+          npx --yes firebase-tools@latest deploy --only hosting \
             --project "${PROJECT}" --non-interactive
 
       # Tell Bing/Yandex/etc. about every URL right after deploy (IndexNow).
