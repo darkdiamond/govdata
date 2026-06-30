@@ -100,7 +100,7 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         run: |
-          npx --yes firebase-tools@latest deploy --only hosting \
+          npx --yes firebase-tools@14.x.x deploy --only hosting \
             --project "${PROJECT}" --non-interactive
 
       # Tell Bing/Yandex/etc. about every URL right after deploy (IndexNow).
