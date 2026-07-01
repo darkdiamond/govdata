@@ -4,8 +4,8 @@ import type { DatasetKind, SlimEntry } from '~/types/manifest'
 import { loadSearchIndex } from '~/utils/search-index'
 
 useSeo({
-  title: 'מאגרי מידע ממשלתיים — מוסבר, מחובר ומובן ע״י AI · govil.ai',
-  description: 'סוכן AI סורק כל מאגר מידע ממשלתי שמתפרסם, מסביר את הנתונים בעברית ומנגיש אותם בעמוד אחד עם ויזואליזציות אינטראקטיביות. בלי הורדות, בלי Excel.',
+  title: 'סוכן AI שמסביר, מחבר ומנגיש מאגרי מידע ממשלתיים · govil.ai',
+  description: 'סוכן AI שקורא כל מאגר מידע ממשלתי חדש, מסביר את הנתונים בעברית פשוטה ומרכז אותם בעמוד אחד — עם גרפים ומפות אינטראקטיביים, בלי הורדות ובלי Excel.',
   path: '/',
   keywords: [
     'מאגרי מידע ממשלתיים',
