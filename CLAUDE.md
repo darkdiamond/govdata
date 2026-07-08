@@ -60,10 +60,12 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
   `minimax/minimax-m3`, via OpenRouter — any `<vendor>/<model>` id is a
   redeploy away). Do not change the production model without asking.
   Candidate models are evaluated first through the local harness
-  (`cli/model_test.py`) against `harness-comparison/` baselines,
-  including numeric validation of chart data vs CKAN (MiniMax once
-  fabricated a chart; the prompt's CHART-DATA PROVENANCE rule + that
-  validation are the guard).
+  (`cli/model_test.py`) per `docs/MODEL_EVAL.md` — comparison snapshots
+  live in `services/page_builder/harness-comparison/`, which is
+  **local-only and gitignored** (agent output embeds raw dataset content,
+  incl. personal contact details). Includes numeric validation of chart
+  data vs CKAN (MiniMax once fabricated a chart; the prompt's CHART-DATA
+  PROVENANCE rule + that validation are the guard).
 - **Design tokens** (aligned with www.gov.il — mirrored across
   `frontend/tailwind.config.ts`,
   `services/page_builder/templates/dataset_page.html.j2`, and
@@ -267,9 +269,9 @@ python -m services.page_builder.pipeline --dry-run
 # Full pipeline for a specific dataset (requires OPENROUTER_API_KEY + GCS_STAGING_BUCKET)
 python -m services.page_builder.pipeline --source <dataset_id> --no-trigger-publish
 
-# Rebuild manifest from the emulator
-python -m services.page_builder.manifest --from-firestore \
-  --out frontend/public/data/manifest.json
+# Rebuild publisher artifacts (manifest.json + per-dataset json) from the emulator
+python -m services.page_builder.publish --from-firestore \
+  --out frontend/public/
 
 # Frontend
 cd frontend && npm run generate && npx serve .output/public
