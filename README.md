@@ -86,9 +86,10 @@ for embedding-driven relatedness.
 ```sh
 # 1. Python env
 python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -U pip   # stock pip 24.x fails to resolve pydantic-ai's extras
 pip install -r services/page_builder/requirements.txt
 
-# 2. Scan into the Firestore emulator
+# 2. Scan into the Firestore emulator (needs a Java 8+ JRE on PATH)
 gcloud emulators firestore start --host-port=localhost:8080 &
 export FIRESTORE_EMULATOR_HOST=localhost:8080 FIRESTORE_PROJECT_ID=local-dev
 python -m services.scanner.main scan --limit 20
