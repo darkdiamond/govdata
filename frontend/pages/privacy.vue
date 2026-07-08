@@ -1,6 +1,11 @@
 <script setup lang="ts">
 const lastUpdated = '2026-05-02'
 
+// Deployment-specific analytics IDs (empty in forks/local builds — the
+// services aren't loaded then either; see plugins/*.client.ts).
+const { gtag, adsenseId } = useRuntimeConfig().public
+const gtagId = gtag?.id || ''
+
 useSeo({
   title: 'מדיניות פרטיות באתר govil.ai',
   description: 'מדיניות הפרטיות של govil.ai — אילו נתונים אנו אוספים, באילו שירותי צד שלישי אנו משתמשים (Google Analytics, Google AdSense), ואילו זכויות עומדות לכם.',
@@ -44,12 +49,12 @@ useSeo({
       </p>
       <ul class="text-ink/85 leading-relaxed list-disc pe-6">
         <li>
-          <strong>Google Analytics 4</strong> (מזהה <code>G-1P3DPS2M2Q</code>) — לצורך
+          <strong>Google Analytics 4</strong><template v-if="gtagId"> (מזהה <code>{{ gtagId }}</code>)</template> — לצורך
           הבנת דפוסי שימוש מצרפיים: כמה מבקרים, אילו עמודים נצפים, ממה הם הגיעו
           לאתר. הנתונים מצרפיים ואינם משויכים לשם.
         </li>
         <li>
-          <strong>Google AdSense</strong> (מזהה <code>ca-pub-9066544714340882</code>) —
+          <strong>Google AdSense</strong><template v-if="adsenseId"> (מזהה <code>{{ adsenseId }}</code>)</template> —
           להצגת פרסומות שמממנות את התפעול של האתר. AdSense עשוי להציג פרסומות
           מותאמות אישית בהתאם לעדפות המבקר אצל Google.
         </li>

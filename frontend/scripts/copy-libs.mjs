@@ -6,7 +6,7 @@
 //
 // Hand-written browser libs (in this scripts/ dir) are copied alongside
 // the node_modules-sourced ones — see HANDWRITTEN_FILES below.
-import { copyFile, mkdir, readdir, stat } from 'node:fs/promises'
+import { copyFile, mkdir, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -67,4 +67,18 @@ for (const [from, to] of HANDWRITTEN_FILES) {
   const dst = resolve(libDir, to)
   await copyFile(src, dst)
   console.log(`  scripts/${from} -> public/lib/${to}`)
+}
+
+// ads.txt is deployment-specific (gitignored): emitted only when the build
+// sets NUXT_PUBLIC_ADSENSE_ID (see nuxt.config.ts), removed otherwise so
+// local/fork builds never ship someone else's publisher ID. The file wants
+// the bare pub-… id, without the ca- code prefix.
+const adsPath = resolve(root, 'public/ads.txt')
+const adsenseId = process.env.NUXT_PUBLIC_ADSENSE_ID || ''
+if (adsenseId) {
+  const pubId = adsenseId.replace(/^ca-/, '')
+  await writeFile(adsPath, `google.com, ${pubId}, DIRECT, f08c47fec0942fa0\n`)
+  console.log('  ads.txt -> public/ads.txt (NUXT_PUBLIC_ADSENSE_ID set)')
+} else {
+  await rm(adsPath, { force: true })
 }

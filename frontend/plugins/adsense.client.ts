@@ -12,12 +12,13 @@
 // AdSense account meta tag stays in head (nuxt.config.ts) so site
 // verification is unaffected.
 export default defineNuxtPlugin((nuxtApp) => {
+  const adsenseId = useRuntimeConfig().public.adsenseId
+  if (!adsenseId) return
   nuxtApp.hook('app:mounted', () => {
     const s = document.createElement('script')
     s.async = true
     s.crossOrigin = 'anonymous'
-    s.src =
-      'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9066544714340882'
+    s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`
     document.head.appendChild(s)
   })
 })
