@@ -99,8 +99,8 @@ export GCS_STAGING_BUCKET=<your-staging-bucket>
 python -m services.page_builder.pipeline --source <dataset_id> --no-trigger-publish
 
 # 4. Frontend (reads manifest.json at build time)
-python -m services.page_builder.manifest --from-firestore \
-  --out frontend/public/data/manifest.json
+python -m services.page_builder.publish --from-firestore \
+  --out frontend/public/
 cd frontend && npm install && npm run generate
 npx serve .output/public
 ```
@@ -140,14 +140,38 @@ your own instance, override them via environment variables. Copy
 `.env` is gitignored — never commit secrets. See
 [`infra/DEPLOY.md`](infra/DEPLOY.md) for the full provisioning runbook.
 
+### Forking notes
+
+A fork builds clean by default, but a few things are govil.ai-specific:
+
+- **Analytics/ads are off unless you opt in.** GA4, AdSense, and
+  Microsoft Clarity load only when `NUXT_PUBLIC_GTAG_ID` /
+  `NUXT_PUBLIC_ADSENSE_ID` / `NUXT_PUBLIC_CLARITY_ID` are set at
+  `nuxt generate` time (in CI they come from GitHub repo variables —
+  see `.github/workflows/publish.yml`). `ads.txt` is generated from the
+  AdSense ID, never committed.
+- **Replace the site identity.** The canonical URL `https://govil.ai`
+  is hardcoded in `frontend/composables/useSeo.ts`,
+  `frontend/public/robots.txt`, `frontend/public/site.webmanifest`, and
+  `frontend/scripts/build-sitemap.mjs`; the IndexNow key file
+  (`frontend/public/d6ede06d….txt` + `frontend/scripts/indexnow-ping.mjs`)
+  is bound to that domain — generate your own or delete the ping step.
+- **Configure the publish workflow.** `publish.yml` needs the four repo
+  variables provisioned by [`infra/github-ci.setup.sh`](infra/github-ci.setup.sh)
+  (WIF provider, CI service account, Firebase project, staging bucket);
+  until then pushes to `main` show a failed `publish` run — harmless.
+
 ## Publishing
 
 The site can be published two ways — both run identical steps (rsync agent
 output from GCS → rebuild `manifest.json` from Firestore → `nuxt generate`
 → `firebase deploy --only hosting`):
 
-- **Cloud Build** (default; runs on every merge to `main`) — see
-  `cloudbuild-publish.yaml` and the runbook in `infra/DEPLOY.md`.
+- **GitHub Actions** (default) — [`.github/workflows/publish.yml`](.github/workflows/publish.yml)
+  runs on every push to `main` touching the frontend/publisher, and is
+  dispatched by the daily builder after successful agent runs. Auth is
+  keyless via Workload Identity Federation (`infra/github-ci.setup.sh`);
+  a Cloud Build fallback exists in `cloudbuild-publish.yaml`.
 - **Local** — `./infra/publish-local.sh` runs the same four steps from
   your machine. Useful when you want to push a fix without waiting on the
   trigger, or to preview the *exact* static output before it goes live.
@@ -245,12 +269,16 @@ python -m services.page_builder.cli.preview status   # what's swapped right now
   `requirements-test.txt`, never copied by the production Dockerfiles.
 - **No imports leak.** `model_harness` / `podman_sandbox` / `cli/*` are
   only referenced by themselves; `pipeline.py`, `publish.py`, `scanner/`,
-  and `session_runner.run_session` never load them.
+  and `agent_runner.run_production_session` never load them.
 - **No Firestore / GCS writes.** The harness reads source records from
   Firestore (so it picks up real CKAN metadata) but writes nothing back;
   outputs land under `tmp/model_test/`, which is gitignored.
 - **No production page change.** `swap` backs up the prod files first;
   `restore` returns them byte-identical.
+
+The full model-comparison methodology (dataset selection, what to check,
+how to archive snapshots locally) is in
+[`docs/MODEL_EVAL.md`](docs/MODEL_EVAL.md).
 
 ## Contributing
 

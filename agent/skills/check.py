@@ -16,10 +16,10 @@ outers, missing icon headers, missing <ul>/<li> insights, the 50KB
 inline-data cap, percent-conflict across year contexts. Hence the
 runtime check.
 
-Mounted into the session container via Files API (one-time upload by
-infra/setup-agent.sh) and attached at session-create time by
-services/page_builder/session_runner.py — the agent never has to
-write or read this file.
+Copied into each session's private workdir (CHECK_SCRIPT in
+services/page_builder/agent_contract.py) so the agent can self-check
+in-session, and run again host-side on the sanitized body by
+services/page_builder/agent_runner.py before anything persists.
 """
 from __future__ import annotations
 
