@@ -110,6 +110,14 @@ function ensureSearchIndex(): void {
 }
 ensureSearchIndex()
 
+// Analytics/ads are opt-in per deployment: unset (the default in forks and
+// local builds) means the feature is fully absent from the generated site.
+// Production sets these as GitHub repo variables (see
+// .github/workflows/publish.yml and infra/github-ci.setup.sh).
+const GTAG_ID = process.env.NUXT_PUBLIC_GTAG_ID || ''
+const ADSENSE_ID = process.env.NUXT_PUBLIC_ADSENSE_ID || ''
+const CLARITY_ID = process.env.NUXT_PUBLIC_CLARITY_ID || ''
+
 export default defineNuxtConfig({
   ssr: true,
   compatibilityDate: '2025-01-01',
@@ -129,7 +137,15 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', 'nuxt-gtag'],
 
   gtag: {
-    id: 'G-1P3DPS2M2Q',
+    id: GTAG_ID,
+    enabled: Boolean(GTAG_ID),
+  },
+
+  runtimeConfig: {
+    public: {
+      adsenseId: ADSENSE_ID,
+      clarityId: CLARITY_ID,
+    },
   },
 
   components: [
@@ -166,7 +182,9 @@ export default defineNuxtConfig({
         // any page that forgets to call useSeo().
         { name: 'description', content: 'דפי נחיתה אוטומטיים למאגרי data.gov.il — נכתבים על ידי סוכן בינה מלאכותית (agentic AI).' },
         { name: 'keywords', content: 'מידע ממשלתי, data.gov.il, בינה מלאכותית, AI, סוכן AI, agentic, אג׳נטי, open data Israel' },
-        { name: 'google-adsense-account', content: 'ca-pub-9066544714340882' },
+        ...(ADSENSE_ID
+          ? [{ name: 'google-adsense-account', content: ADSENSE_ID }]
+          : []),
       ],
       // AdSense (Auto Ads) is injected post-hydration by
       // plugins/adsense.client.ts — NOT from head. Auto Ads mutates the DOM

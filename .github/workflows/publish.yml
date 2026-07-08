@@ -20,7 +20,6 @@ on:
     paths:
       - 'frontend/**'
       - 'services/page_builder/publish.py'
-      - 'services/page_builder/manifest.py'
       - 'services/page_builder/related.py'
       - 'services/page_builder/schema.py'
       - 'services/shared/**'
@@ -101,6 +100,12 @@ jobs:
         run: |
           npm ci --prefer-offline --no-audit --no-fund
           npm run generate
+        env:
+          # Optional analytics/ads — repo variables, unset in forks (the
+          # generated site then contains no GA/AdSense/Clarity at all).
+          NUXT_PUBLIC_GTAG_ID: ${{ vars.NUXT_PUBLIC_GTAG_ID }}
+          NUXT_PUBLIC_ADSENSE_ID: ${{ vars.NUXT_PUBLIC_ADSENSE_ID }}
+          NUXT_PUBLIC_CLARITY_ID: ${{ vars.NUXT_PUBLIC_CLARITY_ID }}
 
       - name: Deploy to Firebase Hosting
         run: |
