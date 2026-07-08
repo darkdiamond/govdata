@@ -27,12 +27,14 @@ Prerequisites: Python 3.12, Node 22, and an
 ```sh
 # Python services
 python3 -m venv .venv && source .venv/bin/activate
+python -m pip install -U pip   # stock pip 24.x fails to resolve pydantic-ai's extras
 pip install -r services/page_builder/requirements.txt
 
 # Frontend
 cd frontend && npm install
 
 # Local state — run against the Firestore emulator, never production
+# (the emulator needs a Java 8+ JRE on PATH)
 gcloud emulators firestore start --host-port=localhost:8080 &
 export FIRESTORE_EMULATOR_HOST=localhost:8080 FIRESTORE_PROJECT_ID=local-dev
 ```
