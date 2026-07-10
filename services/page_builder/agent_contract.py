@@ -27,8 +27,9 @@ import re
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 from urllib.parse import urlencode
@@ -87,18 +88,57 @@ _PREFETCH_SAMPLE_LIMIT = 5
 _PREFETCH_VALUE_TRUNC = 80
 _PREFETCH_JSON_CAP = 2048
 
-# Full-data prefetch (host-side datastore export → CSV in the session
+# Full-data prefetch (host-side datastore export → CSV files in the session
 # workdir). Every model burned most of its tool rounds paginating
 # datastore_search; shipping the data into the sandbox up front cuts
-# requests, wall-clock, and CKAN/WAF flake exposure. Gated by record
-# count (env DATA_PREFETCH_MAX_RECORDS, 0 disables) and a byte cap;
-# any failure returns None and the session falls back to the normal
-# curl flow — prefetch must never block a build.
+# requests, wall-clock, and CKAN/WAF flake exposure. All knobs are
+# env-overridable (code defaults preserve the pre-multi-resource behavior);
+# any failure degrades to "no file for that resource" and the session falls
+# back to the normal curl flow — prefetch must never block a build.
+#
+#   DATA_PREFETCH_MAX_RECORDS   coarse record gate; above it a resource is
+#                               sampled (if enabled) instead of fetched in
+#                               full. 0 disables all data prefetch.
+#   DATA_PREFETCH_MAX_BYTES     per-resource CSV cap, enforced while
+#                               streaming.
+#   DATA_PREFETCH_TOTAL_BYTES   per-dataset aggregate cap across all files.
+#   DATA_PREFETCH_SAMPLE_ROWS   over-cap fallback: deterministic sample of
+#                               ~this many rows. 0 = all-or-nothing (legacy).
+#   DATA_PREFETCH_MULTI         prefetch every datastore-active resource
+#                               (deduped) instead of the primary only.
+#   DATA_PREFETCH_PAGE_SIZE / DATA_PREFETCH_WALL_BUDGET_S  paging knobs.
 _DATA_PREFETCH_DEFAULT_MAX_RECORDS = 50_000
-_DATA_PREFETCH_PAGE_SIZE = 5_000
-_DATA_PREFETCH_PAGE_TIMEOUT_S = 20.0
-_DATA_PREFETCH_WALL_BUDGET_S = 120.0
-_DATA_PREFETCH_BYTE_CAP = 30_000_000
+_DATA_PREFETCH_DEFAULT_PAGE_SIZE = 25_000
+_DATA_PREFETCH_PAGE_TIMEOUT_S = 60.0
+_DATA_PREFETCH_DEFAULT_WALL_BUDGET_S = 120.0
+_DATA_PREFETCH_DEFAULT_MAX_BYTES = 30_000_000
+_DATA_PREFETCH_DEFAULT_TOTAL_BYTES = 60_000_000
+_DATA_PREFETCH_DEFAULT_SAMPLE_ROWS = 0
+# Cap on the serialized per-file schemas block in the user message.
+_SCHEMAS_BLOCK_CAP = 10_240
+
+
+def _env_int(name: str, default: int) -> int:
+    try:
+        raw = os.environ.get(name)
+        return int(raw) if raw is not None and raw != "" else default
+    except ValueError:
+        return default
+
+
+def _env_float(name: str, default: float) -> float:
+    try:
+        raw = os.environ.get(name)
+        return float(raw) if raw is not None and raw != "" else default
+    except ValueError:
+        return default
+
+
+def _env_bool(name: str, default: bool = False) -> bool:
+    raw = (os.environ.get(name) or "").strip().lower()
+    if not raw:
+        return default
+    return raw in ("1", "true", "yes", "on")
 
 
 def _truncate_value(v: Any) -> Any:
@@ -214,99 +254,297 @@ def fetch_resource_preview(resource_id: str) -> Optional[dict]:
     return preview
 
 def data_prefetch_max_records() -> int:
-    """Record-count gate for the full-data prefetch (0 disables)."""
-    try:
-        return int(
-            os.environ.get("DATA_PREFETCH_MAX_RECORDS")
-            or _DATA_PREFETCH_DEFAULT_MAX_RECORDS
-        )
-    except ValueError:
-        return _DATA_PREFETCH_DEFAULT_MAX_RECORDS
+    """Record gate for the full-data prefetch (0 disables all prefetch)."""
+    return _env_int("DATA_PREFETCH_MAX_RECORDS", _DATA_PREFETCH_DEFAULT_MAX_RECORDS)
 
 
-def fetch_resource_records(
-    resource_id: str, total: int, *, max_records: Optional[int] = None
-) -> Optional[bytes]:
-    """Full datastore export for a resource, normalized to CSV bytes.
+@dataclass
+class PrefetchedResource:
+    """One datastore resource as presented to the agent session.
 
-    Pages datastore_search host-side (same source of truth the agent
-    would query) and writes one UTF-8 CSV with a header row; `_id` is
-    dropped, field order follows the datastore schema. Returns None
-    whenever the export shouldn't or can't happen: no resource id,
-    unknown/zero/over-cap total, any HTTP/parse error, wall-clock budget
-    or byte cap exceeded. Callers treat None as "run the session the
-    old way".
+    ``host_path`` is set when a CSV was actually exported (``mode`` is
+    ``full`` or ``sample``); ``mode == "unfetched"`` means the resource is
+    listed for awareness only and the agent queries it via the API.
     """
-    cap = data_prefetch_max_records() if max_records is None else max_records
-    if not resource_id or total <= 0 or cap <= 0 or total > cap:
-        return None
+    resource_id: str
+    name: str
+    format: str
+    total: int
+    schema: Optional[dict]
+    sandbox_filename: Optional[str] = None
+    host_path: Optional[Path] = None
+    rows: int = 0
+    mode: str = "unfetched"          # "full" | "sample" | "unfetched"
+    sample_note: Optional[str] = None
 
-    started = time.monotonic()
-    fields: list[str] = []
-    rows: list[dict] = []
-    offset = 0
-    try:
-        while offset < total:
-            if time.monotonic() - started > _DATA_PREFETCH_WALL_BUDGET_S:
-                log.warning(
-                    "data prefetch %s: wall budget exceeded at offset %d — skipping",
-                    resource_id[:8], offset,
-                )
-                return None
-            qs = urlencode(
-                {
-                    "resource_id": resource_id,
-                    "limit": _DATA_PREFETCH_PAGE_SIZE,
-                    "offset": offset,
-                }
-            )
-            req = urllib_request.Request(
-                f"{_CKAN_DATASTORE_URL}?{qs}",
-                headers={"User-Agent": _CKAN_BROWSER_UA},
-            )
-            with urllib_request.urlopen(
-                req, timeout=_DATA_PREFETCH_PAGE_TIMEOUT_S
-            ) as resp:
-                payload = json.loads(resp.read().decode("utf-8", errors="replace"))
-            if not payload.get("success"):
-                log.warning("data prefetch %s: success=false", resource_id[:8])
-                return None
-            result = payload.get("result") or {}
+
+@dataclass
+class FetchOutcome:
+    rows: int
+    bytes: int
+    mode: str                        # "full" | "sample"
+    sample_note: Optional[str] = None
+
+
+class _ByteCapExceeded(Exception):
+    pass
+
+
+def _fetch_page(
+    resource_id: str, offset: int, limit: int, timeout: float
+) -> tuple[list[str], list[dict]]:
+    """One datastore_search page → (field ids sans _id, records). Raises on
+    any HTTP/parse/success=false problem — callers decide the fallback."""
+    qs = urlencode({"resource_id": resource_id, "limit": limit, "offset": offset})
+    req = urllib_request.Request(
+        f"{_CKAN_DATASTORE_URL}?{qs}", headers={"User-Agent": _CKAN_BROWSER_UA}
+    )
+    with urllib_request.urlopen(req, timeout=timeout) as resp:
+        payload = json.loads(resp.read().decode("utf-8", errors="replace"))
+    if not payload.get("success"):
+        raise RuntimeError("datastore_search success=false")
+    result = payload.get("result") or {}
+    fields = [
+        f["id"] for f in (result.get("fields") or [])
+        if f.get("id") and f["id"] != "_id"
+    ]
+    return fields, (result.get("records") or [])
+
+
+class _CsvStreamWriter:
+    """Streams datastore pages into an open binary file as UTF-8 CSV,
+    enforcing a byte cap as it writes (peak RAM ≈ one page)."""
+
+    def __init__(self, f, max_bytes: int):
+        self._f = f
+        self._max = max_bytes
+        self.bytes = 0
+        self.rows = 0
+        self._fields: Optional[list[str]] = None
+
+    def write_page(self, fields: list[str], records: list[dict]) -> None:
+        buf = io.StringIO()
+        writer = csv.DictWriter(
+            buf, fieldnames=self._fields or fields, extrasaction="ignore", restval=""
+        )
+        if self._fields is None:
             if not fields:
-                fields = [
-                    f["id"] for f in (result.get("fields") or [])
-                    if f.get("id") and f["id"] != "_id"
-                ]
-                if not fields:
-                    return None
-            page = result.get("records") or []
-            if not page:
-                break
-            rows.extend(page)
-            offset += len(page)
-    except Exception as e:
-        log.warning("data prefetch %s failed: %s", resource_id[:8], e)
-        return None
+                raise RuntimeError("datastore_search returned no fields")
+            self._fields = fields
+            writer.fieldnames = fields
+            writer.writeheader()
+        for r in records:
+            writer.writerow({k: ("" if v is None else v) for k, v in r.items()})
+        data = buf.getvalue().encode("utf-8")
+        if self.bytes + len(data) > self._max:
+            raise _ByteCapExceeded()
+        self._f.write(data)
+        self.bytes += len(data)
+        self.rows += len(records)
 
+
+def _estimate_bytes_per_row(preview: Optional[dict]) -> Optional[float]:
+    """CSV bytes/row estimated from the schema preview's sample rows,
+    with the survey's ~1.06 metadata calibration rounded up to 1.1."""
+    rows = (preview or {}).get("sample_rows") or []
     if not rows:
         return None
     buf = io.StringIO()
-    writer = csv.DictWriter(buf, fieldnames=fields, extrasaction="ignore", restval="")
-    writer.writeheader()
+    writer = csv.writer(buf)
     for r in rows:
-        writer.writerow({k: ("" if v is None else v) for k, v in r.items()})
-    data = buf.getvalue().encode("utf-8")
-    if len(data) > _DATA_PREFETCH_BYTE_CAP:
-        log.warning(
-            "data prefetch %s: %d bytes exceeds cap — skipping", resource_id[:8], len(data)
-        )
+        writer.writerow(["" if v is None else v for v in r.values()])
+    per_row = len(buf.getvalue().encode("utf-8")) / len(rows)
+    return per_row * 1.1
+
+
+def fetch_resource_records_to_file(
+    resource_id: str,
+    total: int,
+    dest: Path,
+    *,
+    max_bytes: int,
+    page_size: int,
+    page_timeout_s: float,
+    deadline: float,
+    sample_target_rows: int,
+    prefer_sample: bool = False,
+) -> Optional[FetchOutcome]:
+    """Datastore export for one resource, streamed to `dest` as UTF-8 CSV.
+
+    Pages datastore_search host-side (same source of truth the agent would
+    query); `_id` is dropped, field order follows the datastore schema.
+    A full export that crosses `max_bytes` mid-stream retries in sample
+    mode instead of discarding everything. Sampling (when
+    `sample_target_rows` > 0) fetches deterministic contiguous blocks:
+    the head page plus pages at fixed strides — verbatim datastore output,
+    recipe recorded in `sample_note`. Returns None when nothing could or
+    should be written (dest is removed); callers treat None as "run the
+    session the old way".
+    """
+    if not resource_id or total <= 0 or max_bytes <= 0:
         return None
-    log.info(
-        "data prefetch %s: %d rows, %d fields, %d bytes in %.1fs",
-        resource_id[:8], len(rows), len(fields), len(data),
-        time.monotonic() - started,
+
+    def _walk(offsets: list[int], sequential: bool) -> tuple[int, int]:
+        with open(dest, "wb") as f:
+            w = _CsvStreamWriter(f, max_bytes)
+            if sequential:
+                offset = 0
+                while offset < total:
+                    if time.monotonic() > deadline:
+                        raise TimeoutError("prefetch wall budget exceeded")
+                    fields, records = _fetch_page(
+                        resource_id, offset, page_size, page_timeout_s
+                    )
+                    if not records:
+                        break
+                    w.write_page(fields, records)
+                    offset += len(records)
+            else:
+                for offset in offsets:
+                    if time.monotonic() > deadline:
+                        raise TimeoutError("prefetch wall budget exceeded")
+                    fields, records = _fetch_page(
+                        resource_id, offset, page_size, page_timeout_s
+                    )
+                    if records:
+                        w.write_page(fields, records)
+            if w.rows == 0:
+                raise RuntimeError("no records returned")
+            return w.rows, w.bytes
+
+    started = time.monotonic()
+    if not prefer_sample:
+        try:
+            rows, nbytes = _walk([], sequential=True)
+            log.info(
+                "data prefetch %s: full, %d rows, %d bytes in %.1fs",
+                resource_id[:8], rows, nbytes, time.monotonic() - started,
+            )
+            return FetchOutcome(rows=rows, bytes=nbytes, mode="full")
+        except _ByteCapExceeded:
+            log.info(
+                "data prefetch %s: byte cap crossed mid-fetch — retrying as sample",
+                resource_id[:8],
+            )
+        except Exception as e:
+            log.warning("data prefetch %s (full) failed: %s", resource_id[:8], e)
+            dest.unlink(missing_ok=True)
+            return None
+
+    if sample_target_rows > 0 and total > 0:
+        n_blocks = max(1, -(-sample_target_rows // page_size))  # ceil div
+        stride = max(total // n_blocks, page_size)
+        offsets = list(range(0, total, stride))[:n_blocks]
+        note = (
+            f"{len(offsets)} contiguous blocks of up to {page_size:,} rows, "
+            f"starting at offsets 0, {stride:,}, {2 * stride:,}, …"
+        )
+        try:
+            rows, nbytes = _walk(offsets, sequential=False)
+            log.info(
+                "data prefetch %s: sample, %d of %d rows, %d bytes in %.1fs",
+                resource_id[:8], rows, total, nbytes, time.monotonic() - started,
+            )
+            return FetchOutcome(
+                rows=rows, bytes=nbytes, mode="sample", sample_note=note
+            )
+        except Exception as e:
+            log.warning("data prefetch %s (sample) failed: %s", resource_id[:8], e)
+
+    dest.unlink(missing_ok=True)
+    return None
+
+
+def prefetch_dataset(
+    resources: Optional[list], cache_dir: Path
+) -> list[PrefetchedResource]:
+    """Host-side prefetch for a whole dataset: schema previews + data files.
+
+    Selects the datastore-active resources (primary first, format twins
+    deduped — `services.shared.resources.select_prefetch_resources`),
+    restricted to the primary unless DATA_PREFETCH_MULTI is set, and
+    exports each under a shared wall deadline and a per-dataset
+    DATA_PREFETCH_TOTAL_BYTES budget. Runs once per source; callers reuse
+    the returned files across every session attempt.
+
+    `ResourceRestrictedError` propagates only for the PRIMARY resource
+    (the dataset genuinely has no accessible data → mark `restricted`);
+    a 403 on a secondary resource just drops that resource.
+    """
+    from services.shared.resources import select_prefetch_resources
+
+    selected = select_prefetch_resources(resources or [])
+    if not selected:
+        return []
+    if not _env_bool("DATA_PREFETCH_MULTI", False):
+        selected = selected[:1]
+
+    cap_records = data_prefetch_max_records()
+    max_bytes = _env_int("DATA_PREFETCH_MAX_BYTES", _DATA_PREFETCH_DEFAULT_MAX_BYTES)
+    budget = _env_int("DATA_PREFETCH_TOTAL_BYTES", _DATA_PREFETCH_DEFAULT_TOTAL_BYTES)
+    page_size = _env_int("DATA_PREFETCH_PAGE_SIZE", _DATA_PREFETCH_DEFAULT_PAGE_SIZE)
+    sample_rows = _env_int(
+        "DATA_PREFETCH_SAMPLE_ROWS", _DATA_PREFETCH_DEFAULT_SAMPLE_ROWS
     )
-    return data
+    wall = _env_float(
+        "DATA_PREFETCH_WALL_BUDGET_S", _DATA_PREFETCH_DEFAULT_WALL_BUDGET_S
+    )
+    deadline = time.monotonic() + wall
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    out: list[PrefetchedResource] = []
+    remaining = budget
+    for i, res in enumerate(selected):
+        rid = res["id"]
+        is_primary = i == 0
+        try:
+            preview = fetch_resource_preview(rid)
+        except ResourceRestrictedError:
+            if is_primary:
+                raise
+            log.warning(
+                "prefetch: secondary resource %s is restricted — skipping", rid[:8]
+            )
+            continue
+        if preview is None:
+            continue
+        total = int(preview.get("total") or 0)
+        entry = PrefetchedResource(
+            resource_id=rid,
+            name=res.get("name") or "",
+            format=res.get("format") or "",
+            total=total,
+            schema=preview,
+        )
+        if cap_records <= 0 or total <= 0 or remaining <= 0:
+            out.append(entry)
+            continue
+        res_max_bytes = min(max_bytes, remaining)
+        est = _estimate_bytes_per_row(preview)
+        prefer_sample = total > cap_records or (
+            est is not None and est * total > res_max_bytes
+        )
+        fname = f"data_{len(out) + 1}.csv"
+        outcome = fetch_resource_records_to_file(
+            rid,
+            total,
+            cache_dir / fname,
+            max_bytes=res_max_bytes,
+            page_size=page_size,
+            page_timeout_s=_DATA_PREFETCH_PAGE_TIMEOUT_S,
+            deadline=deadline,
+            sample_target_rows=sample_rows,
+            prefer_sample=prefer_sample,
+        )
+        if outcome is not None:
+            entry.sandbox_filename = fname
+            entry.host_path = cache_dir / fname
+            entry.rows = outcome.rows
+            entry.mode = outcome.mode
+            entry.sample_note = outcome.sample_note
+            remaining -= outcome.bytes
+        out.append(entry)
+    return out
 
 
 # Belt-and-braces cleanup for agent-emitted body fragments. The agent
@@ -552,6 +790,99 @@ def sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
     return body
 
 
+def _render_schemas_block(files: list[PrefetchedResource]) -> str:
+    """Compact per-file schema JSON, capped at _SCHEMAS_BLOCK_CAP bytes by
+    progressively dropping sample rows (fields + total always survive)."""
+    schemas = {}
+    for p in files:
+        if not p.schema:
+            continue
+        s = dict(p.schema)
+        # The CSV drops _id — keep the advertised fields in sync.
+        s["fields"] = [f for f in (s.get("fields") or []) if f.get("id") != "_id"]
+        schemas[p.sandbox_filename] = s
+
+    def _dump() -> str:
+        return json.dumps(schemas, ensure_ascii=False, separators=(",", ":"))
+
+    serialized = _dump()
+    while len(serialized.encode("utf-8")) > _SCHEMAS_BLOCK_CAP:
+        victim = max(
+            schemas.values(), key=lambda s: len(s.get("sample_rows") or [])
+        )
+        if not victim.get("sample_rows"):
+            break
+        victim["sample_rows"] = victim["sample_rows"][:-1]
+        serialized = _dump()
+    return serialized
+
+
+def _render_prefetch_blocks(
+    prefetched: Sequence[PrefetchedResource],
+    data_dir: Optional[str],
+    pre_fetched_schema: Optional[dict],
+) -> str:
+    """The pre_fetched_files manifest (or the legacy schema block when no
+    file was provisioned)."""
+    files = [p for p in prefetched if p.host_path and p.sandbox_filename]
+    listed_only = [p for p in prefetched if not p.host_path]
+
+    if not files:
+        # Legacy path: schema-only prefetch (or nothing).
+        schema = pre_fetched_schema or (
+            prefetched[0].schema if prefetched else None
+        )
+        if not schema:
+            return ""
+        schema_json = json.dumps(schema, ensure_ascii=False, separators=(",", ":"))
+        return (
+            "\n\npre_fetched_schema (already retrieved host-side from "
+            "datastore_search; SKIP package_show + the schema-discovery "
+            "datastore_search call — go straight to aggregations):\n"
+            f"```json\n{schema_json}\n```"
+        )
+
+    dd = (data_dir or "").rstrip("/")
+    lines: list[str] = []
+    for n, p in enumerate(files, 1):
+        label = ", primary" if n == 1 else ""
+        if p.mode == "full":
+            lines.append(
+                f"  {n}. {p.sandbox_filename} — \"{p.name or p.resource_id}\" "
+                f"(resource {p.resource_id}{label}) — FULL, {p.rows:,} rows"
+            )
+        else:
+            lines.append(
+                f"  {n}. {p.sandbox_filename} — \"{p.name or p.resource_id}\" "
+                f"(resource {p.resource_id}{label}) — SAMPLE: {p.rows:,} of "
+                f"{p.total:,} rows (deterministic; {p.sample_note}). The TRUE "
+                f"total is {p.total:,} — cite that, never the sample row "
+                "count. Any figure aggregated from this sample must disclose "
+                "the sampling in Hebrew on the chart/text, or be verified "
+                "with exact filtered limit=0 datastore_search counts."
+            )
+    for p in listed_only:
+        lines.append(
+            f"  -  \"{p.name or p.resource_id}\" (resource {p.resource_id}) — "
+            f"NOT provisioned ({p.total:,} rows); query it via "
+            "datastore_search with filters/limits if it matters to the page."
+        )
+    manifest = "\n".join(lines)
+    return (
+        f"\n\npre_fetched_files: the datastore exports below are already "
+        f"saved under {dd}/ (UTF-8 CSV, header row, verbatim "
+        "datastore_search output — CHART-DATA PROVENANCE is satisfied by "
+        "aggregating these files). Analyze ALL of them locally with python — "
+        "pandas is preinstalled, no pip install needed — and do NOT "
+        "re-download or paginate datastore_search for resources marked "
+        "FULL. Query CKAN only for spot-checks, exact sample verifications, "
+        "or resources not provisioned here.\n"
+        f"{manifest}\n"
+        "per-file schemas (fields, true total, sample rows):\n"
+        f"```json\n{_render_schemas_block(files)}\n```"
+    )
+
+
 def build_user_message(
     *,
     dataset_id: str,
@@ -562,8 +893,9 @@ def build_user_message(
     outputs_dir: str,
     check_script: str,
     pre_fetched_schema: Optional[dict] = None,
-    pre_fetched_data_path: Optional[str] = None,
-    pre_fetched_data_rows: Optional[int] = None,
+    prefetched: Sequence[PrefetchedResource] = (),
+    data_dir: Optional[str] = None,
+    previous_failure: Optional[str] = None,
 ) -> str:
     resource_line = (
         f"primary_resource_id: {primary_resource_id}"
@@ -571,29 +903,14 @@ def build_user_message(
         else "primary_resource_id: (not pre-identified — pick one from package_show)"
     )
     od = outputs_dir.rstrip("/")
-    schema_block = ""
-    if pre_fetched_schema:
-        schema_json = json.dumps(
-            pre_fetched_schema, ensure_ascii=False, separators=(",", ":")
-        )
-        schema_block = (
-            "\n\npre_fetched_schema (already retrieved host-side from "
-            "datastore_search; SKIP package_show + the schema-discovery "
-            "datastore_search call — go straight to aggregations):\n"
-            f"```json\n{schema_json}\n```"
-        )
-    data_block = ""
-    if pre_fetched_data_path:
-        rows = f"{pre_fetched_data_rows:,}" if pre_fetched_data_rows else "all"
-        data_block = (
-            f"\n\npre_fetched_data: the FULL datastore export of the primary "
-            f"resource is already saved at {pre_fetched_data_path} (UTF-8 CSV, "
-            f"header row, {rows} data rows, columns as in pre_fetched_schema; "
-            "verbatim datastore_search output, so CHART-DATA PROVENANCE is "
-            "satisfied by aggregating this file). Analyze it locally with "
-            "python — pandas is preinstalled, no pip install needed — and "
-            "do NOT re-download or paginate datastore_search for this "
-            "resource. Query CKAN only for other resources or spot-checks."
+    data_block = _render_prefetch_blocks(prefetched, data_dir, pre_fetched_schema)
+    failure_block = ""
+    if previous_failure:
+        failure_block = (
+            "\n\nprevious_attempt_failure: an earlier attempt for this "
+            "dataset (fresh workdir; its outputs were discarded) failed "
+            f"validation with:\n  {previous_failure.strip()}\n"
+            "Avoid repeating that mistake."
         )
     return (
         "Build the landing page for this CKAN dataset. Write content.html "
@@ -608,8 +925,8 @@ def build_user_message(
         f"{resource_line}\n"
         f"OUTPUTS_DIR: {od}\n"
         f"CHECK_SCRIPT: {check_script}"
-        f"{schema_block}"
-        f"{data_block}\n\n"
+        f"{data_block}"
+        f"{failure_block}\n\n"
         "Begin by investigating the dataset. Keep working until both "
         "files are written and the CHECK_SCRIPT self-check passes — only "
         "then end your turn, replying with a one-sentence summary of the "
