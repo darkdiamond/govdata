@@ -392,11 +392,13 @@ class FirestoreStateStore:
         """Persist per-session usage + cost so we can compare models/prompts.
 
         Stored under `sources/<id>.last_usage` — overwritten on every
-        successful run. `actual_cost_usd` is the billed USD reported by
-        OpenRouter usage accounting (None for runs without it).
+        successful run. `actual_cost_usd` is the billed USD of the
+        successful session; `attempts_cost_usd` adds the spend of failed
+        in-run attempts (closest to the OpenRouter dashboard figure).
         """
         now = datetime.now(timezone.utc)
         cost = usage.get("actual_cost_usd")
+        attempts_cost = usage.get("attempts_cost_usd")
         self.client.collection(SOURCES_COLL).document(dataset_id).set(
             {
                 "last_usage": {
@@ -407,9 +409,14 @@ class FirestoreStateStore:
                         or usage.get("cache_read_input_tokens")
                         or 0
                     ),
+                    "cache_write_tokens": int(usage.get("cache_write_tokens") or 0),
                     "model": usage.get("model"),
                     "actual_cost_usd": float(cost) if cost is not None else None,
+                    "attempts_cost_usd": (
+                        float(attempts_cost) if attempts_cost is not None else None
+                    ),
                     "cost_source": usage.get("cost_source"),
+                    "cost_breakdown": usage.get("cost_breakdown"),
                     "attempts": int(usage.get("attempts", 1)),
                     "model_requests": int(model_requests),
                     "elapsed_s": float(elapsed_s),

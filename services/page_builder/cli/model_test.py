@@ -95,7 +95,11 @@ def _print_summary(res) -> None:
     usage = res.usage
     if cost.get("total_usd") is not None:
         source = cost.get("cost_source") or "?"
-        tag = "actual billed" if source == "openrouter" else "table estimate"
+        tag = {
+            "openrouter": "actual billed",
+            "openrouter+api": "actual billed (some fetched from stats API)",
+            "openrouter+estimate": "billed + partial table estimate",
+        }.get(source, "table estimate")
         cost_line = f"  $: {cost['total_usd']:.4f} ({tag})"
     else:
         cost_line = f"  $: unknown ({cost.get('note', '')})"

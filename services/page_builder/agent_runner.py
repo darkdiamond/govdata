@@ -115,6 +115,12 @@ def run_production_session(
     agent_data: Optional[AgentData] = None
     attempts = 0
 
+    # Spend across ALL attempts, including ones that returned output but
+    # failed validation — the closest match to the OpenRouter dashboard.
+    # Attempts that die mid-run (API error) never return usage, so their
+    # spend stays invisible here; the dashboard remains the authority.
+    attempts_cost = 0.0
+
     for attempt in range(1, attempts_max + 1):
         attempts = attempt
         workdir = Path(
@@ -134,6 +140,7 @@ def run_production_session(
                 check_script=str(workdir / "check.py"),
                 pre_fetched_schema=pre_fetched_schema,
             )
+            attempts_cost += out.cost.get("total_usd") or 0.0
             agent_data = AgentData.model_validate_json(out.agent_data_raw)
             content_html = sanitize_content_html(
                 out.content_html_raw, dataset_id=dataset_id
@@ -183,7 +190,9 @@ def run_production_session(
             usage={
                 **out.usage,
                 "actual_cost_usd": out.cost.get("total_usd"),
+                "attempts_cost_usd": round(attempts_cost, 6),
                 "cost_source": out.cost.get("cost_source"),
+                "cost_breakdown": out.cost.get("breakdown"),
                 "model": model,
                 "attempts": attempts,
             },
