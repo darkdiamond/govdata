@@ -134,6 +134,18 @@ def _run_one(*, dataset_id: str, args, store: FirestoreStateStore):
     if isinstance(src.organization, dict):
         org_title = src.organization.get("title") or src.organization.get("name") or ""
 
+    # Same related-candidates block as prod (read-only Firestore query).
+    related_candidates: list[dict] = []
+    org_name = (src.organization or {}).get("name") or ""
+    if org_name:
+        try:
+            related_candidates = [
+                {"id": s.id, "title": s.title, "tags": s.tags}
+                for s in store.list_org_sources(org_name, exclude_id=dataset_id)
+            ]
+        except Exception:
+            log.warning("related-candidates lookup failed for %s", dataset_id[:8])
+
     print(f"\n--- running {args.model} on {dataset_id} ({src.title!r}) ---")
     try:
         res = run_test_session(
@@ -143,6 +155,7 @@ def _run_one(*, dataset_id: str, args, store: FirestoreStateStore):
             org_title=org_title,
             primary_resource_id=primary_resource_id,
             resources=src.resources,
+            related_candidates=related_candidates,
             out_dir=out_dir,
             model=args.model,
             max_iters=args.max_iters,

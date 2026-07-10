@@ -110,6 +110,7 @@ def run_production_session(
     notes: str,
     org_title: str,
     resources: Optional[list] = None,
+    organization: Optional[dict] = None,
     primary_resource_id: Optional[str] = None,
     gcs_bucket: str,
     store: Optional[FirestoreStateStore] = None,
@@ -166,6 +167,21 @@ def run_production_session(
             ),
             f"{sum(p.host_path.stat().st_size for p in prefetched if p.host_path):,}",
         )
+    # Same-ministry related candidates from our own index — the agent picks
+    # related_ids from this list instead of 3-5 CKAN discovery calls (each
+    # of which replays the whole transcript as input tokens). Best-effort:
+    # an empty list just re-enables the agent's package_search fallback.
+    related_candidates: list[dict] = []
+    try:
+        org_name = (organization or {}).get("name") or ""
+        if org_name:
+            related_candidates = [
+                {"id": s.id, "title": s.title, "tags": s.tags}
+                for s in store.list_org_sources(org_name, exclude_id=dataset_id)
+            ]
+    except Exception:
+        log.exception("related-candidates lookup failed for %s", dataset_id)
+
     prefetch_stats = {
         "files": sum(1 for p in prefetched if p.host_path),
         "total_bytes": sum(
@@ -210,6 +226,7 @@ def run_production_session(
                     prefetched=prefetched,
                     data_dir=str(workdir / "data"),
                     previous_failure=failure_hint,
+                    related_candidates=related_candidates,
                 )
                 attempts_cost += out.cost.get("total_usd") or 0.0
                 agent_data = AgentData.model_validate_json(out.agent_data_raw)

@@ -386,6 +386,20 @@ def test_user_message_silent_without_prefetch():
     assert "pre_fetched_schema" not in msg
 
 
+def test_user_message_related_candidates_block():
+    msg = _msg(
+        related_candidates=[
+            {"id": "abc-1", "title": "מאגר קרוב", "tags": ["בנקים", "אשראי"]},
+            {"id": "abc-2", "title": "מאגר אחר", "tags": []},
+        ]
+    )
+    assert "related_candidates" in msg
+    assert 'abc-1 — "מאגר קרוב" [tags: בנקים, אשראי]' in msg
+    assert 'abc-2 — "מאגר אחר"' in msg
+    assert "do NOT query CKAN package_search" in msg
+    assert "related_candidates" not in _msg()
+
+
 def test_user_message_previous_failure_block():
     msg = _msg(previous_failure="host self-check failed (exit 5): NO-ICON-HEADER")
     assert "previous_attempt_failure" in msg

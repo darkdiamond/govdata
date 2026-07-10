@@ -752,6 +752,7 @@ def run_agent_session(
     prefetched: Sequence[PrefetchedResource] = (),
     data_dir: Optional[str] = None,
     previous_failure: Optional[str] = None,
+    related_candidates: Sequence[dict] = (),
     reasoning_effort: Optional[str] = None,
 ) -> AgentSessionOutput:
     """Drive one agent session on an already-created sandbox.
@@ -779,6 +780,7 @@ def run_agent_session(
         prefetched=prefetched,
         data_dir=data_dir,
         previous_failure=previous_failure,
+        related_candidates=related_candidates,
     )
     httpx_client = httpx.Client()
     deps = Deps(sandbox=sandbox, httpx_client=httpx_client, dataset_id=dataset_id)
@@ -884,6 +886,7 @@ def run_test_session(
     out_dir: Path,
     model: str,
     resources: Optional[list] = None,
+    related_candidates: Sequence[dict] = (),
     max_iters: int = 30,  # noqa: ARG001 - PydanticAI controls retries; kept for caller parity
     reasoning_effort: Optional[str] = None,
 ) -> TestSessionResult:
@@ -933,6 +936,7 @@ def run_test_session(
             pre_fetched_schema=pre_fetched_schema,
             prefetched=prefetched,
             data_dir=DATA_DIR_IN_SANDBOX,
+            related_candidates=related_candidates,
             reasoning_effort=reasoning_effort,
         )
         sandbox_files: list[str] = []

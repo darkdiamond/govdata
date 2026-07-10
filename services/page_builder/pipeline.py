@@ -58,6 +58,7 @@ async def _build_one(
                 notes=src.notes or "",
                 org_title=(src.organization or {}).get("title", "") or "",
                 resources=src.resources,
+                organization=src.organization,
                 gcs_bucket=staging_bucket,
                 store=store,
             )
