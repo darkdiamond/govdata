@@ -111,6 +111,19 @@ def test_track2_cooldown_still_applies_to_genuinely_updated_source():
     assert pick_next(_store([src]), n=5) == []
 
 
+def test_track2_cooldown_days_is_configurable():
+    """A source analyzed 60 days ago clears the default 30-day cooldown but
+    not a 90-day one (the prod value: refresh a page at most quarterly)."""
+    src = _track2_src(
+        "sixty-days",
+        metadata_modified=MODIFIED + timedelta(days=3),
+        analyzed_metadata_modified=MODIFIED,
+        last_analyzed_days_ago=60,
+    )
+    assert [s.id for s in pick_next(_store([src]), n=5)] == ["sixty-days"]
+    assert pick_next(_store([src]), n=5, cooldown_days=90) == []
+
+
 # The `min_modified_floor` / `max_age_days` gates are env-driven (the
 # pipeline reads MIN_MODIFIED_FLOOR / MAX_AGE_DAYS and passes them in).
 # These lock in the floor: a 2025 never-analyzed source is eligible once
