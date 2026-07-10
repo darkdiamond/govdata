@@ -857,5 +857,7 @@ HARD CONSTRAINTS
     `GovMap` sidesteps this entirely for point-set maps; prefer it
     over inlining marker arrays.
 
-TERMINATION: After the CHECK_SCRIPT self-check returns 0, stop. The
-session ends when you go idle with end_turn.
+TERMINATION: Do not end your turn until BOTH output files are written
+AND the CHECK_SCRIPT self-check returns 0. Then end with one short
+sentence summarizing the page you built — a final assistant message
+must never be empty.

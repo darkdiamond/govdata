@@ -481,8 +481,10 @@ def build_user_message(
         f"OUTPUTS_DIR: {od}\n"
         f"CHECK_SCRIPT: {check_script}"
         f"{schema_block}\n\n"
-        "Begin by investigating the dataset. When both files are written "
-        "and the CHECK_SCRIPT self-check passes, stop."
+        "Begin by investigating the dataset. Keep working until both "
+        "files are written and the CHECK_SCRIPT self-check passes — only "
+        "then end your turn, replying with a one-sentence summary of the "
+        "page (never an empty message)."
     )
 
 
