@@ -139,13 +139,20 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
      sources with `failed_attempts < 3` — transient failures self-heal
      on later daily runs; 3 whole-run failures park the source.
   2. `change_status in {new, updated}` AND `metadata_modified >= cutoff`
-     AND (`last_analyzed_at` null or older than 30 days) — ordered by
-     `metadata_modified` DESC.
+     AND CKAN advanced past our build (`metadata_modified >
+     analyzed_metadata_modified`) AND (`last_analyzed_at` null or older
+     than `COOLDOWN_DAYS`) — ordered by `metadata_modified` DESC.
   The (recent) never-analyzed backlog is drained first; re-analysis of
   already-published pages waits until every recent source has at least
-  one page. The 30-day cooldown applies only to Track 2 (already-
-  analyzed sources that CKAN re-flagged as `updated`): skip the rebuild
-  if the source was analyzed less than 30 days ago.
+  one page. The cooldown applies only to Track 2 (already-analyzed
+  sources that CKAN re-flagged as `updated`): skip the rebuild if the
+  source was analyzed less than `COOLDOWN_DAYS` ago. **Prod: Track 2 is
+  ON (`REANALYZE_ENABLED=true`) with `COOLDOWN_DAYS=90` — a published
+  page is refreshed at most quarterly.** Both are env-overridable
+  (pipeline reads them; code defaults `reanalyze=true`,
+  `DEFAULT_COOLDOWN_DAYS=30`). The additive-vs-structural concern (a
+  daily-appending dataset re-qualifies each cooldown even when the page
+  barely changes) is bounded by the 90-day cadence, not eliminated.
 - **Related-datasets scoring** (deterministic, content-first):
   `1.5·same_ministry + 2·min(shared_tag_count, 6) + 8·cosine(embedding) + 6·agent_suggested`.
   Embedding similarity dominates; same-ministry is a tiebreaker only.
