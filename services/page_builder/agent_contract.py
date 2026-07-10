@@ -21,12 +21,44 @@ from __future__ import annotations
 import json
 import logging
 import re
+import subprocess
+import sys
+from pathlib import Path
 from typing import Any, Optional
 from urllib import error as urllib_error
 from urllib import request as urllib_request
 from urllib.parse import urlencode
 
 log = logging.getLogger(__name__)
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+CHECK_SCRIPT_PATH = REPO_ROOT / "agent" / "skills" / "check.py"
+
+
+def run_host_check(content_html: str, agent_data_json: str, workdir: Path) -> None:
+    """Run agent/skills/check.py on the sanitized outputs; raise on non-zero.
+
+    The agent already self-checked in its sandbox, but the sanitizer may
+    have rewritten the body since — this is the authoritative gate. Used
+    by production (`agent_runner`) before anything reaches GCS/Firestore
+    and by the local test harness (`model_harness.run_test_session`) so
+    eval runs pass the exact same bar.
+    """
+    c = workdir / "validated-content.html"
+    a = workdir / "validated-agent_data.json"
+    c.write_text(content_html, encoding="utf-8")
+    a.write_text(agent_data_json, encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, str(CHECK_SCRIPT_PATH), str(c), str(a)],
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"host self-check failed (exit {proc.returncode}): "
+            f"{(proc.stdout or proc.stderr).strip()[:500]}"
+        )
 
 
 class ResourceRestrictedError(Exception):
