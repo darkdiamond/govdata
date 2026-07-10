@@ -42,10 +42,24 @@ MAX_AGE_DAYS=${MAX_AGE_DAYS:-100000}
 # Pause Track 2 re-analysis until structural-change gating exists (see
 # services/page_builder/selector.py). Flip back with REANALYZE_ENABLED=true.
 REANALYZE_ENABLED=${REANALYZE_ENABLED:-false}
-# Full-data prefetch gate: datasets with at most this many records get the
-# whole datastore export downloaded host-side into the session workdir,
-# saving the agent its pagination tool rounds. 0 disables.
-DATA_PREFETCH_MAX_RECORDS=${DATA_PREFETCH_MAX_RECORDS:-50000}
+# Full-data prefetch (services/page_builder/agent_contract.py). Resources
+# up to MAX_RECORDS/MAX_BYTES get the whole datastore export streamed
+# host-side into the session workdir (saves the agent its pagination tool
+# rounds); larger ones fall back to a deterministic SAMPLE_ROWS sample.
+# MULTI=true prefetches every datastore-active resource (format twins
+# deduped) under the per-dataset TOTAL_BYTES budget. MAX_RECORDS=0 is the
+# kill switch. Rollout: stage A = caps below (single resource), stage B =
+# MULTI=true, stage C = RETRY_FEEDBACK=true. Survey 2026-07-10: 150MB
+# covers ~96% of in-scope datasets in full.
+DATA_PREFETCH_MAX_RECORDS=${DATA_PREFETCH_MAX_RECORDS:-2000000}
+DATA_PREFETCH_MAX_BYTES=${DATA_PREFETCH_MAX_BYTES:-150000000}
+DATA_PREFETCH_TOTAL_BYTES=${DATA_PREFETCH_TOTAL_BYTES:-200000000}
+DATA_PREFETCH_WALL_BUDGET_S=${DATA_PREFETCH_WALL_BUDGET_S:-300}
+DATA_PREFETCH_SAMPLE_ROWS=${DATA_PREFETCH_SAMPLE_ROWS:-150000}
+DATA_PREFETCH_MULTI=${DATA_PREFETCH_MULTI:-false}
+# Feed a failed attempt's validation diagnostic into the next attempt's
+# user message (fresh workdir/history either way; API flakes stay hintless).
+RETRY_FEEDBACK=${RETRY_FEEDBACK:-false}
 
 cd "$(dirname "$0")/.."
 
@@ -58,12 +72,12 @@ gcloud run deploy "$SERVICE" \
   --region="$REGION" \
   --service-account="$BUILDER_SA" \
   --cpu=2 \
-  --memory=1Gi \
+  --memory=4Gi \
   --max-instances=1 \
   --concurrency=1 \
   --timeout=3600 \
   --no-allow-unauthenticated \
-  --set-env-vars="FIRESTORE_PROJECT_ID=${PROJECT},GOOGLE_CLOUD_PROJECT=${PROJECT},FIREBASE_PROJECT=${PROJECT},GCS_STAGING_BUCKET=${STAGING_BUCKET},PUBLISH_VIA=${PUBLISH_VIA},PUBLISH_TRIGGER_ID=${TRIGGER_ID},PUBLISH_BRANCH=${PUBLISH_BRANCH},OPENROUTER_MODEL=${OPENROUTER_MODEL},DAILY_CAP=${DAILY_CAP},MAX_CONCURRENT=${MAX_CONCURRENT},SESSION_ATTEMPTS=${SESSION_ATTEMPTS},SCAN_LIMIT=${SCAN_LIMIT},MIN_MODIFIED_FLOOR=${MIN_MODIFIED_FLOOR},MAX_AGE_DAYS=${MAX_AGE_DAYS},REANALYZE_ENABLED=${REANALYZE_ENABLED},DATA_PREFETCH_MAX_RECORDS=${DATA_PREFETCH_MAX_RECORDS}" \
+  --set-env-vars="FIRESTORE_PROJECT_ID=${PROJECT},GOOGLE_CLOUD_PROJECT=${PROJECT},FIREBASE_PROJECT=${PROJECT},GCS_STAGING_BUCKET=${STAGING_BUCKET},PUBLISH_VIA=${PUBLISH_VIA},PUBLISH_TRIGGER_ID=${TRIGGER_ID},PUBLISH_BRANCH=${PUBLISH_BRANCH},OPENROUTER_MODEL=${OPENROUTER_MODEL},DAILY_CAP=${DAILY_CAP},MAX_CONCURRENT=${MAX_CONCURRENT},SESSION_ATTEMPTS=${SESSION_ATTEMPTS},SCAN_LIMIT=${SCAN_LIMIT},MIN_MODIFIED_FLOOR=${MIN_MODIFIED_FLOOR},MAX_AGE_DAYS=${MAX_AGE_DAYS},REANALYZE_ENABLED=${REANALYZE_ENABLED},DATA_PREFETCH_MAX_RECORDS=${DATA_PREFETCH_MAX_RECORDS},DATA_PREFETCH_MAX_BYTES=${DATA_PREFETCH_MAX_BYTES},DATA_PREFETCH_TOTAL_BYTES=${DATA_PREFETCH_TOTAL_BYTES},DATA_PREFETCH_WALL_BUDGET_S=${DATA_PREFETCH_WALL_BUDGET_S},DATA_PREFETCH_SAMPLE_ROWS=${DATA_PREFETCH_SAMPLE_ROWS},DATA_PREFETCH_MULTI=${DATA_PREFETCH_MULTI},RETRY_FEEDBACK=${RETRY_FEEDBACK}" \
   --set-secrets="OPENROUTER_API_KEY=openrouter-api-key:latest,GITHUB_DISPATCH_TOKEN=github-dispatch-token:latest,VOYAGE_API_KEY=voyage-api-key:latest" \
   --project="$PROJECT"
 

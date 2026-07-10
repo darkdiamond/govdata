@@ -335,6 +335,34 @@ class FirestoreStateStore:
                     break
         return out
 
+    def list_org_sources(
+        self, org_name: str, exclude_id: str = "", limit: int = 15
+    ) -> list[SourceRecord]:
+        """Same-ministry sources for the related-candidates block in the
+        agent's user message — saves the agent 3-5 CKAN package_search
+        discovery calls per session (each one replays the whole transcript).
+
+        Single-field filter, sorted client-side (already-published sources
+        first, then newest) — no composite index needed.
+        """
+        if not org_name:
+            return []
+        query = (
+            self.client.collection(SOURCES_COLL)
+            .where(filter=FieldFilter("organization.name", "==", org_name))
+            .limit(max(limit * 3, 30))
+        )
+        out = [
+            SourceRecord.from_doc(d) for d in query.stream() if d.id != exclude_id
+        ]
+        out.sort(
+            key=lambda s: (
+                s.analysis_status != "succeeded",
+                -(s.metadata_modified.timestamp() if s.metadata_modified else 0),
+            )
+        )
+        return out[:limit]
+
     def iter_succeeded_sources(self) -> Iterator[SourceRecord]:
         query = self.client.collection(SOURCES_COLL).where(
             filter=FieldFilter("analysis_status", "==", "succeeded")

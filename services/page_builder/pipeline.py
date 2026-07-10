@@ -26,7 +26,6 @@ from services.scanner.config import ScannerSettings
 from services.scanner.main import Scanner
 from services.scanner.state import StateDB
 from services.shared.firestore import FirestoreStateStore, SourceRecord
-from services.shared.resources import pick_primary_resource_id
 
 from . import selector
 from .agent_contract import ResourceRestrictedError
@@ -51,7 +50,6 @@ async def _build_one(
         analyzed_metadata_modified = src.metadata_modified
         await asyncio.to_thread(store.mark_analysis_pending, src.id)
 
-        primary_id = pick_primary_resource_id(src.resources)
         try:
             result = await asyncio.to_thread(
                 run_production_session,
@@ -59,7 +57,8 @@ async def _build_one(
                 title=src.title,
                 notes=src.notes or "",
                 org_title=(src.organization or {}).get("title", "") or "",
-                primary_resource_id=primary_id,
+                resources=src.resources,
+                organization=src.organization,
                 gcs_bucket=staging_bucket,
                 store=store,
             )
