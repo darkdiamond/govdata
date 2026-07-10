@@ -28,6 +28,7 @@ Required by `model_harness.py`:
 from __future__ import annotations
 
 import logging
+import os
 import shlex
 from dataclasses import dataclass, field
 from typing import Optional
@@ -39,8 +40,13 @@ def _sh_quote(s: str) -> str:
 log = logging.getLogger(__name__)
 
 # Pre-built image with Python 3.11 + curl + common tooling. Pinning a tag
-# keeps runs reproducible across the test campaign.
-DEFAULT_IMAGE = "ghcr.io/vndee/sandbox-python-311-bullseye"
+# keeps runs reproducible across the test campaign. Override with
+# PODMAN_SANDBOX_IMAGE — normally localhost/govdata-sandbox:latest, the
+# derived image with pandas preinstalled (see sandbox.Containerfile).
+DEFAULT_IMAGE = (
+    os.environ.get("PODMAN_SANDBOX_IMAGE")
+    or "ghcr.io/vndee/sandbox-python-311-bullseye"
+)
 
 DEFAULT_RUNTIME_CONFIGS = {
     "mem_limit": "1g",
