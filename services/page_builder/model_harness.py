@@ -84,13 +84,13 @@ STDOUT_CAP_BYTES = 100_000
 WEB_FETCH_CAP_BYTES = 200_000
 SEARCH_SNIPPET_CAP = 2_000
 
-# Fallback prices ($/1M tokens). OpenRouter runs normally report actual
-# billed cost per response (cost_source="openrouter"); the table is the
-# backstop for the native `anthropic:` path AND for the occasional
-# OpenRouter response batch that arrives without cost fields (observed
-# in prod 2026-06-12 — same code/versions, one run had per-response
-# cost, the next didn't). Table-derived numbers are marked
-# cost_source="price_table" and may overstate cached-input spend.
+# Fallback prices ($/1M tokens). Cost is assembled per response, most
+# accurate source first: inline OpenRouter usage accounting (with BYOK —
+# our MiniMax setup — the credits `cost` is ~0/None and the real spend is
+# `upstream_inference_cost`; both are summed), then the /api/v1/generation
+# stats endpoint for responses that arrive without cost fields, then this
+# table (cache-aware: cached input priced at the `cached` rate). The
+# table is also the only source for the native `anthropic:` path.
 PRICE_TABLE: dict[str, dict[str, float]] = {
     "minimax/minimax-m3":          {"input": 0.30, "cached": 0.06, "output": 1.20},
     "anthropic:claude-sonnet-4-6": {"input": 3.00, "cached": 0.30, "output": 15.00},
@@ -434,15 +434,19 @@ def _extract_usage(result_usage) -> dict[str, int]:
     input_tokens = int(u.get("input_tokens") or u.get("request_tokens") or 0)
     output_tokens = int(u.get("output_tokens") or u.get("response_tokens") or 0)
     total = int(u.get("total_tokens") or (input_tokens + output_tokens))
+    # PydanticAI's RequestUsage/RunUsage carry cache counts as top-level
+    # fields; the `details` sub-dict only holds leftover provider extras.
     details = u.get("details") or {}
     cache_read = int(
-        details.get("cache_read_input_tokens")
+        u.get("cache_read_tokens")
+        or details.get("cache_read_input_tokens")
         or details.get("cached_tokens")
         or details.get("prompt_cache_hit_tokens")
         or 0
     )
     cache_write = int(
-        details.get("cache_creation_input_tokens")
+        u.get("cache_write_tokens")
+        or details.get("cache_creation_input_tokens")
         or details.get("cache_write_tokens")
         or 0
     )
@@ -455,59 +459,147 @@ def _extract_usage(result_usage) -> dict[str, int]:
     }
 
 
-def _extract_openrouter_cost(messages: list) -> Optional[float]:
-    """Sum the actual billed USD across all model responses in a run.
+GENERATION_API_URL = "https://openrouter.ai/api/v1/generation"
 
-    With usage accounting enabled, OpenRouter reports per-request cost in
-    credits (1 credit = 1 USD); PydanticAI's OpenRouterModel surfaces it
-    as `ModelResponse.provider_details['cost']`. Returns None when no
-    response carried a cost (e.g. non-OpenRouter run).
+
+def _fetch_generation_cost(
+    gen_id: str, api_key: str, *, retries: int = 4, backoff_s: float = 1.0
+) -> Optional[float]:
+    """Authoritative billed USD for one generation, from OpenRouter's
+    stats endpoint. `total_cost` is the OpenRouter credits charged; with
+    BYOK (our MiniMax setup) that is ~0 and the real spend is
+    `upstream_inference_cost` — sum both. Stats lag the response
+    (observed live: 404 AND 200-with-null-cost for ~2-3s), so not-ready
+    shapes are retried with backoff. Returns None on give-up — the
+    caller estimates instead.
     """
-    total = 0.0
-    seen = False
-    for m in messages:
-        details = getattr(m, "provider_details", None)
-        if isinstance(details, dict) and details.get("cost") is not None:
-            total += float(details["cost"])
-            seen = True
-    return round(total, 6) if seen else None
+    for attempt in range(retries):
+        if attempt:
+            time.sleep(backoff_s * attempt)
+        try:
+            r = httpx.get(
+                GENERATION_API_URL,
+                params={"id": gen_id},
+                headers={"Authorization": f"Bearer {api_key}"},
+                timeout=10.0,
+            )
+            if r.status_code == 404:  # stats not materialized yet
+                continue
+            r.raise_for_status()
+            data = (r.json() or {}).get("data") or {}
+            total_cost = data.get("total_cost")
+            upstream = data.get("upstream_inference_cost")
+            if total_cost is not None or upstream is not None:
+                return float(total_cost or 0.0) + float(upstream or 0.0)
+        except Exception as e:
+            log.debug("generation stats fetch failed for %s: %s", gen_id, e)
+    return None
+
+
+def _estimate_response_cost(
+    prices: dict[str, float], response_usage
+) -> Optional[float]:
+    u = _extract_usage(response_usage or {})
+    cached = u["cache_read_tokens"]
+    uncached_input = max(u["input_tokens"] - cached, 0)
+    return (
+        uncached_input * prices["input"]
+        + cached * prices["cached"]
+        + u["output_tokens"] * prices["output"]
+    ) / 1_000_000
 
 
 def _compute_cost(*, model: str, usage: dict[str, int], messages: list) -> dict[str, Any]:
-    actual = _extract_openrouter_cost(messages)
-    if actual is not None:
-        return {
-            "tokens_usd": actual,
-            "total_usd": actual,
-            "cost_source": "openrouter",
-        }
-    if "/" in model:
-        # OpenRouter run whose responses carried no cost fields — track
-        # the frequency; the dashboard remains the billing authority.
-        log.warning(
-            "no per-response OpenRouter cost for model=%s — falling back "
-            "to price table estimate", model,
-        )
+    """Assemble the run's billed USD per response, most-accurate source
+    first: inline OpenRouter usage accounting (`provider_details['cost']`,
+    net of cache discounts) → the `/api/v1/generation` stats endpoint for
+    responses that intermittently arrive without cost fields → a
+    cache-aware PRICE_TABLE estimate. `cost_source` records the mix.
+    """
     prices = PRICE_TABLE.get(model)
-    if prices is None:
-        return {
-            "tokens_usd": None,
-            "total_usd": None,
-            "cost_source": None,
-            "note": "no OpenRouter cost in responses and model not in PRICE_TABLE",
-        }
-    cached = usage["cache_read_tokens"]
-    uncached_input = max(usage["input_tokens"] - cached, 0)
-    tokens_usd = (
-        uncached_input * prices["input"]
-        + cached * prices["cached"]
-        + usage["output_tokens"] * prices["output"]
-    ) / 1_000_000
-    return {
-        "tokens_usd": round(tokens_usd, 6),
-        "total_usd": round(tokens_usd, 6),  # only cost component
-        "cost_source": "price_table",
+    api_key = os.environ.get("OPENROUTER_API_KEY") if "/" in model else None
+
+    responses = [m for m in messages if getattr(m, "kind", None) == "response"]
+    total = 0.0
+    inline = fetched = estimated = 0
+    missing: list[Any] = []
+    for m in responses:
+        details = getattr(m, "provider_details", None)
+        if not isinstance(details, dict):
+            missing.append(m)
+            continue
+        # OpenRouter credits charged. With BYOK this is ~0 and the real
+        # spend is what the upstream provider bills — sum both.
+        cost = details.get("cost")
+        upstream = details.get("upstream_inference_cost")
+        if cost is not None or upstream is not None:
+            total += float(cost or 0.0) + float(upstream or 0.0)
+            inline += 1
+        else:
+            missing.append(m)
+
+    if missing and "/" in model:
+        log.warning(
+            "%d/%d responses carried no OpenRouter cost for model=%s — "
+            "fetching generation stats", len(missing), len(responses), model,
+        )
+    for m in missing:
+        gen_id = getattr(m, "provider_response_id", None)
+        cost = (
+            _fetch_generation_cost(gen_id, api_key)
+            if gen_id and api_key
+            else None
+        )
+        if cost is not None:
+            total += cost
+            fetched += 1
+        elif prices is not None:
+            total += _estimate_response_cost(prices, getattr(m, "usage", None))
+            estimated += 1
+
+    breakdown = {
+        "responses": len(responses),
+        "inline": inline,
+        "fetched": fetched,
+        "estimated": estimated,
     }
+    covered = inline + fetched + estimated
+    note = None
+    if covered == 0:
+        if prices is None:
+            return {
+                "tokens_usd": None,
+                "total_usd": None,
+                "cost_source": None,
+                "breakdown": breakdown,
+                "note": "no OpenRouter cost in responses and model not in PRICE_TABLE",
+            }
+        # No per-response data at all (e.g. odd message shapes) — fall
+        # back to a run-level table estimate from aggregate usage.
+        total = _estimate_response_cost(prices, usage)
+        breakdown["estimated"] = estimated = len(responses) or 1
+    elif covered < len(responses):
+        # Unpriced model with responses we couldn't cost — keep the
+        # partial sum but flag the gap instead of silently undercounting.
+        note = f"{len(responses) - covered} responses unpriced"
+
+    if estimated == 0 and fetched == 0:
+        source = "openrouter"
+    elif estimated == 0:
+        source = "openrouter+api"
+    elif inline or fetched:
+        source = "openrouter+estimate"
+    else:
+        source = "price_table"
+    out: dict[str, Any] = {
+        "tokens_usd": round(total, 6),
+        "total_usd": round(total, 6),  # only cost component
+        "cost_source": source,
+        "breakdown": breakdown,
+    }
+    if note:
+        out["note"] = note
+    return out
 
 
 @dataclass
