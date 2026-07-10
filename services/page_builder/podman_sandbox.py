@@ -49,7 +49,9 @@ DEFAULT_IMAGE = (
 )
 
 DEFAULT_RUNTIME_CONFIGS = {
-    "mem_limit": "1g",
+    # 4g: in-session pandas over prefetched CSVs (DATA_PREFETCH_MAX_BYTES,
+    # up to ~150 MB) needs headroom; matches the prod builder's memory.
+    "mem_limit": "4g",
     "cpu_count": 1,
     "cap_drop": ["ALL"],
     "security_opt": ["no-new-privileges"],
@@ -158,6 +160,18 @@ class PodmanSandbox:
         # Make the path the harness system prompt expects (rewritten to /tmp/).
         sb.run_code("mkdir -p /tmp/session/outputs", language="bash", timeout=10)
         return sb
+
+    def copy_in(self, src, container_path: str) -> None:
+        """Copy a host file into the container (tar upload via llm-sandbox).
+
+        Used by the harness to provision large prefetched CSVs — the
+        chunked-base64 fallback is O(size/60KB) exec calls. The known
+        rootless-Podman tar bug only affects copy FROM the runtime
+        (see _Files.read); the host-built upload tar is fine.
+        """
+        parent = container_path.rsplit("/", 1)[0] or "/"
+        self.run_code(f"mkdir -p {_sh_quote(parent)}", language="bash", timeout=30)
+        self._session.copy_to_runtime(str(src), container_path)
 
     def kill(self) -> None:
         if self._closed:

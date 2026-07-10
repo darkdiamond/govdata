@@ -46,16 +46,17 @@ import os
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, Sequence
 
 import httpx
 from pydantic_ai import Agent, ModelRetry, RunContext
 
 from .agent_contract import (
     CHECK_SCRIPT_PATH,
+    PrefetchedResource,
     build_user_message,
     fetch_resource_preview,
-    fetch_resource_records,
+    prefetch_dataset,
     run_host_check,
     sanitize_content_html,
 )
@@ -69,7 +70,7 @@ SYSTEM_PROMPT_PATH = REPO_ROOT / "agent" / "system-prompt.md"
 # so they never collide). Production (LocalSandbox) passes per-session
 # paths instead.
 CHECK_SCRIPT_IN_SANDBOX = "/tmp/session/uploads/check.py"
-DATA_FILE_IN_SANDBOX = "/tmp/session/data.csv"
+DATA_DIR_IN_SANDBOX = "/tmp/session/data"
 
 CONTENT_FILENAME = "content.html"
 AGENT_DATA_FILENAME = "agent_data.json"
@@ -228,6 +229,51 @@ def _provision_file(sandbox, data: bytes, target: str) -> None:
             f"failed to provision {target} in sandbox: {exe.error.value}: "
             f"{exe.logs.stderr}"
         )
+
+
+# Base64 fallback is O(size/60KB) exec calls — fine for a check script,
+# unusable for a 150 MB CSV. Above this, a missing fast path is an error.
+_PROVISION_B64_MAX_BYTES = 5_000_000
+
+
+def _provision_path(sandbox, src: Path, target: str) -> None:
+    """Provision a host file into the sandbox at `target`, cheaply.
+
+    LocalSandbox (prod): hardlink into the workdir — zero-copy across the
+    up-to-3 attempts that reuse one prefetched file — falling back to a
+    plain copy across filesystems. PodmanSandbox: `copy_to_runtime`
+    (tar upload; the broken-tar quirk only affects copy FROM the runtime).
+    Last resort: the chunked-base64 writer, small files only.
+    """
+    workdir = getattr(sandbox, "workdir", None)
+    if workdir is not None:
+        try:
+            t = Path(target).resolve()
+            if t.is_relative_to(Path(workdir).resolve()):
+                t.parent.mkdir(parents=True, exist_ok=True)
+                t.unlink(missing_ok=True)
+                try:
+                    os.link(src, t)
+                except OSError:
+                    import shutil
+
+                    shutil.copyfile(src, t)
+                return
+        except OSError as e:
+            log.warning(
+                "direct provision of %s failed (%s) — trying sandbox copy", target, e
+            )
+    copy_in = getattr(sandbox, "copy_in", None)
+    if copy_in is not None:
+        copy_in(src, target)
+        return
+    size = src.stat().st_size
+    if size > _PROVISION_B64_MAX_BYTES:
+        raise RuntimeError(
+            f"no fast provisioning path for {target} ({size} bytes) — "
+            "base64 fallback is only for small files"
+        )
+    _provision_file(sandbox, src.read_bytes(), target)
 
 
 def _provision_check_script(sandbox, target: str = CHECK_SCRIPT_IN_SANDBOX) -> None:
@@ -696,23 +742,24 @@ def run_agent_session(
     outputs_dir: str,
     check_script: str,
     pre_fetched_schema: Optional[dict] = None,
-    pre_fetched_data: Optional[bytes] = None,
-    data_file: Optional[str] = None,
+    prefetched: Sequence[PrefetchedResource] = (),
+    data_dir: Optional[str] = None,
+    previous_failure: Optional[str] = None,
     reasoning_effort: Optional[str] = None,
 ) -> AgentSessionOutput:
     """Drive one agent session on an already-created sandbox.
 
     Shared by production (`agent_runner`, LocalSandbox) and the local
     test harness (`run_test_session`, PodmanSandbox). Provisions
-    check.py at `check_script`, runs the PydanticAI loop, and returns
-    the RAW outputs + telemetry — validation, sanitizing, and
-    persistence are the caller's responsibility.
+    check.py at `check_script` and every prefetched data file under
+    `data_dir`, runs the PydanticAI loop, and returns the RAW outputs +
+    telemetry — validation, sanitizing, and persistence are the caller's
+    responsibility.
     """
     system_prompt = _load_system_prompt()
-    provisioned_data = pre_fetched_data if (pre_fetched_data and data_file) else None
-    data_rows = (
-        max(provisioned_data.count(b"\n") - 1, 0) if provisioned_data else None
-    )
+    data_files = [p for p in prefetched if p.host_path and p.sandbox_filename]
+    if data_files and not data_dir:
+        raise ValueError("prefetched data files require data_dir")
     user_msg = build_user_message(
         dataset_id=dataset_id,
         title=title,
@@ -722,19 +769,21 @@ def run_agent_session(
         outputs_dir=outputs_dir,
         check_script=check_script,
         pre_fetched_schema=pre_fetched_schema,
-        pre_fetched_data_path=data_file if provisioned_data else None,
-        pre_fetched_data_rows=data_rows,
+        prefetched=prefetched,
+        data_dir=data_dir,
+        previous_failure=previous_failure,
     )
     httpx_client = httpx.Client()
     deps = Deps(sandbox=sandbox, httpx_client=httpx_client, dataset_id=dataset_id)
     started = time.monotonic()
     try:
         _provision_check_script(sandbox, check_script)
-        if provisioned_data:
-            _provision_file(sandbox, provisioned_data, data_file)
+        for p in data_files:
+            target = f"{data_dir.rstrip('/')}/{p.sandbox_filename}"
+            _provision_path(sandbox, p.host_path, target)
             log.info(
-                "session[%s]: provisioned data prefetch (%d rows, %d bytes) at %s",
-                dataset_id[:8], data_rows or 0, len(provisioned_data), data_file,
+                "session[%s]: provisioned %s (%s, %d rows) at %s",
+                dataset_id[:8], p.sandbox_filename, p.mode, p.rows, target,
             )
         py_model, model_settings = _build_pydantic_model(model, reasoning_effort)
         agent = _build_agent(
@@ -800,6 +849,7 @@ def run_test_session(
     primary_resource_id: Optional[str],
     out_dir: Path,
     model: str,
+    resources: Optional[list] = None,
     max_iters: int = 30,  # noqa: ARG001 - PydanticAI controls retries; kept for caller parity
     reasoning_effort: Optional[str] = None,
 ) -> TestSessionResult:
@@ -814,21 +864,20 @@ def run_test_session(
 
     # Same host-side schema + data prefetch as run_production_session — the
     # user message must be identical for an apples-to-apples model comparison.
-    pre_fetched_schema = (
-        fetch_resource_preview(primary_resource_id) if primary_resource_id else None
-    )
-    if pre_fetched_schema is not None:
+    pre_fetched_schema: Optional[dict] = None
+    prefetched: list[PrefetchedResource] = []
+    if resources:
+        prefetched = prefetch_dataset(resources, out_dir / "prefetch")
         log.info(
-            "test[%s]: prefetched schema (%d fields, total=%d)",
+            "test[%s]: prefetched %d resource(s): %s",
             dataset_id[:8],
-            len(pre_fetched_schema["fields"]),
-            pre_fetched_schema["total"],
+            len(prefetched),
+            ", ".join(f"{p.sandbox_filename or p.resource_id[:8]}({p.mode})"
+                      for p in prefetched) or "-",
         )
-    pre_fetched_data = (
-        fetch_resource_records(primary_resource_id, pre_fetched_schema["total"])
-        if pre_fetched_schema
-        else None
-    )
+    elif primary_resource_id:
+        # Legacy caller without the full resource list — schema-only.
+        pre_fetched_schema = fetch_resource_preview(primary_resource_id)
 
     log.info(
         "test[%s]: starting Podman sandbox + model=%s%s",
@@ -848,8 +897,8 @@ def run_test_session(
             outputs_dir=OUTPUTS_DIR_IN_SANDBOX,
             check_script=CHECK_SCRIPT_IN_SANDBOX,
             pre_fetched_schema=pre_fetched_schema,
-            pre_fetched_data=pre_fetched_data,
-            data_file=DATA_FILE_IN_SANDBOX,
+            prefetched=prefetched,
+            data_dir=DATA_DIR_IN_SANDBOX,
             reasoning_effort=reasoning_effort,
         )
         sandbox_files: list[str] = []
