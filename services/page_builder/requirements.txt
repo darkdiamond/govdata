@@ -6,6 +6,14 @@
 # web_search tool. The Podman sandbox used by the local test harness is
 # NOT here — see requirements-test.txt.
 pydantic-ai>=1.107,<2
+# logfire comes in via pydantic-ai's extras; a fresh pip resolve (container
+# build 2026-07-10) hit ResolutionImpossible: newest logfire floats while
+# opentelemetry-instrumentation-httpx exact-pins its matching
+# opentelemetry-instrumentation, and pip can't align the pair. Pin the
+# venv-proven set; drop once pydantic-ai/logfire advance past the conflict.
+logfire[httpx]==4.36.0
+opentelemetry-instrumentation==0.60b1
+opentelemetry-instrumentation-httpx==0.60b1
 duckduckgo-search>=8
 httpx>=0.27.0
 pydantic>=2.0
