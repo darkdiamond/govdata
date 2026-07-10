@@ -175,7 +175,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                         "'anthropic:claude-...' for the native calibration path")
     p.add_argument("--out", default=str(DEFAULT_OUT_DIR))
     p.add_argument("--reasoning-effort",
-                   choices=["none", "minimal", "low", "medium", "high", "xhigh"],
+                   choices=["none", "minimal", "low", "medium", "high", "xhigh", "max"],
                    help="OpenRouter reasoning.effort override (OpenRouter "
                         "models only); omit for the model default, which is "
                         "what production uses")
