@@ -51,14 +51,19 @@ from typing import Any, Optional
 import httpx
 from pydantic_ai import Agent, ModelRetry, RunContext
 
-from .agent_contract import build_user_message, sanitize_content_html
+from .agent_contract import (
+    CHECK_SCRIPT_PATH,
+    build_user_message,
+    fetch_resource_preview,
+    run_host_check,
+    sanitize_content_html,
+)
 from .schema import AgentData
 
 log = logging.getLogger(__name__)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SYSTEM_PROMPT_PATH = REPO_ROOT / "agent" / "system-prompt.md"
-CHECK_SCRIPT_PATH = REPO_ROOT / "agent" / "skills" / "check.py"
 # Fixed paths used by the Podman test harness (one session per container,
 # so they never collide). Production (LocalSandbox) passes per-session
 # paths instead.
@@ -157,6 +162,7 @@ class TestSessionResult:
     usage: dict[str, int]
     cost_usd: dict[str, float]
     sandbox_files: list[str] = field(default_factory=list)
+    host_check: str = "passed"
 
 
 def _provision_check_script(sandbox, target: str = CHECK_SCRIPT_IN_SANDBOX) -> None:
@@ -629,6 +635,19 @@ def run_test_session(
 
     from .podman_sandbox import PodmanSandbox
 
+    # Same host-side schema prefetch as run_production_session — the user
+    # message must be identical for an apples-to-apples model comparison.
+    pre_fetched_schema = (
+        fetch_resource_preview(primary_resource_id) if primary_resource_id else None
+    )
+    if pre_fetched_schema is not None:
+        log.info(
+            "test[%s]: prefetched schema (%d fields, total=%d)",
+            dataset_id[:8],
+            len(pre_fetched_schema["fields"]),
+            pre_fetched_schema["total"],
+        )
+
     log.info("test[%s]: starting Podman sandbox + model=%s", dataset_id[:8], model)
     sandbox = PodmanSandbox.create()
     try:
@@ -642,6 +661,7 @@ def run_test_session(
             primary_resource_id=primary_resource_id,
             outputs_dir=OUTPUTS_DIR_IN_SANDBOX,
             check_script=CHECK_SCRIPT_IN_SANDBOX,
+            pre_fetched_schema=pre_fetched_schema,
         )
         sandbox_files: list[str] = []
         try:
@@ -657,6 +677,17 @@ def run_test_session(
 
     content_html = sanitize_content_html(out.content_html_raw, dataset_id=dataset_id)
     agent_data = AgentData.model_validate_json(out.agent_data_raw)
+
+    # Same authoritative gate as production (agent_runner). Single attempt
+    # here — a failure is reported, not retried, so eval runs surface it.
+    try:
+        run_host_check(
+            content_html, agent_data.model_dump_json(exclude_none=True), out_dir
+        )
+        host_check = "passed"
+    except Exception as e:
+        host_check = str(e)
+        log.warning("test[%s]: %s", dataset_id[:8], host_check[:300])
 
     content_html_path = out_dir / CONTENT_FILENAME
     agent_data_path = out_dir / AGENT_DATA_FILENAME
@@ -681,6 +712,7 @@ def run_test_session(
                 "cost_usd": out.cost,
                 "tool_calls": out.tool_calls,
                 "sandbox_files": sandbox_files,
+                "host_check": host_check,
             },
             ensure_ascii=False,
             indent=2,
@@ -701,4 +733,5 @@ def run_test_session(
         usage=out.usage,
         cost_usd=out.cost,
         sandbox_files=sandbox_files,
+        host_check=host_check,
     )

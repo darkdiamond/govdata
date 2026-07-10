@@ -206,8 +206,10 @@ def _do(action: str, ids: Iterable[str]) -> int:
     return 0 if fail == 0 else 1
 
 
-def _fetch_prod_html(dataset_id: str) -> str:
-    url = f"{PROD_URL_BASE}/{dataset_id}"
+def _fetch_prod_html(dataset_id: str, prod_url: str | None = None) -> str:
+    # Live pages are served at /datasets/<page_slug>; the id URL only works
+    # for legacy entries. Pass --prod-url with the slug URL when the id 404s.
+    url = prod_url or f"{PROD_URL_BASE}/{dataset_id}"
     req = urllib.request.Request(url, headers={"User-Agent": "govdata-preview/1"})
     with urllib.request.urlopen(req, timeout=30) as r:
         return r.read().decode("utf-8")
@@ -289,16 +291,19 @@ def _freeze_static(html: str) -> str:
     return html
 
 
-def _render_one(p: Paths) -> bool:
+def _render_one(p: Paths, prod_url: str | None = None) -> bool:
     if not p.build_file("content.html").exists():
         print(
             f"[{p.dataset_id[:8]}] no harness build at {p.build_dir} — skip",
             file=sys.stderr,
         )
         return False
-    print(f"[{p.dataset_id[:8]}] fetching {PROD_URL_BASE}/{p.dataset_id} ...")
+    print(
+        f"[{p.dataset_id[:8]}] fetching "
+        f"{prod_url or f'{PROD_URL_BASE}/{p.dataset_id}'} ..."
+    )
     try:
-        prod_html = _fetch_prod_html(p.dataset_id)
+        prod_html = _fetch_prod_html(p.dataset_id, prod_url=prod_url)
     except Exception as e:
         print(
             f"[{p.dataset_id[:8]}] fetch failed: {type(e).__name__}: {e}",
@@ -318,14 +323,18 @@ def _render_one(p: Paths) -> bool:
     out.write_text(spliced, encoding="utf-8")
     print(f"[{p.dataset_id[:8]}] wrote {out} ({out.stat().st_size:,} bytes)")
     print(f"  open: file://{out}")
-    print(f"  prod: {PROD_URL_BASE}/{p.dataset_id}")
+    print(f"  prod: {prod_url or f'{PROD_URL_BASE}/{p.dataset_id}'}")
     return True
 
 
-def _cmd_render(ids: Iterable[str]) -> int:
+def _cmd_render(ids: Iterable[str], prod_url: str | None = None) -> int:
+    ids = list(ids)
+    if prod_url and len(ids) > 1:
+        print("--prod-url only works with a single dataset id", file=sys.stderr)
+        return 2
     ok = fail = 0
     for did in ids:
-        if _render_one(Paths.for_id(did)):
+        if _render_one(Paths.for_id(did), prod_url=prod_url):
             ok += 1
         else:
             fail += 1
@@ -370,6 +379,11 @@ def main(argv: list[str] | None = None) -> int:
         sp.add_argument("ids", nargs="*", help="dataset id(s)")
         sp.add_argument("--all", action="store_true",
                         help=f"apply to every harness build under {HARNESS_OUT_DIR.relative_to(REPO_ROOT)}/")
+        if name == "render":
+            sp.add_argument("--prod-url",
+                            help="full live page URL to splice into (use the "
+                                 "slug URL when the id-based URL 404s); "
+                                 "single id only")
 
     sub.add_parser("status", help="list datasets currently swapped + available builds")
 
@@ -381,7 +395,7 @@ def main(argv: list[str] | None = None) -> int:
             print("nothing to do — pass dataset ids or --all", file=sys.stderr)
             return 2
         if args.cmd == "render":
-            return _cmd_render(ids)
+            return _cmd_render(ids, prod_url=getattr(args, "prod_url", None))
         return _do(args.cmd, ids)
     return _cmd_status()
 

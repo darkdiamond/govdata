@@ -23,8 +23,6 @@ from __future__ import annotations
 
 import logging
 import os
-import subprocess
-import sys
 import tempfile
 import time
 import uuid
@@ -34,11 +32,14 @@ from typing import Optional
 
 from services.shared.firestore import FirestoreStateStore
 
-from .agent_contract import fetch_resource_preview, sanitize_content_html
+from .agent_contract import (
+    fetch_resource_preview,
+    run_host_check,
+    sanitize_content_html,
+)
 from .local_sandbox import LocalSandbox
 from .model_harness import (
     AGENT_DATA_FILENAME,
-    CHECK_SCRIPT_PATH,
     CONTENT_FILENAME,
     AgentSessionOutput,
     run_agent_session,
@@ -66,30 +67,6 @@ class ProdSessionResult:
     @property
     def events_seen(self) -> int:
         return 0
-
-
-def _host_check(content_html: str, agent_data_json: str, workdir: Path) -> None:
-    """Run agent/skills/check.py on the sanitized outputs; raise on non-zero.
-
-    The agent already self-checked in its sandbox, but the sanitizer may
-    have rewritten the body since — this is the authoritative gate before
-    anything reaches GCS/Firestore.
-    """
-    c = workdir / "validated-content.html"
-    a = workdir / "validated-agent_data.json"
-    c.write_text(content_html, encoding="utf-8")
-    a.write_text(agent_data_json, encoding="utf-8")
-    proc = subprocess.run(
-        [sys.executable, str(CHECK_SCRIPT_PATH), str(c), str(a)],
-        capture_output=True,
-        text=True,
-        timeout=60,
-    )
-    if proc.returncode != 0:
-        raise RuntimeError(
-            f"host self-check failed (exit {proc.returncode}): "
-            f"{(proc.stdout or proc.stderr).strip()[:500]}"
-        )
 
 
 def _write_gcs(data: bytes, bucket: str, relpath: str) -> str:
@@ -161,7 +138,7 @@ def run_production_session(
             content_html = sanitize_content_html(
                 out.content_html_raw, dataset_id=dataset_id
             )
-            _host_check(
+            run_host_check(
                 content_html,
                 agent_data.model_dump_json(exclude_none=True),
                 workdir,

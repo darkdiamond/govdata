@@ -99,6 +99,12 @@ def _print_summary(res) -> None:
         cost_line = f"  $: {cost['total_usd']:.4f} ({tag})"
     else:
         cost_line = f"  $: unknown ({cost.get('note', '')})"
+    check = res.host_check
+    check_line = (
+        "  host check: passed"
+        if check == "passed"
+        else f"  host check: FAILED — {check[:200]}"
+    )
     print(
         f"\n=== {res.dataset_id} (model={res.model}) ===\n"
         f"  out: {res.out_dir}\n"
@@ -106,6 +112,7 @@ def _print_summary(res) -> None:
         f"  tokens: in={usage['input_tokens']:,} out={usage['output_tokens']:,} "
         f"cached={usage['cache_read_tokens']:,} total={usage['total_tokens']:,}\n"
         f"{cost_line}\n"
+        f"{check_line}\n"
         f"  files: {res.content_html_path.name}, {res.agent_data_path.name}, "
         f"transcript.json, cost.json"
     )
