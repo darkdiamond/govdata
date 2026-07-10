@@ -338,6 +338,13 @@ def _build_pydantic_model(
                 f"model={model_id!r} is an OpenRouter id but "
                 "OPENROUTER_API_KEY is not set"
             )
+        # Richer prefetched data → bigger pages → the single write-content
+        # heredoc response can push past 16384 and get its tool call dropped
+        # mid-stream (same pydantic-ai truncation class as the 4096→16384
+        # bump; two observed 2026-07-10 sessions died exactly at that step).
+        # M3 allows 131072 completion tokens; 32768 costs nothing unless
+        # actually generated.
+        base_settings["max_tokens"] = 32768
         # `usage.include` asks OpenRouter for usage accounting: the final
         # response carries billed cost + cached-token counts, which the
         # OpenRouterModel maps into provider_details / RequestUsage.
@@ -798,6 +805,33 @@ def run_agent_session(
             content_html_bytes = sandbox.files.read(f"{od}/{CONTENT_FILENAME}")
             agent_data_bytes = sandbox.files.read(f"{od}/{AGENT_DATA_FILENAME}")
         except Exception as e:
+            # Diagnose before raising: did the agent write elsewhere, or did
+            # its final response lose a tool call (max_tokens truncation)?
+            try:
+                exe = sandbox.run_code(
+                    f"find /tmp/session /tmp/work {od} -maxdepth 3 -type f "
+                    "2>/dev/null | head -40",
+                    language="bash",
+                    timeout=15,
+                )
+                log.warning(
+                    "session[%s]: outputs missing; sandbox files:\n%s",
+                    dataset_id[:8], (exe.logs.stdout or "(none)")[:1500],
+                )
+            except Exception:
+                pass
+            try:
+                parts = getattr(result.all_messages()[-1], "parts", [])
+                log.warning(
+                    "session[%s]: final message parts: %s",
+                    dataset_id[:8],
+                    "; ".join(
+                        f"{type(p).__name__}:{str(getattr(p, 'content', ''))[:200]}"
+                        for p in parts
+                    )[:1200],
+                )
+            except Exception:
+                pass
             raise RuntimeError(
                 f"agent did not produce both output files: {e}"
             ) from e
