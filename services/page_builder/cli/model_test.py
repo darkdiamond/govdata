@@ -42,6 +42,7 @@ from typing import Optional
 
 from services.page_builder.model_harness import TestSessionResult, run_test_session
 from services.shared.firestore import FirestoreStateStore, SourceRecord
+from services.shared.resources import pick_primary_resource_id
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 PROD_DATASETS_DIR = REPO_ROOT / "frontend" / "public" / "datasets"
@@ -125,17 +126,25 @@ def _print_summary(res) -> None:
 def _run_one(*, dataset_id: str, args, store: FirestoreStateStore):
     src = _load_source(store, dataset_id)
     out_dir = Path(args.out) / dataset_id
-    primary_resource_id = None
-    for r in src.resources or []:
-        if (r.get("format") or "").upper() == "CSV":
-            primary_resource_id = r.get("id")
-            break
-    if not primary_resource_id and src.resources:
-        primary_resource_id = src.resources[0].get("id")
+    # Same selection as prod: pick_primary_resource_id + prefetch_dataset
+    # inside run_test_session (apples-to-apples with the daily pipeline).
+    primary_resource_id = pick_primary_resource_id(src.resources or [])
 
     org_title = ""
     if isinstance(src.organization, dict):
         org_title = src.organization.get("title") or src.organization.get("name") or ""
+
+    # Same related-candidates block as prod (read-only Firestore query).
+    related_candidates: list[dict] = []
+    org_name = (src.organization or {}).get("name") or ""
+    if org_name:
+        try:
+            related_candidates = [
+                {"id": s.id, "title": s.title, "tags": s.tags}
+                for s in store.list_org_sources(org_name, exclude_id=dataset_id)
+            ]
+        except Exception:
+            log.warning("related-candidates lookup failed for %s", dataset_id[:8])
 
     print(f"\n--- running {args.model} on {dataset_id} ({src.title!r}) ---")
     try:
@@ -145,6 +154,8 @@ def _run_one(*, dataset_id: str, args, store: FirestoreStateStore):
             notes=src.notes or "",
             org_title=org_title,
             primary_resource_id=primary_resource_id,
+            resources=src.resources,
+            related_candidates=related_candidates,
             out_dir=out_dir,
             model=args.model,
             max_iters=args.max_iters,
