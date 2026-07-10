@@ -148,6 +148,7 @@ def _run_one(*, dataset_id: str, args, store: FirestoreStateStore):
             out_dir=out_dir,
             model=args.model,
             max_iters=args.max_iters,
+            reasoning_effort=args.reasoning_effort,
         )
     except Exception as e:
         log.exception("test[%s]: run_test_session failed: %s", dataset_id[:8], e)
@@ -173,6 +174,11 @@ def main(argv: Optional[list[str]] = None) -> int:
                         "'anthropic/claude-sonnet-4-6', ...) or "
                         "'anthropic:claude-...' for the native calibration path")
     p.add_argument("--out", default=str(DEFAULT_OUT_DIR))
+    p.add_argument("--reasoning-effort",
+                   choices=["none", "minimal", "low", "medium", "high", "xhigh"],
+                   help="OpenRouter reasoning.effort override (OpenRouter "
+                        "models only); omit for the model default, which is "
+                        "what production uses")
     p.add_argument("--max-iters", type=int, default=30)
     p.add_argument("--project", default=os.environ.get("FIREBASE_PROJECT") or "govdata-il")
     p.add_argument("-v", "--verbose", action="store_true")
