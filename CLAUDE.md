@@ -27,11 +27,23 @@ landing pages. Four layers:
    `minimax/minimax-m3`). Tools: bash + code_execution (subprocess in a
    private per-session workdir via `local_sandbox.LocalSandbox`),
    web_fetch (httpx), web_search (DDG). System prompt:
-   `agent/system-prompt.md` (canonical, hand-edited). Each session
-   self-validates before anything persists: AgentData schema →
-   sanitizer → host-side `agent/skills/check.py` exit 0, with
-   `SESSION_ATTEMPTS` (3) in-run retries on fresh workdirs
-   (`agent_runner.run_production_session`). Outputs: `content.html`
+   `agent/system-prompt.md` (canonical, hand-edited). Host-side
+   prefetch (`agent_contract.prefetch_dataset`, once per source):
+   every datastore-active resource (format twins deduped;
+   primary-only unless `DATA_PREFETCH_MULTI=true`) is streamed into
+   the session workdir as CSV — full up to
+   `DATA_PREFETCH_MAX_RECORDS`/`_MAX_BYTES` (per-dataset
+   `_TOTAL_BYTES` budget), deterministic strided sample above them
+   (`DATA_PREFETCH_SAMPLE_ROWS`; 0 = legacy all-or-nothing skip) —
+   and advertised via a `pre_fetched_files` manifest in the user
+   message; the prompt is pandas-first on those files, CKAN API as
+   fallback/spot-check only. Each session self-validates before
+   anything persists: AgentData schema → sanitizer → host-side
+   `agent/skills/check.py` exit 0, with `SESSION_ATTEMPTS` (3)
+   in-run retries on fresh workdirs
+   (`agent_runner.run_production_session`); `RETRY_FEEDBACK=true`
+   feeds a validation failure's diagnostic into the next attempt's
+   user message (API flakes stay hintless). Outputs: `content.html`
    → GCS staging, `agent_data` + usage/cost telemetry → Firestore.
 4. **Publisher** — GitHub Actions workflow
    `.github/workflows/publish.yml` ($0 — free-tier minutes; keyless GCP

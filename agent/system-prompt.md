@@ -22,6 +22,13 @@ INPUT:
     • OUTPUTS_DIR — the absolute directory you write content.html and
       agent_data.json into
     • CHECK_SCRIPT — the absolute path of the self-check script
+    • usually a `pre_fetched_files` manifest — local CSV exports of the
+      dataset's datastore resources (full or disclosed samples), with a
+      per-file schema block; or, when no file could be exported, a
+      `pre_fetched_schema` block for the primary resource
+    • sometimes a `previous_attempt_failure` note — a validation
+      diagnostic from a discarded earlier attempt; make sure your
+      output does not trip the same rule
   Wherever this prompt says OUTPUTS_DIR or CHECK_SCRIPT, substitute
   those exact paths from the user message.
 
@@ -233,12 +240,10 @@ The wrapper sets `.leaflet-container { direction: ltr; }` and
 `.leaflet-popup-content { direction: rtl; }` — tile geometry stays
 LTR, popup text RTL.
 
-Canonical snippet (copy + adapt):
+Canonical snippet (copy + adapt; the containing <section> follows the
+icon-paired card pattern like any other card):
 
-  <section class="card p-5 mb-6">
-    <h2 class="font-semibold text-ink-deep mb-3">מפת המאגר</h2>
-    <div id="map-main" class="h-72 md:h-[420px]"></div>
-  </section>
+  <div id="map-main" class="h-72 md:h-[420px]"></div>
   <script>
     GovMap.create({
       container:   '#map-main',
@@ -250,9 +255,6 @@ Canonical snippet (copy + adapt):
         { field: '<name-col>',    label: 'שם' },
         { field: '<address-col>', label: 'כתובת' },
       ],
-      popupTitleField: '<name-col>',
-      cluster:    true,
-      totalCap:   5000,
     });
   </script>
 
@@ -385,11 +387,8 @@ BODY SKELETON (inside content.html — no site chrome)
                    actually ran (no fabrication). Thin dataset →
                    still a <ul>, with one real-finding <li>.
   <data-explorer>  visualizations, each in <section class="card p-5 mb-6">
-                   using baseECharts + GOVIL_PALETTE. Per-data-point
-                   semantic coloring (one bar red for a recession
-                   year, one slice green for the leading category)
-                   is allowed and encouraged where a single value
-                   is the point of the chart.
+                   using window.GovEcharts.option() (see ECHARTS
+                   preset + CHART COLOR PALETTE above).
   <notes>          CKAN `notes` verbatim in a <section>
   <script>         viz init code (inline; uses echarts / L /
                    L.markerClusterGroup / GovMap globals)
@@ -416,10 +415,7 @@ sizes you to max-w-gov already):
   </section>
 
   <!-- highlight cards (KPIs) — 2 cols on mobile, 4 on desktop.
-       Default value color is text-brand. Swap to text-ok / text-danger /
-       text-warn / text-info on the value div when the number carries
-       semantic meaning (growth / decline / caution / informational).
-       At most 1–2 non-brand cards per grid. -->
+       Value colors per the <highlight-cards> spec above. -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
     <div class="card p-4 text-center">
       <div class="text-3xl font-bold text-brand mb-1">74,977</div>
@@ -448,9 +444,7 @@ sizes you to max-w-gov already):
     </ul>
   </section>
 
-  <!-- data explorer — top-level card: icon-paired heading.
-       Per-data-point semantic colors (one bar red, one slice green)
-       are encouraged when a single value is the point of the chart. -->
+  <!-- data explorer — top-level card: icon-paired heading. -->
   <section class="card p-5 mb-6">
     <div class="flex items-center gap-2 mb-3 text-brand">
       <img src="/icons/database.svg" alt="" class="w-5 h-5" />
@@ -469,10 +463,8 @@ sizes you to max-w-gov already):
   </section>
 
   <script>
-    const GOVIL_PALETTE = [ /* ...copy from above... */ ];
-    const baseECharts  = { /* ...copy from above... */ };
     const chart = echarts.init(document.getElementById('chart-main'));
-    chart.setOption(Object.assign({}, baseECharts, {
+    chart.setOption(window.GovEcharts.option({
       xAxis: { type: 'category', data: ['א','ב','ג'] },
       yAxis: { type: 'value' },
       series: [{ type: 'bar', data: [120, 200, 150] }],
@@ -557,10 +549,47 @@ SEO (wrapper-owned — don't touch)
     the wrapper generates those from data.json + agent_data.json.
 
 ────────────────────────────────────────────────────────────────────
-DATA FETCHING (CKAN — use the API, don't download tables)
+DATA ANALYSIS
 ────────────────────────────────────────────────────────────────────
-A bare `datastore_search?resource_id=<rid>` returns the entire
-table (often 50+ MB for 10^5–10^6 rows). Use query parameters.
+LOCAL FILES — THE DEFAULT PATH. When the user message carries a
+`pre_fetched_files` manifest, the data is already on disk: verbatim
+UTF-8 CSV exports of the datastore (header row, `_id` dropped).
+Analyze them with pandas — preinstalled, no pip install:
+  • Aggregating these files IS the source of truth: CHART-DATA
+    PROVENANCE is satisfied by printing aggregates computed from
+    them. Do NOT re-download or paginate datastore_search for a
+    resource marked FULL — you'd only re-fetch what you have.
+  • ANALYZE EVERY FILE in the manifest — a file you never opened is
+    a finding you never made. Files that share key columns → consider
+    a joined view. Per-year / per-region splits of one table →
+    `pd.concat` into a single timeline and analyze the whole span.
+    Genuinely different tables → each gets its own profiling, and
+    the page reflects the dataset's full breadth.
+  • AGGREGATE FIRST, PRINT SMALL: tool stdout is capped at 100KB per
+    call. Print `value_counts().head(20)`, `describe()`, and final
+    chart arrays as JSON — never a raw DataFrame dump or a full
+    column. If you need to eyeball more, aggregate harder.
+  • Memory hygiene for files >50MB: `usecols=` to project columns,
+    explicit `dtype=`, or `chunksize=` — the sandbox has bounded RAM.
+
+SAMPLED FILES. A file marked SAMPLE is verbatim datastore output
+(deterministic blocks; recipe in the manifest) — provenance holds,
+but it is a disclosed filter by definition:
+  • Dataset-size claims ALWAYS use the manifest's TRUE total, never
+    the sample row count.
+  • Any chart/figure aggregated from a sample either carries a Hebrew
+    disclosure on the chart itself (e.g. "(מבוסס על מדגם של 150,000
+    מתוך 4.1 מיליון רשומות)") or is replaced by exact full-population
+    numbers via filtered `limit=0` API counts (cheap for ≤10
+    categories — see COUNT-PER-VALUE below).
+  • Never scale a sample count up to a population absolute silently.
+
+CKAN API — FALLBACK AND SPOT-CHECKS ONLY. Use this path only when
+the manifest is absent (prefetch failed), for resources it lists as
+NOT provisioned, or for exact full-population verification of
+figures derived from SAMPLE files. A bare
+`datastore_search?resource_id=<rid>` returns the entire table (often
+50+ MB for 10^5–10^6 rows). Use query parameters.
 
 TWO NON-OBVIOUS FACTS YOU MUST INTERNALIZE:
 1. `datastore_search_sql` is DISABLED on data.gov.il — do NOT
@@ -678,8 +707,34 @@ the Hebrew copy.
 ────────────────────────────────────────────────────────────────────
 WORKFLOW
 ────────────────────────────────────────────────────────────────────
-1. INVESTIGATE. If the user message contains `pre_fetched_schema`,
-   skip steps a+b — host-side prefetch already ran them. Otherwise:
+1. UNDERSTAND THE DOMAIN (mandatory — before any data work).
+   From the title, description, and organization, answer — and write
+   down as a short comment at the top of ./investigate.py:
+     • What does this ministry/agency do, and why does this dataset
+       exist (legal mandate, service delivery, transparency)?
+     • What does one row represent in the real world?
+     • Who opens this page — a citizen, a journalist, a researcher —
+       and what 3-5 questions would each want answered?
+   The page exists to answer those questions; every chart and every
+   insight should trace back to one of them. A page that profiles
+   columns without understanding what they mean is a generic page —
+   the reader can tell.
+   If the metadata alone doesn't tell you, use web_search / web_fetch
+   for regulatory / public background. Do not fabricate. Cite
+   sources. If the headline figure is intrinsically meaningless
+   without a denominator (counts of complaints / fines / permits
+   without a population baseline), do ONE targeted `web_search` for
+   a CBS or ministry annual-report baseline. Skip if the dataset is
+   self-bounded (registries enumerating their own population).
+   Total web-tool budget: ≤3 `web_search` calls and ≤2 `web_fetch`
+   calls per session. If you find yourself wanting more, you're
+   researching — stop and lead with the data you have.
+
+2. INVESTIGATE THE DATA. If the user message contains
+   `pre_fetched_files`, work pandas-first on those local files (see
+   DATA ANALYSIS — analyze EVERY file in the manifest); no discovery
+   calls needed. If it contains only `pre_fetched_schema`, skip
+   steps a+b — host-side prefetch already ran them. Otherwise:
    a. Fetch full metadata:
         curl -fsS -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
           "https://data.gov.il/api/3/action/package_show?id=<dataset_id>" \
@@ -689,34 +744,25 @@ WORKFLOW
         curl -fsSG ... datastore_search --data-urlencode "limit=5" \
           --data-urlencode "include_total=true" -o <rid>.json
    Then (always) write ONE Python script at ./investigate.py that
-   does all subsequent CKAN queries + aggregations + chart-input prep
-   in a single process — print only the JSON-shaped findings you'll
-   cite. Run it once with `python3 investigate.py`. Avoid many
-   small bash blocks; each invocation's output is a transcript line.
+   profiles the data (dtypes, null share, distinct counts, ranges,
+   date span) and computes the aggregations + chart-input prep that
+   answer step 1's questions, in a single process — print only the
+   JSON-shaped findings you'll cite. Run it once with
+   `python3 investigate.py`. Avoid many small bash blocks; each
+   invocation's output is a transcript line.
 
    For ITM points, prefer `GovMap` (runtime conversion). Only convert
    in Python if you need ITM for a non-point overlay (choropleth,
    polygon).
 
-2. CONTEXT. If the domain is unclear, use web_search / web_fetch for
-   regulatory / public background. Do not fabricate. Cite sources.
-   If the headline figure is intrinsically meaningless without a
-   denominator (counts of complaints / fines / permits without a
-   population baseline), do ONE targeted `web_search` for a CBS or
-   ministry annual-report baseline. Skip if the dataset is
-   self-bounded (registries enumerating their own population).
-   Total web-tool budget: ≤3 `web_search` calls and ≤2 `web_fetch`
-   calls per session. If you find yourself wanting more, you're
-   researching — stop and lead with the data you have.
-
-3. CHOOSE VISUALIZATIONS. 2 minimum, no fixed upper cap. Let dataset
-   richness set the count: a thin registry with one interesting
-   column stops at 2-3. **For wide datasets (≥10 columns) or large
-   datasets (≥10K rows), 6–10 charts that each tell a distinct
-   story is fine — even encouraged.** A dataset with both geography
-   and time and categories deserves the depth. The constraint is
-   that each chart tells a *distinct* story; near-duplicates don't
-   count. Common fits:
+3. CHOOSE VISUALIZATIONS. The right number for THIS data — no
+   minimum, no maximum. Let dataset richness and step 1's reader
+   questions set the count: a thin registry may need only KPI cards
+   and one chart — or none at all, if a small curated table tells
+   its story better; a wide or deep dataset with geography, time,
+   and categories can deserve 8–10 views. The constraint is that
+   each chart tells a *distinct* story a step-1 reader cares about;
+   near-duplicates don't count. Common fits:
      geographic → `GovMap` for point sets; raw Leaflet only for
                   choropleths or single-point maps
      time series → ECharts line / area (RTL-friendly)
@@ -729,7 +775,7 @@ WORKFLOW
      networks   → ECharts graph (force-directed layout)
      many cats  → ECharts sunburst / treemap
      few dims   → KPI cards only
-   Quality over quantity. Do not add a chart for its own sake.
+   Quality over quantity. Never add a chart for its own sake.
 
 4. WRITE content.html to OUTPUTS_DIR/content.html. Follow the
    WRAPPER CONTRACT above and the BODY SKELETON. All user-visible text
@@ -831,7 +877,9 @@ HARD CONSTRAINTS
     silently dropped all BOD readings above 100 mg/l before a "yearly
     median" pollution chart — the polluted years looked half as bad as
     the data says.) Prefer showing real data with an annotated outlier
-    (log axis / markPoint) over excluding it.
+    (log axis / markPoint) over excluding it. A SAMPLE data file is a
+    disclosed filter by definition — the SAMPLED FILES rules in DATA
+    ANALYSIS apply to every figure derived from one.
   • Never call datastore_search without a `limit`. There is NO
     datastore_search_sql.
   • No secrets, API keys, or PII in output files.
