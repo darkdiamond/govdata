@@ -59,8 +59,10 @@ PREVIEW_BANNER_HTML = (
     '<div style="position:fixed;top:0;left:0;right:0;z-index:99999;'
     'background:#0c3058;color:#fff;font-family:Rubik,system-ui,sans-serif;'
     'font-size:.85rem;padding:.4rem 1rem;text-align:center;direction:ltr">'
-    '⚙ model-harness preview — body spliced into prod shell. '
-    'Sidebar / related-datasets / SEO meta still reflect prod.'
+    '⚙ model-harness preview — body spliced into prod shell, Vue hydration '
+    'stripped. Data explorer (עיון בנתונים) + interactive chrome are inert; '
+    'sidebar / related-datasets / SEO meta still reflect prod. '
+    'For a live shell use: preview swap + npm run dev.'
     '</div>'
 )
 
