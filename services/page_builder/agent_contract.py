@@ -18,11 +18,15 @@ Three concerns live here:
 """
 from __future__ import annotations
 
+import csv
+import io
 import json
 import logging
+import os
 import re
 import subprocess
 import sys
+import time
 from pathlib import Path
 from typing import Any, Optional
 from urllib import error as urllib_error
@@ -82,6 +86,19 @@ _PREFETCH_TIMEOUT_S = 4.0
 _PREFETCH_SAMPLE_LIMIT = 5
 _PREFETCH_VALUE_TRUNC = 80
 _PREFETCH_JSON_CAP = 2048
+
+# Full-data prefetch (host-side datastore export → CSV in the session
+# workdir). Every model burned most of its tool rounds paginating
+# datastore_search; shipping the data into the sandbox up front cuts
+# requests, wall-clock, and CKAN/WAF flake exposure. Gated by record
+# count (env DATA_PREFETCH_MAX_RECORDS, 0 disables) and a byte cap;
+# any failure returns None and the session falls back to the normal
+# curl flow — prefetch must never block a build.
+_DATA_PREFETCH_DEFAULT_MAX_RECORDS = 50_000
+_DATA_PREFETCH_PAGE_SIZE = 5_000
+_DATA_PREFETCH_PAGE_TIMEOUT_S = 20.0
+_DATA_PREFETCH_WALL_BUDGET_S = 120.0
+_DATA_PREFETCH_BYTE_CAP = 30_000_000
 
 
 def _truncate_value(v: Any) -> Any:
@@ -195,6 +212,102 @@ def fetch_resource_preview(resource_id: str) -> Optional[dict]:
         ) > _PREFETCH_JSON_CAP:
             preview["sample_rows"].pop()
     return preview
+
+def data_prefetch_max_records() -> int:
+    """Record-count gate for the full-data prefetch (0 disables)."""
+    try:
+        return int(
+            os.environ.get("DATA_PREFETCH_MAX_RECORDS")
+            or _DATA_PREFETCH_DEFAULT_MAX_RECORDS
+        )
+    except ValueError:
+        return _DATA_PREFETCH_DEFAULT_MAX_RECORDS
+
+
+def fetch_resource_records(
+    resource_id: str, total: int, *, max_records: Optional[int] = None
+) -> Optional[bytes]:
+    """Full datastore export for a resource, normalized to CSV bytes.
+
+    Pages datastore_search host-side (same source of truth the agent
+    would query) and writes one UTF-8 CSV with a header row; `_id` is
+    dropped, field order follows the datastore schema. Returns None
+    whenever the export shouldn't or can't happen: no resource id,
+    unknown/zero/over-cap total, any HTTP/parse error, wall-clock budget
+    or byte cap exceeded. Callers treat None as "run the session the
+    old way".
+    """
+    cap = data_prefetch_max_records() if max_records is None else max_records
+    if not resource_id or total <= 0 or cap <= 0 or total > cap:
+        return None
+
+    started = time.monotonic()
+    fields: list[str] = []
+    rows: list[dict] = []
+    offset = 0
+    try:
+        while offset < total:
+            if time.monotonic() - started > _DATA_PREFETCH_WALL_BUDGET_S:
+                log.warning(
+                    "data prefetch %s: wall budget exceeded at offset %d — skipping",
+                    resource_id[:8], offset,
+                )
+                return None
+            qs = urlencode(
+                {
+                    "resource_id": resource_id,
+                    "limit": _DATA_PREFETCH_PAGE_SIZE,
+                    "offset": offset,
+                }
+            )
+            req = urllib_request.Request(
+                f"{_CKAN_DATASTORE_URL}?{qs}",
+                headers={"User-Agent": _CKAN_BROWSER_UA},
+            )
+            with urllib_request.urlopen(
+                req, timeout=_DATA_PREFETCH_PAGE_TIMEOUT_S
+            ) as resp:
+                payload = json.loads(resp.read().decode("utf-8", errors="replace"))
+            if not payload.get("success"):
+                log.warning("data prefetch %s: success=false", resource_id[:8])
+                return None
+            result = payload.get("result") or {}
+            if not fields:
+                fields = [
+                    f["id"] for f in (result.get("fields") or [])
+                    if f.get("id") and f["id"] != "_id"
+                ]
+                if not fields:
+                    return None
+            page = result.get("records") or []
+            if not page:
+                break
+            rows.extend(page)
+            offset += len(page)
+    except Exception as e:
+        log.warning("data prefetch %s failed: %s", resource_id[:8], e)
+        return None
+
+    if not rows:
+        return None
+    buf = io.StringIO()
+    writer = csv.DictWriter(buf, fieldnames=fields, extrasaction="ignore", restval="")
+    writer.writeheader()
+    for r in rows:
+        writer.writerow({k: ("" if v is None else v) for k, v in r.items()})
+    data = buf.getvalue().encode("utf-8")
+    if len(data) > _DATA_PREFETCH_BYTE_CAP:
+        log.warning(
+            "data prefetch %s: %d bytes exceeds cap — skipping", resource_id[:8], len(data)
+        )
+        return None
+    log.info(
+        "data prefetch %s: %d rows, %d fields, %d bytes in %.1fs",
+        resource_id[:8], len(rows), len(fields), len(data),
+        time.monotonic() - started,
+    )
+    return data
+
 
 # Belt-and-braces cleanup for agent-emitted body fragments. The agent
 # prompt forbids `<script src=>` / `<link>` / `integrity=` / `<\/script>`,
@@ -449,6 +562,8 @@ def build_user_message(
     outputs_dir: str,
     check_script: str,
     pre_fetched_schema: Optional[dict] = None,
+    pre_fetched_data_path: Optional[str] = None,
+    pre_fetched_data_rows: Optional[int] = None,
 ) -> str:
     resource_line = (
         f"primary_resource_id: {primary_resource_id}"
@@ -467,6 +582,19 @@ def build_user_message(
             "datastore_search call — go straight to aggregations):\n"
             f"```json\n{schema_json}\n```"
         )
+    data_block = ""
+    if pre_fetched_data_path:
+        rows = f"{pre_fetched_data_rows:,}" if pre_fetched_data_rows else "all"
+        data_block = (
+            f"\n\npre_fetched_data: the FULL datastore export of the primary "
+            f"resource is already saved at {pre_fetched_data_path} (UTF-8 CSV, "
+            f"header row, {rows} data rows, columns as in pre_fetched_schema; "
+            "verbatim datastore_search output, so CHART-DATA PROVENANCE is "
+            "satisfied by aggregating this file). Analyze it locally with "
+            "python — pandas is preinstalled, no pip install needed — and "
+            "do NOT re-download or paginate datastore_search for this "
+            "resource. Query CKAN only for other resources or spot-checks."
+        )
     return (
         "Build the landing page for this CKAN dataset. Write content.html "
         "(body fragment only — no <html>/<head>/<body>) and agent_data.json "
@@ -480,7 +608,8 @@ def build_user_message(
         f"{resource_line}\n"
         f"OUTPUTS_DIR: {od}\n"
         f"CHECK_SCRIPT: {check_script}"
-        f"{schema_block}\n\n"
+        f"{schema_block}"
+        f"{data_block}\n\n"
         "Begin by investigating the dataset. Keep working until both "
         "files are written and the CHECK_SCRIPT self-check passes — only "
         "then end your turn, replying with a one-sentence summary of the "

@@ -823,6 +823,15 @@ HARD CONSTRAINTS
     (Real failure mode: an agent computed correct totals, then
     hallucinated an entire per-city ranking — plausible-looking
     numbers, wrong city order, one city inflated 10×.)
+  • DISCLOSED FILTERING: never silently filter, cap, or exclude
+    records from a chart's aggregation. Any exclusion — outlier caps,
+    minimum-sample thresholds, dropped years/stations — must be stated
+    in Hebrew on the chart itself (title or subtitle), e.g.
+    "(תחנות עם 15 דגימות לפחות)". (Real failure mode: an agent
+    silently dropped all BOD readings above 100 mg/l before a "yearly
+    median" pollution chart — the polluted years looked half as bad as
+    the data says.) Prefer showing real data with an annotated outlier
+    (log axis / markPoint) over excluding it.
   • Never call datastore_search without a `limit`. There is NO
     datastore_search_sql.
   • No secrets, API keys, or PII in output files.

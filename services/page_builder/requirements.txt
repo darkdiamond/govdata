@@ -21,6 +21,12 @@ pydantic-settings>=2.0
 functions-framework>=3.5
 jinja2>=3.1
 tenacity>=8.0
+# Agent-runtime dependency, not builder code: LocalSandbox tool
+# subprocesses share this container's Python, and with the data-prefetch
+# CSV in the workdir agents reach for pandas — preinstall it so sessions
+# don't burn time/network on `pip install pandas` (the Podman test image
+# gets it via sandbox.Containerfile).
+pandas>=2,<3
 
 # Google Cloud
 google-cloud-firestore>=2.16

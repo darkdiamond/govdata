@@ -55,6 +55,7 @@ from .agent_contract import (
     CHECK_SCRIPT_PATH,
     build_user_message,
     fetch_resource_preview,
+    fetch_resource_records,
     run_host_check,
     sanitize_content_html,
 )
@@ -68,6 +69,7 @@ SYSTEM_PROMPT_PATH = REPO_ROOT / "agent" / "system-prompt.md"
 # so they never collide). Production (LocalSandbox) passes per-session
 # paths instead.
 CHECK_SCRIPT_IN_SANDBOX = "/tmp/session/uploads/check.py"
+DATA_FILE_IN_SANDBOX = "/tmp/session/data.csv"
 
 CONTENT_FILENAME = "content.html"
 AGENT_DATA_FILENAME = "agent_data.json"
@@ -165,32 +167,88 @@ class TestSessionResult:
     host_check: str = "passed"
 
 
-def _provision_check_script(sandbox, target: str = CHECK_SCRIPT_IN_SANDBOX) -> None:
-    """Copy agent/skills/check.py into the sandbox at `target` — the
-    CHECK_SCRIPT path the session's user message advertises. check.py is
-    argv-driven, so any path works. Base64 round-trip because the Podman
-    session has no file-write API (see _Files.read for the inverse); the
-    same bash works unchanged on LocalSandbox.
+# Base64 chunk size per bash command when provisioning files into the
+# sandbox. Podman exec rejects args past ~128 KB ("Argument list too
+# long" at 466 KB, observed 2026-07-10), so stay well under that.
+_PROVISION_CHUNK_B64_CHARS = 60_000
+
+
+def _provision_file(sandbox, data: bytes, target: str) -> None:
+    """Write `data` to `target` inside the sandbox.
+
+    LocalSandbox exposes its workdir on the host, so targets under it are
+    written directly (prod's data-prefetch CSV lands in one syscall).
+    Otherwise (Podman) fall back to a base64 round-trip — the session has
+    no file-write API (see _Files.read for the inverse) — chunked to stay
+    under the exec arg limit.
     """
     import base64
 
+    workdir = getattr(sandbox, "workdir", None)
+    if workdir is not None:
+        try:
+            t = Path(target).resolve()
+            wd = Path(workdir).resolve()
+            if t.is_relative_to(wd):
+                t.parent.mkdir(parents=True, exist_ok=True)
+                t.write_bytes(data)
+                return
+        except OSError as e:
+            log.warning(
+                "direct write of %s failed (%s) — falling back to base64", target, e
+            )
+
+    b64 = base64.b64encode(data).decode("ascii")
+    target_dir = target.rsplit("/", 1)[0]
+    exe = sandbox.run_code(
+        f"mkdir -p {target_dir} && : > {target}.b64", language="bash", timeout=30
+    )
+    if exe.error:
+        raise RuntimeError(
+            f"failed to provision {target} in sandbox: {exe.error.value}: "
+            f"{exe.logs.stderr}"
+        )
+    for i in range(0, len(b64), _PROVISION_CHUNK_B64_CHARS):
+        chunk = b64[i : i + _PROVISION_CHUNK_B64_CHARS]
+        exe = sandbox.run_code(
+            f"printf %s {chunk} >> {target}.b64", language="bash", timeout=60
+        )
+        if exe.error:
+            raise RuntimeError(
+                f"failed to provision {target} in sandbox: {exe.error.value}: "
+                f"{exe.logs.stderr}"
+            )
+    exe = sandbox.run_code(
+        f"base64 -d < {target}.b64 > {target} && rm {target}.b64",
+        language="bash",
+        timeout=60,
+    )
+    if exe.error:
+        raise RuntimeError(
+            f"failed to provision {target} in sandbox: {exe.error.value}: "
+            f"{exe.logs.stderr}"
+        )
+
+
+def _provision_check_script(sandbox, target: str = CHECK_SCRIPT_IN_SANDBOX) -> None:
+    """Copy agent/skills/check.py into the sandbox at `target` — the
+    CHECK_SCRIPT path the session's user message advertises. check.py is
+    argv-driven, so any path works.
+    """
     if not CHECK_SCRIPT_PATH.exists():
         raise FileNotFoundError(
             f"{CHECK_SCRIPT_PATH} missing — the system prompt's self-check "
             "step depends on it"
         )
-    b64 = base64.b64encode(CHECK_SCRIPT_PATH.read_bytes()).decode("ascii")
-    target_dir = target.rsplit("/", 1)[0]
+    _provision_file(sandbox, CHECK_SCRIPT_PATH.read_bytes(), target)
     exe = sandbox.run_code(
-        f"mkdir -p {target_dir} && "
-        f"echo {b64} | base64 -d > {target} && "
         f"python3 -c \"import ast; ast.parse(open('{target}').read())\"",
         language="bash",
         timeout=30,
     )
     if exe.error:
         raise RuntimeError(
-            f"failed to provision check.py in sandbox: {exe.error.value}: "
+            f"provisioned check.py failed to parse: {exe.error.value}: "
             f"{exe.logs.stderr}"
         )
 
@@ -638,6 +696,8 @@ def run_agent_session(
     outputs_dir: str,
     check_script: str,
     pre_fetched_schema: Optional[dict] = None,
+    pre_fetched_data: Optional[bytes] = None,
+    data_file: Optional[str] = None,
     reasoning_effort: Optional[str] = None,
 ) -> AgentSessionOutput:
     """Drive one agent session on an already-created sandbox.
@@ -649,6 +709,10 @@ def run_agent_session(
     persistence are the caller's responsibility.
     """
     system_prompt = _load_system_prompt()
+    provisioned_data = pre_fetched_data if (pre_fetched_data and data_file) else None
+    data_rows = (
+        max(provisioned_data.count(b"\n") - 1, 0) if provisioned_data else None
+    )
     user_msg = build_user_message(
         dataset_id=dataset_id,
         title=title,
@@ -658,12 +722,20 @@ def run_agent_session(
         outputs_dir=outputs_dir,
         check_script=check_script,
         pre_fetched_schema=pre_fetched_schema,
+        pre_fetched_data_path=data_file if provisioned_data else None,
+        pre_fetched_data_rows=data_rows,
     )
     httpx_client = httpx.Client()
     deps = Deps(sandbox=sandbox, httpx_client=httpx_client, dataset_id=dataset_id)
     started = time.monotonic()
     try:
         _provision_check_script(sandbox, check_script)
+        if provisioned_data:
+            _provision_file(sandbox, provisioned_data, data_file)
+            log.info(
+                "session[%s]: provisioned data prefetch (%d rows, %d bytes) at %s",
+                dataset_id[:8], data_rows or 0, len(provisioned_data), data_file,
+            )
         py_model, model_settings = _build_pydantic_model(model, reasoning_effort)
         agent = _build_agent(
             model=py_model, system_prompt=system_prompt, model_settings=model_settings
@@ -740,8 +812,8 @@ def run_test_session(
 
     from .podman_sandbox import PodmanSandbox
 
-    # Same host-side schema prefetch as run_production_session — the user
-    # message must be identical for an apples-to-apples model comparison.
+    # Same host-side schema + data prefetch as run_production_session — the
+    # user message must be identical for an apples-to-apples model comparison.
     pre_fetched_schema = (
         fetch_resource_preview(primary_resource_id) if primary_resource_id else None
     )
@@ -752,6 +824,11 @@ def run_test_session(
             len(pre_fetched_schema["fields"]),
             pre_fetched_schema["total"],
         )
+    pre_fetched_data = (
+        fetch_resource_records(primary_resource_id, pre_fetched_schema["total"])
+        if pre_fetched_schema
+        else None
+    )
 
     log.info(
         "test[%s]: starting Podman sandbox + model=%s%s",
@@ -771,6 +848,8 @@ def run_test_session(
             outputs_dir=OUTPUTS_DIR_IN_SANDBOX,
             check_script=CHECK_SCRIPT_IN_SANDBOX,
             pre_fetched_schema=pre_fetched_schema,
+            pre_fetched_data=pre_fetched_data,
+            data_file=DATA_FILE_IN_SANDBOX,
             reasoning_effort=reasoning_effort,
         )
         sandbox_files: list[str] = []

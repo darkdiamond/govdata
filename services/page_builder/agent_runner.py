@@ -34,6 +34,7 @@ from services.shared.firestore import FirestoreStateStore
 
 from .agent_contract import (
     fetch_resource_preview,
+    fetch_resource_records,
     run_host_check,
     sanitize_content_html,
 )
@@ -107,6 +108,13 @@ def run_production_session(
             len(pre_fetched_schema["fields"]),
             pre_fetched_schema["total"],
         )
+    # Full-data prefetch (gated by DATA_PREFETCH_MAX_RECORDS; None on any
+    # failure). Fetched once, provisioned into every attempt's sandbox.
+    pre_fetched_data = (
+        fetch_resource_records(primary_resource_id, pre_fetched_schema["total"])
+        if pre_fetched_schema
+        else None
+    )
 
     SESSIONS_ROOT.mkdir(parents=True, exist_ok=True)
     last_err: Optional[BaseException] = None
@@ -139,6 +147,8 @@ def run_production_session(
                 outputs_dir=str(workdir / "outputs"),
                 check_script=str(workdir / "check.py"),
                 pre_fetched_schema=pre_fetched_schema,
+                pre_fetched_data=pre_fetched_data,
+                data_file=str(workdir / "data.csv"),
             )
             attempts_cost += out.cost.get("total_usd") or 0.0
             agent_data = AgentData.model_validate_json(out.agent_data_raw)
