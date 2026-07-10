@@ -204,7 +204,9 @@ def _load_system_prompt() -> str:
     return SYSTEM_PROMPT_PATH.read_text(encoding="utf-8")
 
 
-def _build_pydantic_model(model_id: str) -> tuple[Any, dict[str, Any]]:
+def _build_pydantic_model(
+    model_id: str, reasoning_effort: Optional[str] = None
+) -> tuple[Any, dict[str, Any]]:
     """Resolve a model id to (PydanticAI model handle, model_settings).
 
     Two accepted forms:
@@ -216,6 +218,9 @@ def _build_pydantic_model(model_id: str) -> tuple[Any, dict[str, Any]]:
 
     The settings dict always carries the load-bearing `max_tokens`
     ceiling (see _build_agent) plus any provider-specific keys.
+    `reasoning_effort` (OpenAI-style: none/minimal/low/medium/high/xhigh)
+    is forwarded as OpenRouter's `reasoning.effort`; None keeps the
+    model's default (what production runs use).
     """
     base_settings: dict[str, Any] = {"max_tokens": 16384}
 
@@ -233,12 +238,18 @@ def _build_pydantic_model(model_id: str) -> tuple[Any, dict[str, Any]]:
         # response carries billed cost + cached-token counts, which the
         # OpenRouterModel maps into provider_details / RequestUsage.
         base_settings["openrouter_usage"] = {"include": True}
+        if reasoning_effort:
+            base_settings["openrouter_reasoning"] = {"effort": reasoning_effort}
         return (
             OpenRouterModel(model_id, provider=OpenRouterProvider(api_key=api_key)),
             base_settings,
         )
 
     if model_id.startswith("anthropic:"):
+        if reasoning_effort:
+            raise RuntimeError(
+                "reasoning_effort is only supported on the OpenRouter path"
+            )
         return model_id, base_settings
 
     raise RuntimeError(
@@ -627,6 +638,7 @@ def run_agent_session(
     outputs_dir: str,
     check_script: str,
     pre_fetched_schema: Optional[dict] = None,
+    reasoning_effort: Optional[str] = None,
 ) -> AgentSessionOutput:
     """Drive one agent session on an already-created sandbox.
 
@@ -652,7 +664,7 @@ def run_agent_session(
     started = time.monotonic()
     try:
         _provision_check_script(sandbox, check_script)
-        py_model, model_settings = _build_pydantic_model(model)
+        py_model, model_settings = _build_pydantic_model(model, reasoning_effort)
         agent = _build_agent(
             model=py_model, system_prompt=system_prompt, model_settings=model_settings
         )
@@ -717,6 +729,7 @@ def run_test_session(
     out_dir: Path,
     model: str,
     max_iters: int = 30,  # noqa: ARG001 - PydanticAI controls retries; kept for caller parity
+    reasoning_effort: Optional[str] = None,
 ) -> TestSessionResult:
     """Local test run: Podman sandbox, artifacts written to `out_dir`.
 
@@ -740,7 +753,11 @@ def run_test_session(
             pre_fetched_schema["total"],
         )
 
-    log.info("test[%s]: starting Podman sandbox + model=%s", dataset_id[:8], model)
+    log.info(
+        "test[%s]: starting Podman sandbox + model=%s%s",
+        dataset_id[:8], model,
+        f" (reasoning_effort={reasoning_effort})" if reasoning_effort else "",
+    )
     sandbox = PodmanSandbox.create()
     try:
         out = run_agent_session(
@@ -754,6 +771,7 @@ def run_test_session(
             outputs_dir=OUTPUTS_DIR_IN_SANDBOX,
             check_script=CHECK_SCRIPT_IN_SANDBOX,
             pre_fetched_schema=pre_fetched_schema,
+            reasoning_effort=reasoning_effort,
         )
         sandbox_files: list[str] = []
         try:
@@ -799,6 +817,7 @@ def run_test_session(
         json.dumps(
             {
                 "model": model,
+                "reasoning_effort": reasoning_effort,
                 "elapsed_seconds": out.elapsed_seconds,
                 "usage": out.usage,
                 "cost_usd": out.cost,
