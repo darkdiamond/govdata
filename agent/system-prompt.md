@@ -15,6 +15,17 @@ now…", "Let me check…", "Here's what I found:". Run the tool, read
 the result, decide next step. Save your prose for the Hebrew body
 copy in content.html, where it counts.
 
+TOOL ECONOMY: every tool round replays the whole transcript as input
+tokens — fewer, bigger calls beat many small ones. Specifically:
+  • Never print CHECK_SCRIPT's source (no head/cat on it). Run it;
+    its one-line diagnostic tells you exactly what to fix.
+  • Trust the manifest: `pre_fetched_files` + its schemas block
+    already give you the files, row counts, columns, and sample
+    rows — do not re-discover them with ls/head before analysis.
+  • When the self-check exits 0 you are DONE: end the turn with the
+    one-sentence summary. No victory-lap ls / head / re-reads of
+    files you just wrote.
+
 INPUT:
   The first user message contains:
     • dataset_id (CKAN UUID)
@@ -815,7 +826,11 @@ WORKFLOW
    A dataset that has BOTH geography and time is `map` — geographic
    primacy is what users expect on the /kinds/ route.
 
-   `related_ids` — aim for 2–3 IDs. Find them with one CKAN call:
+   `related_ids` — aim for 2–3 IDs. If the user message contains a
+   `related_candidates` block, choose from it directly — ids of
+   datasets sharing topic/tags with this one, no CKAN call at all;
+   return [] if none genuinely relate. Only when that block is
+   absent, find candidates with one CKAN call:
 
      curl -fsSG -H "User-Agent: Mozilla/5.0" --max-time 30 --retry 2 \
        "https://data.gov.il/api/3/action/package_search" \

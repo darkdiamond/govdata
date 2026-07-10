@@ -883,6 +883,25 @@ def _render_prefetch_blocks(
     )
 
 
+def _render_related_block(related_candidates: Sequence[dict]) -> str:
+    """Same-ministry datasets from our own Firestore index, so the agent
+    picks related_ids from a list instead of burning 3-5 CKAN
+    package_search rounds rediscovering them."""
+    if not related_candidates:
+        return ""
+    lines = []
+    for c in related_candidates[:15]:
+        tags = ", ".join((c.get("tags") or [])[:4])
+        tag_part = f" [tags: {tags}]" if tags else ""
+        lines.append(f"  {c['id']} — \"{(c.get('title') or '')[:80]}\"{tag_part}")
+    return (
+        "\n\nrelated_candidates (same ministry, from the project's own "
+        "index; pick related_ids from these — do NOT query CKAN "
+        "package_search for related datasets; return [] if none genuinely "
+        "relate):\n" + "\n".join(lines)
+    )
+
+
 def build_user_message(
     *,
     dataset_id: str,
@@ -896,6 +915,7 @@ def build_user_message(
     prefetched: Sequence[PrefetchedResource] = (),
     data_dir: Optional[str] = None,
     previous_failure: Optional[str] = None,
+    related_candidates: Sequence[dict] = (),
 ) -> str:
     resource_line = (
         f"primary_resource_id: {primary_resource_id}"
@@ -904,6 +924,7 @@ def build_user_message(
     )
     od = outputs_dir.rstrip("/")
     data_block = _render_prefetch_blocks(prefetched, data_dir, pre_fetched_schema)
+    related_block = _render_related_block(related_candidates)
     failure_block = ""
     if previous_failure:
         failure_block = (
@@ -926,6 +947,7 @@ def build_user_message(
         f"OUTPUTS_DIR: {od}\n"
         f"CHECK_SCRIPT: {check_script}"
         f"{data_block}"
+        f"{related_block}"
         f"{failure_block}\n\n"
         "Begin by investigating the dataset. Keep working until both "
         "files are written and the CHECK_SCRIPT self-check passes — only "
