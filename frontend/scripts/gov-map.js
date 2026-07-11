@@ -126,6 +126,7 @@
       '.gov-map-skel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#f1f7ff 0%,#e7eef9 50%,#f1f7ff 100%);background-size:200% 100%;animation:gov-map-pulse 1.4s ease-in-out infinite;color:#6c757d;font-size:.85rem;z-index:401}' +
       '.gov-map-state{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:1rem;color:#6c757d;font-size:.9rem;background:#f1f7ff;z-index:401}' +
       '.gov-map-state[data-kind=error]{color:#dc3545}' +
+      '.gov-map-note{position:absolute;top:8px;right:8px;z-index:402;background:rgba(255,255,255,.92);color:#0c3058;font-size:.72rem;line-height:1.3;padding:.2rem .5rem;border-radius:.4rem;box-shadow:0 1px 3px rgba(11,54,104,.15);pointer-events:none;direction:rtl}' +
       '.gov-map-popup{font-family:Rubik,sans-serif;font-size:.85rem;color:#0c3058;direction:rtl;text-align:right;line-height:1.5;min-width:180px;max-width:260px}' +
       '.gov-map-popup-title{font-weight:600;color:#0b3668;margin:0 0 .35rem;font-size:.95rem}' +
       '.gov-map-popup-row{margin:0;padding:.1rem 0;display:flex;gap:.4rem}' +
@@ -244,7 +245,12 @@
     var popupTitleField = config.popupTitleField || null;
     var cluster = config.cluster !== false;
     var fitBounds = config.fitBounds !== false;
-    var totalCap = Math.max(50, Number(config.totalCap) || 5000);
+    // Default cap is effectively min(record_count, 50000): the fetch loop
+    // below stops at res.total, so a 50000 default fetches the entire point
+    // set for all but the 3 gov.il layers that exceed 50k (roads 128k,
+    // מפל"ס 160k, trees 60k). Those get the first 50k + an honest "showing
+    // X of Y" note. Override with config.totalCap when a page needs more.
+    var totalCap = Math.max(50, Number(config.totalCap) || 50000);
     var pageSize = Math.max(100, Math.min(totalCap, Number(config.pageSize) || 1000));
     var initialView = config.initialView || { center: [31.5, 35.0], zoom: 7 };
     var tileUrl = config.tileUrl || 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -303,7 +309,16 @@
 
     var loaded = 0;
     var rendered = 0;
+    var datasetTotal = 0;
     var bounds = L.latLngBounds([]);
+
+    function showCapNote(shown, total) {
+      var note = document.createElement('div');
+      note.className = 'gov-map-note';
+      note.textContent = 'מוצגות ' + shown.toLocaleString('he-IL') +
+        ' מתוך ' + total.toLocaleString('he-IL') + ' נקודות';
+      container.appendChild(note);
+    }
 
     function ingestBatch(records) {
       var batchMarkers = [];
@@ -348,6 +363,7 @@
           ingestBatch(res.records);
           loaded += res.records.length;
           offset += res.records.length;
+          if (res.total && !datasetTotal) datasetTotal = res.total;
           var done = res.records.length < batchLimit
             || loaded >= totalCap
             || (res.total && offset >= res.total);
@@ -363,6 +379,10 @@
         }
         if (fitBounds && bounds.isValid()) {
           map.fitBounds(bounds, { padding: [24, 24], maxZoom: 16 });
+        }
+        // Capped: fetched fewer rows than the dataset holds — disclose it.
+        if (datasetTotal && loaded < datasetTotal) {
+          showCapNote(rendered, datasetTotal);
         }
       }
       return step();
