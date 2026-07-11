@@ -124,6 +124,9 @@ def run_production_session(
         (os.environ.get("RETRY_FEEDBACK") or "").strip().lower()
         in ("1", "true", "yes", "on")
     )
+    reasoning_effort = (
+        (os.environ.get("OPENROUTER_REASONING_EFFORT") or "").strip() or None
+    )
     store = store or FirestoreStateStore()
     session_id = f"or-{uuid.uuid4().hex[:12]}"
     started = time.monotonic()
@@ -227,6 +230,7 @@ def run_production_session(
                     data_dir=str(workdir / "data"),
                     previous_failure=failure_hint,
                     related_candidates=related_candidates,
+                    reasoning_effort=reasoning_effort,
                 )
                 attempts_cost += out.cost.get("total_usd") or 0.0
                 agent_data = AgentData.model_validate_json(out.agent_data_raw)
@@ -292,6 +296,7 @@ def run_production_session(
                 "cost_source": out.cost.get("cost_source"),
                 "cost_breakdown": out.cost.get("breakdown"),
                 "model": model,
+                "reasoning_effort": reasoning_effort,
                 "attempts": attempts,
                 "prefetch": prefetch_stats,
             },
