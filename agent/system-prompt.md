@@ -280,7 +280,12 @@ GovMap.create() config — full parameter reference:
   popupFields      [{field, label}]  rows in the RTL popup. textContent-only.
   popupTitleField  string            optional larger title at top of popup.
   cluster          boolean           default true; false for sparse maps.
-  totalCap         number            default 5000; absolute cap on points fetched.
+  totalCap         number            default 50000; cap on points fetched (the
+                                     fetch stops at the dataset's true total, so
+                                     the effective default is min(record_count,
+                                     50000)). Only the handful of point layers
+                                     above 50k are trimmed, with an on-map
+                                     "showing X of Y" note; raise it if needed.
   pageSize         number            default 1000; CKAN page size per fetch.
   filters / q      object|string     optional datastore_search filters.
   tileUrl          string            default OSM; override only with explicit reason.
