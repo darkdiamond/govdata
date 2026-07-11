@@ -209,6 +209,104 @@ def check_js_string_hygiene(blocks: list[str]) -> None:
             i += 1
 
 
+_OPENERS = {"(": ")", "[": "]", "{": "}"}
+_CLOSERS = {")": "(", "]": "[", "}": "{"}
+# A `/` whose last significant code char is one of these starts a regex
+# literal, not division. Heuristic, but reliable for chart-config code.
+_REGEX_PRECEDERS = set("=([{,;:!&|?+-*/%<>~^")
+
+
+def check_js_delimiter_balance(blocks: list[str]) -> None:
+    # One extra or missing bracket/brace/paren anywhere in a script block
+    # is a page-killing V8 SyntaxError that no other rule catches (e.g. a
+    # stray `}` inside a setOption argument). Walk code outside strings /
+    # comments / regex literals and require the three delimiter kinds to
+    # nest correctly.
+    for n, src in enumerate(blocks, 1):
+        stack: list = []
+        prev = ""  # last significant code char seen
+        i, L = 0, len(src)
+        while i < L:
+            c = src[i]
+            if c == "/" and i + 1 < L and src[i + 1] == "/":
+                j = src.find("\n", i)
+                i = L if j < 0 else j
+                continue
+            if c == "/" and i + 1 < L and src[i + 1] == "*":
+                j = src.find("*/", i + 2)
+                i = L if j < 0 else j + 2
+                continue
+            if c == "/" and (not prev or prev in _REGEX_PRECEDERS):
+                # Regex literal: skip to the unescaped closing `/`; inside
+                # a [...] character class `/` doesn't close. A newline
+                # before the close means it wasn't a regex — stop skipping.
+                i += 1
+                in_class = False
+                while i < L:
+                    ch = src[i]
+                    if ch == "\\" and i + 1 < L:
+                        i += 2
+                        continue
+                    if ch == "[":
+                        in_class = True
+                    elif ch == "]":
+                        in_class = False
+                    elif ch == "/" and not in_class:
+                        i += 1
+                        break
+                    elif ch == "\n":
+                        break
+                    i += 1
+                prev = "/"
+                continue
+            if c == "`":
+                i += 1
+                while i < L:
+                    if src[i] == "\\" and i + 1 < L:
+                        i += 2
+                        continue
+                    if src[i] == "`":
+                        i += 1
+                        break
+                    i += 1
+                prev = "`"
+                continue
+            if c == '"' or c == "'":
+                q = c
+                i += 1
+                while i < L:
+                    if src[i] == "\\" and i + 1 < L:
+                        i += 2
+                        continue
+                    if src[i] == q:
+                        i += 1
+                        break
+                    i += 1
+                prev = q
+                continue
+            if c in _OPENERS:
+                stack.append((c, i))
+            elif c in _CLOSERS:
+                if not stack or stack[-1][0] != _CLOSERS[c]:
+                    fail(
+                        f"JS-BALANCE (script #{n}): unexpected {c!r} near "
+                        f"{src[max(0, i - 60):i + 20]!r} — an extra or "
+                        "misplaced bracket breaks the whole script.",
+                        code=5,
+                    )
+                stack.pop()
+            if not c.isspace():
+                prev = c
+            i += 1
+        if stack:
+            ch, pos = stack[-1]
+            fail(
+                f"JS-BALANCE (script #{n}): {ch!r} opened near "
+                f"{src[max(0, pos - 40):pos + 40]!r} is never closed.",
+                code=5,
+            )
+
+
 def check_icon_headers(body: str) -> None:
     # Top-level <section class="card ... mb-6"> must open with the
     # icon-paired flex wrapper, not a bare <h2>. Sub-cards inside grids
@@ -321,6 +419,7 @@ def main(argv: list[str]) -> int:
     check_inline_data_cap(blocks)
     check_no_spline(blocks)
     check_js_string_hygiene(blocks)
+    check_js_delimiter_balance(blocks)
 
     check_icon_headers(body)
     check_insights(body)
