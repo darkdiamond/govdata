@@ -439,6 +439,7 @@ class FirestoreStateStore:
                     ),
                     "cache_write_tokens": int(usage.get("cache_write_tokens") or 0),
                     "model": usage.get("model"),
+                    "reasoning_effort": usage.get("reasoning_effort"),
                     "actual_cost_usd": float(cost) if cost is not None else None,
                     "attempts_cost_usd": (
                         float(attempts_cost) if attempts_cost is not None else None

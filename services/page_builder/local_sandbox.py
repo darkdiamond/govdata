@@ -65,8 +65,19 @@ class LocalSandbox:
         self.workdir = workdir
         self.files = _Files(self)
         self._closed = False
+        # The interpreter's bin dir carries the pip-installed deps agent
+        # sessions expect from bash (`python3` + pandas). In the builder
+        # container that's /usr/local/bin — already on _BASE_PATH, so this
+        # is a no-op there; on a local venv run it resolves python3 to the
+        # venv interpreter instead of the bare system one.
+        interp_bin = str(Path(sys.executable).parent)
+        path = (
+            _BASE_PATH
+            if interp_bin in _BASE_PATH.split(":")
+            else f"{interp_bin}:{_BASE_PATH}"
+        )
         self._env = {
-            "PATH": _BASE_PATH,
+            "PATH": path,
             "HOME": str(workdir),
             "LANG": "C.UTF-8",
             "LC_ALL": "C.UTF-8",
