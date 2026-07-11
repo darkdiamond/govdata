@@ -209,7 +209,7 @@ def _preview(total):
     }
 
 
-def test_prefetch_dataset_single_resource_by_default(monkeypatch, tmp_path):
+def test_prefetch_dataset_multi_resource_by_default(monkeypatch, tmp_path):
     monkeypatch.delenv("DATA_PREFETCH_MULTI", raising=False)
     monkeypatch.setattr(
         agent_contract, "fetch_resource_preview", lambda rid: _preview(10)
@@ -222,12 +222,20 @@ def test_prefetch_dataset_single_resource_by_default(monkeypatch, tmp_path):
         return agent_contract.FetchOutcome(rows=1, bytes=8, mode="full")
 
     monkeypatch.setattr(agent_contract, "fetch_resource_records_to_file", fake_fetch)
-    out = prefetch_dataset(
-        [_res("r1", "טבלה א", "CSV"), _res("r2", "טבלה ב", "CSV")], tmp_path
-    )
+    resources = [_res("r1", "טבלה א", "CSV"), _res("r2", "טבלה ב", "CSV")]
+
+    # Default is now multi: every datastore-active resource is fetched.
+    out = prefetch_dataset(resources, tmp_path)
+    assert fetched == ["r1", "r2"]
+    assert [o.sandbox_filename for o in out] == ["data_1.csv", "data_2.csv"]
+    assert all(o.mode == "full" for o in out)
+
+    # Opt out with DATA_PREFETCH_MULTI=false → primary resource only.
+    fetched.clear()
+    monkeypatch.setenv("DATA_PREFETCH_MULTI", "false")
+    out = prefetch_dataset(resources, tmp_path)
     assert fetched == ["r1"]
-    assert len(out) == 1 and out[0].mode == "full"
-    assert out[0].sandbox_filename == "data_1.csv"
+    assert len(out) == 1 and out[0].sandbox_filename == "data_1.csv"
 
 
 def test_prefetch_dataset_multi_with_budget(monkeypatch, tmp_path):
