@@ -92,8 +92,8 @@ _PREFETCH_JSON_CAP = 2048
 # workdir). Every model burned most of its tool rounds paginating
 # datastore_search; shipping the data into the sandbox up front cuts
 # requests, wall-clock, and CKAN/WAF flake exposure. All knobs are
-# env-overridable (code defaults preserve the pre-multi-resource behavior);
-# any failure degrades to "no file for that resource" and the session falls
+# env-overridable; any failure degrades to "no file for that resource"
+# and the session falls
 # back to the normal curl flow — prefetch must never block a build.
 #
 #   DATA_PREFETCH_MAX_RECORDS   coarse record gate; above it a resource is
@@ -105,7 +105,9 @@ _PREFETCH_JSON_CAP = 2048
 #   DATA_PREFETCH_SAMPLE_ROWS   over-cap fallback: deterministic sample of
 #                               ~this many rows. 0 = all-or-nothing (legacy).
 #   DATA_PREFETCH_MULTI         prefetch every datastore-active resource
-#                               (deduped) instead of the primary only.
+#                               (deduped). Default TRUE — multi-resource
+#                               datasets get all their files; set =false to
+#                               restrict to the primary resource only.
 #   DATA_PREFETCH_PAGE_SIZE / DATA_PREFETCH_WALL_BUDGET_S  paging knobs.
 _DATA_PREFETCH_DEFAULT_MAX_RECORDS = 50_000
 _DATA_PREFETCH_DEFAULT_PAGE_SIZE = 25_000
@@ -462,7 +464,8 @@ def prefetch_dataset(
 
     Selects the datastore-active resources (primary first, format twins
     deduped — `services.shared.resources.select_prefetch_resources`),
-    restricted to the primary unless DATA_PREFETCH_MULTI is set, and
+    all such resources by default (DATA_PREFETCH_MULTI, default true;
+    set it false to restrict to the primary), and
     exports each under a shared wall deadline and a per-dataset
     DATA_PREFETCH_TOTAL_BYTES budget. Runs once per source; callers reuse
     the returned files across every session attempt.
@@ -476,7 +479,7 @@ def prefetch_dataset(
     selected = select_prefetch_resources(resources or [])
     if not selected:
         return []
-    if not _env_bool("DATA_PREFETCH_MULTI", False):
+    if not _env_bool("DATA_PREFETCH_MULTI", True):
         selected = selected[:1]
 
     cap_records = data_prefetch_max_records()

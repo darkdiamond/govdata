@@ -30,7 +30,9 @@ landing pages. Four layers:
    `agent/system-prompt.md` (canonical, hand-edited). Host-side
    prefetch (`agent_contract.prefetch_dataset`, once per source):
    every datastore-active resource (format twins deduped;
-   primary-only unless `DATA_PREFETCH_MULTI=true`) is streamed into
+   **all resources by default** — `DATA_PREFETCH_MULTI=true` is now the
+   code default so multi-file datasets get every file; set it `false`
+   to restrict to the primary) is streamed into
    the session workdir as CSV — full up to
    `DATA_PREFETCH_MAX_RECORDS`/`_MAX_BYTES` (per-dataset
    `_TOTAL_BYTES` budget), deterministic strided sample above them
