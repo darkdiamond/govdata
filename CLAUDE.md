@@ -70,9 +70,14 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
 - **Hebrew-first, RTL everywhere.** `<html dir="rtl" lang="he">`. Body
   line-height `1.5` (gov.il standard). Tailwind logical properties
   (`ps-*`/`pe-*`) when using Tailwind.
-- **Model**: `OPENROUTER_MODEL` env on the builder (default
-  `minimax/minimax-m3`, via OpenRouter — any `<vendor>/<model>` id is a
-  redeploy away). Do not change the production model without asking.
+- **Model**: `OPENROUTER_MODEL` env on the builder (code default
+  `minimax/minimax-m3`; **prod runs `tencent/hy3:free` at
+  `OPENROUTER_REASONING_EFFORT=max` since 2026-07-15** — free tier,
+  validated over a 477-session backlog drain; MiniMax is the paid
+  fallback, one redeploy away). Free-tier caveats: upstream congestion
+  waves → `RATE_LIMIT_BACKOFF_S` between-attempt backoff, and
+  `MAX_CONCURRENT=2` (not 8). Do not change the production model
+  without asking.
   Candidate models are evaluated first through the local harness
   (`cli/model_test.py`) per `docs/MODEL_EVAL.md` — comparison snapshots
   live in `services/page_builder/harness-comparison/`, which is
