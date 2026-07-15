@@ -8,8 +8,9 @@ Priority (first non-empty track wins):
     2. `change_status in {new, updated}` AND
        `metadata_modified` newer than `analyzed_metadata_modified`
        (null marker = legacy doc, treated as eligible) AND
-       (`last_analyzed_at` is null OR CKAN's `metadata_modified` is more
-       than `reanalyze_gap_days` past `last_analyzed_at`).
+       CKAN's `metadata_modified` is more than `reanalyze_gap_days` past
+       `analyzed_metadata_modified` (falling back to `last_analyzed_at`
+       when the version marker is null; both null = eligible).
        Ordered by CKAN `metadata_modified` DESC.
 
 The `analyzed_metadata_modified` guard exists because `change_status` is
@@ -49,18 +50,20 @@ until every recent source has at least one page.
 
 The re-analysis gap applies ONLY to Track 2 (already-analyzed sources
 that CKAN just re-flagged as `updated`). A rebuild happens when the data
-moved on meaningfully after our page: CKAN's `metadata_modified` is more
-than `reanalyze_gap_days` (default 30) past `last_analyzed_at`. The gate
-is the update-vs-analysis gap, not a calendar cooldown from "now" —
-so a page whose data jumped 30+ days after we built it refreshes on the
-next daily run, while daily-append datasets self-limit to roughly one
-rebuild per gap period (each rebuild resets `last_analyzed_at`).
+moved on meaningfully past the VERSION the page was built from: CKAN's
+`metadata_modified` is more than `reanalyze_gap_days` (default 30) past
+`analyzed_metadata_modified`. The baseline is the data version, not the
+wall-clock time of our run — a page built today from January data
+refreshes as soon as any newer version lands (the version jump is
+months), while daily-append datasets self-limit to roughly one rebuild
+per gap period (each rebuild resets the analyzed version to that day's
+data).
 
 The gap does NOT apply to:
   - Never-analyzed sources (Track 1): always eligible (within cutoff),
     no matter how recently their CKAN row changed.
-  - Sources whose `last_analyzed_at` is null: treated as never-analyzed
-    for gap purposes.
+  - Sources with a null `analyzed_metadata_modified`: legacy docs fall
+    back to `last_analyzed_at`; null on both = always eligible.
 """
 from __future__ import annotations
 
@@ -135,12 +138,19 @@ def pick_next(
                 src.metadata_modified
             ) <= _as_utc(src.analyzed_metadata_modified):
                 continue
-            # Rebuild only when the data moved on meaningfully after the
-            # page: the CKAN update is > reanalyze_gap past our analysis.
-            # Daily-append datasets self-limit to ~one rebuild per gap
-            # period (each rebuild resets last_analyzed_at).
-            if src.last_analyzed_at is None or (
-                _as_utc(src.metadata_modified) - _as_utc(src.last_analyzed_at)
+            # Rebuild only when the data moved on meaningfully past the
+            # VERSION the page was built from: the new CKAN version is
+            # > reanalyze_gap past `analyzed_metadata_modified`. The
+            # baseline is the data version, not `last_analyzed_at` (when
+            # we ran) — a page built today from January data must refresh
+            # as soon as a newer version lands, not 30 days from the run.
+            # Daily-append datasets still self-limit to ~one rebuild per
+            # gap period (each rebuild resets the analyzed version).
+            # Legacy docs missing the version marker fall back to
+            # last_analyzed_at; missing both = always eligible.
+            baseline = src.analyzed_metadata_modified or src.last_analyzed_at
+            if baseline is None or (
+                _as_utc(src.metadata_modified) - _as_utc(baseline)
                 > reanalyze_gap
             ):
                 picks.append(src)
