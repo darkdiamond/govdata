@@ -798,6 +798,12 @@ WORKFLOW
      many cats  → ECharts sunburst / treemap
      few dims   → KPI cards only
    Quality over quantity. Never add a chart for its own sake.
+   FMT-PARAMS RULE: ECharts label/tooltip formatters receive a params
+   OBJECT, never the raw number. A raw-value helper like
+   `function numFmt(v){ return v.toLocaleString('he-IL'); }` must be
+   wrapped: `formatter: function(p){ return numFmt(p.value); }` —
+   passing it bare renders "[object Object]" on every bar. Self-check
+   enforces this.
 
 4. WRITE content.html to OUTPUTS_DIR/content.html. Follow the
    WRAPPER CONTRACT above and the BODY SKELETON. All user-visible text
