@@ -209,6 +209,32 @@ def check_js_string_hygiene(blocks: list[str]) -> None:
             i += 1
 
 
+_CATEGORY_YAXIS_RE = re.compile(r"yAxis\s*:\s*\{[^}]*['\"]category['\"]")
+_LABEL_POS_LEFT_RE = re.compile(r"position\s*:\s*['\"]left['\"]")
+
+
+def check_hbar_label_position(blocks: list[str]) -> None:
+    # Horizontal bars (category yAxis) grow left→right; a value label at
+    # position 'left' sits at the bar's BASE, on top of the y-axis
+    # category names (ECharts positions are geometric even on RTL
+    # pages). The bar's end is 'right' / 'insideRight'.
+    for i, b in enumerate(blocks, 1):
+        # Per-chart granularity: a block often holds several setOption
+        # calls, and `position: 'left'` is legitimate on other chart
+        # types — only flag it inside the same chart config as a
+        # category yAxis.
+        segments = re.split(r"\.setOption\(", b)[1:] or [b]
+        for seg in segments:
+            if _CATEGORY_YAXIS_RE.search(seg) and _LABEL_POS_LEFT_RE.search(seg):
+                fail(
+                    f"HBAR-LABEL: <script> block #{i} has a horizontal bar "
+                    "(category yAxis) with a label `position: 'left'` — the "
+                    "value lands on the category names. Use `position: "
+                    "'right'` (or 'insideRight' for near-max bars).",
+                    code=6,
+                )
+
+
 _OPENERS = {"(": ")", "[": "]", "{": "}"}
 _CLOSERS = {")": "(", "]": "[", "}": "{"}
 # A `/` whose last significant code char is one of these starts a regex
@@ -420,6 +446,7 @@ def main(argv: list[str]) -> int:
     check_no_spline(blocks)
     check_js_string_hygiene(blocks)
     check_js_delimiter_balance(blocks)
+    check_hbar_label_position(blocks)
 
     check_icon_headers(body)
     check_insights(body)

@@ -28,11 +28,32 @@
     grid: { left: 48, right: 64, top: 40, bottom: 48, containLabel: true },
   };
 
+  // Belt for agent-emitted horizontal bars: ECharts label positions are
+  // geometric even on RTL pages, so `position: 'left'` on a
+  // category-yAxis bar chart lands the value label on top of the axis
+  // category names. Already-published pages carrying that mistake are
+  // corrected here at render time; new pages are blocked at build time
+  // by the agent self-check (HBAR-LABEL rule in check.py).
+  function fixHbarLabels(o) {
+    try {
+      var ys = Array.isArray(o.yAxis) ? o.yAxis : o.yAxis ? [o.yAxis] : [];
+      var horizontal = ys.some(function (a) { return a && a.type === 'category'; });
+      if (!horizontal || !o.series) return o;
+      var ss = Array.isArray(o.series) ? o.series : [o.series];
+      ss.forEach(function (s) {
+        if (s && s.type === 'bar' && s.label && s.label.position === 'left') {
+          s.label.position = 'right';
+        }
+      });
+    } catch (e) { /* never break a page over a label position */ }
+    return o;
+  }
+
   // Shallow-merge helper for the common pattern. Equivalent to
   // `Object.assign({}, base, override)` but reads better at the call
   // site: `chart.setOption(GovEcharts.option({xAxis, yAxis, series}))`.
   function option(override) {
-    return Object.assign({}, base, override || {});
+    return Object.assign({}, base, fixHbarLabels(override || {}));
   }
 
   window.GOVIL_PALETTE = GOVIL_PALETTE;
