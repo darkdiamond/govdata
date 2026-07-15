@@ -147,19 +147,20 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
      on later daily runs; 3 whole-run failures park the source.
   2. `change_status in {new, updated}` AND `metadata_modified >= cutoff`
      AND CKAN advanced past our build (`metadata_modified >
-     analyzed_metadata_modified`) AND (`last_analyzed_at` null or older
-     than `COOLDOWN_DAYS`) — ordered by `metadata_modified` DESC.
+     analyzed_metadata_modified`) AND (`last_analyzed_at` null OR the
+     update landed more than `REANALYZE_GAP_DAYS` after our analysis:
+     `metadata_modified - last_analyzed_at > gap`) — ordered by
+     `metadata_modified` DESC.
   The (recent) never-analyzed backlog is drained first; re-analysis of
   already-published pages waits until every recent source has at least
-  one page. The cooldown applies only to Track 2 (already-analyzed
-  sources that CKAN re-flagged as `updated`): skip the rebuild if the
-  source was analyzed less than `COOLDOWN_DAYS` ago. **Prod: Track 2 is
-  ON (`REANALYZE_ENABLED=true`) with `COOLDOWN_DAYS=90` — a published
-  page is refreshed at most quarterly.** Both are env-overridable
-  (pipeline reads them; code defaults `reanalyze=true`,
-  `DEFAULT_COOLDOWN_DAYS=30`). The additive-vs-structural concern (a
-  daily-appending dataset re-qualifies each cooldown even when the page
-  barely changes) is bounded by the 90-day cadence, not eliminated.
+  one page. The gap gate (replaced the now-based COOLDOWN_DAYS on
+  2026-07-15) applies only to Track 2: a page whose data moved on 30+
+  days after we built it refreshes on the next daily run; daily-append
+  datasets self-limit to ~one rebuild per gap period since each rebuild
+  resets `last_analyzed_at`. **Prod: Track 2 is ON
+  (`REANALYZE_ENABLED=true`) with `REANALYZE_GAP_DAYS=30`.** Both are
+  env-overridable (pipeline reads them; code defaults `reanalyze=true`,
+  `DEFAULT_REANALYZE_GAP_DAYS=30`).
 - **Related-datasets scoring** (deterministic, content-first):
   `1.5·same_ministry + 2·min(shared_tag_count, 6) + 8·cosine(embedding) + 6·agent_suggested`.
   Embedding similarity dominates; same-ministry is a tiebreaker only.

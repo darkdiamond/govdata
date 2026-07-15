@@ -32,8 +32,9 @@ def _track2_src(
         title="מאגר לדוגמה",
         metadata_modified=metadata_modified,
         analyzed_metadata_modified=analyzed_metadata_modified,
-        last_analyzed_at=datetime.now(timezone.utc)
-        - timedelta(days=last_analyzed_days_ago),
+        # Pinned relative to MODIFIED (not "now"): the Track 2 gate
+        # compares metadata_modified against last_analyzed_at directly.
+        last_analyzed_at=MODIFIED - timedelta(days=last_analyzed_days_ago),
         analysis_status="succeeded",
         change_status="updated",
     )
@@ -101,27 +102,45 @@ def test_reanalyze_false_keeps_track1():
     assert [s.id for s in picks] == ["brand-new"]
 
 
-def test_track2_cooldown_still_applies_to_genuinely_updated_source():
-    src = _track2_src(
-        "too-recent",
-        metadata_modified=MODIFIED + timedelta(days=3),
-        analyzed_metadata_modified=MODIFIED,
-        last_analyzed_days_ago=5,
+def _gap_src(
+    dataset_id: str, *, updated_days_after_analysis: int
+) -> SourceRecord:
+    """CKAN advanced past our build by the given number of days.
+
+    `last_analyzed_at` is pinned relative to `metadata_modified` (not
+    "now") — the gap gate compares the two directly.
+    """
+    analyzed_at = MODIFIED
+    modified = analyzed_at + timedelta(days=updated_days_after_analysis)
+    return SourceRecord(
+        id=dataset_id,
+        title="מאגר לדוגמה",
+        metadata_modified=modified,
+        analyzed_metadata_modified=analyzed_at,
+        last_analyzed_at=analyzed_at,
+        analysis_status="succeeded",
+        change_status="updated",
     )
+
+
+def test_track2_skips_update_soon_after_analysis():
+    """Data updated 5 days after our build ⇒ page is still fresh enough;
+    no rebuild (the gap gate, not a calendar cooldown, decides)."""
+    src = _gap_src("small-gap", updated_days_after_analysis=5)
     assert pick_next(_store([src]), n=5) == []
 
 
-def test_track2_cooldown_days_is_configurable():
-    """A source analyzed 60 days ago clears the default 30-day cooldown but
-    not a 90-day one (the prod value: refresh a page at most quarterly)."""
-    src = _track2_src(
-        "sixty-days",
-        metadata_modified=MODIFIED + timedelta(days=3),
-        analyzed_metadata_modified=MODIFIED,
-        last_analyzed_days_ago=60,
-    )
-    assert [s.id for s in pick_next(_store([src]), n=5)] == ["sixty-days"]
-    assert pick_next(_store([src]), n=5, cooldown_days=90) == []
+def test_track2_picks_update_well_after_analysis():
+    """Data moved on 40 days after our build ⇒ rebuild on the next run,
+    regardless of how recently that update happened."""
+    src = _gap_src("big-gap", updated_days_after_analysis=40)
+    assert [s.id for s in pick_next(_store([src]), n=5)] == ["big-gap"]
+
+
+def test_track2_gap_days_is_configurable():
+    src = _gap_src("sixty-day-gap", updated_days_after_analysis=60)
+    assert [s.id for s in pick_next(_store([src]), n=5)] == ["sixty-day-gap"]
+    assert pick_next(_store([src]), n=5, reanalyze_gap_days=90) == []
 
 
 # The `min_modified_floor` / `max_age_days` gates are env-driven (the

@@ -222,14 +222,16 @@ async def run_pipeline(
     max_age_env = os.environ.get("MAX_AGE_DAYS", "").strip()
     if max_age_env:
         selector_gates["max_age_days"] = int(max_age_env)
-    # Track 2 re-analysis cooldown: a CKAN-updated source is only rebuilt
-    # if its last analysis is older than this many days. Env-overridable
-    # (unset → selector.DEFAULT_COOLDOWN_DAYS = 30). Prod runs 90 so a
-    # published page is refreshed at most quarterly — keeps Track 2 cost
-    # bounded while still tracking upstream changes.
-    cooldown_env = os.environ.get("COOLDOWN_DAYS", "").strip()
-    if cooldown_env:
-        selector_gates["cooldown_days"] = int(cooldown_env)
+    # Track 2 re-analysis gap: a CKAN-updated source is rebuilt only when
+    # its update landed more than this many days after our last analysis
+    # (metadata_modified - last_analyzed_at > gap). Env-overridable
+    # (unset → selector.DEFAULT_REANALYZE_GAP_DAYS = 30). Replaces the
+    # old now-based COOLDOWN_DAYS (2026-07-15): pages whose data moved on
+    # 30+ days after we built them refresh on the next run; daily-append
+    # datasets self-limit to ~monthly.
+    gap_env = os.environ.get("REANALYZE_GAP_DAYS", "").strip()
+    if gap_env:
+        selector_gates["reanalyze_gap_days"] = int(gap_env)
     staging_bucket = os.environ.get("GCS_STAGING_BUCKET", "")
     project_id = (
         os.environ.get("FIREBASE_PROJECT")

@@ -8,7 +8,8 @@ Priority (first non-empty track wins):
     2. `change_status in {new, updated}` AND
        `metadata_modified` newer than `analyzed_metadata_modified`
        (null marker = legacy doc, treated as eligible) AND
-       (`last_analyzed_at` is null OR older than `cooldown_days`).
+       (`last_analyzed_at` is null OR CKAN's `metadata_modified` is more
+       than `reanalyze_gap_days` past `last_analyzed_at`).
        Ordered by CKAN `metadata_modified` DESC.
 
 The `analyzed_metadata_modified` guard exists because `change_status` is
@@ -46,16 +47,20 @@ Backlog of (recent) never-analyzed sources is drained first — re-analyzing
 already-published pages because CKAN flagged them as `updated` waits
 until every recent source has at least one page.
 
-The 30-day cooldown applies ONLY to Track 2 (already-analyzed sources
-that CKAN just re-flagged as `updated`). For those, we skip a rebuild
-if their last analysis happened less than 30 days ago, to avoid burning
-agent budget on a page that's still fresh.
+The re-analysis gap applies ONLY to Track 2 (already-analyzed sources
+that CKAN just re-flagged as `updated`). A rebuild happens when the data
+moved on meaningfully after our page: CKAN's `metadata_modified` is more
+than `reanalyze_gap_days` (default 30) past `last_analyzed_at`. The gate
+is the update-vs-analysis gap, not a calendar cooldown from "now" —
+so a page whose data jumped 30+ days after we built it refreshes on the
+next daily run, while daily-append datasets self-limit to roughly one
+rebuild per gap period (each rebuild resets `last_analyzed_at`).
 
-The cooldown does NOT apply to:
+The gap does NOT apply to:
   - Never-analyzed sources (Track 1): always eligible (within cutoff),
     no matter how recently their CKAN row changed.
   - Sources whose `last_analyzed_at` is null: treated as never-analyzed
-    for cooldown purposes.
+    for gap purposes.
 """
 from __future__ import annotations
 
@@ -63,7 +68,7 @@ from datetime import datetime, timedelta, timezone
 
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 
-DEFAULT_COOLDOWN_DAYS = 30
+DEFAULT_REANALYZE_GAP_DAYS = 30
 DEFAULT_MAX_AGE_DAYS = 365
 DEFAULT_MIN_MODIFIED_FLOOR = datetime(2026, 1, 1, tzinfo=timezone.utc)
 
@@ -71,13 +76,13 @@ DEFAULT_MIN_MODIFIED_FLOOR = datetime(2026, 1, 1, tzinfo=timezone.utc)
 def pick_next(
     store: FirestoreStateStore,
     n: int = 1,
-    cooldown_days: int = DEFAULT_COOLDOWN_DAYS,
+    reanalyze_gap_days: int = DEFAULT_REANALYZE_GAP_DAYS,
     max_age_days: int = DEFAULT_MAX_AGE_DAYS,
     min_modified_floor: datetime = DEFAULT_MIN_MODIFIED_FLOOR,
     reanalyze: bool = True,
 ) -> list[SourceRecord]:
     now = datetime.now(timezone.utc)
-    cooldown_cutoff = now - timedelta(days=cooldown_days)
+    reanalyze_gap = timedelta(days=reanalyze_gap_days)
     age_cutoff = max(now - timedelta(days=max_age_days), _as_utc(min_modified_floor))
     picks: list[SourceRecord] = []
     seen: set[str] = set()
@@ -108,7 +113,8 @@ def pick_next(
             if len(picks) >= n:
                 return picks
 
-    # Track 2 — already analyzed, CKAN-updated, past cooldown, within max_age.
+    # Track 2 — already analyzed, CKAN-updated well past our analysis
+    # (update-vs-analysis gap > reanalyze_gap_days), within max_age.
     # `reanalyze=False` (env REANALYZE_ENABLED) pauses this track: until
     # structural-vs-additive change gating exists, datasets that append rows
     # daily re-qualify every cooldown period — a full agent run each, for a
@@ -129,7 +135,14 @@ def pick_next(
                 src.metadata_modified
             ) <= _as_utc(src.analyzed_metadata_modified):
                 continue
-            if src.last_analyzed_at is None or _as_utc(src.last_analyzed_at) < cooldown_cutoff:
+            # Rebuild only when the data moved on meaningfully after the
+            # page: the CKAN update is > reanalyze_gap past our analysis.
+            # Daily-append datasets self-limit to ~one rebuild per gap
+            # period (each rebuild resets last_analyzed_at).
+            if src.last_analyzed_at is None or (
+                _as_utc(src.metadata_modified) - _as_utc(src.last_analyzed_at)
+                > reanalyze_gap
+            ):
                 picks.append(src)
                 seen.add(src.id)
                 if len(picks) >= n:
