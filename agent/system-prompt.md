@@ -787,7 +787,13 @@ WORKFLOW
      registry   → ECharts bar for a column breakdown; KPI cards for
                   counts/medians. Row browsing/search is provided
                   by the shell — never build your own
-     rankings   → ECharts horizontal bar
+     rankings   → ECharts horizontal bar. HBAR-LABEL RULE: value labels
+                  on horizontal bars (category yAxis) must use
+                  `position: 'right'` (or 'insideRight' for near-max
+                  bars) — NEVER `position: 'left'`. ECharts positions
+                  are geometric even on RTL pages: 'left' lands the
+                  number at the bar's base, overlapping the category
+                  names. Self-check enforces this.
      networks   → ECharts graph (force-directed layout)
      many cats  → ECharts sunburst / treemap
      few dims   → KPI cards only
