@@ -74,6 +74,23 @@ class ProdSessionResult:
         return 0
 
 
+def _is_rate_limited(err: BaseException) -> bool:
+    """True when the failure is an HTTP 429 anywhere in the exception chain.
+
+    PydanticAI surfaces provider errors as ModelHTTPError with a
+    `status_code` attribute; other layers may wrap it, so walk
+    __cause__/__context__ before falling back to a string sniff.
+    """
+    seen: set[int] = set()
+    e: Optional[BaseException] = err
+    while e is not None and id(e) not in seen:
+        seen.add(id(e))
+        if getattr(e, "status_code", None) == 429:
+            return True
+        e = e.__cause__ or e.__context__
+    return "429" in str(err)
+
+
 def _validation_failure_hint(e: BaseException) -> Optional[str]:
     """A retry-worthy diagnostic for VALIDATION failures only.
 
@@ -127,6 +144,7 @@ def run_production_session(
     reasoning_effort = (
         (os.environ.get("OPENROUTER_REASONING_EFFORT") or "").strip() or None
     )
+    rate_limit_backoff_s = int(os.environ.get("RATE_LIMIT_BACKOFF_S", "60"))
     store = store or FirestoreStateStore()
     session_id = f"or-{uuid.uuid4().hex[:12]}"
     started = time.monotonic()
@@ -262,6 +280,18 @@ def run_production_session(
                     " (hint→retry)" if failure_hint else "",
                     str(e)[:300],
                 )
+                # Rate limits are transient congestion, not model flakes —
+                # an instant retry just burns the remaining attempts inside
+                # the same 429 window. Back off (linear per attempt) so the
+                # window can pass. Non-429 failures keep retrying instantly.
+                if attempt < attempts_max and _is_rate_limited(e):
+                    delay = rate_limit_backoff_s * attempt
+                    log.info(
+                        "session[%s]: rate-limited — backing off %ds before "
+                        "attempt %d/%d",
+                        dataset_id[:8], delay, attempt + 1, attempts_max,
+                    )
+                    time.sleep(delay)
             finally:
                 sandbox.kill()
         else:
