@@ -51,10 +51,12 @@ SCAN_LIMIT=${SCAN_LIMIT:-800}
 MIN_MODIFIED_FLOOR=${MIN_MODIFIED_FLOOR:-2025-01-01}
 MAX_AGE_DAYS=${MAX_AGE_DAYS:-100000}
 # Track 2 re-analysis: rebuild a published page when CKAN has re-flagged
-# it updated AND the update landed more than REANALYZE_GAP_DAYS after our
-# last analysis (metadata_modified - last_analyzed_at > gap). Replaced the
-# now-based COOLDOWN_DAYS on 2026-07-15: stale pages refresh on the next
-# daily run, daily-append datasets self-limit to ~one rebuild per gap.
+# it updated AND the new version is more than REANALYZE_GAP_DAYS past the
+# version the page was built from (metadata_modified -
+# analyzed_metadata_modified > gap). The baseline is the data version, not
+# our run time — a page built today from months-old data refreshes as soon
+# as a newer version lands; daily-append datasets self-limit to ~one
+# rebuild per gap. Replaced the now-based COOLDOWN_DAYS on 2026-07-15.
 REANALYZE_ENABLED=${REANALYZE_ENABLED:-true}
 REANALYZE_GAP_DAYS=${REANALYZE_GAP_DAYS:-30}
 # Full-data prefetch (services/page_builder/agent_contract.py). Resources

@@ -58,7 +58,7 @@ def test_track2_skips_source_already_analyzed_at_current_version():
 def test_track2_picks_source_when_ckan_advanced_past_analysis():
     src = _track2_src(
         "really-updated",
-        metadata_modified=MODIFIED + timedelta(days=3),
+        metadata_modified=MODIFIED + timedelta(days=40),
         analyzed_metadata_modified=MODIFIED,
     )
     picks = pick_next(_store([src]), n=5)
@@ -141,6 +141,41 @@ def test_track2_gap_days_is_configurable():
     src = _gap_src("sixty-day-gap", updated_days_after_analysis=60)
     assert [s.id for s in pick_next(_store([src]), n=5)] == ["sixty-day-gap"]
     assert pick_next(_store([src]), n=5, reanalyze_gap_days=90) == []
+
+
+def test_track2_gap_baseline_is_data_version_not_run_time():
+    """Page built TODAY from January data: a new version landing days
+    after our run must still trigger a rebuild — the gap is measured
+    against the analyzed data version (months old), not against when we
+    happened to run the analysis (days ago)."""
+    analyzed_version = datetime(2026, 1, 10, tzinfo=timezone.utc)
+    ran_at = datetime(2026, 7, 15, tzinfo=timezone.utc)
+    src = SourceRecord(
+        id="backlog-page",
+        title="מאגר לדוגמה",
+        metadata_modified=ran_at + timedelta(days=5),  # new version, 5d after run
+        analyzed_metadata_modified=analyzed_version,
+        last_analyzed_at=ran_at,
+        analysis_status="succeeded",
+        change_status="updated",
+    )
+    assert [s.id for s in pick_next(_store([src]), n=5)] == ["backlog-page"]
+
+
+def test_track2_gap_falls_back_to_run_time_for_legacy_docs():
+    """No analyzed-version marker (legacy doc): the gap falls back to
+    last_analyzed_at, so a fresh update right after a recent run waits."""
+    ran_at = datetime(2026, 7, 15, tzinfo=timezone.utc)
+    src = SourceRecord(
+        id="legacy-fresh",
+        title="מאגר לדוגמה",
+        metadata_modified=ran_at + timedelta(days=5),
+        analyzed_metadata_modified=None,
+        last_analyzed_at=ran_at,
+        analysis_status="succeeded",
+        change_status="updated",
+    )
+    assert pick_next(_store([src]), n=5) == []
 
 
 # The `min_modified_floor` / `max_age_days` gates are env-driven (the

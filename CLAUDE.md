@@ -147,17 +147,20 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
      on later daily runs; 3 whole-run failures park the source.
   2. `change_status in {new, updated}` AND `metadata_modified >= cutoff`
      AND CKAN advanced past our build (`metadata_modified >
-     analyzed_metadata_modified`) AND (`last_analyzed_at` null OR the
-     update landed more than `REANALYZE_GAP_DAYS` after our analysis:
-     `metadata_modified - last_analyzed_at > gap`) — ordered by
-     `metadata_modified` DESC.
+     analyzed_metadata_modified`) AND the new version is more than
+     `REANALYZE_GAP_DAYS` past the version we built from:
+     `metadata_modified - analyzed_metadata_modified > gap` (legacy null
+     marker falls back to `last_analyzed_at`; both null = eligible) —
+     ordered by `metadata_modified` DESC.
   The (recent) never-analyzed backlog is drained first; re-analysis of
   already-published pages waits until every recent source has at least
   one page. The gap gate (replaced the now-based COOLDOWN_DAYS on
-  2026-07-15) applies only to Track 2: a page whose data moved on 30+
-  days after we built it refreshes on the next daily run; daily-append
-  datasets self-limit to ~one rebuild per gap period since each rebuild
-  resets `last_analyzed_at`. **Prod: Track 2 is ON
+  2026-07-15) applies only to Track 2 and is measured against the DATA
+  VERSION, not the run time: a page built today from January data
+  refreshes as soon as any newer version lands (months-long version
+  jump), while daily-append datasets self-limit to ~one rebuild per gap
+  period since each rebuild resets `analyzed_metadata_modified` to that
+  day's version. **Prod: Track 2 is ON
   (`REANALYZE_ENABLED=true`) with `REANALYZE_GAP_DAYS=30`.** Both are
   env-overridable (pipeline reads them; code defaults `reanalyze=true`,
   `DEFAULT_REANALYZE_GAP_DAYS=30`).
