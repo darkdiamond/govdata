@@ -505,6 +505,12 @@ onMounted(async () => {
           סוג מאגר:
           <NuxtLink :to="`/kinds/${entry.dataset_kind}/`" class="badge hover:bg-brand-50">{{ kindLabel }}</NuxtLink>
         </section>
+
+        <ReportIssue
+          :dataset-id="entry.id"
+          :dataset-title="entry.title"
+          :page-url="datasetUrl"
+        />
       </aside>
     </div>
   </div>
