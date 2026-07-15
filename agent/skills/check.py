@@ -235,6 +235,55 @@ def check_hbar_label_position(blocks: list[str]) -> None:
                 )
 
 
+_FMT_HELPER_DEF_RE = re.compile(
+    r"function\s+(\w+)\s*\(\s*(\w+)\s*\)\s*\{\s*return\s+(\w+)\s*"
+    r"\.to(?:LocaleString|Fixed)"
+)
+_FMT_ARROW_DEF_RE = re.compile(
+    r"(?:var|let|const)\s+(\w+)\s*=\s*\(?\s*(\w+)\s*\)?\s*=>\s*(\w+)\s*"
+    r"\.to(?:LocaleString|Fixed)"
+)
+_FMT_INLINE_RE = re.compile(
+    r"label\s*:\s*\{[^{}]*formatter\s*:\s*"
+    r"(?:function\s*\(\s*(\w+)\s*\)\s*\{\s*return\s+(\w+)\s*\.to(?:LocaleString|Fixed)"
+    r"|\(?\s*(\w+)\s*\)?\s*=>\s*(\w+)\s*\.to(?:LocaleString|Fixed))"
+)
+
+
+def check_label_formatter_params(blocks: list[str]) -> None:
+    # ECharts label formatters receive a params OBJECT, not the value.
+    # A raw-value helper (`function numFmt(v){ return v.toLocaleString }`)
+    # passed as `label.formatter` renders "[object Object]" on every bar.
+    # Format `p.value` instead.
+    msg = (
+        "FMT-PARAMS: <script> block #%d passes a raw-value number "
+        "formatter as a label formatter — ECharts calls it with a params "
+        "OBJECT, rendering '[object Object]'. Use "
+        "`formatter: function(p){ return numFmt(p.value); }`."
+    )
+    for i, b in enumerate(blocks, 1):
+        m = _FMT_INLINE_RE.search(b)
+        if m and (
+            (m.group(1) and m.group(1) == m.group(2))
+            or (m.group(3) and m.group(3) == m.group(4))
+        ):
+            fail(msg % i, code=7)
+        helpers = {
+            m.group(1)
+            for m in _FMT_HELPER_DEF_RE.finditer(b)
+            if m.group(2) == m.group(3)
+        } | {
+            m.group(1)
+            for m in _FMT_ARROW_DEF_RE.finditer(b)
+            if m.group(2) == m.group(3)
+        }
+        for h in helpers:
+            if re.search(
+                r"label\s*:\s*\{[^{}]*formatter\s*:\s*" + re.escape(h) + r"\s*[,}]", b
+            ):
+                fail(msg % i, code=7)
+
+
 _OPENERS = {"(": ")", "[": "]", "{": "}"}
 _CLOSERS = {")": "(", "]": "[", "}": "{"}
 # A `/` whose last significant code char is one of these starts a regex
@@ -447,6 +496,7 @@ def main(argv: list[str]) -> int:
     check_js_string_hygiene(blocks)
     check_js_delimiter_balance(blocks)
     check_hbar_label_position(blocks)
+    check_label_formatter_params(blocks)
 
     check_icon_headers(body)
     check_insights(body)

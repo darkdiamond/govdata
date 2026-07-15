@@ -49,11 +49,39 @@
     return o;
   }
 
+  // Belt #2 for agent-emitted label formatters written for raw values:
+  // ECharts calls label formatters with a params OBJECT, so helpers
+  // like `function numFmt(v){ return v.toLocaleString('he-IL') }`
+  // passed directly render "[object Object]" on every bar. When a
+  // function formatter stringifies the params object, re-call it with
+  // params.value; last resort is the bare value.
+  function fixLabelFormatters(o) {
+    try {
+      if (!o.series) return o;
+      var ss = Array.isArray(o.series) ? o.series : [o.series];
+      ss.forEach(function (s) {
+        if (!s || !s.label || typeof s.label.formatter !== 'function') return;
+        var f = s.label.formatter;
+        s.label.formatter = function (p) {
+          var r;
+          try { r = f(p); } catch (e) { r = null; }
+          if (typeof r === 'string' && r.indexOf('[object') === -1) return r;
+          try {
+            var r2 = f(p && p.value !== undefined ? p.value : p);
+            if (typeof r2 === 'string' && r2.indexOf('[object') === -1) return r2;
+          } catch (e2) { /* fall through */ }
+          return p && p.value != null ? String(p.value) : '';
+        };
+      });
+    } catch (e) { /* never break a page over a label */ }
+    return o;
+  }
+
   // Shallow-merge helper for the common pattern. Equivalent to
   // `Object.assign({}, base, override)` but reads better at the call
   // site: `chart.setOption(GovEcharts.option({xAxis, yAxis, series}))`.
   function option(override) {
-    return Object.assign({}, base, fixHbarLabels(override || {}));
+    return Object.assign({}, base, fixLabelFormatters(fixHbarLabels(override || {})));
   }
 
   window.GOVIL_PALETTE = GOVIL_PALETTE;
