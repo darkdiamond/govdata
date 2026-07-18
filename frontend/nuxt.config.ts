@@ -176,12 +176,11 @@ export default defineNuxtConfig({
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         { name: 'theme-color', content: '#0068f5' },
-        { name: 'generator', content: 'Nuxt + agentic AI pipeline' },
         { name: 'author', content: 'govil.ai' },
         // Per-page useSeo() overrides these; they exist as fallbacks for
         // any page that forgets to call useSeo().
-        { name: 'description', content: 'דפי נחיתה אוטומטיים למאגרי data.gov.il — נכתבים על ידי סוכן בינה מלאכותית (agentic AI).' },
-        { name: 'keywords', content: 'מידע ממשלתי, data.gov.il, בינה מלאכותית, AI, סוכן AI, agentic, אג׳נטי, open data Israel' },
+        { name: 'description', content: 'ניתוחים, גרפים ותובנות בעברית לכל מאגרי המידע הפתוחים של ממשלת ישראל — הנתונים הציבוריים, בשפה של בני אדם.' },
+        { name: 'keywords', content: 'מידע ממשלתי, נתונים פתוחים, מאגרי מידע, data.gov.il, גרפים, תובנות, open data Israel' },
         ...(ADSENSE_ID
           ? [{ name: 'google-adsense-account', content: ADSENSE_ID }]
           : []),

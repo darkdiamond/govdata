@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { buildDatasetLdSummary } from '~/composables/useDatasetLd'
 import { loadSearchIndex } from '~/utils/search-index'
+import hubIntros from '~/content/hub-intros.json'
 
 const KIND_LABELS: Record<string, string> = {
   map: 'גיאוגרפי',
@@ -27,12 +28,18 @@ if (entries.value.length === 0) {
 }
 
 const SITE_URL = 'https://govil.ai'
-const kindDescription = computed(
-  () => `${entries.value.length} מאגרי מידע ציבוריים מסוג ${label.value} — עם ויזואליזציות מתאימות.`,
+const intro = computed(
+  () => (hubIntros.kinds as Record<string, string>)[kind.value] ?? '',
 )
+const kindDescription = computed(() => {
+  const firstSentence = intro.value.split('.')[0]
+  return firstSentence
+    ? `${firstSentence}. ${entries.value.length} מאגרים בקטגוריה זו.`
+    : `${entries.value.length} מאגרי מידע ציבוריים מסוג ${label.value} — עם ויזואליזציות מתאימות.`
+})
 
 useSeo({
-  title: `מאגרי ${label.value} — מידע ממשלתי פתוח עם תקציר AI`,
+  title: `מאגרי ${label.value} — מידע ממשלתי פתוח בעברית פשוטה`,
   description: kindDescription.value,
   path: `/kinds/${kind.value}/`,
   keywords: [label.value],
@@ -60,6 +67,7 @@ useSeo({
       </div>
       <h1 class="font-display">{{ label }}</h1>
       <p class="text-subtle mt-2">{{ entries.length }} מאגרים</p>
+      <p v-if="intro" class="mt-4 max-w-3xl leading-relaxed text-ink">{{ intro }}</p>
     </section>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-3">

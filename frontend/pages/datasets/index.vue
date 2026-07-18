@@ -4,7 +4,7 @@ import type { SlimEntry } from '~/types/manifest'
 import { loadSearchIndex } from '~/utils/search-index'
 
 useSeo({
-  title: 'כל מאגרי המידע הממשלתיים — חיפוש, סינון ותקצירי AI',
+  title: 'כל מאגרי המידע הממשלתיים — חיפוש, סינון ותקצירים בעברית',
   description: 'סיור, חיפוש וסינון של כל מאגרי המידע הציבוריים של ממשלת ישראל — לפי משרד, פורמט ותגיות.',
   path: '/datasets/',
   breadcrumbs: [
