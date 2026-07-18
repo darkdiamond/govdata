@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { buildDatasetLdSummary } from '~/composables/useDatasetLd'
 import { loadSearchIndex } from '~/utils/search-index'
+import hubIntros from '~/content/hub-intros.json'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug))
@@ -19,12 +20,18 @@ if (entries.value.length === 0) {
 }
 
 const SITE_URL = 'https://govil.ai'
-const ministryDescription = computed(
-  () => `${entries.value.length} מאגרי מידע ציבוריים שמפרסם ${ministryTitle.value}, עם תקצירים ותובנות שנכתבו על ידי AI.`,
+const intro = computed(
+  () => (hubIntros.ministries as Record<string, string>)[slug.value] ?? '',
 )
+const ministryDescription = computed(() => {
+  const firstSentence = intro.value.split('.')[0]
+  return firstSentence
+    ? `${firstSentence}. ${entries.value.length} מאגרי מידע ציבוריים עם תקצירים ותובנות בעברית.`
+    : `${entries.value.length} מאגרי מידע ציבוריים שמפרסם ${ministryTitle.value}, עם תקצירים ותובנות בעברית.`
+})
 
 useSeo({
-  title: `מאגרי המידע של ${ministryTitle.value} — תקצירי AI`,
+  title: `מאגרי המידע של ${ministryTitle.value} — תקצירים ותובנות`,
   description: ministryDescription.value,
   path: `/ministries/${slug.value}/`,
   keywords: [ministryTitle.value],
@@ -63,6 +70,7 @@ useSeo({
       </div>
       <h1 class="font-display">{{ ministryTitle }}</h1>
       <p class="text-subtle mt-2">{{ entries.length }} מאגרים</p>
+      <p v-if="intro" class="mt-4 max-w-3xl leading-relaxed text-ink">{{ intro }}</p>
     </section>
 
     <section class="grid grid-cols-1 md:grid-cols-2 gap-3">
