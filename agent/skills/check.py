@@ -284,6 +284,34 @@ def check_label_formatter_params(blocks: list[str]) -> None:
                 fail(msg % i, code=7)
 
 
+# A body must be FINAL HTML, never the Python str.format()/f-string
+# template the agent built it with. Two signatures of a leaked template,
+# either one conclusive (neither can occur in valid browser JS):
+#   • a Python stdlib call left inside a placeholder — `json.dumps(...)`,
+#     `ensure_ascii=…`. In the browser `{json.dumps(...)}` parses as an
+#     object literal → "Unexpected token '.'", killing the whole <script>.
+#   • str.format-escaped object braces — `{{ prop: ...`  paired with `}}`.
+_TEMPLATE_LEAK_RE = re.compile(
+    r"json\.dumps\s*\("  # Python stdlib call — impossible in valid JS
+    r"|ensure_ascii"  # Python json.dumps kwarg
+    r"|\{\{\s*[A-Za-z_]\w*\s*:"  # `.format()`-escaped object literal `{{ x:`
+)
+
+
+def check_unrendered_template(blocks: list[str]) -> None:
+    for i, b in enumerate(blocks, 1):
+        if _TEMPLATE_LEAK_RE.search(b):
+            fail(
+                f"TEMPLATE-LEAK: <script> block #{i} is an unrendered Python "
+                "template (`{json.dumps(...)}` placeholders / `{{ }}` escaped "
+                "braces), not final JavaScript — in the browser this throws a "
+                "SyntaxError and no chart initialises. Render the template "
+                "(str.format / f-string) and write the RESULT, not the "
+                "template source.",
+                code=8,
+            )
+
+
 _OPENERS = {"(": ")", "[": "]", "{": "}"}
 _CLOSERS = {")": "(", "]": "[", "}": "{"}
 # A `/` whose last significant code char is one of these starts a regex
@@ -494,6 +522,7 @@ def main(argv: list[str]) -> int:
     check_inline_data_cap(blocks)
     check_no_spline(blocks)
     check_js_string_hygiene(blocks)
+    check_unrendered_template(blocks)
     check_js_delimiter_balance(blocks)
     check_hbar_label_position(blocks)
     check_label_formatter_params(blocks)
