@@ -71,6 +71,44 @@ def test_drops_cdn_script_and_link_tags() -> None:
     assert "<link href=CDN>" in msgs
 
 
+def test_decodes_cloudflare_email_span_form() -> None:
+    # Form the agent copies from a gov.il page behind Cloudflare: nested
+    # <span class="__cf_email__" data-cfemail> inside an email-protection <a>.
+    # 016c...  XOR-decodes to matpim@102.gov.il.
+    src = (
+        '<a href="/cdn-cgi/l/email-protection#80ede1f4f0e9edc0b1b0b2aee7eff6aee9ec" '
+        'class="text-brand"><span class="__cf_email__" '
+        'data-cfemail="016c607571686c413031332f666e772f686d">'
+        "[email&#160;protected]</span></a>"
+    )
+    out, recs = _logs(None, body=src)
+    assert "cdn-cgi" not in out
+    assert "__cf_email__" not in out
+    assert "data-cfemail" not in out
+    assert '<a href="mailto:matpim@102.gov.il">matpim@102.gov.il</a>' in out
+    assert any("Cloudflare email-protection" in r.getMessage() for r in recs)
+
+
+def test_decodes_cloudflare_email_anchor_form() -> None:
+    # Second form: __cf_email__ + data-cfemail live on the <a> itself.
+    src = (
+        '<a href="/cdn-cgi/l/email-protection" class="__cf_email__" '
+        'data-cfemail="355d5c5954575447750405071b525a431b5c59">'
+        "[email&#160;protected]</a>"
+    )
+    out, _ = _logs(None, body=src)
+    assert "cdn-cgi" not in out
+    assert '<a href="mailto:hilabar@102.gov.il">hilabar@102.gov.il</a>' in out
+
+
+def test_drops_cloudflare_email_decode_script() -> None:
+    src = '<script data-cfasync="false" src="/cdn-cgi/scripts/x/email-decode.min.js"></script>\n<p>ok</p>'
+    out, recs = _logs(None, body=src)
+    assert "cdn-cgi" not in out
+    assert "<p>ok</p>" in out
+    assert any("/cdn-cgi/" in r.getMessage() for r in recs)
+
+
 def test_clean_input_pass_through_no_warnings() -> None:
     src = (
         '<h1>Title</h1>\n'
@@ -332,6 +370,9 @@ def main() -> None:
         test_does_not_misread_lf_inside_line_comment,
         test_preserves_existing_backslash_escape_inside_string,
         test_real_world_b2370286_pattern,
+        test_decodes_cloudflare_email_span_form,
+        test_decodes_cloudflare_email_anchor_form,
+        test_drops_cloudflare_email_decode_script,
     ]
     for t in tests:
         t()

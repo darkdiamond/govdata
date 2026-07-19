@@ -10,16 +10,6 @@
     "trailingSlash": true,
     "redirects": [
       {
-        "source": "/datasets/d3c80c46-9d99-41a9-8b62-50b590011a60",
-        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%94%D7%97%D7%95%D7%91-%D7%94%D7%9E%D7%9E%D7%A9%D7%9C%D7%AA%D7%99-%D7%94%D7%9E%D7%A7%D7%95%D7%9E%D7%99-d3c80c46/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/5265b154-c2e2-4f3d-a22e-fba593240d9a",
-        "destination": "/datasets/%D7%92%D7%9E%D7%9C-%D7%A0%D7%98-5265b154/",
-        "type": 301
-      },
-      {
         "source": "/datasets/6c44da0d-e499-4233-973a-e404c607fb86",
         "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%97%D7%91%D7%A8%D7%95%D7%AA-%D7%9E%D7%9E%D7%A9%D7%9C%D7%AA%D7%99%D7%95%D7%AA-%D7%95%D7%93%D7%99%D7%A8%D7%A7%D7%98%D7%95%D7%A8%D7%99%D7%9D-%D7%9E%D7%9B%D7%94%D7%A0%D7%99%D7%9D-6c44da0d/",
         "type": 301
@@ -27,6 +17,11 @@
       {
         "source": "/datasets/dcd96625-def1-45dc-a2cf-f4ad7fc2360a",
         "destination": "/datasets/%D7%A8%D7%99%D7%91%D7%99%D7%95%D7%AA-%D7%A9%D7%9C-%D7%A4%D7%99%D7%A7%D7%93%D7%95%D7%A0%D7%95%D7%AA-%D7%97%D7%A1%D7%9B%D7%95%D7%9F-%D7%9C%D7%9B%D7%9C-%D7%99%D7%9C%D7%93-%D7%A2%D7%93%D7%9B%D7%95%D7%9F-%D7%99%D7%95%D7%9E%D7%99-dcd96625/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/31176aa8-1609-4b42-911b-2b0f38ba4dd3",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99%D7%9D-%D7%AA%D7%A7%D7%95%D7%A4%D7%AA%D7%99%D7%99%D7%9D-%D7%AA%D7%9B%D7%A0%D7%99%D7%AA-%D7%93%D7%99%D7%A8%D7%94-%D7%91%D7%94%D7%A0%D7%97%D7%94-31176aa8/",
         "type": 301
       },
       {
@@ -50,6 +45,11 @@
         "type": 301
       },
       {
+        "source": "/datasets/7a338622-63bb-4cfd-b3f7-0d2e8cf71033",
+        "destination": "/datasets/%D7%9E%D7%A1%D7%A4%D7%A8%D7%99-%D7%A8%D7%99%D7%A9%D7%95%D7%99-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%A4%D7%A8%D7%98%D7%99%D7%99%D7%9D-%D7%95%D7%9E%D7%A1%D7%97%D7%A8%D7%99%D7%99%D7%9D-7a338622/",
+        "type": 301
+      },
+      {
         "source": "/datasets/840827c2-7420-4687-9f2a-62aeb5602c11",
         "destination": "/datasets/%D7%9E%D7%A1%D7%A4%D7%A8%D7%99-%D7%A8%D7%99%D7%A9%D7%95%D7%99-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%94%D7%A8%D7%9B%D7%91-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%99%D7%9D-%D7%94%D7%A4%D7%A2%D7%99%D7%9C%D7%99%D7%9D-840827c2/",
         "type": 301
@@ -60,43 +60,13 @@
         "type": 301
       },
       {
-        "source": "/datasets/7a338622-63bb-4cfd-b3f7-0d2e8cf71033",
-        "destination": "/datasets/%D7%9E%D7%A1%D7%A4%D7%A8%D7%99-%D7%A8%D7%99%D7%A9%D7%95%D7%99-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%A4%D7%A8%D7%98%D7%99%D7%99%D7%9D-%D7%95%D7%9E%D7%A1%D7%97%D7%A8%D7%99%D7%99%D7%9D-7a338622/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/273c5e33-25ab-4980-8522-a2f7ba0bb62d",
-        "destination": "/datasets/%D7%94%D7%99%D7%A1%D7%98%D7%95%D7%A8%D7%99%D7%99%D7%AA-%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%A4%D7%A8%D7%98%D7%99%D7%99%D7%9D-273c5e33/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/b37b28ae-d465-482b-b47e-7cc844f45adb",
-        "destination": "/datasets/%D7%AA%D7%95%D7%A6%D7%A8%D7%99%D7%9D-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%94%D7%A8%D7%9B%D7%91-%D7%94%D7%A4%D7%A2%D7%99%D7%9C%D7%99%D7%9D-b37b28ae/",
-        "type": 301
-      },
-      {
         "source": "/datasets/45e317cf-7bb1-4535-b8cf-be5e79ea341f",
         "destination": "/datasets/%D7%AA%D7%95%D7%A6%D7%A8%D7%99%D7%9D-%D7%95%D7%93%D7%92%D7%9E%D7%99%D7%9D-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%A4%D7%A8%D7%98%D7%99-%D7%95%D7%9E%D7%A1%D7%97%D7%A8%D7%99-45e317cf/",
         "type": 301
       },
       {
-        "source": "/datasets/392abd0a-64f6-4c18-9d56-0111001411e6",
-        "destination": "/datasets/%D7%A1%D7%95%D7%97%D7%A8%D7%99-%D7%A8%D7%9B%D7%91-392abd0a/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/90723376-9db7-4bde-90c0-6f3d5b5cdf9d",
-        "destination": "/datasets/%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA-%D7%91%D7%98%D7%99%D7%97%D7%95%D7%AA-%D7%91%D7%A8%D7%9B%D7%91-90723376/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/5877dcf0-1895-4f35-b87b-c85a0b286318",
-        "destination": "/datasets/%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%94%D7%9E%D7%97%D7%95%D7%99%D7%91%D7%99%D7%9D-%D7%91%D7%94%D7%AA%D7%A7%D7%A0%D7%AA-%D7%A0%D7%A7%D7%95%D7%93%D7%95%D7%AA-%D7%A2%D7%99%D7%92%D7%95%D7%9F-%D7%9C%D7%90%D7%91%D7%98%D7%97%D7%AA-%D7%9E%D7%98%D7%A2%D7%A0%D7%99%D7%9D-5877dcf0/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/9db8e799-d2db-4136-bb9c-df255740c810",
-        "destination": "/datasets/%D7%99%D7%91%D7%95%D7%90%D7%A0%D7%99%D7%9D-%D7%95%D7%9E%D7%97%D7%99%D7%A8%D7%95%D7%A0%D7%99-%D7%A8%D7%9B%D7%91-%D7%97%D7%93%D7%A9-9db8e799/",
+        "source": "/datasets/273c5e33-25ab-4980-8522-a2f7ba0bb62d",
+        "destination": "/datasets/%D7%94%D7%99%D7%A1%D7%98%D7%95%D7%A8%D7%99%D7%99%D7%AA-%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%A4%D7%A8%D7%98%D7%99%D7%99%D7%9D-273c5e33/",
         "type": 301
       },
       {
@@ -135,23 +105,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/71426c53-ccfe-4463-a625-d0c8eae8f69c",
-        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%A1%D7%A4%D7%A8-%D7%9C%D7%A0%D7%94%D7%99%D7%92%D7%94-71426c53/",
-        "type": 301
-      },
-      {
         "source": "/datasets/d4bb45f7-5114-4a30-ad4a-1553b06c98fb",
         "destination": "/datasets/%D7%A1%D7%97%D7%A8-%D7%99%D7%91%D7%95%D7%90-%D7%95%D7%99%D7%99%D7%A6%D7%95%D7%A8-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%AA%D7%A2%D7%91%D7%95%D7%A8%D7%94-d4bb45f7/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/5c8c7be1-3825-4c7d-bcd6-9735355b4a04",
-        "destination": "/datasets/%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%9B%D7%91-5c8c7be1/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/0219b34f-43c7-435b-bdfe-e65e944cde50",
-        "destination": "/datasets/%D7%9B%D7%9C%D7%99-%D7%A6%D7%9E-%D7%94-%D7%A6%D7%99%D7%95%D7%93-%D7%9E%D7%9B%D7%A0%D7%99-%D7%94%D7%A0%D7%93%D7%A1%D7%99-0219b34f/",
         "type": 301
       },
       {
@@ -170,6 +125,46 @@
         "type": 301
       },
       {
+        "source": "/datasets/b37b28ae-d465-482b-b47e-7cc844f45adb",
+        "destination": "/datasets/%D7%AA%D7%95%D7%A6%D7%A8%D7%99%D7%9D-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%94%D7%A8%D7%9B%D7%91-%D7%94%D7%A4%D7%A2%D7%99%D7%9C%D7%99%D7%9D-b37b28ae/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/392abd0a-64f6-4c18-9d56-0111001411e6",
+        "destination": "/datasets/%D7%A1%D7%95%D7%97%D7%A8%D7%99-%D7%A8%D7%9B%D7%91-392abd0a/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/90723376-9db7-4bde-90c0-6f3d5b5cdf9d",
+        "destination": "/datasets/%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA-%D7%91%D7%98%D7%99%D7%97%D7%95%D7%AA-%D7%91%D7%A8%D7%9B%D7%91-90723376/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5877dcf0-1895-4f35-b87b-c85a0b286318",
+        "destination": "/datasets/%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%94%D7%9E%D7%97%D7%95%D7%99%D7%91%D7%99%D7%9D-%D7%91%D7%94%D7%AA%D7%A7%D7%A0%D7%AA-%D7%A0%D7%A7%D7%95%D7%93%D7%95%D7%AA-%D7%A2%D7%99%D7%92%D7%95%D7%9F-%D7%9C%D7%90%D7%91%D7%98%D7%97%D7%AA-%D7%9E%D7%98%D7%A2%D7%A0%D7%99%D7%9D-5877dcf0/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/9db8e799-d2db-4136-bb9c-df255740c810",
+        "destination": "/datasets/%D7%99%D7%91%D7%95%D7%90%D7%A0%D7%99%D7%9D-%D7%95%D7%9E%D7%97%D7%99%D7%A8%D7%95%D7%A0%D7%99-%D7%A8%D7%9B%D7%91-%D7%97%D7%93%D7%A9-9db8e799/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/71426c53-ccfe-4463-a625-d0c8eae8f69c",
+        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%A1%D7%A4%D7%A8-%D7%9C%D7%A0%D7%94%D7%99%D7%92%D7%94-71426c53/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5c8c7be1-3825-4c7d-bcd6-9735355b4a04",
+        "destination": "/datasets/%D7%A9%D7%9E%D7%90%D7%99-%D7%A8%D7%9B%D7%91-5c8c7be1/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/0219b34f-43c7-435b-bdfe-e65e944cde50",
+        "destination": "/datasets/%D7%9B%D7%9C%D7%99-%D7%A6%D7%9E-%D7%94-%D7%A6%D7%99%D7%95%D7%93-%D7%9E%D7%9B%D7%A0%D7%99-%D7%94%D7%A0%D7%93%D7%A1%D7%99-0219b34f/",
+        "type": 301
+      },
+      {
         "source": "/datasets/ad4e7cbf-0f86-4e8a-b159-6dd6f3a003ef",
         "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%A9%D7%9E%D7%90%D7%95%D7%AA-%D7%9E%D7%9B%D7%A8%D7%99%D7%A2%D7%94-ad4e7cbf/",
         "type": 301
@@ -185,8 +180,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/6397d78e-f00f-4657-a03a-3868f845d3c0",
-        "destination": "/datasets/%D7%A4%D7%A8%D7%98%D7%99-%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D-%D7%91%D7%97%D7%91%D7%A8%D7%95%D7%AA-%D7%95%D7%A9%D7%95%D7%AA%D7%A4%D7%95%D7%99%D7%95%D7%AA-6397d78e/",
+        "source": "/datasets/556634fd-fcec-4bbd-8bd5-ba1390bc1c14",
+        "destination": "/datasets/%D7%A1%D7%99%D7%9E%D7%A0%D7%99-%D7%9E%D7%A1%D7%97%D7%A8-%D7%A1%D7%99%D7%95%D7%95%D7%92%D7%99%D7%9D-556634fd/",
         "type": 301
       },
       {
@@ -195,8 +190,53 @@
         "type": 301
       },
       {
+        "source": "/datasets/6397d78e-f00f-4657-a03a-3868f845d3c0",
+        "destination": "/datasets/%D7%A4%D7%A8%D7%98%D7%99-%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D-%D7%91%D7%97%D7%91%D7%A8%D7%95%D7%AA-%D7%95%D7%A9%D7%95%D7%AA%D7%A4%D7%95%D7%99%D7%95%D7%AA-6397d78e/",
+        "type": 301
+      },
+      {
         "source": "/datasets/382c098b-a687-478a-9965-06977d7c9501",
         "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%A9%D7%95%D7%AA%D7%A4%D7%95%D7%99%D7%95%D7%AA-%D7%A8%D7%A9%D7%9D-%D7%94%D7%97%D7%91%D7%A8%D7%95%D7%AA-382c098b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/fdf06a98-0fe3-47df-8c3e-18ee582d1445",
+        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%9C%D7%A0%D7%95%D7%9B%D7%97%D7%95%D7%AA-%D7%A0%D7%92%D7%A2%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-fdf06a98/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/d2581732-eca4-4988-b986-df8e791a1d60",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A8%D7%97%D7%95%D7%91%D7%95%D7%AA-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-d2581732/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/7c27e23b-86f1-44ee-9d9b-4f8880ca0973",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%90%D7%A8%D7%A6%D7%95%D7%AA-%D7%9E%D7%95%D7%9B%D7%A8%D7%95%D7%AA-%D7%A2-%D7%99-%D7%9E%D7%93%D7%99%D7%A0%D7%AA-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-7c27e23b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/785ad9fb-6da6-426d-b5ea-b8e36febbc8a",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A8%D7%97%D7%95%D7%91%D7%95%D7%AA-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%A7%D7%95%D7%91%D7%A5-%D7%A2%D7%9D-%D7%A1%D7%99%D7%A0%D7%95%D7%A0%D7%99%D7%9E%D7%99%D7%99%D7%9D-785ad9fb/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/9d86c8a9-9240-4fc4-86a3-834c539f9488",
+        "destination": "/datasets/%D7%AA%D7%95%D7%A9%D7%91%D7%99%D7%9D-%D7%A6%D7%A2%D7%99%D7%A8%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9C%D7%A4%D7%99-%D7%99%D7%A9%D7%95%D7%91%D7%99%D7%9D-9d86c8a9/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/3fc54b81-25b3-4ac7-87db-248c3e1602de",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%99%D7%A9%D7%95%D7%91%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-3fc54b81/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/00172ee8-4433-4d5d-8fd4-11f0f08ce5c4",
+        "destination": "/datasets/%D7%AA%D7%95%D7%A9%D7%91%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9C%D7%A4%D7%99-%D7%99%D7%A9%D7%95%D7%91%D7%99%D7%9D-%D7%95%D7%A7%D7%91%D7%95%D7%A6%D7%95%D7%AA-%D7%92%D7%99%D7%9C-00172ee8/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/d5f1e517-4b47-4611-b8ec-bb261bb363f7",
+        "destination": "/datasets/%D7%A1%D7%98%D7%98%D7%99%D7%A1%D7%98%D7%99%D7%A7%D7%AA-%D7%94%D7%A0%D7%A4%D7%A7%D7%AA-%D7%A8%D7%A9%D7%99%D7%95%D7%A0%D7%95%D7%AA-%D7%9C%D7%96%D7%A8%D7%99%D7%9D-d5f1e517/",
         "type": 301
       },
       {
@@ -215,18 +255,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/fdf06a98-0fe3-47df-8c3e-18ee582d1445",
-        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%9C%D7%90%D7%95%D7%9E%D7%99-%D7%9C%D7%A0%D7%95%D7%9B%D7%97%D7%95%D7%AA-%D7%A0%D7%92%D7%A2%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-fdf06a98/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/90b08091-d516-4b89-bea5-cce542ac61fb",
-        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%9B%D7%95%D7%97-%D7%90%D7%93%D7%9D-%D7%A9%D7%99%D7%A8%D7%95%D7%AA%D7%99-%D7%90%D7%91%D7%98%D7%97%D7%94-%D7%95%D7%A0%D7%99%D7%A7%D7%99%D7%95%D7%9F-%D7%9C%D7%A9%D7%9B%D7%95%D7%AA-%D7%A4%D7%A8%D7%98%D7%99%D7%95%D7%AA-%D7%95%D7%A2%D7%92%D7%95%D7%A8%D7%A0%D7%99%D7%9D-90b08091/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/11369651-1c70-4d8f-8090-ee49354a7c52",
-        "destination": "/datasets/%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%A2%D7%9D-%D7%AA%D7%92-%D7%97%D7%A0%D7%99%D7%94-%D7%9C%D7%A0%D7%9B%D7%94-11369651/",
+        "source": "/datasets/0bfc2b7f-5ed6-426a-84de-1a6552a5c35f",
+        "destination": "/datasets/%D7%94%D7%AA%D7%97%D7%93%D7%A9%D7%95%D7%AA-%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA-0bfc2b7f/",
         "type": 301
       },
       {
@@ -252,6 +282,11 @@
       {
         "source": "/datasets/c0beab05-9061-4dad-868c-40142260d35f",
         "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A6%D7%95%D7%95%D7%99-%D7%91%D7%98%D7%99%D7%97%D7%95%D7%AA-c0beab05/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/90b08091-d516-4b89-bea5-cce542ac61fb",
+        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%9B%D7%95%D7%97-%D7%90%D7%93%D7%9D-%D7%A9%D7%99%D7%A8%D7%95%D7%AA%D7%99-%D7%90%D7%91%D7%98%D7%97%D7%94-%D7%95%D7%A0%D7%99%D7%A7%D7%99%D7%95%D7%9F-%D7%9C%D7%A9%D7%9B%D7%95%D7%AA-%D7%A4%D7%A8%D7%98%D7%99%D7%95%D7%AA-%D7%95%D7%A2%D7%92%D7%95%D7%A8%D7%A0%D7%99%D7%9D-90b08091/",
         "type": 301
       },
       {
@@ -292,81 +327,6 @@
       {
         "source": "/datasets/176f2727-476e-440e-bc8d-5d3461ea0e76",
         "destination": "/datasets/%D7%A4%D7%A0%D7%A7%D7%A1-%D7%94%D7%A1%D7%A0%D7%99%D7%92%D7%95%D7%A8%D7%99%D7%9D-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%99%D7%9D-%D7%94%D7%A1%D7%A0%D7%92%D7%95%D7%A8%D7%99%D7%94-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%AA-176f2727/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/4e9111d8-e842-40ec-b587-629e684e85ac",
-        "destination": "/datasets/%D7%90%D7%A0%D7%98%D7%A0%D7%95%D7%AA-%D7%A1%D7%9C%D7%95%D7%9C%D7%A8%D7%99%D7%95%D7%AA-%D7%91%D7%94%D7%A7%D7%9E%D7%94-4e9111d8/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/e444962a-0f58-429c-bc3c-f63786be1cfe",
-        "destination": "/datasets/%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA-%D7%9E%D7%99%D7%93%D7%A2-%D7%A4%D7%A1%D7%95%D7%9C%D7%AA-%D7%A0%D7%A1%D7%A4%D7%97%D7%99%D7%9D-e444962a/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/bfe4e10f-8d85-4342-b068-75edabca3c79",
-        "destination": "/datasets/%D7%A2%D7%99%D7%A6%D7%95%D7%9E%D7%99%D7%9D-%D7%9B%D7%A1%D7%A4%D7%99%D7%99%D7%9D-bfe4e10f/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/6b991a56-c209-4b02-a52e-ba1c69091a4c",
-        "destination": "/datasets/%D7%93%D7%A8%D7%92%D7%AA-%D7%96%D7%99%D7%94%D7%95%D7%9D-%D7%90%D7%95%D7%95%D7%99%D7%A8-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%A6%D7%9E-%D7%94-6b991a56/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/a9d7da6b-8cb7-46a0-8da8-82b99c737781",
-        "destination": "/datasets/%D7%A8%D7%99%D7%A9%D7%99%D7%95%D7%A0%D7%95%D7%AA-%D7%A2%D7%A1%D7%A7-%D7%95%D7%94%D7%99%D7%AA%D7%A8%D7%99%D7%9D-%D7%9E%D7%A1%D7%95%D7%92%D7%99%D7%9D-%D7%A9%D7%95%D7%A0%D7%99%D7%9D-%D7%9C%D7%9E%D7%A4%D7%A2%D7%9C%D7%99%D7%9D-a9d7da6b/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/14b7572d-c8f1-427a-8ef8-8069b197225d",
-        "destination": "/datasets/%D7%A0%D7%99%D7%98%D7%95%D7%A8-%D7%A0%D7%9E%D7%9C%D7%AA-%D7%94%D7%90%D7%A9-%D7%94%D7%A7%D7%98%D7%A0%D7%94-%D7%91%D7%9E%D7%A9%D7%AA%D7%9C%D7%95%D7%AA-14b7572d/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/4d95a5ed-d567-4515-bbfb-517c6c0b859f",
-        "destination": "/datasets/%D7%94%D7%9E%D7%93%D7%A8%D7%9A-%D7%93%D7%99%D7%95%D7%95%D7%97%D7%99-%D7%94%D7%A9%D7%A4%D7%A2%D7%95%D7%AA-%D7%A1%D7%91%D7%99%D7%91%D7%AA%D7%99%D7%95%D7%AA-%D7%9E%D7%93%D7%95%D7%93%D7%95%D7%AA-%D7%9E%D7%9E%D7%95%D7%A6%D7%A8%D7%99%D7%9D-4d95a5ed/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/b2370286-54f0-492d-a238-1bbdae997cb5",
-        "destination": "/datasets/%D7%A7%D7%A8%D7%A7%D7%A2%D7%95%D7%AA-%D7%9E%D7%96%D7%95%D7%94%D7%9E%D7%95%D7%AA-b2370286/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/995eb826-c471-4572-8fd3-39d92a3a9603",
-        "destination": "/datasets/%D7%90%D7%A0%D7%98%D7%A0%D7%95%D7%AA-%D7%A1%D7%9C%D7%95%D7%9C%D7%A8%D7%99%D7%95%D7%AA-%D7%A4%D7%A2%D7%99%D7%9C%D7%95%D7%AA-995eb826/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/04931a88-336c-4d95-8a13-9dc631c3e2d1",
-        "destination": "/datasets/%D7%9E%D7%A4%D7%A2%D7%9C%D7%99%D7%9D-04931a88/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/422ff747-a1ee-4e8d-b515-43417f0d80d8",
-        "destination": "/datasets/%D7%93%D7%99%D7%95%D7%95%D7%97-%D7%A2%D7%9C-%D7%AA%D7%A7%D7%9C%D7%94-%D7%9C%D7%99%D7%93%D7%99%D7%A2%D7%AA-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8-422ff747/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/a3cec603-dd66-49de-af14-a612754a7b9a",
-        "destination": "/datasets/%D7%9E%D7%91%D7%A0%D7%99%D7%9D-%D7%99%D7%A8%D7%95%D7%A7%D7%99%D7%9D-a3cec603/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/005fe7c5-be59-42de-91ea-0ce3cdece35c",
-        "destination": "/datasets/%D7%9E%D7%A8%D7%A9%D7%9D-%D7%94%D7%A2%D7%95%D7%A1%D7%A7%D7%99%D7%9D-%D7%91%D7%90%D7%A1%D7%91%D7%A1%D7%98-005fe7c5/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/fecc5a5f-8e69-43f0-9c0f-6121fb93a78e",
-        "destination": "/datasets/%D7%9E%D7%93%D7%91%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-fecc5a5f/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/a37765ea-d407-42e8-b757-9b70a8cf574f",
-        "destination": "/datasets/%D7%AA%D7%9B%D7%A9%D7%99%D7%A8%D7%99-%D7%94%D7%93%D7%91%D7%A8%D7%94-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-%D7%9C%D7%A9%D7%99%D7%9E%D7%95%D7%A9-a37765ea/",
         "type": 301
       },
       {
@@ -485,6 +445,11 @@
         "type": 301
       },
       {
+        "source": "/datasets/aacfb917-fe4f-49b6-b61d-5189c5e3cf7d",
+        "destination": "/datasets/%D7%AA%D7%97%D7%96%D7%99%D7%AA-%D7%97%D7%A6%D7%99-%D7%99%D7%95%D7%9E%D7%99%D7%AA-%D7%9C%D7%9E%D7%96%D7%94%D7%9E%D7%99-%D7%90%D7%95%D7%95%D7%99%D7%A8-aacfb917/",
+        "type": 301
+      },
+      {
         "source": "/datasets/656f6e4c-ec04-40a5-b3bc-c556b2b127e0",
         "destination": "/datasets/%D7%A1%D7%99%D7%9E%D7%A0%D7%99-%D7%9E%D7%A1%D7%97%D7%A8-656f6e4c/",
         "type": 301
@@ -510,16 +475,6 @@
         "type": 301
       },
       {
-        "source": "/datasets/aacfb917-fe4f-49b6-b61d-5189c5e3cf7d",
-        "destination": "/datasets/%D7%AA%D7%97%D7%96%D7%99%D7%AA-%D7%97%D7%A6%D7%99-%D7%99%D7%95%D7%9E%D7%99%D7%AA-%D7%9C%D7%9E%D7%96%D7%94%D7%9E%D7%99-%D7%90%D7%95%D7%95%D7%99%D7%A8-aacfb917/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/505aa85e-a49f-4a49-aea2-4cc7b6e44e92",
-        "destination": "/datasets/%D7%A7%D7%95%D7%A0%D7%A1%D7%95%D7%9C%D7%99-%D7%9B%D7%91%D7%95%D7%93-%D7%A9%D7%9C-%D7%9E%D7%93%D7%99%D7%A0%D7%AA-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-505aa85e/",
-        "type": 301
-      },
-      {
         "source": "/datasets/eda6d5e4-b6ed-478e-a92b-71e0baab84b6",
         "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%94%D7%93%D7%99%D7%9F-%D7%94%D7%A9%D7%A8%D7%A2%D7%99%D7%99%D7%9D-%D7%A7%D7%90%D7%93%D7%99%D7%9D-eda6d5e4/",
         "type": 301
@@ -527,11 +482,6 @@
       {
         "source": "/datasets/cdf9391c-e51d-48d7-aacc-2dade6e63c09",
         "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%94%D7%93%D7%99%D7%9F-%D7%94%D7%A9%D7%A8%D7%A2%D7%99%D7%99%D7%9D-%D7%AA%D7%99%D7%A7%D7%99%D7%9D-%D7%95%D7%97%D7%95%D7%96%D7%99-%D7%A0%D7%99%D7%A9%D7%95%D7%90%D7%99%D7%9F-cdf9391c/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/d89ecfe3-e443-4fde-925a-bf686790b35d",
-        "destination": "/datasets/%D7%A6%D7%99%D7%99-%D7%A8%D7%9B%D7%91-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1%D7%99%D7%9D-d89ecfe3/",
         "type": 301
       },
       {
@@ -555,6 +505,11 @@
         "type": 301
       },
       {
+        "source": "/datasets/d89ecfe3-e443-4fde-925a-bf686790b35d",
+        "destination": "/datasets/%D7%A6%D7%99%D7%99-%D7%A8%D7%9B%D7%91-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1%D7%99%D7%9D-d89ecfe3/",
+        "type": 301
+      },
+      {
         "source": "/datasets/b8fa0d40-5955-45a5-8c1c-d31a79c88b6b",
         "destination": "/datasets/%D7%95%D7%95%D7%A2%D7%93%D7%AA-%D7%94%D7%A2%D7%96%D7%91%D7%95%D7%A0%D7%95%D7%AA-b8fa0d40/",
         "type": 301
@@ -575,33 +530,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/013bf5b9-c7ff-4282-b402-73ed20deeacc",
-        "destination": "/datasets/%D7%A0%D7%A7%D7%95%D7%93%D7%95%D7%AA-%D7%9E%D7%9B%D7%99%D7%A8%D7%94-%D7%95%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%A8%D7%91%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%9E%D7%96%D7%95%D7%9F-%D7%9E%D7%99%D7%95%D7%91%D7%90%D7%99%D7%9D-013bf5b9/",
-        "type": 301
-      },
-      {
         "source": "/datasets/0a374a70-87e9-41d1-a710-d8a81dc61144",
         "destination": "/datasets/%D7%A2%D7%99%D7%A6%D7%95%D7%91%D7%99%D7%9D-%D7%9E%D7%93%D7%92%D7%9E%D7%99%D7%9D-0a374a70/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/75989c99-3122-4656-943c-3b758262cbf4",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D-%D7%91%D7%A0%D7%A7%D7%90%D7%99%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9B%D7%AA%D7%95%D7%91%D7%95%D7%AA-%D7%95%D7%A7%D7%99%D7%A9%D7%95%D7%A8%D7%99%D7%9D-75989c99/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/9f357b63-99f6-4b52-8c9e-fa53c86e63e4",
-        "destination": "/datasets/%D7%A1%D7%A0%D7%99%D7%A4%D7%99%D7%9D-%D7%9C%D7%A1%D7%9C%D7%99%D7%A7%D7%94-9f357b63/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/67759a6a-4167-439b-af53-0eb792321264",
-        "destination": "/datasets/%D7%9E%D7%9B%D7%A9%D7%99%D7%A8%D7%99%D7%9D-%D7%90%D7%95%D7%98%D7%95%D7%9E%D7%98%D7%99%D7%99%D7%9D-ATMs-67759a6a/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/32348d0b-dc49-4bd0-a931-860e55709689",
-        "destination": "/datasets/%D7%A1%D7%A0%D7%99%D7%A4%D7%99%D7%9D-%D7%91%D7%A0%D7%A7%D7%99%D7%9D-32348d0b/",
         "type": 301
       },
       {
@@ -665,8 +595,33 @@
         "type": 301
       },
       {
+        "source": "/datasets/75989c99-3122-4656-943c-3b758262cbf4",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D-%D7%91%D7%A0%D7%A7%D7%90%D7%99%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9B%D7%AA%D7%95%D7%91%D7%95%D7%AA-%D7%95%D7%A7%D7%99%D7%A9%D7%95%D7%A8%D7%99%D7%9D-75989c99/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/9f357b63-99f6-4b52-8c9e-fa53c86e63e4",
+        "destination": "/datasets/%D7%A1%D7%A0%D7%99%D7%A4%D7%99%D7%9D-%D7%9C%D7%A1%D7%9C%D7%99%D7%A7%D7%94-9f357b63/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/67759a6a-4167-439b-af53-0eb792321264",
+        "destination": "/datasets/%D7%9E%D7%9B%D7%A9%D7%99%D7%A8%D7%99%D7%9D-%D7%90%D7%95%D7%98%D7%95%D7%9E%D7%98%D7%99%D7%99%D7%9D-ATMs-67759a6a/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/32348d0b-dc49-4bd0-a931-860e55709689",
+        "destination": "/datasets/%D7%A1%D7%A0%D7%99%D7%A4%D7%99-%D7%91%D7%A0%D7%A7%D7%99%D7%9D-%D7%A4%D7%99%D7%96%D7%99%D7%99%D7%9D-32348d0b/",
+        "type": 301
+      },
+      {
         "source": "/datasets/2db3210b-1803-4854-84e9-e77e8a1bbe50",
         "destination": "/datasets/%D7%A8%D7%99%D7%91%D7%99%D7%95%D7%AA-%D7%94%D7%97%D7%A9%D7%91-%D7%94%D7%9B%D7%9C%D7%9C%D7%99-2db3210b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/d3c80c46-9d99-41a9-8b62-50b590011a60",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%94%D7%97%D7%95%D7%91-%D7%94%D7%9E%D7%9E%D7%A9%D7%9C%D7%AA%D7%99-%D7%94%D7%9E%D7%A7%D7%95%D7%9E%D7%99-d3c80c46/",
         "type": 301
       },
       {
@@ -685,38 +640,228 @@
         "type": 301
       },
       {
-        "source": "/datasets/a52c0585-8af8-42bd-8c5c-03c6550682ea",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%95%D7%AA-%D7%94%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D-%D7%A8%D7%A9%D7%9D-%D7%94%D7%94%D7%A7%D7%93%D7%A9%D7%95%D7%AA-a52c0585/",
+        "source": "/datasets/5265b154-c2e2-4f3d-a22e-fba593240d9a",
+        "destination": "/datasets/%D7%92%D7%9E%D7%9C-%D7%A0%D7%98-5265b154/",
         "type": 301
       },
       {
-        "source": "/datasets/31176aa8-1609-4b42-911b-2b0f38ba4dd3",
-        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99%D7%9D-%D7%AA%D7%A7%D7%95%D7%A4%D7%AA%D7%99%D7%99%D7%9D-%D7%AA%D7%9B%D7%A0%D7%99%D7%AA-%D7%93%D7%99%D7%A8%D7%94-%D7%91%D7%94%D7%A0%D7%97%D7%94-31176aa8/",
+        "source": "/datasets/41c2db9f-4615-4864-af15-5350d794c99c",
+        "destination": "/datasets/%D7%93%D7%99%D7%A8%D7%95%D7%AA-%D7%94%D7%93%D7%99%D7%95%D7%A8-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99-41c2db9f/",
         "type": 301
       },
       {
-        "source": "/datasets/c11b5d08-411b-4e54-b267-f1bd58a00dd2",
-        "destination": "/datasets/%D7%90%D7%99%D7%A8%D7%95%D7%A2%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%9E%D7%97%D7%95%D7%96-c11b5d08/",
+        "source": "/datasets/11369651-1c70-4d8f-8090-ee49354a7c52",
+        "destination": "/datasets/%D7%9B%D7%9C%D7%99-%D7%A8%D7%9B%D7%91-%D7%A2%D7%9D-%D7%AA%D7%92-%D7%97%D7%A0%D7%99%D7%94-%D7%9C%D7%A0%D7%9B%D7%94-11369651/",
         "type": 301
       },
       {
-        "source": "/datasets/40593d42-f3c9-4c1d-a9e9-67d72c1e7714",
-        "destination": "/datasets/%D7%93%D7%A8%D7%99%D7%A9%D7%95%D7%AA-%D7%91%D7%98%D7%99%D7%97%D7%95%D7%AA-%D7%90%D7%A9-%D7%9C%D7%94%D7%99%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%94-40593d42/",
+        "source": "/datasets/da374239-7f83-43bc-a60f-36fc8380a093",
+        "destination": "/datasets/%D7%AA%D7%A7%D7%A0%D7%95%D7%AA-%D7%94%D7%99%D7%A8%D7%95%D7%A9%D7%94-%D7%91%D7%AA%D7%99-%D7%94%D7%93%D7%99%D7%9F-%D7%94%D7%93%D7%A8%D7%95%D7%96%D7%99%D7%9D-%D7%91%D7%A9%D7%A4%D7%94-%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA-da374239/",
         "type": 301
       },
       {
-        "source": "/datasets/f0b71d2d-9448-4b8b-a4ec-d1ddc8977c9c",
-        "destination": "/datasets/%D7%93%D7%A8%D7%99%D7%A9%D7%95%D7%AA-%D7%91%D7%98%D7%99%D7%97%D7%95%D7%AA-%D7%90%D7%A9-%D7%9C%D7%A8%D7%99%D7%A9%D7%95%D7%99-%D7%A2%D7%A1%D7%A7%D7%99%D7%9D-f0b71d2d/",
+        "source": "/datasets/4e9111d8-e842-40ec-b587-629e684e85ac",
+        "destination": "/datasets/%D7%90%D7%A0%D7%98%D7%A0%D7%95%D7%AA-%D7%A1%D7%9C%D7%95%D7%9C%D7%A8%D7%99%D7%95%D7%AA-%D7%91%D7%94%D7%A7%D7%9E%D7%94-4e9111d8/",
         "type": 301
       },
       {
-        "source": "/datasets/a725b698-e7e2-4452-9c74-2e8d1a546d7f",
-        "destination": "/datasets/%D7%9E%D7%A2%D7%91%D7%93%D7%95%D7%AA-%D7%9E%D7%95%D7%9B%D7%A8%D7%95%D7%AA-%D7%9C%D7%91%D7%99%D7%A6%D7%95%D7%A2-%D7%91%D7%93%D7%99%D7%A7%D7%95%D7%AA-%D7%91%D7%AA%D7%97%D7%95%D7%9D-%D7%9E%D7%A2%D7%A8%D7%9B%D7%95%D7%AA-%D7%92%D7%99%D7%9C%D7%95%D7%99-%D7%95%D7%9B%D7%99%D7%91%D7%95%D7%99-%D7%90%D7%A9-%D7%95%D7%A6%D7%99%D7%95%D7%93-%D7%9B%D7%99%D7%91%D7%95%D7%99-%D7%90%D7%A9-a725b698/",
+        "source": "/datasets/e444962a-0f58-429c-bc3c-f63786be1cfe",
+        "destination": "/datasets/%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA-%D7%9E%D7%99%D7%93%D7%A2-%D7%A4%D7%A1%D7%95%D7%9C%D7%AA-%D7%A0%D7%A1%D7%A4%D7%97%D7%99%D7%9D-e444962a/",
         "type": 301
       },
       {
-        "source": "/datasets/d0ebccda-eb09-49cb-b9d3-09bd2c50592a",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%91%D7%A7%D7%A8%D7%99%D7%9D-%D7%95%D7%AA%D7%97%D7%96%D7%95%D7%A7%D7%90%D7%99-%D7%9E%D7%98%D7%A4%D7%99%D7%9D-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-d0ebccda/",
+        "source": "/datasets/bfe4e10f-8d85-4342-b068-75edabca3c79",
+        "destination": "/datasets/%D7%A2%D7%99%D7%A6%D7%95%D7%9E%D7%99%D7%9D-%D7%9B%D7%A1%D7%A4%D7%99%D7%99%D7%9D-bfe4e10f/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/6b991a56-c209-4b02-a52e-ba1c69091a4c",
+        "destination": "/datasets/%D7%93%D7%A8%D7%92%D7%AA-%D7%96%D7%99%D7%94%D7%95%D7%9D-%D7%90%D7%95%D7%95%D7%99%D7%A8-%D7%A9%D7%9C-%D7%9B%D7%9C%D7%99-%D7%A6%D7%9E-%D7%94-6b991a56/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a9d7da6b-8cb7-46a0-8da8-82b99c737781",
+        "destination": "/datasets/%D7%A8%D7%99%D7%A9%D7%99%D7%95%D7%A0%D7%95%D7%AA-%D7%A2%D7%A1%D7%A7-%D7%95%D7%94%D7%99%D7%AA%D7%A8%D7%99%D7%9D-%D7%9E%D7%A1%D7%95%D7%92%D7%99%D7%9D-%D7%A9%D7%95%D7%A0%D7%99%D7%9D-%D7%9C%D7%9E%D7%A4%D7%A2%D7%9C%D7%99%D7%9D-a9d7da6b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/14b7572d-c8f1-427a-8ef8-8069b197225d",
+        "destination": "/datasets/%D7%A0%D7%99%D7%98%D7%95%D7%A8-%D7%A0%D7%9E%D7%9C%D7%AA-%D7%94%D7%90%D7%A9-%D7%94%D7%A7%D7%98%D7%A0%D7%94-%D7%91%D7%9E%D7%A9%D7%AA%D7%9C%D7%95%D7%AA-14b7572d/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/4d95a5ed-d567-4515-bbfb-517c6c0b859f",
+        "destination": "/datasets/%D7%94%D7%9E%D7%93%D7%A8%D7%9A-%D7%93%D7%99%D7%95%D7%95%D7%97%D7%99-%D7%94%D7%A9%D7%A4%D7%A2%D7%95%D7%AA-%D7%A1%D7%91%D7%99%D7%91%D7%AA%D7%99%D7%95%D7%AA-%D7%9E%D7%93%D7%95%D7%93%D7%95%D7%AA-%D7%9E%D7%9E%D7%95%D7%A6%D7%A8%D7%99%D7%9D-4d95a5ed/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/b2370286-54f0-492d-a238-1bbdae997cb5",
+        "destination": "/datasets/%D7%A7%D7%A8%D7%A7%D7%A2%D7%95%D7%AA-%D7%9E%D7%96%D7%95%D7%94%D7%9E%D7%95%D7%AA-b2370286/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/995eb826-c471-4572-8fd3-39d92a3a9603",
+        "destination": "/datasets/%D7%90%D7%A0%D7%98%D7%A0%D7%95%D7%AA-%D7%A1%D7%9C%D7%95%D7%9C%D7%A8%D7%99%D7%95%D7%AA-%D7%A4%D7%A2%D7%99%D7%9C%D7%95%D7%AA-995eb826/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/04931a88-336c-4d95-8a13-9dc631c3e2d1",
+        "destination": "/datasets/%D7%9E%D7%A4%D7%A2%D7%9C%D7%99%D7%9D-04931a88/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/422ff747-a1ee-4e8d-b515-43417f0d80d8",
+        "destination": "/datasets/%D7%93%D7%99%D7%95%D7%95%D7%97-%D7%A2%D7%9C-%D7%AA%D7%A7%D7%9C%D7%94-%D7%9C%D7%99%D7%93%D7%99%D7%A2%D7%AA-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8-422ff747/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a3cec603-dd66-49de-af14-a612754a7b9a",
+        "destination": "/datasets/%D7%9E%D7%91%D7%A0%D7%99%D7%9D-%D7%99%D7%A8%D7%95%D7%A7%D7%99%D7%9D-a3cec603/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/005fe7c5-be59-42de-91ea-0ce3cdece35c",
+        "destination": "/datasets/%D7%9E%D7%A8%D7%A9%D7%9D-%D7%94%D7%A2%D7%95%D7%A1%D7%A7%D7%99%D7%9D-%D7%91%D7%90%D7%A1%D7%91%D7%A1%D7%98-005fe7c5/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/fecc5a5f-8e69-43f0-9c0f-6121fb93a78e",
+        "destination": "/datasets/%D7%9E%D7%93%D7%91%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-fecc5a5f/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a37765ea-d407-42e8-b757-9b70a8cf574f",
+        "destination": "/datasets/%D7%AA%D7%9B%D7%A9%D7%99%D7%A8%D7%99-%D7%94%D7%93%D7%91%D7%A8%D7%94-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-%D7%9C%D7%A9%D7%99%D7%9E%D7%95%D7%A9-a37765ea/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1e04cde0-57a5-42e0-81a0-b634bafee4d6",
+        "destination": "/datasets/%D7%9E%D7%A8%D7%A9%D7%9D-%D7%91%D7%A8%D7%99%D7%AA-%D7%94%D7%96%D7%95%D7%92%D7%99%D7%95%D7%AA-1e04cde0/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/b72acc9a-6512-4849-9529-3ce73370bff2",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%95%D7%94%D7%9C%D7%99%D7%9D-%D7%90%D7%A8%D7%A6%D7%99%D7%AA-b72acc9a/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/f312eda5-27bc-4619-8917-8072a12f14ce",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A8%D7%91%D7%A0%D7%99%D7%9D-%D7%9E%D7%95%D7%A1%D7%9E%D7%9B%D7%99%D7%9D-%D7%9C%D7%A2%D7%A8%D7%99%D7%9B%D7%AA-%D7%97%D7%95%D7%A4%D7%95%D7%AA-%D7%95%D7%A7%D7%99%D7%93%D7%95%D7%A9%D7%99%D7%9F-f312eda5/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/e6ef4310-746f-4504-867b-804520401755",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%97%D7%A7%D7%9C%D7%90%D7%99%D7%9D-%D7%9C%D7%9C%D7%90-%D7%97%D7%A9%D7%A9-%D7%A4%D7%A8%D7%99-%D7%A2%D7%A8%D7%9C%D7%94-e6ef4310/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1a49cbba-3722-4a67-9c20-9895697d0373",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%9E%D7%96%D7%95%D7%9F-%D7%95%D7%97%D7%95%D7%9E%D7%A8%D7%99-%D7%92%D7%9C%D7%9D-%D7%9E%D7%99%D7%95%D7%91%D7%90%D7%99%D7%9D-1a49cbba/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/83aba0a3-dc03-48a4-87eb-74af55b0cc5e",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%9B%D7%9C%D7%95%D7%A8%D7%99%D7%93-%D7%91%D7%9B%D7%A0%D7%A8%D7%AA-83aba0a3/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/e4c3e3d0-c4e4-497e-b2a5-43c533728624",
+        "destination": "/datasets/%D7%9B%D7%AA%D7%91-%D7%94%D7%A2%D7%AA-%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%A8%D7%95%D7%95%D7%97%D7%94-e4c3e3d0/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/205a626d-e6d7-46a0-aac2-331f9b235b03",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%99%D7%AA%D7%A8-%D7%9B%D7%9C%D7%9C%D7%99-%D7%9C%D7%90%D7%99%D7%A1%D7%95%D7%A3-%D7%94%D7%A2%D7%91%D7%A8%D7%94-%D7%90%D7%95-%D7%9E%D7%A1%D7%99%D7%A8%D7%94-%D7%A9%D7%9C-%D7%9E%D7%9B%D7%AA%D7%91%D7%99%D7%9D-205a626d/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/7ae4a3da-1c40-410b-bffb-d89f81709d12",
+        "destination": "/datasets/PLMN-codes-in-Israel-7ae4a3da/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/df60d73b-aa60-46dc-bb76-f183d6bf055c",
+        "destination": "/datasets/Israel-Numbering-Plan-df60d73b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/231bb737-cf24-443b-8975-a920b9b0d39f",
+        "destination": "/datasets/%D7%A9%D7%9B%D7%91%D7%AA-%D7%A8%D7%A6%D7%A3-%D7%90%D7%96%D7%95%D7%A8%D7%99-%D7%AA%D7%A4%D7%A7%D7%95%D7%93-%D7%9E%D7%A4%D7%A8%D7%A7-%D7%90%D7%96%D7%95%D7%A8%D7%99%D7%95%D7%AA-%D7%91%D7%AA%D7%9B%D7%A0%D7%99%D7%AA-%D7%94%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99%D7%AA-%D7%94%D7%9E%D7%A8%D7%97%D7%91%D7%99%D7%AA-231bb737/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1ba21c94-c45e-4d45-a29f-49da77e8d2b8",
+        "destination": "/datasets/%D7%9B%D7%AA%D7%91-%D7%94%D7%A2%D7%AA-%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%A8%D7%95%D7%95%D7%97%D7%94-Society-and-Welfare-journal-1ba21c94/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/00044967-eda3-4942-b87c-a796b5768526",
+        "destination": "/datasets/%D7%AA%D7%A7%D7%A0%D7%95%D7%AA-%D7%94%D7%99%D7%A8%D7%95%D7%A9%D7%94-%D7%91%D7%AA%D7%99-%D7%94%D7%93%D7%99%D7%9F-%D7%94%D7%A9%D7%A8%D7%A2%D7%99%D7%99%D7%9D-%D7%91%D7%A9%D7%A4%D7%94-%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA-00044967/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/6498e21c-a532-45c0-9812-ada23af5af82",
+        "destination": "/datasets/%D7%94%D7%97%D7%9C%D7%98%D7%95%D7%AA-%D7%95%D7%A2%D7%93%D7%AA-%D7%9B%D7%95%D7%A4%D7%A8-6498e21c/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/432ee66d-0e62-43f0-b0e6-2ff66e961a02",
+        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%AA%D7%91%D7%99%D7%A2%D7%95%D7%AA-%D7%A7%D7%98%D7%A0%D7%95%D7%AA-%D7%91%D7%97%D7%9C%D7%95%D7%A7%D7%94-%D7%9C%D7%9E%D7%97%D7%95%D7%96%D7%95%D7%AA-432ee66d/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/80189fff-17da-4ee5-994d-be68ce8ce2b1",
+        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%A2%D7%A0%D7%99%D7%99%D7%A0%D7%99-%D7%AA%D7%A2%D7%91%D7%95%D7%A8%D7%94-%D7%91%D7%97%D7%9C%D7%95%D7%A7%D7%94-%D7%9C%D7%9E%D7%97%D7%95%D7%96%D7%95%D7%AA-80189fff/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/7571aa64-9970-44d1-be04-190ba9fc386c",
+        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%94%D7%9E%D7%A9%D7%A4%D7%98-%D7%9C%D7%A2%D7%A0%D7%99%D7%99%D7%A0%D7%99-%D7%9E%D7%A9%D7%A4%D7%97%D7%94-%D7%91%D7%97%D7%9C%D7%95%D7%A7%D7%94-%D7%9C%D7%9E%D7%97%D7%95%D7%96%D7%95%D7%AA-7571aa64/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/505aa85e-a49f-4a49-aea2-4cc7b6e44e92",
+        "destination": "/datasets/%D7%A7%D7%95%D7%A0%D7%A1%D7%95%D7%9C%D7%99-%D7%9B%D7%91%D7%95%D7%93-%D7%A9%D7%9C-%D7%9E%D7%93%D7%99%D7%A0%D7%AA-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-505aa85e/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/9f0ea3dc-2e25-43f0-9b8f-10f53e23c335",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%9B%D7%A9%D7%A8%D7%95%D7%AA-%D7%91%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-%D7%94%D7%A1%D7%91%D7%99%D7%91%D7%94-9f0ea3dc/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/b08fae4e-d4b1-4936-bec0-9340ee2db9b5",
+        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%93%D7%99%D7%95%D7%A8-b08fae4e/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/83bd6cfa-cab5-4645-92a1-1a757524ce70",
+        "destination": "/datasets/%D7%A1%D7%A4%D7%A8%D7%99%D7%99%D7%AA-%D7%9E%D7%99%D7%9C%D7%95%D7%A0%D7%99-%D7%A0%D7%AA%D7%95%D7%A0%D7%99%D7%9D-%D7%98%D7%A8%D7%9E%D7%99%D7%A0%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%99%D7%AA-%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%A2%D7%A1%D7%A7-83bd6cfa/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/e9b65317-9e73-4189-b30f-004759afd070",
+        "destination": "/datasets/%D7%A1%D7%A4%D7%A8%D7%99%D7%99%D7%AA-%D7%9E%D7%99%D7%9C%D7%95%D7%A0%D7%99-%D7%A0%D7%AA%D7%95%D7%A0%D7%99%D7%9D-%D7%98%D7%A8%D7%9E%D7%99%D7%A0%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%99%D7%AA-%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%A0%D7%9B%D7%A1-e9b65317/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/d4a897f6-84bf-4560-9f28-7757bf8a0619",
+        "destination": "/datasets/%D7%A1%D7%A4%D7%A8%D7%99%D7%99%D7%AA-%D7%9E%D7%99%D7%9C%D7%95%D7%A0%D7%99-%D7%A0%D7%AA%D7%95%D7%A0%D7%99%D7%9D-%D7%98%D7%A8%D7%9E%D7%99%D7%A0%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%99%D7%AA-%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%90%D7%93%D7%9D-d4a897f6/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/94031fa3-c664-4d68-9980-27a29d313e72",
+        "destination": "/datasets/%D7%94%D7%95%D7%93%D7%A2%D7%AA-%D7%A2%D7%93%D7%9B%D7%95%D7%9F-%D7%A7%D7%93%D7%A1%D7%98%D7%A8-%D7%9C%D7%A8%D7%A9%D7%95%D7%99%D7%95%D7%AA-94031fa3/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/93af8b7b-536e-4589-9509-46536e0cd97d",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A1%D7%95%D7%9B%D7%A0%D7%99-%D7%AA%D7%99%D7%99%D7%A8%D7%95%D7%AA-%D7%9E%D7%A8%D7%A4%D7%90-93af8b7b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/776ad523-6e7b-4451-85f1-6eb123d992af",
+        "destination": "/datasets/%D7%A7%D7%95%D7%9C%D7%95%D7%AA-%D7%A7%D7%95%D7%A8%D7%90%D7%99%D7%9D-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%93%D7%A2-%D7%95%D7%94%D7%98%D7%9B%D7%A0%D7%95%D7%9C%D7%95%D7%92%D7%99%D7%94-776ad523/",
         "type": 301
       },
       {
@@ -725,8 +870,13 @@
         "type": 301
       },
       {
-        "source": "/datasets/1ac4189b-95c2-45fc-bb52-a363f01478f5",
-        "destination": "/datasets/%D7%94%D7%A1%D7%98%D7%95%D7%A8%D7%99%D7%99%D7%AA-%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%90%D7%99%D7%9B%D7%95%D7%AA-%D7%9E%D7%99%D7%9D-%D7%91%D7%A7%D7%99%D7%93%D7%95%D7%97%D7%99%D7%9D-1ac4189b/",
+        "source": "/datasets/a545d0ba-0d30-4fbc-be38-e965c5dae56b",
+        "destination": "/datasets/%D7%A4%D7%A0%D7%A7%D7%A1-%D7%94%D7%A7%D7%91%D7%9C%D7%A0%D7%99%D7%9D-%D7%94%D7%A8%D7%A9%D7%95%D7%9E%D7%99%D7%9D-a545d0ba/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/6d8bf87d-bd13-4df6-9846-d449f407b318",
+        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%94%D7%9B%D7%95%D7%A0%D7%A1-%D7%94%D7%A8%D7%A9%D7%9E%D7%99-6d8bf87d/",
         "type": 301
       },
       {
@@ -740,13 +890,118 @@
         "type": 301
       },
       {
+        "source": "/datasets/7ac4505d-dfd8-4ebf-90e5-eefdefd292de",
+        "destination": "/datasets/%D7%AA%D7%90%D7%95%D7%A0%D7%95%D7%AA-%D7%93%D7%A8%D7%9B%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%A8%D7%A9%D7%95%D7%AA-%D7%9E%D7%95%D7%A0%D7%99%D7%A6%D7%99%D7%A4%D7%9C%D7%99%D7%AA-7ac4505d/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/09cbcff5-64fc-429b-96e5-881cbcab96af",
+        "destination": "/datasets/%D7%AA%D7%90%D7%95%D7%A0%D7%95%D7%AA-%D7%93%D7%A8%D7%9B%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%90%D7%96%D7%95%D7%A8%D7%99-%D7%AA%D7%A0%D7%95%D7%A2%D7%94-09cbcff5/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5e4ffbc7-dcc1-4d0b-b158-9f720cc02f01",
+        "destination": "/datasets/%D7%9E%D7%A1%D7%95%D7%A4%D7%99%D7%9D-%D7%95%D7%9E%D7%AA%D7%A7%D7%A0%D7%99-%D7%AA%D7%A9%D7%AA%D7%99%D7%AA-%D7%9E%D7%A6%D7%91-%D7%9E%D7%AA%D7%95%D7%9B%D7%A0%D7%9F-5e4ffbc7/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/3edcd023-f7ca-43eb-928f-6fdda479c172",
+        "destination": "/datasets/%D7%9E%D7%A1%D7%95%D7%A4%D7%99%D7%9D-%D7%95%D7%9E%D7%AA%D7%A7%D7%A0%D7%99-%D7%AA%D7%A9%D7%AA%D7%99%D7%AA-%D7%9E%D7%A6%D7%91-%D7%A7%D7%99%D7%99%D7%9D-3edcd023/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/f461e9c0-1878-4b29-86bf-ad4006a82b07",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99%D7%9D-%D7%92%D7%95%D7%9C%D7%9E%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%AA%D7%95%D7%A6%D7%90%D7%95%D7%AA-%D7%A0%D7%99%D7%98%D7%95%D7%A8-%D7%A0%D7%97%D7%9C%D7%99%D7%9D-%D7%91%D7%A9%D7%A0%D7%99%D7%9D-1996-2025-f461e9c0/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a59be263-f392-46b2-b7e7-8ca0afea5dd6",
+        "destination": "/datasets/%D7%A8%D7%9B%D7%91%D7%AA-%D7%9B%D7%91%D7%93%D7%94-%D7%AA%D7%97%D7%A0%D7%95%D7%AA-%D7%A0%D7%95%D7%A1%D7%A2%D7%99%D7%9D-a59be263/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/afe246b3-1810-442d-9f82-45e2574f2923",
+        "destination": "/datasets/%D7%93%D7%95%D7%97-%D7%9E%D7%A2%D7%A0%D7%A7%D7%99%D7%9D-%D7%9C%D7%A7%D7%95%D7%9C%D7%95%D7%AA-%D7%A7%D7%95%D7%A8%D7%90%D7%99%D7%9D-%D7%90%D7%92%D7%A3-%D7%A9%D7%9C%D7%98%D7%95%D7%9F-%D7%9E%D7%A7%D7%95%D7%9E%D7%99-%D7%97%D7%98%D7%99%D7%91%D7%AA-%D7%90%D7%A0%D7%A8%D7%92%D7%99%D7%94-%D7%9E%D7%A7%D7%99%D7%99%D7%9E%D7%AA-afe246b3/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/09f0e9ee-5cef-48f7-84f6-10235e6dd9ed",
+        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%AA%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%93%D7%9C%D7%A7-09f0e9ee/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/507f46c1-20f3-445e-8063-ad9ace29bcb0",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%94%D7%AA%D7%95%D7%91%D7%A2%D7%99%D7%9D-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%A1%D7%9E%D7%9B%D7%94-%D7%9E%D7%90%D7%AA-%D7%94%D7%99%D7%95%D7%A2%D7%A5-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%9C%D7%9E%D7%9E%D7%A9%D7%9C%D7%94-507f46c1/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/46577c12-8675-4464-a5ca-473ae20e3dd9",
+        "destination": "/datasets/%D7%90%D7%9E%D7%A0%D7%95%D7%AA-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%97%D7%95%D7%A5-46577c12/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/9579874b-7a1f-4981-ae17-80e57fd22e71",
+        "destination": "/datasets/%D7%96%D7%9B%D7%90%D7%95%D7%AA-%D7%9C%D7%94%D7%A0%D7%97%D7%94-%D7%91%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94-%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%AA-9579874b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/e81d14bd-a81d-4de4-b1de-d7a0541ace02",
+        "destination": "/datasets/%D7%A0%D7%A4%D7%97%D7%99%D7%9D-%D7%99%D7%95%D7%9E%D7%99%D7%99%D7%9D-%D7%95%D7%A1%D7%A4%D7%99%D7%A7%D7%94-%D7%99%D7%95%D7%9E%D7%99%D7%AA-%D7%9E%D7%9E%D7%95%D7%A6%D7%A2%D7%AA-%D7%91%D7%AA%D7%97%D7%A0%D7%95%D7%AA-e81d14bd/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/0d51bcd2-aa52-4c7c-8e5f-96d0d193a1fb",
+        "destination": "/datasets/%D7%94%D7%A9%D7%AA%D7%9C%D7%9E%D7%95%D7%99%D7%95%D7%AA-%D7%9C%D7%9E%D7%95%D7%A8%D7%99-%D7%93%D7%A8%D7%9A-0d51bcd2/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/d0ebccda-eb09-49cb-b9d3-09bd2c50592a",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%91%D7%A7%D7%A8%D7%99%D7%9D-%D7%95%D7%AA%D7%97%D7%96%D7%95%D7%A7%D7%90%D7%99-%D7%9E%D7%98%D7%A4%D7%99%D7%9D-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-d0ebccda/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/40593d42-f3c9-4c1d-a9e9-67d72c1e7714",
+        "destination": "/datasets/%D7%93%D7%A8%D7%99%D7%A9%D7%95%D7%AA-%D7%91%D7%98%D7%99%D7%97%D7%95%D7%AA-%D7%90%D7%A9-%D7%9C%D7%94%D7%99%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%94-40593d42/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/56639c97-30ba-4307-a768-9f4b1655c68a",
+        "destination": "/datasets/%D7%9E%D7%A1%D7%92%D7%A8%D7%95%D7%AA-%D7%94%D7%A8%D7%95%D7%95%D7%97%D7%94-%D7%A9%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%A8%D7%95%D7%95%D7%97%D7%94-%D7%95%D7%94%D7%91%D7%99%D7%98%D7%97%D7%95%D7%9F-%D7%94%D7%97%D7%91%D7%A8%D7%AA%D7%99-56639c97/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/7b840685-b166-46aa-9612-883bc9d2b91e",
+        "destination": "/datasets/%D7%90%D7%95%D7%92%D7%93%D7%9F-%D7%9E%D7%97%D7%9C%D7%95%D7%AA-%D7%A0%D7%93%D7%99%D7%A8%D7%95%D7%AA-7b840685/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/4f361ce6-f30f-4629-b4ba-1ad19039e745",
+        "destination": "/datasets/%D7%A4%D7%A0%D7%A7%D7%A1-%D7%94%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D-%D7%94%D7%A1%D7%95%D7%A6%D7%99%D7%90%D7%9C%D7%99%D7%99%D7%9D-4f361ce6/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/f0b71d2d-9448-4b8b-a4ec-d1ddc8977c9c",
+        "destination": "/datasets/%D7%93%D7%A8%D7%99%D7%A9%D7%95%D7%AA-%D7%91%D7%98%D7%99%D7%97%D7%95%D7%AA-%D7%90%D7%A9-%D7%9C%D7%A8%D7%99%D7%A9%D7%95%D7%99-%D7%A2%D7%A1%D7%A7%D7%99%D7%9D-f0b71d2d/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a725b698-e7e2-4452-9c74-2e8d1a546d7f",
+        "destination": "/datasets/%D7%9E%D7%A2%D7%91%D7%93%D7%95%D7%AA-%D7%9E%D7%95%D7%9B%D7%A8%D7%95%D7%AA-%D7%9C%D7%91%D7%99%D7%A6%D7%95%D7%A2-%D7%91%D7%93%D7%99%D7%A7%D7%95%D7%AA-%D7%91%D7%AA%D7%97%D7%95%D7%9D-%D7%9E%D7%A2%D7%A8%D7%9B%D7%95%D7%AA-%D7%92%D7%99%D7%9C%D7%95%D7%99-%D7%95%D7%9B%D7%99%D7%91%D7%95%D7%99-%D7%90%D7%A9-%D7%95%D7%A6%D7%99%D7%95%D7%93-%D7%9B%D7%99%D7%91%D7%95%D7%99-%D7%90%D7%A9-a725b698/",
+        "type": 301
+      },
+      {
         "source": "/datasets/0914a18b-b2c9-4e2f-bc25-0a8dfc912acf",
         "destination": "/datasets/%D7%A2%D7%A1%D7%A7%D7%99%D7%9D-%D7%91%D7%9E%D7%A1%D7%92%D7%A8%D7%AA-%D7%94%D7%97%D7%96%D7%A8-%D7%9E%D7%A2%D7%9E-%D7%9C%D7%AA%D7%99%D7%99%D7%A8-VAT-Refund-Stores-0914a18b/",
         "type": 301
       },
       {
-        "source": "/datasets/85451410-ba71-489e-828a-9fbf90138586",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A4%D7%A8%D7%99%D7%98%D7%99%D7%9D-%D7%9C%D7%99%D7%91%D7%95%D7%90-%D7%9E%D7%A1%D7%97%D7%A8%D7%99-%D7%A9%D7%90%D7%99%D7%A9%D7%95%D7%A8%D7%9D-%D7%91%D7%AA%D7%95%D7%A7%D7%A3-%D7%9C%D7%A6%D7%95%D7%A8%D7%9A-%D7%94%D7%92%D7%A9%D7%AA-%D7%90%D7%99%D7%A9%D7%95%D7%A8-%D7%A2%D7%9C-%D7%A1%D7%9E%D7%9A-%D7%90%D7%99%D7%A9%D7%95%D7%A8-85451410/",
+        "source": "/datasets/0952e5e4-8910-477a-8ba3-cde48f4c048f",
+        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%9E%D7%A8%D7%A7%D7%97%D7%AA-%D7%94%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A7%D7%A0%D7%91%D7%99%D7%A1-%D7%A8%D7%A4%D7%95%D7%90%D7%99-0952e5e4/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/04027bcc-4d4c-4289-8088-0ecccede57f5",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%94%D7%9E%D7%95%D7%93%D7%93%D7%99%D7%9D-04027bcc/",
         "type": 301
       },
       {
@@ -755,63 +1010,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/e6ef4310-746f-4504-867b-804520401755",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%97%D7%A7%D7%9C%D7%90%D7%99%D7%9D-%D7%9C%D7%9C%D7%90-%D7%97%D7%A9%D7%A9-%D7%A4%D7%A8%D7%99-%D7%A2%D7%A8%D7%9C%D7%94-e6ef4310/",
-        "type": 301
-      },
-      {
         "source": "/datasets/aa55c19d-afdd-4ff4-8b1e-1cb0d59d2b26",
         "destination": "/datasets/%D7%9E%D7%95%D7%A8%D7%99-%D7%93%D7%A8%D7%9A-Tour-Guides-aa55c19d/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/0bfc2b7f-5ed6-426a-84de-1a6552a5c35f",
-        "destination": "/datasets/%D7%94%D7%AA%D7%97%D7%93%D7%A9%D7%95%D7%AA-%D7%A2%D7%99%D7%A8%D7%95%D7%A0%D7%99%D7%AA-0bfc2b7f/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/41c2db9f-4615-4864-af15-5350d794c99c",
-        "destination": "/datasets/%D7%93%D7%99%D7%A8%D7%95%D7%AA-%D7%94%D7%93%D7%99%D7%95%D7%A8-%D7%94%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99-41c2db9f/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/da374239-7f83-43bc-a60f-36fc8380a093",
-        "destination": "/datasets/%D7%AA%D7%A7%D7%A0%D7%95%D7%AA-%D7%94%D7%99%D7%A8%D7%95%D7%A9%D7%94-%D7%91%D7%AA%D7%99-%D7%94%D7%93%D7%99%D7%9F-%D7%94%D7%93%D7%A8%D7%95%D7%96%D7%99%D7%9D-%D7%91%D7%A9%D7%A4%D7%94-%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA-da374239/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/1e04cde0-57a5-42e0-81a0-b634bafee4d6",
-        "destination": "/datasets/%D7%9E%D7%A8%D7%A9%D7%9D-%D7%91%D7%A8%D7%99%D7%AA-%D7%94%D7%96%D7%95%D7%92%D7%99%D7%95%D7%AA-1e04cde0/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/1a49cbba-3722-4a67-9c20-9895697d0373",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%9E%D7%96%D7%95%D7%9F-%D7%95%D7%97%D7%95%D7%9E%D7%A8%D7%99-%D7%92%D7%9C%D7%9D-%D7%9E%D7%99%D7%95%D7%91%D7%90%D7%99%D7%9D-1a49cbba/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/3e4e79f7-643b-4be6-94c2-e47667d42916",
-        "destination": "/datasets/%D7%A1%D7%A4%D7%A8-%D7%A1%D7%99%D7%95%D7%95%D7%92-%D7%98%D7%95%D7%91%D7%99%D7%9F-%D7%91%D7%99%D7%A6%D7%95%D7%90-Israel-Customs-Book-for-export-3e4e79f7/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/00044967-eda3-4942-b87c-a796b5768526",
-        "destination": "/datasets/%D7%AA%D7%A7%D7%A0%D7%95%D7%AA-%D7%94%D7%99%D7%A8%D7%95%D7%A9%D7%94-%D7%91%D7%AA%D7%99-%D7%94%D7%93%D7%99%D7%9F-%D7%94%D7%A9%D7%A8%D7%A2%D7%99%D7%99%D7%9D-%D7%91%D7%A9%D7%A4%D7%94-%D7%94%D7%A2%D7%A8%D7%91%D7%99%D7%AA-00044967/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/3b1e6441-83c5-47de-a1e2-1d35063bab3d",
-        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99%D7%9D-%D7%A1%D7%98%D7%98%D7%99%D7%A1%D7%98%D7%99%D7%9D-%D7%A2%D7%9C-%D7%99%D7%91%D7%95%D7%90-%D7%98%D7%95%D7%91%D7%99%D7%9F-%D7%9C%D7%99%D7%A9%D7%A8%D7%90%D7%9C-3b1e6441/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/b5fecfa2-2dac-4cdd-b961-5553f652f2d7",
-        "destination": "/datasets/%D7%90%D7%96%D7%94%D7%A8%D7%95%D7%AA-%D7%9E%D7%A1%D7%A2-b5fecfa2/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/e00f1a81-43f0-47c2-b4bf-1468fb6bfcd2",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%91%D7%AA%D7%99%D7%9D-%D7%9E%D7%90%D7%96%D7%A0%D7%99%D7%9D-%D7%9C%D7%9E%D7%A0%D7%99%D7%A2%D7%AA-%D7%90%D7%A9%D7%A4%D7%95%D7%96-%D7%A4%D7%A1%D7%99%D7%9B%D7%99%D7%90%D7%98%D7%A8%D7%99-%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-e00f1a81/",
         "type": 301
       },
       {
@@ -825,93 +1025,23 @@
         "type": 301
       },
       {
-        "source": "/datasets/56639c97-30ba-4307-a768-9f4b1655c68a",
-        "destination": "/datasets/%D7%9E%D7%A1%D7%92%D7%A8%D7%95%D7%AA-%D7%94%D7%A8%D7%95%D7%95%D7%97%D7%94-%D7%A9%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%A8%D7%95%D7%95%D7%97%D7%94-%D7%95%D7%94%D7%91%D7%99%D7%98%D7%97%D7%95%D7%9F-%D7%94%D7%97%D7%91%D7%A8%D7%AA%D7%99-56639c97/",
+        "source": "/datasets/1e9d4542-97af-47ac-a780-f2a6b291b1f5",
+        "destination": "/datasets/%D7%AA%D7%99%D7%A7%D7%95%D7%A4%D7%99-%D7%9E%D7%A1%D7%9C%D7%A7%D7%94-%D7%9C%D7%AA%D7%97%D7%A0%D7%94-1e9d4542/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/ab746a13-c7e9-442d-a524-e4ffd1a041b0",
+        "destination": "/datasets/%D7%AA%D7%99%D7%A7%D7%95%D7%A4%D7%99-%D7%9E%D7%A1%D7%9C%D7%A7%D7%94-%D7%91%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94-%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%AA-ab746a13/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/3a4c012f-11c5-4a57-bc82-21d85c02c106",
+        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%9E%D7%95%D7%93%D7%93%D7%99%D7%9D-3a4c012f/",
         "type": 301
       },
       {
         "source": "/datasets/fa11b2f3-0796-48f8-ab84-e5540ea2b014",
         "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%9B%D7%95%D7%97-%D7%90%D7%93%D7%9D-%D7%91%D7%A8%D7%A9%D7%95%D7%99%D7%95%D7%AA-%D7%94%D7%A8%D7%95%D7%95%D7%97%D7%94-fa11b2f3/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/83aba0a3-dc03-48a4-87eb-74af55b0cc5e",
-        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%9B%D7%9C%D7%95%D7%A8%D7%99%D7%93-%D7%91%D7%9B%D7%A0%D7%A8%D7%AA-83aba0a3/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/0d51bcd2-aa52-4c7c-8e5f-96d0d193a1fb",
-        "destination": "/datasets/%D7%94%D7%A9%D7%AA%D7%9C%D7%9E%D7%95%D7%99%D7%95%D7%AA-%D7%9C%D7%9E%D7%95%D7%A8%D7%99-%D7%93%D7%A8%D7%9A-0d51bcd2/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/bc0e0381-2fdf-4c5d-af37-4d34f3c60857",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%A9%D7%99%D7%A8%D7%95%D7%AA-%D7%A9%D7%9E%D7%99%D7%A8%D7%94-%D7%90%D7%91%D7%98%D7%97%D7%94-%D7%95%D7%A0%D7%99%D7%A7%D7%99%D7%95%D7%9F-bc0e0381/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/7d475608-8609-407e-b535-72a72e24b375",
-        "destination": "/datasets/%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%9B%D7%95%D7%97-%D7%90%D7%93%D7%9D-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%99%D7%AA%D7%A8-%D7%9C%D7%94%D7%A2%D7%A1%D7%A7%D7%AA-%D7%A2%D7%92%D7%95%D7%A8%D7%A0%D7%90%D7%99-%D7%A6%D7%A8%D7%99%D7%97-7d475608/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/8152ebdf-502f-4459-81ce-e828085abb5b",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%9B%D7%97-%D7%90%D7%93%D7%9D-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-8152ebdf/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/a698417e-e51d-43cd-b82f-356d8cf9de0e",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9C%D7%A9%D7%9B%D7%95%D7%AA-%D7%A4%D7%A8%D7%98%D7%99%D7%95%D7%AA-%D7%9E%D7%95%D7%A8%D7%A9%D7%95%D7%AA-%D7%9C%D7%AA%D7%99%D7%95%D7%95%D7%9A-%D7%A2%D7%91%D7%95%D7%93%D7%94-%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D-%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99%D7%9D-%D7%91%D7%9C%D7%91%D7%93-a698417e/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/7ac4505d-dfd8-4ebf-90e5-eefdefd292de",
-        "destination": "/datasets/%D7%AA%D7%90%D7%95%D7%A0%D7%95%D7%AA-%D7%93%D7%A8%D7%9B%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%A8%D7%A9%D7%95%D7%AA-%D7%9E%D7%95%D7%A0%D7%99%D7%A6%D7%99%D7%A4%D7%9C%D7%99%D7%AA-7ac4505d/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/09cbcff5-64fc-429b-96e5-881cbcab96af",
-        "destination": "/datasets/%D7%AA%D7%90%D7%95%D7%A0%D7%95%D7%AA-%D7%93%D7%A8%D7%9B%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%90%D7%96%D7%95%D7%A8%D7%99-%D7%AA%D7%A0%D7%95%D7%A2%D7%94-09cbcff5/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/5f56810c-8fa2-4116-95f7-37dd5ca2e61f",
-        "destination": "/datasets/%D7%9E%D7%A0%D7%94%D7%A8%D7%95%D7%AA-5f56810c/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/e81d14bd-a81d-4de4-b1de-d7a0541ace02",
-        "destination": "/datasets/%D7%A0%D7%A4%D7%97%D7%99%D7%9D-%D7%99%D7%95%D7%9E%D7%99%D7%99%D7%9D-%D7%95%D7%A1%D7%A4%D7%99%D7%A7%D7%94-%D7%99%D7%95%D7%9E%D7%99%D7%AA-%D7%9E%D7%9E%D7%95%D7%A6%D7%A2%D7%AA-%D7%91%D7%AA%D7%97%D7%A0%D7%95%D7%AA-e81d14bd/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/5de14d12-d5d7-475d-ade1-5dbd0ef9d086",
-        "destination": "/datasets/%D7%9E%D7%93%D7%99%D7%93%D7%95%D7%AA-%D7%90%D7%99%D7%9B%D7%95%D7%AA-%D7%91%D7%9E%D7%A2%D7%99%D7%99%D7%A0%D7%95%D7%AA-5de14d12/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/4dd3bb28-a4ef-4ab5-bb57-fd0bd0b79f8f",
-        "destination": "/datasets/%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%97%D7%95%D7%A9%D7%91%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%A6%D7%95-%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%A2%D7%9C-%D7%9E%D7%97%D7%99%D7%A8%D7%99-%D7%9E%D7%A6%D7%A8%D7%9B%D7%99%D7%9D-%D7%95%D7%A9%D7%99%D7%A8%D7%95%D7%AA%D7%99%D7%9D-%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%A8%D7%91%D7%99%D7%99%D7%9D-%D7%9C%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%A0%D7%A4%D7%98-%D7%91%D7%A9%D7%A2%D7%A8-%D7%91%D7%99%D7%AA-%D7%96%D7%99%D7%A7%D7%95%D7%A7-4dd3bb28/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/61dc38b6-803e-476e-a1ac-0679c354b2ef",
-        "destination": "/datasets/%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%AA%D7%99%D7%90%D7%95%D7%A8%D7%98%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%93%D7%9C%D7%A7-%D7%A9%D7%90%D7%99%D7%A0%D7%9D-%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-61dc38b6/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/263e3397-aac1-4f8a-b1e3-caff7eabcbff",
-        "destination": "/datasets/%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%97%D7%A0%D7%94-%D7%95%D7%A1%D7%A2-263e3397/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/b2f22645-5068-487b-82d3-78e3490ef49d",
-        "destination": "/datasets/%D7%9E%D7%99%D7%A1%D7%99-%D7%94%D7%93%D7%9C%D7%A7-%D7%91%D7%9C%D7%95-b2f22645/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/3edcd023-f7ca-43eb-928f-6fdda479c172",
-        "destination": "/datasets/%D7%9E%D7%A1%D7%95%D7%A4%D7%99%D7%9D-%D7%95%D7%9E%D7%AA%D7%A7%D7%A0%D7%99-%D7%AA%D7%A9%D7%AA%D7%99%D7%AA-%D7%9E%D7%A6%D7%91-%D7%A7%D7%99%D7%99%D7%9D-3edcd023/",
         "type": 301
       },
       {
@@ -937,6 +1067,16 @@
       {
         "source": "/datasets/a53613b2-f5da-48d1-86d8-1a8094c568af",
         "destination": "/datasets/%D7%93%D7%95%D7%97-%D7%A7%D7%98%D7%9C%D7%95%D7%92-%D7%9E%D7%A2%D7%99%D7%99%D7%A0%D7%95%D7%AA-a53613b2/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5de14d12-d5d7-475d-ade1-5dbd0ef9d086",
+        "destination": "/datasets/%D7%9E%D7%93%D7%99%D7%93%D7%95%D7%AA-%D7%90%D7%99%D7%9B%D7%95%D7%AA-%D7%91%D7%9E%D7%A2%D7%99%D7%99%D7%A0%D7%95%D7%AA-5de14d12/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/aa009a0c-8103-4641-9ff4-247b5e1fe303",
+        "destination": "/datasets/%D7%94%D7%9B%D7%A0%D7%A1%D7%95%D7%AA-%D7%95%D7%92%D7%91%D7%99%D7%99%D7%94-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D-aa009a0c/",
         "type": 301
       },
       {
@@ -975,53 +1115,28 @@
         "type": 301
       },
       {
-        "source": "/datasets/5e4ffbc7-dcc1-4d0b-b158-9f720cc02f01",
-        "destination": "/datasets/%D7%9E%D7%A1%D7%95%D7%A4%D7%99%D7%9D-%D7%95%D7%9E%D7%AA%D7%A7%D7%A0%D7%99-%D7%AA%D7%A9%D7%AA%D7%99%D7%AA-%D7%9E%D7%A6%D7%91-%D7%9E%D7%AA%D7%95%D7%9B%D7%A0%D7%9F-5e4ffbc7/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/aa7747c4-fd59-4563-805a-d30e2fd431c8",
-        "destination": "/datasets/%D7%A1%D7%A4%D7%99%D7%A8%D7%95%D7%AA-%D7%AA%D7%A0%D7%95%D7%A2%D7%94-aa7747c4/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/46c46b18-970b-4812-925e-906e4e56ad51",
-        "destination": "/datasets/%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99%D7%AA-%D7%9C%D7%9E%D7%AA%D7%A2-%D7%9F-%D7%9E%D7%98%D7%A8%D7%95%D7%A4%D7%95%D7%9C%D7%99%D7%9F-%D7%AA-%D7%90-2040-46c46b18/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/a59be263-f392-46b2-b7e7-8ca0afea5dd6",
-        "destination": "/datasets/%D7%A8%D7%9B%D7%91%D7%AA-%D7%9B%D7%91%D7%93%D7%94-%D7%AA%D7%97%D7%A0%D7%95%D7%AA-%D7%A0%D7%95%D7%A1%D7%A2%D7%99%D7%9D-a59be263/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/5f6d04bf-6da7-4dc3-ac84-2c00c032c8d0",
-        "destination": "/datasets/%D7%9E%D7%A0%D7%94%D7%A8%D7%95%D7%AA-%D7%A8%D7%9B%D7%91%D7%AA-%D7%A7%D7%9C%D7%94-5f6d04bf/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/4ba66a37-1d2e-466e-89b1-c604ef641dca",
-        "destination": "/datasets/%D7%9E%D7%A0%D7%94%D7%A8%D7%95%D7%AA-%D7%A8%D7%9B%D7%91%D7%AA-%D7%9B%D7%91%D7%93%D7%94-4ba66a37/",
-        "type": 301
-      },
-      {
         "source": "/datasets/ee626064-7d09-401c-9f32-d5d8947cfc6e",
         "destination": "/datasets/%D7%A9%D7%9B%D7%91%D7%95%D7%AA-%D7%9E%D7%99%D7%93%D7%A2-%D7%92%D7%99%D7%90%D7%95%D7%92%D7%A8%D7%A4%D7%99-GIS-%D7%A9%D7%9C-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%91%D7%99%D7%A0%D7%95%D7%99-%D7%95%D7%94%D7%A9%D7%99%D7%9B%D7%95%D7%9F-ee626064/",
         "type": 301
       },
       {
-        "source": "/datasets/cdd75af3-b849-4726-8e2e-1b23e81842bc",
-        "destination": "/datasets/%D7%93%D7%99%D7%A4%D7%95-%D7%9E%D7%98%D7%A8%D7%95-cdd75af3/",
+        "source": "/datasets/4dd3bb28-a4ef-4ab5-bb57-fd0bd0b79f8f",
+        "destination": "/datasets/%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%97%D7%95%D7%A9%D7%91%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%A6%D7%95-%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%A2%D7%9C-%D7%9E%D7%97%D7%99%D7%A8%D7%99-%D7%9E%D7%A6%D7%A8%D7%9B%D7%99%D7%9D-%D7%95%D7%A9%D7%99%D7%A8%D7%95%D7%AA%D7%99%D7%9D-%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%A8%D7%91%D7%99%D7%99%D7%9D-%D7%9C%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%A0%D7%A4%D7%98-%D7%91%D7%A9%D7%A2%D7%A8-%D7%91%D7%99%D7%AA-%D7%96%D7%99%D7%A7%D7%95%D7%A7-4dd3bb28/",
         "type": 301
       },
       {
-        "source": "/datasets/7cac04c9-d84d-4966-83a1-ef5839e522f0",
-        "destination": "/datasets/%D7%93%D7%99%D7%A4%D7%95-%D7%A8%D7%A7-%D7%9C-7cac04c9/",
+        "source": "/datasets/61dc38b6-803e-476e-a1ac-0679c354b2ef",
+        "destination": "/datasets/%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%AA%D7%99%D7%90%D7%95%D7%A8%D7%98%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%93%D7%9C%D7%A7-%D7%A9%D7%90%D7%99%D7%A0%D7%9D-%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-61dc38b6/",
         "type": 301
       },
       {
-        "source": "/datasets/9f0ea3dc-2e25-43f0-9b8f-10f53e23c335",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%9B%D7%A9%D7%A8%D7%95%D7%AA-%D7%91%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-%D7%94%D7%A1%D7%91%D7%99%D7%91%D7%94-9f0ea3dc/",
+        "source": "/datasets/b2f22645-5068-487b-82d3-78e3490ef49d",
+        "destination": "/datasets/%D7%9E%D7%99%D7%A1%D7%99-%D7%94%D7%93%D7%9C%D7%A7-%D7%91%D7%9C%D7%95-b2f22645/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/965b52b6-7267-45d9-bccd-020416fbcfb5",
+        "destination": "/datasets/%D7%93%D7%95-%D7%97-%D7%9E%D7%94%D7%99%D7%A8%D7%95%D7%AA-%D7%94%D7%A9%D7%97%D7%A8%D7%95%D7%A8-965b52b6/",
         "type": 301
       },
       {
@@ -1030,8 +1145,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/965b52b6-7267-45d9-bccd-020416fbcfb5",
-        "destination": "/datasets/%D7%93%D7%95-%D7%97-%D7%9E%D7%94%D7%99%D7%A8%D7%95%D7%AA-%D7%94%D7%A9%D7%97%D7%A8%D7%95%D7%A8-965b52b6/",
+        "source": "/datasets/15fd7d7f-da3a-461e-94dd-1dfbbec52a22",
+        "destination": "/datasets/%D7%93%D7%A8%D7%99%D7%A9%D7%95%D7%AA-%D7%97%D7%95%D7%A7%D7%99%D7%95%D7%AA-%D7%99%D7%91%D7%95%D7%90-%D7%95%D7%99%D7%A6%D7%95%D7%90-%D7%98%D7%95%D7%91%D7%99%D7%9F-15fd7d7f/",
         "type": 301
       },
       {
@@ -1060,48 +1175,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/a98fbabc-acfd-4cf4-9c90-5102246ee267",
-        "destination": "/datasets/%D7%9E%D7%98%D7%A8%D7%95-%D7%A7%D7%95%D7%95%D7%99%D7%9D-%D7%91%D7%9E%D7%98%D7%A8%D7%95%D7%A4%D7%95%D7%9C%D7%99%D7%9F-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-a98fbabc/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/4f361ce6-f30f-4629-b4ba-1ad19039e745",
-        "destination": "/datasets/%D7%A4%D7%A0%D7%A7%D7%A1-%D7%94%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D-%D7%94%D7%A1%D7%95%D7%A6%D7%99%D7%90%D7%9C%D7%99%D7%99%D7%9D-4f361ce6/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/4eef54bc-a050-4639-a1f8-81b2b83a6bba",
-        "destination": "/datasets/%D7%93%D7%95%D7%97%D7%95%D7%AA-%D7%9E%D7%91%D7%95%D7%A7%D7%A8%D7%99%D7%9D-%D7%A9%D7%9C-%D7%94%D7%A8%D7%A9%D7%95%D7%99%D7%95%D7%AA-%D7%94%D7%9E%D7%A7%D7%95%D7%9E%D7%99%D7%95%D7%AA-%D7%9C%D7%A4%D7%99-%D7%A9%D7%A0%D7%99%D7%9D-4eef54bc/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/1d2d0ec1-bcdb-41dd-a8bc-0d1189cbcf78",
-        "destination": "/datasets/%D7%92%D7%95%D7%A9%D7%99%D7%9D-shape-1d2d0ec1/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/cf44567a-16aa-4f79-ac3c-527de2338b09",
-        "destination": "/datasets/%D7%9E%D7%A4%D7%AA%D7%97%D7%95%D7%AA-%D7%92%D7%95%D7%A9%D7%99%D7%9D-shape-cf44567a/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/dff8a168-af6c-4e0f-bbe3-c4bd3646084c",
-        "destination": "/datasets/%D7%97%D7%9C%D7%A7%D7%95%D7%AA-shape-dff8a168/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/7a2d683b-10fd-4f39-ba91-efa9db23c663",
-        "destination": "/datasets/%D7%A9%D7%9B%D7%91%D7%AA-%D7%97%D7%9C%D7%A7%D7%95%D7%AA-%D7%A9%D7%95%D7%9E%D7%94-7a2d683b/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/200b7541-b11b-4b35-b350-a90e4d7fe25c",
-        "destination": "/datasets/%D7%A9%D7%9B%D7%91%D7%AA-%D7%92%D7%95%D7%A9%D7%99-%D7%A9%D7%95%D7%9E%D7%94-200b7541/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/409c1d81-feea-4729-b37d-796fba3f8658",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%95%D7%9E%D7%97%D7%99%D7%9D-%D7%9C%D7%91%D7%AA%D7%99-%D7%9E%D7%A9%D7%A4%D7%98-409c1d81/",
+        "source": "/datasets/48cb43dd-ae45-43a2-979d-f93aa985ff96",
+        "destination": "/datasets/%D7%AA%D7%A9%D7%9C%D7%95%D7%9E%D7%99-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%A4%D7%A0%D7%99%D7%9D-%D7%A9%D7%94%D7%95%D7%A2%D7%91%D7%A8%D7%95-48cb43dd/",
         "type": 301
       },
       {
@@ -1110,13 +1185,228 @@
         "type": 301
       },
       {
-        "source": "/datasets/93af8b7b-536e-4589-9509-46536e0cd97d",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A1%D7%95%D7%9B%D7%A0%D7%99-%D7%AA%D7%99%D7%99%D7%A8%D7%95%D7%AA-%D7%9E%D7%A8%D7%A4%D7%90-93af8b7b/",
+        "source": "/datasets/b5fecfa2-2dac-4cdd-b961-5553f652f2d7",
+        "destination": "/datasets/%D7%90%D7%96%D7%94%D7%A8%D7%95%D7%AA-%D7%9E%D7%A1%D7%A2-b5fecfa2/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/409c1d81-feea-4729-b37d-796fba3f8658",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%95%D7%9E%D7%97%D7%99%D7%9D-%D7%9C%D7%91%D7%AA%D7%99-%D7%9E%D7%A9%D7%A4%D7%98-409c1d81/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/4bee0109-501e-4ae0-aa9e-a70f713b84d0",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%99%D7%91%D7%99-%D7%94%D7%A2%D7%93%D7%A4%D7%94-%D7%A7%D7%99%D7%99%D7%9E%D7%99%D7%9D-4bee0109/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/3bf88891-4cb3-4288-81ef-bad6a9f8d625",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%99%D7%91%D7%99%D7%9D-%D7%9E%D7%94%D7%99%D7%A8%D7%99%D7%9D-3bf88891/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/08645753-6d8b-4bb3-be0f-9cec2cd7557a",
+        "destination": "/datasets/%D7%9E%D7%99%D7%9C%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%A1%D7%98%D7%A8-Code-Lists-08645753/",
         "type": 301
       },
       {
         "source": "/datasets/63445be8-e05d-4ab4-81b6-dfa241388f8e",
         "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%95%D7%9E%D7%97%D7%99%D7%9D-%D7%9C%D7%91%D7%AA%D7%99-%D7%9E%D7%A9%D7%A4%D7%98-63445be8/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/3e4e79f7-643b-4be6-94c2-e47667d42916",
+        "destination": "/datasets/%D7%A1%D7%A4%D7%A8-%D7%A1%D7%99%D7%95%D7%95%D7%92-%D7%98%D7%95%D7%91%D7%99%D7%9F-%D7%91%D7%99%D7%A6%D7%95%D7%90-Israel-Customs-Book-for-export-3e4e79f7/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a52c0585-8af8-42bd-8c5c-03c6550682ea",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%95%D7%AA-%D7%94%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D-%D7%A8%D7%A9%D7%9D-%D7%94%D7%94%D7%A7%D7%93%D7%A9%D7%95%D7%AA-a52c0585/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/37c93c3e-e536-4abd-aedf-2813bfc74a4c",
+        "destination": "/datasets/%D7%A8%D7%9B%D7%91%D7%AA-%D7%9B%D7%91%D7%93%D7%94-%D7%AA%D7%93%D7%99%D7%A8%D7%95%D7%AA-%D7%A9%D7%A2%D7%AA%D7%99%D7%AA-2026-37c93c3e/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a416609e-f68a-4fea-b278-657f92bfbe73",
+        "destination": "/datasets/%D7%9C%D7%A9%D7%9B%D7%95%D7%AA-%D7%9E%D7%99%D7%93%D7%A2-Tourist-Information-a416609e/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1d2d0ec1-bcdb-41dd-a8bc-0d1189cbcf78",
+        "destination": "/datasets/%D7%92%D7%95%D7%A9%D7%99%D7%9D-shape-1d2d0ec1/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/dff8a168-af6c-4e0f-bbe3-c4bd3646084c",
+        "destination": "/datasets/%D7%97%D7%9C%D7%A7%D7%95%D7%AA-shape-dff8a168/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/cf44567a-16aa-4f79-ac3c-527de2338b09",
+        "destination": "/datasets/%D7%9E%D7%A4%D7%AA%D7%97%D7%95%D7%AA-%D7%92%D7%95%D7%A9%D7%99%D7%9D-shape-cf44567a/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/200b7541-b11b-4b35-b350-a90e4d7fe25c",
+        "destination": "/datasets/%D7%A9%D7%9B%D7%91%D7%AA-%D7%92%D7%95%D7%A9%D7%99-%D7%A9%D7%95%D7%9E%D7%94-200b7541/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/7a2d683b-10fd-4f39-ba91-efa9db23c663",
+        "destination": "/datasets/%D7%A9%D7%9B%D7%91%D7%AA-%D7%97%D7%9C%D7%A7%D7%95%D7%AA-%D7%A9%D7%95%D7%9E%D7%94-7a2d683b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/79deed28-e923-41e1-a1ec-96dd5d1d8cae",
+        "destination": "/datasets/%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA-%D7%AA%D7%AA-%D7%92-79deed28/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/65dafbb0-1fbe-4a4c-bd59-71eadcac3995",
+        "destination": "/datasets/%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA-%D7%AA%D7%A6-%D7%A8-65dafbb0/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/9fac2d91-4abc-4cd8-a794-d2c4fa9db1e4",
+        "destination": "/datasets/%D7%A6%D7%99%D7%95%D7%93-%D7%90%D7%9C%D7%97%D7%95%D7%98%D7%99-%D7%A4%D7%A8%D7%99%D7%98%D7%99%D7%9D-%D7%91%D7%99%D7%91%D7%95%D7%90-%D7%90%D7%99%D7%A9%D7%99-%D7%A9%D7%A7%D7%99%D7%91%D7%9C%D7%95-%D7%90%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%AA%D7%A7%D7%A9%D7%95%D7%A8%D7%AA-9fac2d91/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/fdac16cf-0f39-487d-b5e0-fd20cc43b112",
+        "destination": "/datasets/%D7%A6%D7%99%D7%95%D7%93-%D7%90%D7%9C%D7%97%D7%95%D7%98%D7%99-%D7%A4%D7%A8%D7%99%D7%98%D7%99%D7%9D-%D7%91%D7%99%D7%91%D7%95%D7%90-%D7%90%D7%99%D7%A9%D7%99-%D7%A9%D7%9C%D7%90-%D7%A7%D7%99%D7%91%D7%9C%D7%95-%D7%90%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%AA%D7%A7%D7%A9%D7%95%D7%A8%D7%AA-fdac16cf/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1745d2f8-1cff-4ef6-bd57-427ac7b9addb",
+        "destination": "/datasets/%D7%90%D7%A9%D7%9B%D7%95%D7%9C%D7%95%D7%AA-%D7%AA%D7%97-%D7%A6-1745d2f8/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/626b0931-8385-4f62-87e5-cadae3379754",
+        "destination": "/datasets/%D7%AA%D7%9B%D7%A0%D7%95%D7%9F-%D7%9E%D7%95%D7%9C-%D7%91%D7%99%D7%A6%D7%95%D7%A2-%D7%A0%D7%A1%D7%99%D7%A2%D7%95%D7%AA-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1%D7%99%D7%9D-%D7%91%D7%A8%D7%9E%D7%AA-%D7%A0%D7%A1%D7%99%D7%A2%D7%94-%D7%91%D7%95%D7%93%D7%93%D7%AA-626b0931/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/e00f1a81-43f0-47c2-b4bf-1468fb6bfcd2",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%91%D7%AA%D7%99%D7%9D-%D7%9E%D7%90%D7%96%D7%A0%D7%99%D7%9D-%D7%9C%D7%9E%D7%A0%D7%99%D7%A2%D7%AA-%D7%90%D7%A9%D7%A4%D7%95%D7%96-%D7%A4%D7%A1%D7%99%D7%9B%D7%99%D7%90%D7%98%D7%A8%D7%99-%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-e00f1a81/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/eb26b8f9-213f-4bd6-90c1-1a3c65b82c72",
+        "destination": "/datasets/%D7%A0%D7%A1%D7%95%D7%A2%D7%94-%D7%91%D7%A7%D7%95%D7%95%D7%99-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1-eb26b8f9/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/e4a5e2d7-6668-42d0-b6c8-4a64f246242a",
+        "destination": "/datasets/%D7%AA%D7%9B%D7%A0%D7%95%D7%9F-%D7%95%D7%91%D7%99%D7%A6%D7%95%D7%A2-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1%D7%99%D7%9D-e4a5e2d7/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/2b2882aa-5258-4ef4-bcb2-9747dbb62890",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%9F-%D7%90%D7%97%D7%A8%D7%95%D7%9F-%D7%90%D7%99%D7%9B%D7%95%D7%AA-%D7%9E%D7%99%D7%9D-%D7%91%D7%A7%D7%99%D7%93%D7%95%D7%97%D7%99%D7%9D-2b2882aa/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a7e4c07e-8898-414c-91eb-e1f9ed3eb4e6",
+        "destination": "/datasets/%D7%A1%D7%A0%D7%99%D7%A4%D7%99-%D7%94%D7%A1%D7%9C-%D7%A9%D7%9C-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-a7e4c07e/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/013bf5b9-c7ff-4282-b402-73ed20deeacc",
+        "destination": "/datasets/%D7%A0%D7%A7%D7%95%D7%93%D7%95%D7%AA-%D7%9E%D7%9B%D7%99%D7%A8%D7%94-%D7%95%D7%9E%D7%97%D7%99%D7%A8%D7%99%D7%9D-%D7%9E%D7%A8%D7%91%D7%99%D7%99%D7%9D-%D7%A9%D7%9C-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%9E%D7%96%D7%95%D7%9F-%D7%9E%D7%99%D7%95%D7%91%D7%90%D7%99%D7%9D-013bf5b9/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/c11b5d08-411b-4e54-b267-f1bd58a00dd2",
+        "destination": "/datasets/%D7%90%D7%99%D7%A8%D7%95%D7%A2%D7%99%D7%9D-%D7%9C%D7%A4%D7%99-%D7%9E%D7%97%D7%95%D7%96-c11b5d08/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/993ed1f3-0a55-4c31-addc-f15f30ce9790",
+        "destination": "/datasets/%D7%AA%D7%99%D7%A7-%D7%94%D7%AA%D7%A2%D7%A8%D7%91%D7%95%D7%AA-993ed1f3/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1ac4189b-95c2-45fc-bb52-a363f01478f5",
+        "destination": "/datasets/%D7%94%D7%A1%D7%98%D7%95%D7%A8%D7%99%D7%99%D7%AA-%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%90%D7%99%D7%9B%D7%95%D7%AA-%D7%9E%D7%99%D7%9D-%D7%91%D7%A7%D7%99%D7%93%D7%95%D7%97%D7%99%D7%9D-1ac4189b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/85451410-ba71-489e-828a-9fbf90138586",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A4%D7%A8%D7%99%D7%98%D7%99%D7%9D-%D7%9C%D7%99%D7%91%D7%95%D7%90-%D7%9E%D7%A1%D7%97%D7%A8%D7%99-%D7%A9%D7%90%D7%99%D7%A9%D7%95%D7%A8%D7%9D-%D7%91%D7%AA%D7%95%D7%A7%D7%A3-%D7%9C%D7%A6%D7%95%D7%A8%D7%9A-%D7%94%D7%92%D7%A9%D7%AA-%D7%90%D7%99%D7%A9%D7%95%D7%A8-%D7%A2%D7%9C-%D7%A1%D7%9E%D7%9A-%D7%90%D7%99%D7%A9%D7%95%D7%A8-85451410/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/bc0e0381-2fdf-4c5d-af37-4d34f3c60857",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%A9%D7%99%D7%A8%D7%95%D7%AA-%D7%A9%D7%9E%D7%99%D7%A8%D7%94-%D7%90%D7%91%D7%98%D7%97%D7%94-%D7%95%D7%A0%D7%99%D7%A7%D7%99%D7%95%D7%9F-bc0e0381/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/7d475608-8609-407e-b535-72a72e24b375",
+        "destination": "/datasets/%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%9B%D7%95%D7%97-%D7%90%D7%93%D7%9D-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%99%D7%AA%D7%A8-%D7%9C%D7%94%D7%A2%D7%A1%D7%A7%D7%AA-%D7%A2%D7%92%D7%95%D7%A8%D7%A0%D7%90%D7%99-%D7%A6%D7%A8%D7%99%D7%97-7d475608/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/8152ebdf-502f-4459-81ce-e828085abb5b",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A7%D7%91%D7%9C%D7%A0%D7%99-%D7%9B%D7%97-%D7%90%D7%93%D7%9D-%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-8152ebdf/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a698417e-e51d-43cd-b82f-356d8cf9de0e",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9C%D7%A9%D7%9B%D7%95%D7%AA-%D7%A4%D7%A8%D7%98%D7%99%D7%95%D7%AA-%D7%9E%D7%95%D7%A8%D7%A9%D7%95%D7%AA-%D7%9C%D7%AA%D7%99%D7%95%D7%95%D7%9A-%D7%A2%D7%91%D7%95%D7%93%D7%94-%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D-%D7%99%D7%A9%D7%A8%D7%90%D7%9C%D7%99%D7%9D-%D7%91%D7%9C%D7%91%D7%93-a698417e/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5f56810c-8fa2-4116-95f7-37dd5ca2e61f",
+        "destination": "/datasets/%D7%9E%D7%A0%D7%94%D7%A8%D7%95%D7%AA-5f56810c/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/263e3397-aac1-4f8a-b1e3-caff7eabcbff",
+        "destination": "/datasets/%D7%97%D7%A0%D7%99%D7%95%D7%A0%D7%99-%D7%97%D7%A0%D7%94-%D7%95%D7%A1%D7%A2-263e3397/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/aa7747c4-fd59-4563-805a-d30e2fd431c8",
+        "destination": "/datasets/%D7%A1%D7%A4%D7%99%D7%A8%D7%95%D7%AA-%D7%AA%D7%A0%D7%95%D7%A2%D7%94-aa7747c4/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/46c46b18-970b-4812-925e-906e4e56ad51",
+        "destination": "/datasets/%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99%D7%AA-%D7%9C%D7%9E%D7%AA%D7%A2-%D7%9F-%D7%9E%D7%98%D7%A8%D7%95%D7%A4%D7%95%D7%9C%D7%99%D7%9F-%D7%AA-%D7%90-2040-46c46b18/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5f6d04bf-6da7-4dc3-ac84-2c00c032c8d0",
+        "destination": "/datasets/%D7%9E%D7%A0%D7%94%D7%A8%D7%95%D7%AA-%D7%A8%D7%9B%D7%91%D7%AA-%D7%A7%D7%9C%D7%94-5f6d04bf/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/4ba66a37-1d2e-466e-89b1-c604ef641dca",
+        "destination": "/datasets/%D7%9E%D7%A0%D7%94%D7%A8%D7%95%D7%AA-%D7%A8%D7%9B%D7%91%D7%AA-%D7%9B%D7%91%D7%93%D7%94-4ba66a37/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/cdd75af3-b849-4726-8e2e-1b23e81842bc",
+        "destination": "/datasets/%D7%93%D7%99%D7%A4%D7%95-%D7%9E%D7%98%D7%A8%D7%95-cdd75af3/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/7cac04c9-d84d-4966-83a1-ef5839e522f0",
+        "destination": "/datasets/%D7%93%D7%99%D7%A4%D7%95-%D7%A8%D7%A7-%D7%9C-7cac04c9/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a98fbabc-acfd-4cf4-9c90-5102246ee267",
+        "destination": "/datasets/%D7%9E%D7%98%D7%A8%D7%95-%D7%A7%D7%95%D7%95%D7%99%D7%9D-%D7%91%D7%9E%D7%98%D7%A8%D7%95%D7%A4%D7%95%D7%9C%D7%99%D7%9F-%D7%99%D7%A8%D7%95%D7%A9%D7%9C%D7%99%D7%9D-a98fbabc/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/4eef54bc-a050-4639-a1f8-81b2b83a6bba",
+        "destination": "/datasets/%D7%93%D7%95%D7%97%D7%95%D7%AA-%D7%9E%D7%91%D7%95%D7%A7%D7%A8%D7%99%D7%9D-%D7%A9%D7%9C-%D7%94%D7%A8%D7%A9%D7%95%D7%99%D7%95%D7%AA-%D7%94%D7%9E%D7%A7%D7%95%D7%9E%D7%99%D7%95%D7%AA-%D7%9C%D7%A4%D7%99-%D7%A9%D7%A0%D7%99%D7%9D-4eef54bc/",
         "type": 301
       },
       {
@@ -1130,28 +1420,8 @@
         "type": 301
       },
       {
-        "source": "/datasets/0952e5e4-8910-477a-8ba3-cde48f4c048f",
-        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%9E%D7%A8%D7%A7%D7%97%D7%AA-%D7%94%D7%9E%D7%95%D7%A8%D7%A9%D7%99%D7%9D-%D7%9C%D7%9E%D7%9B%D7%95%D7%A8-%D7%A7%D7%A0%D7%91%D7%99%D7%A1-%D7%A8%D7%A4%D7%95%D7%90%D7%99-0952e5e4/",
-        "type": 301
-      },
-      {
         "source": "/datasets/4eaa3676-34ea-4c88-8980-dd64cba86411",
         "destination": "/datasets/%D7%90%D7%A9%D7%A8%D7%95%D7%AA-%D7%9B%D7%A0%D7%99%D7%A1%D7%94-%D7%9C%D7%96%D7%A8%D7%99%D7%9D-%D7%9C%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%91%D7%90%D7%A9%D7%A8%D7%95%D7%AA-%D7%91-2-4eaa3676/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/65dafbb0-1fbe-4a4c-bd59-71eadcac3995",
-        "destination": "/datasets/%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA-%D7%AA%D7%A6-%D7%A8-65dafbb0/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/79deed28-e923-41e1-a1ec-96dd5d1d8cae",
-        "destination": "/datasets/%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA-%D7%AA%D7%AA-%D7%92-79deed28/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/94031fa3-c664-4d68-9980-27a29d313e72",
-        "destination": "/datasets/%D7%94%D7%95%D7%93%D7%A2%D7%AA-%D7%A2%D7%93%D7%9B%D7%95%D7%9F-%D7%A7%D7%93%D7%A1%D7%98%D7%A8-%D7%9C%D7%A8%D7%A9%D7%95%D7%99%D7%95%D7%AA-94031fa3/",
         "type": 301
       },
       {
@@ -1162,6 +1432,11 @@
       {
         "source": "/datasets/069357eb-bcc9-466c-a515-ce6d0a81462f",
         "destination": "/datasets/%D7%9E%D7%99%D7%A4%D7%95%D7%99-%D7%9E%D7%90%D7%92%D7%A8%D7%99-%D7%9E%D7%99%D7%93%D7%A2-%D7%91%D7%9E%D7%A9%D7%A8%D7%93%D7%99-%D7%94%D7%9E%D7%9E%D7%A9%D7%9C%D7%94-069357eb/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5a9278c8-fa76-46e1-bf2d-0368078c9cc7",
+        "destination": "/datasets/%D7%9E%D7%90%D7%A4%D7%99%D7%99%D7%A0%D7%99-%D7%9E%D7%95%D7%A1%D7%93%D7%95%D7%AA-%D7%97%D7%99%D7%A0%D7%95%D7%9A-%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%97%D7%99%D7%A0%D7%95%D7%9A-5a9278c8/",
         "type": 301
       },
       {
@@ -1400,53 +1675,13 @@
         "type": 301
       },
       {
-        "source": "/datasets/a7e4c07e-8898-414c-91eb-e1f9ed3eb4e6",
-        "destination": "/datasets/%D7%A1%D7%A0%D7%99%D7%A4%D7%99-%D7%94%D7%A1%D7%9C-%D7%A9%D7%9C-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-a7e4c07e/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/08645753-6d8b-4bb3-be0f-9cec2cd7557a",
-        "destination": "/datasets/%D7%9E%D7%99%D7%9C%D7%95%D7%A0%D7%99-%D7%9E%D7%90%D7%A1%D7%98%D7%A8-Code-Lists-08645753/",
-        "type": 301
-      },
-      {
         "source": "/datasets/89fbf87e-6bc0-4e26-acc7-a288c31b12a1",
         "destination": "/datasets/%D7%9E%D7%97%D7%99%D7%A8%D7%99-%D7%9E%D7%95%D7%A6%D7%A8%D7%99-%D7%A6%D7%A8%D7%99%D7%9B%D7%94-%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-89fbf87e/",
         "type": 301
       },
       {
-        "source": "/datasets/b72acc9a-6512-4849-9529-3ce73370bff2",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%9E%D7%95%D7%94%D7%9C%D7%99%D7%9D-%D7%90%D7%A8%D7%A6%D7%99%D7%AA-b72acc9a/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/e4a5e2d7-6668-42d0-b6c8-4a64f246242a",
-        "destination": "/datasets/%D7%AA%D7%9B%D7%A0%D7%95%D7%9F-%D7%95%D7%91%D7%99%D7%A6%D7%95%D7%A2-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1%D7%99%D7%9D-e4a5e2d7/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/1e9d4542-97af-47ac-a780-f2a6b291b1f5",
-        "destination": "/datasets/%D7%AA%D7%99%D7%A7%D7%95%D7%A4%D7%99-%D7%9E%D7%A1%D7%9C%D7%A7%D7%94-%D7%9C%D7%AA%D7%97%D7%A0%D7%94-1e9d4542/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/ab746a13-c7e9-442d-a524-e4ffd1a041b0",
-        "destination": "/datasets/%D7%AA%D7%99%D7%A7%D7%95%D7%A4%D7%99-%D7%9E%D7%A1%D7%9C%D7%A7%D7%94-%D7%91%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94-%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%AA-ab746a13/",
-        "type": 301
-      },
-      {
         "source": "/datasets/bc1df8cb-c266-4962-9e18-a9cf986f9640",
         "destination": "/datasets/%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99%D7%AA-%D7%9C%D7%9E%D7%AA%D7%A2-%D7%9F-%D7%9E%D7%98%D7%A8%D7%95%D7%A4%D7%95%D7%9C%D7%99%D7%9F-%D7%97%D7%99%D7%A4%D7%94-2040-bc1df8cb/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/46577c12-8675-4464-a5ca-473ae20e3dd9",
-        "destination": "/datasets/%D7%90%D7%9E%D7%A0%D7%95%D7%AA-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%97%D7%95%D7%A5-46577c12/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/48cb43dd-ae45-43a2-979d-f93aa985ff96",
-        "destination": "/datasets/%D7%AA%D7%A9%D7%9C%D7%95%D7%9E%D7%99-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%A4%D7%A0%D7%99%D7%9D-%D7%A9%D7%94%D7%95%D7%A2%D7%91%D7%A8%D7%95-48cb43dd/",
         "type": 301
       },
       {
@@ -1460,31 +1695,6 @@
         "type": 301
       },
       {
-        "source": "/datasets/eb26b8f9-213f-4bd6-90c1-1a3c65b82c72",
-        "destination": "/datasets/%D7%A0%D7%A1%D7%95%D7%A2%D7%94-%D7%91%D7%A7%D7%95%D7%95%D7%99-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1-eb26b8f9/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/626b0931-8385-4f62-87e5-cadae3379754",
-        "destination": "/datasets/%D7%AA%D7%9B%D7%A0%D7%95%D7%9F-%D7%9E%D7%95%D7%9C-%D7%91%D7%99%D7%A6%D7%95%D7%A2-%D7%A0%D7%A1%D7%99%D7%A2%D7%95%D7%AA-%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1%D7%99%D7%9D-%D7%91%D7%A8%D7%9E%D7%AA-%D7%A0%D7%A1%D7%99%D7%A2%D7%94-%D7%91%D7%95%D7%93%D7%93%D7%AA-626b0931/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/e4c3e3d0-c4e4-497e-b2a5-43c533728624",
-        "destination": "/datasets/%D7%9B%D7%AA%D7%91-%D7%94%D7%A2%D7%AA-%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%A8%D7%95%D7%95%D7%97%D7%94-e4c3e3d0/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/1ba21c94-c45e-4d45-a29f-49da77e8d2b8",
-        "destination": "/datasets/%D7%9B%D7%AA%D7%91-%D7%94%D7%A2%D7%AA-%D7%97%D7%91%D7%A8%D7%94-%D7%95%D7%A8%D7%95%D7%95%D7%97%D7%94-Society-and-Welfare-journal-1ba21c94/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/04027bcc-4d4c-4289-8088-0ecccede57f5",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%94%D7%9E%D7%95%D7%93%D7%93%D7%99%D7%9D-04027bcc/",
-        "type": 301
-      },
-      {
         "source": "/datasets/33b03ff6-a58e-49bf-840e-a17a894c9885",
         "destination": "/datasets/%D7%9E%D7%A2%D7%91%D7%93%D7%95%D7%AA-%D7%90%D7%A1%D7%91%D7%A1%D7%98-33b03ff6/",
         "type": 301
@@ -1492,16 +1702,6 @@
       {
         "source": "/datasets/e9771200-8aba-48fd-8a15-7fe65540b06d",
         "destination": "/datasets/%D7%A7%D7%99%D7%93%D7%95%D7%97%D7%99%D7%9D-%D7%9E%D7%98%D7%95%D7%99%D7%99%D7%91%D7%99%D7%9D-e9771200/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/aa009a0c-8103-4641-9ff4-247b5e1fe303",
-        "destination": "/datasets/%D7%94%D7%9B%D7%A0%D7%A1%D7%95%D7%AA-%D7%95%D7%92%D7%91%D7%99%D7%99%D7%94-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D-aa009a0c/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/507f46c1-20f3-445e-8063-ad9ace29bcb0",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%94%D7%AA%D7%95%D7%91%D7%A2%D7%99%D7%9D-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%A1%D7%9E%D7%9B%D7%94-%D7%9E%D7%90%D7%AA-%D7%94%D7%99%D7%95%D7%A2%D7%A5-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99-%D7%9C%D7%9E%D7%9E%D7%A9%D7%9C%D7%94-507f46c1/",
         "type": 301
       },
       {
@@ -1580,11 +1780,6 @@
         "type": 301
       },
       {
-        "source": "/datasets/4bee0109-501e-4ae0-aa9e-a70f713b84d0",
-        "destination": "/datasets/%D7%A0%D7%AA%D7%99%D7%91%D7%99-%D7%94%D7%A2%D7%93%D7%A4%D7%94-%D7%A7%D7%99%D7%99%D7%9E%D7%99%D7%9D-4bee0109/",
-        "type": 301
-      },
-      {
         "source": "/datasets/6c31fbf5-69f7-4aac-b61f-43c8c4a2768e",
         "destination": "/datasets/%D7%A9%D7%91%D7%99%D7%9C%D7%99-%D7%90%D7%95%D7%A4%D7%A0%D7%99%D7%99%D7%9D-%D7%AA%D7%A9%D7%AA%D7%99%D7%AA-%D7%A8%D7%9B%D7%99%D7%91%D7%94-%D7%9E%D7%AA%D7%95%D7%9B%D7%A0%D7%A0%D7%AA-6c31fbf5/",
         "type": 301
@@ -1650,21 +1845,6 @@
         "type": 301
       },
       {
-        "source": "/datasets/a416609e-f68a-4fea-b278-657f92bfbe73",
-        "destination": "/datasets/%D7%9C%D7%A9%D7%9B%D7%95%D7%AA-%D7%9E%D7%99%D7%93%D7%A2-Tourist-Information-a416609e/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/9579874b-7a1f-4981-ae17-80e57fd22e71",
-        "destination": "/datasets/%D7%96%D7%9B%D7%90%D7%95%D7%AA-%D7%9C%D7%94%D7%A0%D7%97%D7%94-%D7%91%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94-%D7%A6%D7%99%D7%91%D7%95%D7%A8%D7%99%D7%AA-9579874b/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/205a626d-e6d7-46a0-aac2-331f9b235b03",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%99%D7%AA%D7%A8-%D7%9B%D7%9C%D7%9C%D7%99-%D7%9C%D7%90%D7%99%D7%A1%D7%95%D7%A3-%D7%94%D7%A2%D7%91%D7%A8%D7%94-%D7%90%D7%95-%D7%9E%D7%A1%D7%99%D7%A8%D7%94-%D7%A9%D7%9C-%D7%9E%D7%9B%D7%AA%D7%91%D7%99%D7%9D-205a626d/",
-        "type": 301
-      },
-      {
         "source": "/datasets/1ad4c0e9-de8c-4ac4-b945-e008fa87ed41",
         "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%95%D7%AA-%D7%91%D7%A2%D7%9C%D7%99-%D7%94%D7%99%D7%AA%D7%A8%D7%99%D7%9D-%D7%9C%D7%9E%D7%AA%D7%9F-%D7%A9%D7%99%D7%A8%D7%95%D7%AA%D7%99-%D7%93%D7%95%D7%90%D7%A8-%D7%9B%D7%9E%D7%95%D7%AA%D7%99-1ad4c0e9/",
         "type": 301
@@ -1705,11 +1885,6 @@
         "type": 301
       },
       {
-        "source": "/datasets/df60d73b-aa60-46dc-bb76-f183d6bf055c",
-        "destination": "/datasets/Israel-Numbering-Plan-df60d73b/",
-        "type": 301
-      },
-      {
         "source": "/datasets/287f7e34-7675-49a9-90bd-7c6a8b55698e",
         "destination": "/datasets/%D7%9E%D7%A1%D7%A4%D7%A8-%D7%96%D7%95%D7%92%D7%95%D7%AA-%D7%A9%D7%94%D7%AA%D7%92%D7%A8%D7%A9%D7%95-%D7%9C%D7%A4%D7%99-%D7%9E%D7%A7%D7%95%D7%9D-%D7%9E%D7%92%D7%95%D7%A8%D7%99%D7%9D-%D7%A9%D7%9C-%D7%94%D7%96%D7%95%D7%92-287f7e34/",
         "type": 301
@@ -1730,16 +1905,6 @@
         "type": 301
       },
       {
-        "source": "/datasets/f312eda5-27bc-4619-8917-8072a12f14ce",
-        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%A8%D7%91%D7%A0%D7%99%D7%9D-%D7%9E%D7%95%D7%A1%D7%9E%D7%9B%D7%99%D7%9D-%D7%9C%D7%A2%D7%A8%D7%99%D7%9B%D7%AA-%D7%97%D7%95%D7%A4%D7%95%D7%AA-%D7%95%D7%A7%D7%99%D7%93%D7%95%D7%A9%D7%99%D7%9F-f312eda5/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/09f0e9ee-5cef-48f7-84f6-10235e6dd9ed",
-        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%AA%D7%97%D7%A0%D7%95%D7%AA-%D7%94%D7%93%D7%9C%D7%A7-09f0e9ee/",
-        "type": 301
-      },
-      {
         "source": "/datasets/ce12ebb6-fbec-4134-80b1-79d068bd96ee",
         "destination": "/datasets/%D7%AA%D7%95%D7%9B%D7%A0%D7%99%D7%AA-%D7%99%D7%AA%D7%93-%D7%91%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%A8%D7%95%D7%95%D7%97%D7%94-ce12ebb6/",
         "type": 301
@@ -1747,11 +1912,6 @@
       {
         "source": "/datasets/cb3b66dd-b840-44a4-97e6-38ff239c3040",
         "destination": "/datasets/%D7%A0%D7%95%D7%A9%D7%9E%D7%99%D7%9D-%D7%9C%D7%A8%D7%95%D7%95%D7%97%D7%94-cb3b66dd/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/2b2882aa-5258-4ef4-bcb2-9747dbb62890",
-        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%9F-%D7%90%D7%97%D7%A8%D7%95%D7%9F-%D7%90%D7%99%D7%9B%D7%95%D7%AA-%D7%9E%D7%99%D7%9D-%D7%91%D7%A7%D7%99%D7%93%D7%95%D7%97%D7%99%D7%9D-2b2882aa/",
         "type": 301
       },
       {
@@ -1772,16 +1932,6 @@
       {
         "source": "/datasets/d01a5ee3-9198-44a3-8eec-4120423cc45f",
         "destination": "/datasets/%D7%94%D7%92%D7%91%D7%95%D7%9C%D7%95%D7%AA-%D7%94%D7%9E%D7%A9%D7%98%D7%A8%D7%AA%D7%99%D7%99%D7%9D-d01a5ee3/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/fdac16cf-0f39-487d-b5e0-fd20cc43b112",
-        "destination": "/datasets/%D7%A6%D7%99%D7%95%D7%93-%D7%90%D7%9C%D7%97%D7%95%D7%98%D7%99-%D7%A4%D7%A8%D7%99%D7%98%D7%99%D7%9D-%D7%91%D7%99%D7%91%D7%95%D7%90-%D7%90%D7%99%D7%A9%D7%99-%D7%A9%D7%9C%D7%90-%D7%A7%D7%99%D7%91%D7%9C%D7%95-%D7%90%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%AA%D7%A7%D7%A9%D7%95%D7%A8%D7%AA-fdac16cf/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/9fac2d91-4abc-4cd8-a794-d2c4fa9db1e4",
-        "destination": "/datasets/%D7%A6%D7%99%D7%95%D7%93-%D7%90%D7%9C%D7%97%D7%95%D7%98%D7%99-%D7%A4%D7%A8%D7%99%D7%98%D7%99%D7%9D-%D7%91%D7%99%D7%91%D7%95%D7%90-%D7%90%D7%99%D7%A9%D7%99-%D7%A9%D7%A7%D7%99%D7%91%D7%9C%D7%95-%D7%90%D7%99%D7%A9%D7%95%D7%A8-%D7%9E%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%AA%D7%A7%D7%A9%D7%95%D7%A8%D7%AA-9fac2d91/",
         "type": 301
       },
       {
@@ -1845,6 +1995,11 @@
         "type": 301
       },
       {
+        "source": "/datasets/b62a44d0-9f77-4eff-a489-d2b77be59bac",
+        "destination": "/datasets/%D7%A9%D7%99%D7%A8%D7%95%D7%AA-%D7%94%D7%9E%D7%91%D7%97%D7%9F-%D7%9C%D7%A0%D7%95%D7%A2%D7%A8-b62a44d0/",
+        "type": 301
+      },
+      {
         "source": "/datasets/fae447eb-6f24-45ed-ac48-b890e11daf13",
         "destination": "/datasets/%D7%A9%D7%99%D7%A8%D7%95%D7%AA-%D7%94%D7%9E%D7%91%D7%97%D7%9F-%D7%9C%D7%9E%D7%91%D7%95%D7%92%D7%A8%D7%99%D7%9D-fae447eb/",
         "type": 301
@@ -1902,11 +2057,6 @@
       {
         "source": "/datasets/ed63bffb-5932-4c8a-a168-403709bc78b4",
         "destination": "/datasets/%D7%9E%D7%A8%D7%9B%D7%96%D7%99%D7%9D-%D7%9C%D7%9E%D7%A9%D7%A4%D7%97%D7%95%D7%AA-%D7%9C%D7%99%D7%9C%D7%93%D7%99%D7%9D-%D7%A2%D7%9D-%D7%9E%D7%95%D7%92%D7%91%D7%9C%D7%95%D7%AA-ed63bffb/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/b1e5bd44-b6a1-4274-b71f-e475b5ee1919",
-        "destination": "/datasets/%D7%9E%D7%A8%D7%9B%D7%96%D7%99-%D7%94%D7%92%D7%A0%D7%94-%D7%9C%D7%A0%D7%A4%D7%92%D7%A2%D7%99-%D7%AA%D7%A7%D7%99%D7%A4%D7%94-%D7%9E%D7%99%D7%A0%D7%99%D7%AA-%D7%90%D7%95-%D7%90%D7%9C%D7%99%D7%9E%D7%95%D7%AA-b1e5bd44/",
         "type": 301
       },
       {
@@ -2135,11 +2285,6 @@
         "type": 301
       },
       {
-        "source": "/datasets/7b840685-b166-46aa-9612-883bc9d2b91e",
-        "destination": "/datasets/%D7%90%D7%95%D7%92%D7%93%D7%9F-%D7%9E%D7%97%D7%9C%D7%95%D7%AA-%D7%A0%D7%93%D7%99%D7%A8%D7%95%D7%AA-7b840685/",
-        "type": 301
-      },
-      {
         "source": "/datasets/7a6d0673-920c-470a-ad90-600d4ce3adcb",
         "destination": "/datasets/%D7%99%D7%99%D7%A9%D7%95%D7%91%D7%99%D7%9D-%D7%95%D7%9E%D7%93%D7%99%D7%A0%D7%95%D7%AA-%D7%A2%D7%91%D7%A8%D7%99%D7%AA-%D7%90%D7%A0%D7%92%D7%9C%D7%99%D7%AA-%D7%A2%D7%A8%D7%91%D7%99%D7%AA-%D7%95%D7%A8%D7%95%D7%A1%D7%99%D7%AA-7a6d0673/",
         "type": 301
@@ -2157,16 +2302,6 @@
       {
         "source": "/datasets/7f1a7496-c3d9-498f-ade2-2ebb8e602916",
         "destination": "/datasets/%D7%9E%D7%98%D7%9E%D7%A0%D7%95%D7%AA-%D7%90%D7%A1%D7%91%D7%A1%D7%98-7f1a7496/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/7ae4a3da-1c40-410b-bffb-d89f81709d12",
-        "destination": "/datasets/PLMN-codes-in-Israel-7ae4a3da/",
-        "type": 301
-      },
-      {
-        "source": "/datasets/3a4c012f-11c5-4a57-bc82-21d85c02c106",
-        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%9E%D7%95%D7%93%D7%93%D7%99%D7%9D-3a4c012f/",
         "type": 301
       },
       {
@@ -2420,8 +2555,258 @@
         "type": 301
       },
       {
-        "source": "/datasets/6498e21c-a532-45c0-9812-ada23af5af82",
-        "destination": "/datasets/%D7%94%D7%97%D7%9C%D7%98%D7%95%D7%AA-%D7%95%D7%A2%D7%93%D7%AA-%D7%9B%D7%95%D7%A4%D7%A8-6498e21c/",
+        "source": "/datasets/6fca1935-7d3f-43b9-afc8-d6d2460dedad",
+        "destination": "/datasets/%D7%9E%D7%A7%D7%91%D7%9C%D7%99-%D7%94%D7%98%D7%91%D7%94-%D7%9C%D7%A4%D7%99-%D7%A1%D7%A4%D7%A7-6fca1935/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/cb3f5bef-a0e1-40a3-903a-723c44550802",
+        "destination": "/datasets/%D7%97%D7%91%D7%A8%D7%95%D7%AA-%D7%9C%D7%94%D7%9B%D7%A9%D7%A8%D7%AA-%D7%97%D7%95%D7%91%D7%A9%D7%99-%D7%A8%D7%A4%D7%95%D7%90%D7%AA-%D7%97%D7%99%D7%A8%D7%95%D7%9D-cb3f5bef/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/6b7c7138-0061-4166-96c0-5174cd54510f",
+        "destination": "/datasets/%D7%97%D7%91%D7%A8%D7%99-%D7%94%D7%A0%D7%94%D7%9C%D7%AA-%D7%AA%D7%90%D7%92%D7%99%D7%93-%D7%93%D7%99%D7%A8%D7%A7%D7%98%D7%95%D7%A8%D7%99%D7%95%D7%9F-%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D-%D7%A0%D7%A6%D7%99%D7%92%D7%99-%D7%A6%D7%99%D7%91%D7%95%D7%A8-%D7%A9%D7%90%D7%95%D7%A9%D7%A8%D7%95-%D7%A2%D7%9C-%D7%99%D7%93%D7%99-%D7%94%D7%95%D7%95%D7%A2%D7%93%D7%94-6b7c7138/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/3266acec-bf9c-4224-a7b6-7fca1014d784",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%92%D7%99%D7%95%D7%A1-%D7%A2%D7%95%D7%91%D7%93%D7%99%D7%9D-%D7%9C%D7%A9%D7%99%D7%A8%D7%95%D7%AA-%D7%94%D7%9E%D7%93%D7%99%D7%A0%D7%94-3266acec/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a889eb03-463f-4e2d-890b-4644f5da4607",
+        "destination": "/datasets/%D7%A7%D7%99%D7%A9%D7%95%D7%A8%D7%99%D7%95%D7%AA-%D7%A8%D7%A7-%D7%9C-%D7%A0%D7%95%D7%A4%D7%99%D7%AA-a889eb03/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/94a9cdb6-0c34-4c86-b3d4-fcf9b8a7131e",
+        "destination": "/datasets/%D7%A9%D7%95%D7%AA%D7%A4%D7%99%D7%9D-%D7%9C%D7%93%D7%A8%D7%9A-%D7%94%D7%A9%D7%AA%D7%AA%D7%A4%D7%95%D7%AA-%D7%91%D7%9E%D7%99%D7%9E%D7%95%D7%9F-%D7%A4%D7%A8%D7%95%D7%99%D7%A7%D7%98%D7%99-%D7%AA%D7%97%D7%91%D7%95%D7%A8%D7%94-%D7%91%D7%A8%D7%A9%D7%95%D7%99%D7%95%D7%AA-%D7%9E%D7%A7%D7%95%D7%9E%D7%99%D7%95%D7%AA-94a9cdb6/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/d4b95764-3d20-41a2-88a7-bdb553a6951f",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%98%D7%95%D7%A2%D7%A0%D7%99%D7%9D-%D7%A8%D7%91%D7%A0%D7%99%D7%99%D7%9D-d4b95764/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/d9b1e04c-426f-4e32-ba40-a1ad9d8748a7",
+        "destination": "/datasets/%D7%99%D7%99%D7%A9%D7%95%D7%91%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%A7%D7%95%D7%91%D7%A6%D7%99-%D7%99%D7%99%D7%A9%D7%95%D7%91%D7%99%D7%9D-d9b1e04c/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/12c7457c-a9f0-40f8-9ed6-b4689d3d3fa4",
+        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%A4%D7%A8%D7%99%D7%98%D7%99%D7%9D-%D7%94%D7%9E%D7%97%D7%99%D7%99%D7%91%D7%99%D7%9D-%D7%A8%D7%99%D7%A9%D7%99%D7%95%D7%9F-%D7%99%D7%91%D7%95%D7%90-%D7%9B%D7%99%D7%9E%D7%99%D7%A7%D7%9C%D7%99%D7%9D-12c7457c/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/f96dd976-7f9c-4bcf-9288-a1efd8c8c1a5",
+        "destination": "/datasets/%D7%91%D7%AA%D7%99-%D7%A1%D7%A4%D7%A8-%D7%90%D7%99%D7%96%D7%95%D7%A8%D7%99%D7%99%D7%9D-%D7%91%D7%A4%D7%99%D7%A7%D7%95%D7%97-%D7%94%D7%9E%D7%99%D7%A0%D7%94%D7%9C-%D7%9C%D7%97%D7%99%D7%A0%D7%95%D7%9A-%D7%94%D7%AA%D7%99%D7%99%D7%A9%D7%91%D7%95%D7%AA%D7%99-f96dd976/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/5aab974a-ef3e-4a7d-9538-972ea5debf00",
+        "destination": "/datasets/%D7%9E%D7%95%D7%A2%D7%93%D7%99-%D7%9E%D7%A8%D7%9B%D7%96%D7%99-%D7%A9%D7%99%D7%A8%D7%95%D7%AA-%D7%A9%D7%9C-%D7%94%D7%A8%D7%A9%D7%95%D7%AA-%D7%9C%D7%96%D7%9B%D7%95%D7%99%D7%95%D7%AA-%D7%A0%D7%99%D7%A6%D7%95%D7%9C%D7%99-%D7%94%D7%A9%D7%95%D7%90%D7%94-%D7%9C%D7%97%D7%95%D7%93%D7%A9%D7%99%D7%9D-%D7%9E%D7%A8%D7%A5-%D7%A1%D7%A4%D7%98%D7%9E%D7%91%D7%A8-2025-5aab974a/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/8d40abd7-60e3-4007-8f9d-f6683e018009",
+        "destination": "/datasets/%D7%9E%D7%90%D7%92%D7%A8-%D7%96%D7%9E%D7%A0%D7%99-%D7%94%D7%92%D7%A2%D7%94-%D7%9C%D7%AA%D7%97%D7%A0%D7%94-VM-%D7%91%D7%A8%D7%9E%D7%AA-%D7%99%D7%95%D7%9D-%D7%95%D7%A9%D7%A2%D7%94-8d40abd7/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/2df529d9-3f5a-44da-82e0-d6cbb8cdf856",
+        "destination": "/datasets/%D7%96%D7%9E%D7%A0%D7%99-%D7%94%D7%92%D7%A2%D7%94-%D7%9C%D7%AA%D7%97%D7%A0%D7%94-VM-%D7%91%D7%A8%D7%9E%D7%AA-%D7%A9%D7%A2%D7%94-2df529d9/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/a6d07757-5641-493d-bfd1-bf2afc8f9eb7",
+        "destination": "/datasets/%D7%99%D7%97%D7%99%D7%93%D7%95%D7%AA-%D7%A1%D7%91%D7%99%D7%91%D7%AA%D7%99%D7%95%D7%AA-%D7%95%D7%90%D7%99%D7%92%D7%95%D7%93%D7%99-%D7%A2%D7%A8%D7%99%D7%9D-%D7%9C%D7%90%D7%99%D7%9B%D7%95%D7%AA-%D7%94%D7%A1%D7%91%D7%99%D7%91%D7%94-a6d07757/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/f2b2a661-c950-42c1-be07-1dafb89fa0d5",
+        "destination": "/datasets/%D7%90%D7%A1%D7%98%D7%A8%D7%98%D7%92%D7%99%D7%AA-%D7%9C%D7%93%D7%A8%D7%9B%D7%99%D7%9D-2050-f2b2a661/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/c425e549-60b4-4523-badd-de6886d81306",
+        "destination": "/datasets/%D7%A9%D7%91%D7%99%D7%9C%D7%99-%D7%90%D7%95%D7%A4%D7%A0%D7%99%D7%99%D7%9D-%D7%AA%D7%A9%D7%AA%D7%99%D7%AA-%D7%A8%D7%9B%D7%99%D7%91%D7%94-%D7%A7%D7%99%D7%99%D7%9E%D7%AA-c425e549/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/f8bc8173-367b-4d14-930e-3c8a1d53099f",
+        "destination": "/datasets/%D7%91%D7%97%D7%99%D7%A8%D7%95%D7%AA-%D7%9C%D7%A8%D7%A9%D7%95%D7%99%D7%95%D7%AA-%D7%94%D7%9E%D7%A7%D7%95%D7%9E%D7%99%D7%95%D7%AA-%D7%A7%D7%9C%D7%A4%D7%99%D7%95%D7%AA-%D7%9E%D7%99%D7%95%D7%97%D7%93%D7%95%D7%AA-%D7%91%D7%A4%D7%A8%D7%99%D7%A1%D7%94-%D7%90%D7%A8%D7%A6%D7%99%D7%AA-f8bc8173/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1e621d41-179e-4b01-8223-9a08a23c6aef",
+        "destination": "/datasets/%D7%A1%D7%A7%D7%A8-%D7%A0%D7%95%D7%A1%D7%A2%D7%99%D7%9D-%D7%91%D7%90%D7%95%D7%98%D7%95%D7%91%D7%95%D7%A1%D7%99%D7%9D-%D7%91%D7%9E%D7%98%D7%A8%D7%95%D7%A4%D7%95%D7%9C%D7%99%D7%9F-%D7%91%D7%90%D7%A8-%D7%A9%D7%91%D7%A2-2019-1e621d41/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/56ddb2ac-0627-4908-86b3-f50ac4311552",
+        "destination": "/datasets/%D7%A1%D7%93%D7%A8%D7%95%D7%AA-%D7%94%D7%A2%D7%A9%D7%A8%D7%94-%D7%9C%D7%90%D7%A7%D7%95%D7%95%D7%99%D7%A4%D7%A8-%D7%94%D7%97%D7%95%D7%A3-56ddb2ac/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/297a656a-b929-4f63-af6b-a3d2411f7f7e",
+        "destination": "/datasets/%D7%AA%D7%A2%D7%A8%D7%99%D7%A4%D7%99-%D7%97%D7%9C%D7%A7%D7%95%D7%AA-%D7%A7%D7%91%D7%A8-%D7%9E%D7%97%D7%99%D7%99%D7%9D-2025-297a656a/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/022552b2-a33e-456e-ace3-dcdbf831264b",
+        "destination": "/datasets/%D7%9E%D7%A4%D7%95%D7%AA-%D7%9E%D7%A4%D7%9C%D7%A1%D7%99%D7%9D-%D7%95%D7%9E%D7%9C%D7%99%D7%97%D7%95%D7%AA-%D7%91%D7%90%D7%A7%D7%95%D7%95%D7%99%D7%A4%D7%A8%D7%99%D7%9D-%D7%94%D7%A9%D7%95%D7%A0%D7%99%D7%9D-%D7%91%D7%9E%D7%93%D7%99%D7%A0%D7%AA-%D7%99%D7%A9%D7%A8%D7%90%D7%9C-022552b2/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/e20c1979-24cf-464b-8701-767d2127f4f3",
+        "destination": "/datasets/%D7%9E%D7%95%D7%93%D7%9C-%D7%A1%D7%98%D7%A8%D7%98%D7%99%D7%92%D7%A8%D7%A4%D7%99-%D7%92%D7%9C%D7%99%D7%9C-%D7%9E%D7%A2%D7%A8%D7%91%D7%99-%D7%A9%D7%9B%D7%91%D7%95%D7%AA-%D7%97%D7%91%D7%95%D7%A8%D7%AA-%D7%99%D7%94%D7%95%D7%93%D7%94-e20c1979/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/fa494da7-1dd9-4806-a03d-a5ee95babb4a",
+        "destination": "/datasets/%D7%A4%D7%A1%D7%A7-%D7%93%D7%99%D7%9F-%D7%9C%D7%92%D7%99%D7%A8%D7%95%D7%A9%D7%99%D7%9F-%D7%9C%D7%A4%D7%99-%D7%A9%D7%A0%D7%99%D7%9D-fa494da7/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/54b90478-73cf-4161-8933-853664b1b395",
+        "destination": "/datasets/%D7%A0%D7%AA%D7%95%D7%A0%D7%99-%D7%94%D7%A2%D7%A8%D7%9B%D7%AA-%D7%92%D7%93%D7%99%D7%9C%D7%94-%D7%A9%D7%9C-%D7%AA%D7%9C%D7%9E%D7%99%D7%93%D7%99%D7%9D-%D7%91%D7%99%D7%A9%D7%A8%D7%90%D7%9C-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-54b90478/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/cfc9fab4-e97b-4056-8bd5-0a34ed0aa998",
+        "destination": "/datasets/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%94%D7%A7%D7%93%D7%A9%D7%95%D7%AA-cfc9fab4/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/1c8c276b-0eec-472e-b23f-c76c55caaa87",
+        "destination": "/datasets/%D7%91%D7%A0%D7%A7%D7%99-%D7%93%D7%9D-%D7%98%D7%91%D7%95%D7%A8%D7%99-%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%91%D7%A8%D7%99%D7%90%D7%95%D7%AA-1c8c276b/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/ebe5ec6f-3e37-4bd9-bbdc-926ad1e0d6b9",
+        "destination": "/datasets/%D7%A4%D7%A8%D7%98%D7%99-%D7%A7%D7%A9%D7%A8-%D7%A2%D7%9D-%D7%9E%D7%A0%D7%94%D7%9C%D7%99-%D7%94%D7%91%D7%97%D7%99%D7%A8%D7%95%D7%AA-ebe5ec6f/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/b5ee9460-87d7-4eb4-868a-58e35bc507b2",
+        "destination": "/datasets/%D7%A7%D7%9C%D7%A4%D7%99%D7%95%D7%AA-%D7%A0%D7%92%D7%99%D7%A9%D7%95%D7%AA-%D7%9C%D7%94%D7%A6%D7%91%D7%A2%D7%AA-%D7%91%D7%95%D7%97%D7%A8%D7%99%D7%9D-%D7%94%D7%9E%D7%95%D7%92%D7%91%D7%9C%D7%99%D7%9D-%D7%91%D7%A0%D7%99%D7%99%D7%93%D7%95%D7%AA-b5ee9460/",
+        "type": 301
+      },
+      {
+        "source": "/datasets/4949b4d9-32b1-410c-aab0-62054038ec2b",
+        "destination": "/datasets/%D7%9E%D7%A2%D7%92%D7%9C%D7%99-%D7%AA%D7%A0%D7%95%D7%A2%D7%94-4949b4d9/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A1%D7%99%D7%9E%D7%A0%D7%99%20%D7%9E%D7%A1%D7%97%D7%A8/",
+        "destination": "/tags/%D7%A1%D7%99%D7%9E%D7%A0%D7%99-%D7%9E%D7%A1%D7%97%D7%A8/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%90%D7%AA%D7%A8%D7%99%20%D7%91%D7%A0%D7%99%D7%99%D7%94%20%D7%A9%D7%A0%D7%A1%D7%92%D7%A8%D7%95/",
+        "destination": "/tags/%D7%90%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%99%D7%94-%D7%A9%D7%A0%D7%A1%D7%92%D7%A8%D7%95/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A9%D7%9E%D7%90%D7%99%D7%9D%20%D7%9E%D7%9B%D7%A8%D7%99%D7%A2%D7%99%D7%9D/",
+        "destination": "/tags/%D7%A9%D7%9E%D7%90%D7%99%D7%9D-%D7%9E%D7%9B%D7%A8%D7%99%D7%A2%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%90%D7%AA%D7%A8%D7%99%20%D7%91%D7%A0%D7%99%D7%99%D7%94/",
+        "destination": "/tags/%D7%90%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%99%D7%94/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A1%D7%99%D7%95%D7%95%D7%92%D7%99%20CPC/",
+        "destination": "/tags/%D7%A1%D7%99%D7%95%D7%95%D7%92%D7%99-CPC/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D%20%D7%91%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
+        "destination": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D-%D7%91%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D%20%D7%91%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D/",
+        "destination": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D-%D7%91%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%9E%D7%A0%D7%94%D7%9C%20%D7%94%D7%98%D7%95%D7%91%D7%99%D7%9F/",
+        "destination": "/tags/%D7%9E%D7%A0%D7%94%D7%9C-%D7%94%D7%98%D7%95%D7%91%D7%99%D7%9F/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%9E%D7%A9%D7%A8%D7%93%20%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D/",
+        "destination": "/tags/%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%90%D7%AA%D7%A8%D7%99%20%D7%91%D7%A0%D7%99%D7%99%D7%94%20%D7%A4%D7%A2%D7%99%D7%9C%D7%99%D7%9D/",
+        "destination": "/tags/%D7%90%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%99%D7%94-%D7%A4%D7%A2%D7%99%D7%9C%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A9%D7%9E%D7%90%D7%99%20%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F/",
+        "destination": "/tags/%D7%A9%D7%9E%D7%90%D7%99-%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%AA%D7%A7%D7%A0%D7%99%D7%9D%20%D7%A8%D7%A9%D7%9E%D7%99%D7%99%D7%9D/",
+        "destination": "/tags/%D7%AA%D7%A7%D7%A0%D7%99%D7%9D-%D7%A8%D7%A9%D7%9E%D7%99%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A2%D7%99%D7%A6%D7%95%D7%9E%D7%99%D7%9D%20%D7%9B%D7%A1%D7%A4%D7%99%D7%99%D7%9D/",
+        "destination": "/tags/%D7%A2%D7%99%D7%A6%D7%95%D7%9E%D7%99%D7%9D-%D7%9B%D7%A1%D7%A4%D7%99%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A2%D7%95%D7%A8%D7%9B%D7%99%20%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
+        "destination": "/tags/%D7%A2%D7%95%D7%A8%D7%9B%D7%99-%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%9E%D7%A9%D7%A8%D7%93%20%D7%94%D7%A2%D7%91%D7%95%D7%93%D7%94/",
+        "destination": "/tags/%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%A2%D7%91%D7%95%D7%93%D7%94/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A8%D7%A9%D7%9D%20%D7%94%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
+        "destination": "/tags/%D7%A8%D7%A9%D7%9D-%D7%94%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A8%D7%A9%D7%95%D7%AA%20%D7%94%D7%9E%D7%99%D7%9D/",
+        "destination": "/tags/%D7%A8%D7%A9%D7%95%D7%AA-%D7%94%D7%9E%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%9E%D7%9E%D7%A6%D7%99%D7%90%D7%99%D7%9D%20%D7%9C%D7%91%D7%A7%D7%A9%D7%95%D7%AA%20%D7%A4%D7%98%D7%A0%D7%98/",
+        "destination": "/tags/%D7%9E%D7%9E%D7%A6%D7%99%D7%90%D7%99%D7%9D-%D7%9C%D7%91%D7%A7%D7%A9%D7%95%D7%AA-%D7%A4%D7%98%D7%A0%D7%98/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%91%D7%A7%D7%A9%D7%95%D7%AA%20%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
+        "destination": "/tags/%D7%91%D7%A7%D7%A9%D7%95%D7%AA-%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%99%D7%9D%20%D7%94%D7%9E%D7%9C%D7%97/",
+        "destination": "/tags/%D7%99%D7%9D-%D7%94%D7%9E%D7%9C%D7%97/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA%20%D7%94%D7%A0%D7%95%D7%98%D7%A8%D7%99%D7%95%D7%A0%D7%99%D7%9D/",
+        "destination": "/tags/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%94%D7%A0%D7%95%D7%98%D7%A8%D7%99%D7%95%D7%A0%D7%99%D7%9D/",
+        "type": 301
+      },
+      {
+        "source": "/tags/%D7%AA%D7%99%D7%A7%D7%99%20%D7%A4%D7%99%D7%A7%D7%95%D7%97/",
+        "destination": "/tags/%D7%AA%D7%99%D7%A7%D7%99-%D7%A4%D7%99%D7%A7%D7%95%D7%97/",
         "type": 301
       }
     ],

@@ -569,6 +569,49 @@ _LINK_CDN_TAG = re.compile(
     rf'<link\b[^>]*\bhref\s*=\s*"https?://{_CDN_HOSTS}[^"]*"[^>]*/?>',
     re.IGNORECASE,
 )
+# Cloudflare "Email Address Obfuscation": when the agent web_fetches a
+# gov.il page that sits behind Cloudflare with that feature on, the source
+# HTML has real mailto:s rewritten to `<a href="/cdn-cgi/l/email-protection
+# #HEX"><span class="__cf_email__" data-cfemail="HEX">[email protected]</span></a>`
+# (a client-side JS on Cloudflare decodes it). govil.ai is NOT behind
+# Cloudflare, so any such link the agent copies verbatim 404s on click and
+# the address never renders. The real address is XOR-encoded in the HEX
+# (first byte = key). Decode it back to a plain mailto: link on ingest.
+_CF_EMAIL_ANCHOR = re.compile(
+    r"<a\b[^>]*?/cdn-cgi/l/email-protection[^>]*>.*?</a>", re.IGNORECASE | re.DOTALL
+)
+_CF_EMAIL_HEX = re.compile(r'data-cfemail="([0-9a-fA-F]{4,})"', re.IGNORECASE)
+_CF_SCRIPT_TAG = re.compile(
+    r'<script\b[^>]*\bsrc\s*=\s*"[^"]*cdn-cgi[^"]*"[^>]*>\s*(?:</script>)?',
+    re.IGNORECASE,
+)
+
+
+def _decode_cfemail(hex_str: str) -> Optional[str]:
+    """Decode a Cloudflare `data-cfemail` hex string to a plain address."""
+    try:
+        raw = bytes.fromhex(hex_str)
+    except ValueError:
+        return None
+    if len(raw) < 2:
+        return None
+    key = raw[0]
+    email = "".join(chr(b ^ key) for b in raw[1:])
+    return email if "@" in email else None
+
+
+def _deobfuscate_cf_email(match: re.Match) -> str:
+    anchor = match.group(0)
+    hex_match = _CF_EMAIL_HEX.search(anchor)
+    email = _decode_cfemail(hex_match.group(1)) if hex_match else None
+    if email:
+        return f'<a href="mailto:{email}">{email}</a>'
+    # No decodable address: neutralize the dead link, keep whatever text is
+    # there rather than dropping content.
+    inner = re.sub(r"<[^>]+>", "", anchor)
+    return inner or ""
+
+
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.DOTALL)
 _OPEN_SCRIPT = re.compile(r"<script\b[^>]*>", re.IGNORECASE)
 _CLOSE_SCRIPT = re.compile(r"</script\s*>", re.IGNORECASE)
@@ -782,6 +825,16 @@ def sanitize_content_html(body: str, *, dataset_id: str = "") -> str:
     new_body, n = _LINK_CDN_TAG.subn("", body)
     if n:
         log.warning("%ssanitizer: dropped %d <link href=CDN> tag(s)", tag, n)
+    body = new_body
+
+    new_body, n = _CF_EMAIL_ANCHOR.subn(_deobfuscate_cf_email, body)
+    if n:
+        log.warning("%ssanitizer: decoded %d Cloudflare email-protection link(s)", tag, n)
+    body = new_body
+
+    new_body, n = _CF_SCRIPT_TAG.subn("", body)
+    if n:
+        log.warning("%ssanitizer: dropped %d <script src=/cdn-cgi/> tag(s)", tag, n)
     body = new_body
 
     body = _balance_raw_text_tag(body, _OPEN_SCRIPT, _CLOSE_SCRIPT, "script", tag=tag)

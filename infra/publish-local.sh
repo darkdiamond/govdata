@@ -204,6 +204,10 @@ if (( DRY_RUN )); then
   echo
   echo "==> [$(date +%H:%M:%S)] dry-run: skipping firebase deploy"
 else
+  step_begin "regenerate firebase.json redirects from manifest"
+  node frontend/scripts/gen-redirects.mjs
+  step_end
+
   step_begin "firebase deploy --only hosting (project=$PROJECT)"
   firebase deploy \
     --only hosting \

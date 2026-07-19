@@ -107,6 +107,13 @@ jobs:
           NUXT_PUBLIC_ADSENSE_ID: ${{ vars.NUXT_PUBLIC_ADSENSE_ID }}
           NUXT_PUBLIC_CLARITY_ID: ${{ vars.NUXT_PUBLIC_CLARITY_ID }}
 
+      # Rebuild hosting.redirects from the fresh manifest so old dataset-uuid
+      # and old tag URLs keep 301-ing to their current slug instead of 404-ing.
+      # Runs after publish (manifest written) + generate, before deploy reads
+      # firebase.json.
+      - name: Regenerate redirects from manifest
+        run: node frontend/scripts/gen-redirects.mjs
+
       - name: Deploy to Firebase Hosting
         run: |
           npx --yes firebase-tools@latest deploy --only hosting \
