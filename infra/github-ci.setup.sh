@@ -24,7 +24,7 @@
 set -euo pipefail
 
 PROJECT=${FIREBASE_PROJECT:-govdata-il}
-REPO=${GITHUB_REPO:-darkdiamond/govdata}
+REPO=${GITHUB_REPO:-darkdiamond/govil.ai}
 POOL=${WIF_POOL:-github-pool}
 PROVIDER=${WIF_PROVIDER:-github-provider}
 CI_SA_NAME=${CI_SA_NAME:-govdata-ci}
