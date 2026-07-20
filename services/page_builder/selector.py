@@ -126,6 +126,14 @@ def pick_next(
         for src in store.list_changed_sources(limit=max((n - len(picks)) * 4, 16)):
             if src.id in seen:
                 continue
+            # A source removed upstream (reconcile flagged it `unavailable`)
+            # keeps its preserved snapshot page. Re-selecting it would run an
+            # agent session whose prefetch 403s → `restricted` → the page is
+            # dropped, undoing the preservation. Never rebuild it here; the
+            # reconcile self-heal path returns it to `succeeded` if it comes
+            # back.
+            if src.analysis_status == "unavailable":
+                continue
             if src.metadata_modified is None or _as_utc(src.metadata_modified) < age_cutoff:
                 break
             # `change_status` is sticky — the scanner only writes it on
