@@ -225,6 +225,13 @@ const SITE_URL = 'https://govil.ai'
 const pagePath = `/datasets/${encodeURI(entry.value.page_slug || entry.value.id)}/`
 const datasetUrl = `${SITE_URL}${pagePath}`
 
+// Archive banner date — reuses formatDateHe (defined above, alongside
+// dataVintage/last_analyzed_at) so the "as of" phrasing matches the rest of
+// this page's date formatting. Empty when the source has no stamped
+// unavailable_since (legacy/edge case) — the banner still renders its main
+// sentence without the trailing clause.
+const unavailableSinceHe = computed(() => formatDateHe(entry.value.unavailable_since))
+
 const seoDescription = datasetDescription(entry.value)
 
 const breadcrumbs = [
@@ -402,11 +409,20 @@ onMounted(async () => {
     <div class="max-w-gov mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-[1fr_280px] gap-8">
       <!-- min-w-0 keeps the explorer's wide table from blowing out the 1fr track -->
       <div class="min-w-0">
+        <div
+          v-if="entry.source_status === 'unavailable'"
+          class="unavailable-banner"
+          role="note"
+        >
+          <strong>מאגר זה הוסר ממקור הנתונים (data.gov.il).</strong>
+          הנתונים המוצגים הם תמונת מצב מהסריקה האחרונה שלנו<template v-if="unavailableSinceHe">, שנערכה עד {{ unavailableSinceHe }}</template>.
+        </div>
         <article ref="bodyEl" class="dataset-body" v-html="body" />
         <DatasetExplorer
           :resources="entry.resources ?? []"
           :primary-resource-id="entry.primary_resource_id"
           :record-count="entry.record_count"
+          :source-unavailable="entry.source_status === 'unavailable'"
         />
       </div>
 
@@ -517,6 +533,16 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.unavailable-banner {
+  border: 1px solid #ffc107;
+  background: #fff9e6;
+  color: #0c3058;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
 /* Guard against agent-emitted bodies with wide tables, fixed-pixel images,
    or full-width charts pushing horizontal overflow on mobile. ECharts and
    Leaflet self-size to their container, so capping the container is enough. */

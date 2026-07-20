@@ -12,6 +12,7 @@ const props = defineProps<{
   resources: ResourceEntry[]
   primaryResourceId?: string
   recordCount?: number
+  sourceUnavailable?: boolean
 }>()
 
 const API = 'https://data.gov.il/api/3/action/datastore_search'
@@ -103,7 +104,10 @@ const fetchError = ref(false)
 // Source made private / removed upstream: the live datastore_search returns
 // HTTP 403 ("Authorization Error"). Distinct from a resource that was never
 // datastore-backed (404 / success:false) — that still collapses the section.
-const sourceGone = ref(false)
+// Seeded from the publisher-stamped `source_status` (via the sourceUnavailable
+// prop) so the gone-state renders deterministically at first paint (SSG),
+// without waiting on the live probe below.
+const sourceGone = ref(Boolean(props.sourceUnavailable))
 // rid whose schema probe last returned 403. Consumed by activate() only
 // after its staleness guard, so a stale probe for an abandoned resource
 // can't flip sourceGone for the resource the user actually switched to.
