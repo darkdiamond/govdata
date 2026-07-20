@@ -52,6 +52,8 @@ export interface DatasetMeta {
    *  the live `metadata_modified` above. The publisher backfills this
    *  with min(metadata_modified, last_analyzed_at) for legacy sources. */
   analyzed_metadata_modified?: string
+  source_status?: string
+  unavailable_since?: string
   version: number
 }
 
@@ -102,6 +104,8 @@ export interface ManifestEntry {
   // Publisher-computed
   related_ids: string[]
   embedding?: number[]
+  source_status?: string
+  unavailable_since?: string
   version: number
 }
 
@@ -126,6 +130,8 @@ export interface SlimEntry {
   license?: string
   metadata_modified?: string
   last_analyzed_at?: string
+  source_status?: string
+  unavailable_since?: string
 }
 
 /** Shape of /data/search-index.json — the runtime-fetchable slim manifest. */

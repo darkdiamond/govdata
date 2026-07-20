@@ -235,6 +235,8 @@ _SEARCH_INDEX_FIELDS = {
     "license",
     "metadata_modified",
     "last_analyzed_at",
+    "source_status",
+    "unavailable_since",
 }
 
 
