@@ -99,6 +99,10 @@ def dataset_meta_from_source(src: SourceRecord) -> DatasetMeta:
         notes=src.notes,
         last_analyzed_at=src.last_analyzed_at,
         analyzed_metadata_modified=src.analyzed_metadata_modified,
+        source_status=(
+            "unavailable" if src.analysis_status == "unavailable" else "available"
+        ),
+        unavailable_since=src.unavailable_since,
     )
 
 
@@ -291,8 +295,8 @@ def publish(
 
     # First pass: load every successful source, build the un-related shape,
     # ensure each has an embedding cached on its doc.
-    sources: list[SourceRecord] = list(store.iter_succeeded_sources())
-    log.info("publish: %d succeeded source(s)", len(sources))
+    sources: list[SourceRecord] = list(store.iter_publishable_sources())
+    log.info("publish: %d publishable source(s) (succeeded + unavailable)", len(sources))
 
     metas: dict[str, DatasetMeta] = {}
     agents: dict[str, Optional[AgentData]] = {}
