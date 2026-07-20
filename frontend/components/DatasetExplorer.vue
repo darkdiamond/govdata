@@ -104,6 +104,10 @@ const fetchError = ref(false)
 // HTTP 403 ("Authorization Error"). Distinct from a resource that was never
 // datastore-backed (404 / success:false) — that still collapses the section.
 const sourceGone = ref(false)
+// rid whose schema probe last returned 403. Consumed by activate() only
+// after its staleness guard, so a stale probe for an abandoned resource
+// can't flip sourceGone for the resource the user actually switched to.
+const goneRid = ref<string | null>(null)
 
 function isGoneError(err: unknown): boolean {
   return (
@@ -207,7 +211,7 @@ async function loadSchema(rid: string): Promise<Schema | null> {
     schemaCache.set(rid, sch)
     return sch
   } catch (err) {
-    if (isGoneError(err)) sourceGone.value = true
+    if (isGoneError(err)) goneRid.value = rid
     return null
   }
 }
@@ -221,9 +225,10 @@ async function activate(rid: string) {
   const sch = await loadSchema(rid)
   if (activeRid.value !== rid) return // user switched away mid-probe
   if (!sch) {
-    if (sourceGone.value) {
-      // Access revoked upstream (403). Keep the section; the template
-      // renders the gone-state instead of the table.
+    if (goneRid.value === rid) {
+      // This resource is access-revoked (403) and still the current one.
+      // Keep the section; the template renders the gone-state.
+      sourceGone.value = true
       loading.value = false
       return
     }
@@ -476,125 +481,125 @@ onBeforeUnmount(() => {
     </div>
 
     <template v-else>
-    <div v-if="visibleCandidates.length > 1" class="flex flex-wrap gap-2 mb-3" role="group" aria-label="בחירת קובץ">
-      <button
-        v-for="c in visibleCandidates"
-        :key="c.rid"
-        type="button"
-        class="explorer-pill"
-        :class="{ 'explorer-pill--active': c.rid === activeRid }"
-        :aria-pressed="c.rid === activeRid"
-        @click="switchResource(c.rid)"
-      >
-        <span class="max-w-[40ch] truncate">{{ c.name }}</span>
-        <span v-if="c.format" class="explorer-pill-fmt">{{ c.format }}</span>
-      </button>
-    </div>
+      <div v-if="visibleCandidates.length > 1" class="flex flex-wrap gap-2 mb-3" role="group" aria-label="בחירת קובץ">
+        <button
+          v-for="c in visibleCandidates"
+          :key="c.rid"
+          type="button"
+          class="explorer-pill"
+          :class="{ 'explorer-pill--active': c.rid === activeRid }"
+          :aria-pressed="c.rid === activeRid"
+          @click="switchResource(c.rid)"
+        >
+          <span class="max-w-[40ch] truncate">{{ c.name }}</span>
+          <span v-if="c.format" class="explorer-pill-fmt">{{ c.format }}</span>
+        </button>
+      </div>
 
-    <template v-if="!schemaEmpty">
-      <input
-        v-model="searchText"
-        type="search"
-        class="explorer-search"
-        placeholder="חיפוש ברשומות…"
-        aria-label="חיפוש בכל רשומות המאגר"
-        aria-describedby="explorer-search-hint"
-        @input="onSearchInput"
-      />
-      <p id="explorer-search-hint" class="m-0 mt-1.5 mb-3 text-xs text-subtle">
-        החיפוש מתבצע בכל הרשומות במאגר, גם לפי תחילת מילה
-      </p>
-    </template>
+      <template v-if="!schemaEmpty">
+        <input
+          v-model="searchText"
+          type="search"
+          class="explorer-search"
+          placeholder="חיפוש ברשומות…"
+          aria-label="חיפוש בכל רשומות המאגר"
+          aria-describedby="explorer-search-hint"
+          @input="onSearchInput"
+        />
+        <p id="explorer-search-hint" class="m-0 mt-1.5 mb-3 text-xs text-subtle">
+          החיפוש מתבצע בכל הרשומות במאגר, גם לפי תחילת מילה
+        </p>
+      </template>
 
-    <div v-if="schemaEmpty" class="explorer-state">
-      אין רשומות זמינות לעיון בקובץ זה.
-      <a :href="activeUrl" target="_blank" rel="noopener">להורדת הקובץ</a>
-    </div>
+      <div v-if="schemaEmpty" class="explorer-state">
+        אין רשומות זמינות לעיון בקובץ זה.
+        <a :href="activeUrl" target="_blank" rel="noopener">להורדת הקובץ</a>
+      </div>
 
-    <div v-else class="explorer-scroll-wrap" :class="{ 'fade-start': fadeStart, 'fade-end': fadeEnd }">
-      <div ref="scrollEl" class="explorer-scroll" :aria-busy="loading" @scroll.passive="updateFades">
-        <table v-if="schema" class="explorer-tbl" :class="{ 'opacity-50': loading && rows.length }">
-          <caption class="sr-only">תוכן המאגר — תוצאות מעומדות בטבלה</caption>
-          <thead>
-            <tr>
-              <th
-                v-for="col in schema.cols"
-                :key="col.id"
-                scope="col"
-                :aria-sort="sortable(col.id) ? ariaSort(col.id) : undefined"
-              >
-                <button
-                  v-if="sortable(col.id)"
-                  type="button"
-                  class="th-sort"
-                  :class="{ 'th-sort--active': sortCol === col.id }"
-                  :title="col.notes"
-                  @click="toggleSort(col.id)"
+      <div v-else class="explorer-scroll-wrap" :class="{ 'fade-start': fadeStart, 'fade-end': fadeEnd }">
+        <div ref="scrollEl" class="explorer-scroll" :aria-busy="loading" @scroll.passive="updateFades">
+          <table v-if="schema" class="explorer-tbl" :class="{ 'opacity-50': loading && rows.length }">
+            <caption class="sr-only">תוכן המאגר — תוצאות מעומדות בטבלה</caption>
+            <thead>
+              <tr>
+                <th
+                  v-for="col in schema.cols"
+                  :key="col.id"
+                  scope="col"
+                  :aria-sort="sortable(col.id) ? ariaSort(col.id) : undefined"
                 >
-                  <span>{{ colLabel(col) }}</span>
-                  <span class="th-sort-arrow" aria-hidden="true">{{
-                    sortCol === col.id ? (sortDir === 'asc' ? '▲' : '▼') : '↕'
-                  }}</span>
-                </button>
-                <template v-else>{{ colLabel(col) }}</template>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-if="loading && !rows.length">
-              <tr v-for="i in 5" :key="`skel-${i}`">
-                <td :colspan="schema.cols.length"><span class="explorer-skel" :style="{ width: `${100 - i * 8}%` }" /></td>
+                  <button
+                    v-if="sortable(col.id)"
+                    type="button"
+                    class="th-sort"
+                    :class="{ 'th-sort--active': sortCol === col.id }"
+                    :title="col.notes"
+                    @click="toggleSort(col.id)"
+                  >
+                    <span>{{ colLabel(col) }}</span>
+                    <span class="th-sort-arrow" aria-hidden="true">{{
+                      sortCol === col.id ? (sortDir === 'asc' ? '▲' : '▼') : '↕'
+                    }}</span>
+                  </button>
+                  <template v-else>{{ colLabel(col) }}</template>
+                </th>
               </tr>
-            </template>
-            <tr v-else-if="fetchError">
-              <td :colspan="schema.cols.length" class="explorer-state explorer-state--error">
-                לא ניתן לטעון את הנתונים כעת.
-                <a :href="activeUrl" target="_blank" rel="noopener">להורדת הקובץ המלא</a>
-              </td>
-            </tr>
-            <tr v-else-if="!rows.length">
-              <td :colspan="schema.cols.length" class="explorer-state">לא נמצאו רשומות תואמות</td>
-            </tr>
-            <tr v-for="(row, ri) in rows" :key="`${offset}-${ri}`">
-              <td
-                v-for="col in schema.cols"
-                :key="col.id"
-                :dir="col.numeric || col.date ? 'ltr' : 'auto'"
-                :class="{ 'text-end tabular-nums': col.numeric || col.date }"
-                :title="cellText(row[col.id], col).length > 60 ? cellText(row[col.id], col) : undefined"
-              >{{ cellText(row[col.id], col) }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div v-else-if="loading" class="py-6">
-          <span v-for="i in 3" :key="i" class="explorer-skel" :style="{ width: `${100 - i * 12}%` }" />
+            </thead>
+            <tbody>
+              <template v-if="loading && !rows.length">
+                <tr v-for="i in 5" :key="`skel-${i}`">
+                  <td :colspan="schema.cols.length"><span class="explorer-skel" :style="{ width: `${100 - i * 8}%` }" /></td>
+                </tr>
+              </template>
+              <tr v-else-if="fetchError">
+                <td :colspan="schema.cols.length" class="explorer-state explorer-state--error">
+                  לא ניתן לטעון את הנתונים כעת.
+                  <a :href="activeUrl" target="_blank" rel="noopener">להורדת הקובץ המלא</a>
+                </td>
+              </tr>
+              <tr v-else-if="!rows.length">
+                <td :colspan="schema.cols.length" class="explorer-state">לא נמצאו רשומות תואמות</td>
+              </tr>
+              <tr v-for="(row, ri) in rows" :key="`${offset}-${ri}`">
+                <td
+                  v-for="col in schema.cols"
+                  :key="col.id"
+                  :dir="col.numeric || col.date ? 'ltr' : 'auto'"
+                  :class="{ 'text-end tabular-nums': col.numeric || col.date }"
+                  :title="cellText(row[col.id], col).length > 60 ? cellText(row[col.id], col) : undefined"
+                >{{ cellText(row[col.id], col) }}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div v-else-if="loading" class="py-6">
+            <span v-for="i in 3" :key="i" class="explorer-skel" :style="{ width: `${100 - i * 12}%` }" />
+          </div>
         </div>
       </div>
-    </div>
 
-    <details v-if="legendCols.length" class="explorer-legend">
-      <summary>מקרא עמודות</summary>
-      <dl>
-        <template v-for="col in legendCols" :key="col.id">
-          <dt>{{ colLabel(col) }} <code v-if="col.label && col.label !== col.id">({{ col.id }})</code></dt>
-          <dd>{{ col.notes || '—' }}</dd>
+      <details v-if="legendCols.length" class="explorer-legend">
+        <summary>מקרא עמודות</summary>
+        <dl>
+          <template v-for="col in legendCols" :key="col.id">
+            <dt>{{ colLabel(col) }} <code v-if="col.label && col.label !== col.id">({{ col.id }})</code></dt>
+            <dd>{{ col.notes || '—' }}</dd>
+          </template>
+        </dl>
+      </details>
+
+      <p v-if="schema && schema.totalCols > schema.cols.length" class="m-0 mt-2 text-xs text-subtle">
+        מוצגות {{ schema.cols.length }} מתוך {{ schema.totalCols }} עמודות —
+        <a :href="activeUrl" target="_blank" rel="noopener">לצפייה בכל העמודות הורידו את הקובץ</a>
+      </p>
+
+      <div v-if="schema && !schemaEmpty" class="flex flex-wrap items-center gap-3 mt-3">
+        <template v-if="total > PAGE_SIZE">
+          <button ref="prevBtn" type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset === 0 || loading" @click="prevPage">הקודם</button>
+          <button ref="nextBtn" type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset + PAGE_SIZE >= total || loading" @click="nextPage">הבא</button>
+          <span class="text-xs text-subtle">{{ pageText }}</span>
         </template>
-      </dl>
-    </details>
-
-    <p v-if="schema && schema.totalCols > schema.cols.length" class="m-0 mt-2 text-xs text-subtle">
-      מוצגות {{ schema.cols.length }} מתוך {{ schema.totalCols }} עמודות —
-      <a :href="activeUrl" target="_blank" rel="noopener">לצפייה בכל העמודות הורידו את הקובץ</a>
-    </p>
-
-    <div v-if="schema && !schemaEmpty" class="flex flex-wrap items-center gap-3 mt-3">
-      <template v-if="total > PAGE_SIZE">
-        <button ref="prevBtn" type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset === 0 || loading" @click="prevPage">הקודם</button>
-        <button ref="nextBtn" type="button" class="btn-ghost text-xs px-3 py-1.5" :disabled="offset + PAGE_SIZE >= total || loading" @click="nextPage">הבא</button>
-        <span class="text-xs text-subtle">{{ pageText }}</span>
-      </template>
-      <span role="status" aria-live="polite" class="text-xs text-subtle">{{ rangeText }}</span>
-    </div>
+        <span role="status" aria-live="polite" class="text-xs text-subtle">{{ rangeText }}</span>
+      </div>
     </template>
   </section>
 </template>
