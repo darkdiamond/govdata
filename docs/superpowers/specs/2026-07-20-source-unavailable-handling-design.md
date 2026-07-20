@@ -235,14 +235,14 @@ field set in sync with `SlimEntry` per the existing belt).
    --update-env-vars=RECONCILE_ENABLED=true` (optionally
    `RECONCILE_WEEKDAY=<n>`).
 
-## Open risks / notes
+## Requirements / notes
 
-- **GCS `content.html` retention:** Phase 2 assumes the staged
-  `content.html` for an `unavailable` source is not purged. The publisher
-  rsync deletes stray `data.json`/`agent_data.json` from GCS but keeps
-  `content.html`; confirm no lifecycle rule expires it. If it can be
-  purged, the page would lose its body — mitigation is out of scope but
-  should be noted during Phase 2 implementation.
+- **`content.html` is retained forever — no expiry.** An `unavailable`
+  page's body is its last snapshot and must never be purged. During Phase 2
+  implementation, confirm the GCS staging bucket has **no lifecycle rule**
+  that expires objects (and don't add one); the publisher rsync already
+  keeps `content.html` (it only deletes stray `data.json`/`agent_data.json`
+  from GCS). This is a hard requirement, not a risk to weigh.
 - The weekly full sweep re-probes healthy sources every week; this is
   intentional and cheap. If the succeeded set grows into the thousands,
   revisit (rotating slice) — but not before.
