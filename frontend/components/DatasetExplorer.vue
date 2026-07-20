@@ -107,6 +107,12 @@ const fetchError = ref(false)
 // Seeded from the publisher-stamped `source_status` (via the sourceUnavailable
 // prop) so the gone-state renders deterministically at first paint (SSG),
 // without waiting on the live probe below.
+// Deliberately one-directional: once gone (seeded here, or flipped true by
+// a 403 below), we never reset sourceGone back to false on a later
+// successful probe within the same mount. The banner and this state are
+// both driven by the authoritative `source_status`; recovery happens via
+// the weekly reconcile → publish cycle, not a live re-probe. Don't "fix"
+// this into a two-way toggle.
 const sourceGone = ref(Boolean(props.sourceUnavailable))
 // rid whose schema probe last returned 403. Consumed by activate() only
 // after its staleness guard, so a stale probe for an abandoned resource

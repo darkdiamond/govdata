@@ -1,7 +1,8 @@
 """Publisher — writes all per-dataset and aggregated frontend artifacts.
 
 One process, one source of truth: the Firestore `sources/<id>` document.
-For every source with `analysis_status == "succeeded"` we emit:
+For every source with `analysis_status == "succeeded"` OR "unavailable" we
+emit (unavailable sources keep their preserved snapshot page):
 
     <out_root>/datasets/<id>/data.json        — DatasetMeta (scanner facts)
     <out_root>/datasets/<id>/agent_data.json  — AgentData (agent judgments)
@@ -288,7 +289,8 @@ def publish(
     *,
     store: Optional[FirestoreStateStore] = None,
 ) -> dict:
-    """Emit data.json + agent_data.json for each succeeded source and the
+    """Emit data.json + agent_data.json for each succeeded or unavailable
+    source (unavailable sources keep their preserved snapshot page) and the
     merged manifest.json. Returns a small summary dict.
     """
     store = store or FirestoreStateStore()

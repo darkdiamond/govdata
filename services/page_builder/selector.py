@@ -64,6 +64,11 @@ The gap does NOT apply to:
     no matter how recently their CKAN row changed.
   - Sources with a null `analyzed_metadata_modified`: legacy docs fall
     back to `last_analyzed_at`; null on both = always eligible.
+
+Sources flagged `analysis_status == "unavailable"` by the reconcile sweep
+are never re-selected in Track 2: their page is preserved as-is, and
+re-running the agent against a removed/unreadable datastore resource
+would just 403 and drop it.
 """
 from __future__ import annotations
 

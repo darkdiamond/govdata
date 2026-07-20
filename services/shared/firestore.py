@@ -222,6 +222,13 @@ class FirestoreStateStore:
             payload["analysis_status"] = "never"
             payload["last_error"] = None
             payload["failed_attempts"] = 0
+        # Deliberately no analogous branch for `analysis_status == "unavailable"`
+        # here: CKAN re-listing the package only means it's back in the public
+        # search results, not that its datastore resource is readable again.
+        # `unavailable` is set exclusively by the reconcile probe (which
+        # actually checks datastore readability) and self-heals via
+        # `clear_source_unavailable`. Flipping it on scan-reappearance could
+        # clear the "removed" banner while the explorer still gets a 403.
 
         ref.set(payload, merge=True)
 
@@ -578,7 +585,7 @@ class FirestoreStateStore:
     def get_stats(self) -> dict[str, int]:
         coll = self.client.collection(SOURCES_COLL)
         counts: dict[str, int] = {"total": _count(coll)}
-        for status in ("never", "succeeded", "failed", "pending", "restricted"):
+        for status in ("never", "succeeded", "failed", "pending", "restricted", "unavailable"):
             counts[status] = _count(
                 coll.where(filter=FieldFilter("analysis_status", "==", status))
             )
