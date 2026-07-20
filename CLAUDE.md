@@ -61,7 +61,7 @@ landing pages. Four layers:
    `infra/publish-local.sh` (same steps, your machine).
 
 State: Firestore `sources/{id}` (per-dataset), `scan_runs/{run_id}`
-(per invocation). No SQLite. No Cloudflare. No Anthropic Managed
+(per invocation). No SQLite. No Anthropic Managed
 Agents (migrated to OpenRouter 2026-06-12; sources that fail a whole
 run auto-retry on subsequent days via `failed_attempts`, parked at 3).
 
@@ -233,8 +233,19 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
   the model goes idle; per-tool-command timeouts (120s in LocalSandbox)
   and the Cloud Run timeout (3600s for the whole daily batch) are the
   only bounds.
-- **Don't bring back Cloudflare or GCS-as-CDN.** Firebase Hosting is the
-  sole deploy target. GCS is an internal staging bucket only.
+- **Firebase Hosting is the sole deploy target; GCS is staging only.**
+  Don't deploy pages to Cloudflare Pages or serve them from GCS-as-CDN.
+  Note: the `govil.ai` domain is proxied through **Cloudflare** (DNS/CDN) in
+  front of the Firebase origin — live responses carry `cf-nel` / `x-cache`,
+  and HTML is edge-cached `s-maxage=3600`. To debug origin vs. edge, hit the
+  Firebase origin directly at `https://govdata-il.web.app/…` (bypasses the
+  Cloudflare cache). Keep Cloudflare's Scrape Shield → **Email Address
+  Obfuscation OFF**: with it on, Cloudflare rewrites plain-text emails in the
+  clean origin HTML into `/cdn-cgi/l/email-protection` links that 404 on this
+  zone — it broke every dataset-page contact email until disabled 2026-07-20.
+  The agent-output sanitizer + `check.py` also strip `/cdn-cgi/` defensively
+  (an agent can copy that markup from a Cloudflare-fronted gov.il page it
+  fetches), but that guards the corpus, not this edge behaviour.
 - **Sandbox boundary (accepted risk, know it before touching it):** the
   agent's bash/python tools run as subprocesses in the builder container
   (Cloud Run can't nest containers). Tool processes get a scrubbed env
