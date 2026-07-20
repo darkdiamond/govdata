@@ -67,6 +67,11 @@ class SourceRecord:
     last_error: Optional[str] = None
     page_path: Optional[str] = None
 
+    # UTC timestamp the reconcile sweep first flagged the source as removed
+    # upstream. Set by mark_source_unavailable, cleared by
+    # clear_source_unavailable. None while the source is available.
+    unavailable_since: Optional[datetime] = None
+
     # Agent's per-dataset judgments (summary_he, dataset_kind, related_ids, …).
     # Set by the builder after a successful Managed Agents session; consumed
     # by the publisher to write `agent_data.json`.
@@ -104,6 +109,7 @@ class SourceRecord:
             page_path=data.get("page_path"),
             agent_data=data.get("agent_data"),
             embedding=data.get("embedding"),
+            unavailable_since=data.get("unavailable_since"),
         )
 
 
@@ -503,6 +509,56 @@ class FirestoreStateStore:
             },
             merge=True,
         )
+
+    def mark_source_unavailable(self, dataset_id: str, error: str) -> None:
+        """Flag a *previously-succeeded* source as removed upstream.
+
+        Unlike `mark_analysis_restricted` (never-succeeded 403 → page
+        dropped), this PRESERVES the page: the publisher still emits it
+        (see `iter_publishable_sources`) with an archive banner. Stamps
+        `unavailable_since` only on the first transition so the displayed
+        date is the true first-detection time. Does not bump
+        `failed_attempts`.
+        """
+        ref = self.client.collection(SOURCES_COLL).document(dataset_id)
+        snap = ref.get()
+        already = (snap.to_dict() or {}).get("unavailable_since") if snap.exists else None
+        payload: dict = {
+            "analysis_status": "unavailable",
+            "last_error": (error or "")[:1000],
+        }
+        if not already:
+            payload["unavailable_since"] = datetime.now(timezone.utc)
+        ref.set(payload, merge=True)
+
+    def clear_source_unavailable(self, dataset_id: str) -> None:
+        """Self-heal: the source is reachable again. Flip back to
+        `succeeded` (NOT `never` — that would drop the live page until a
+        fresh agent run) and clear `unavailable_since`. Any genuine data
+        change while it was gone is picked up by normal Track-2
+        re-analysis once CKAN's metadata_modified advances.
+        """
+        self.client.collection(SOURCES_COLL).document(dataset_id).set(
+            {
+                "analysis_status": "succeeded",
+                "unavailable_since": firestore.DELETE_FIELD,
+                "last_error": None,
+            },
+            merge=True,
+        )
+
+    def iter_publishable_sources(self) -> Iterator[SourceRecord]:
+        """Sources the publisher should emit: succeeded + unavailable.
+
+        `unavailable` docs keep their frozen snapshot (content.html in GCS,
+        scanner facts + agent_data in the doc) so the page is preserved with
+        an archive banner.
+        """
+        query = self.client.collection(SOURCES_COLL).where(
+            filter=FieldFilter("analysis_status", "in", ["succeeded", "unavailable"])
+        )
+        for d in query.stream():
+            yield SourceRecord.from_doc(d)
 
     def mark_analysis_failed(self, dataset_id: str, error: str) -> None:
         # `failed_attempts` counts whole pipeline-run failures (each one
