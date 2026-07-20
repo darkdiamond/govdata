@@ -266,7 +266,12 @@ async def run_pipeline(
     reconcile_enabled = os.environ.get("RECONCILE_ENABLED", "false").lower() in (
         "true", "1", "yes",
     )
-    reconcile_weekday = int(os.environ.get("RECONCILE_WEEKDAY", "6"))
+    try:
+        reconcile_weekday = int(os.environ.get("RECONCILE_WEEKDAY", "6"))
+    except ValueError:
+        log.warning("invalid RECONCILE_WEEKDAY=%r — defaulting to 6 (Sunday)",
+                    os.environ.get("RECONCILE_WEEKDAY"))
+        reconcile_weekday = 6
     try:
         from zoneinfo import ZoneInfo
         il_now = datetime.now(ZoneInfo("Asia/Jerusalem"))
@@ -278,9 +283,12 @@ async def run_pipeline(
         from services.scanner.client import CKANClient
         from . import reconcile as _reconcile
         log.info("reconcile: due (weekday=%s) — running sweep", reconcile_weekday)
-        async with CKANClient(config=config) as _ckan:
-            reconcile_summary = await _reconcile.reconcile_sources(store, _ckan)
-        log.info("reconcile: %s", reconcile_summary)
+        try:
+            async with CKANClient(config=config) as _ckan:
+                reconcile_summary = await _reconcile.reconcile_sources(store, _ckan)
+            log.info("reconcile: %s", reconcile_summary)
+        except Exception:
+            log.exception("reconcile sweep failed — continuing with scan/build")
 
     # [1] scan — unless override_id is set (manual single-source invoke)
     scan_summary = None
