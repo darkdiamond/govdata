@@ -2700,112 +2700,112 @@
         "type": 301
       },
       {
-        "source": "/tags/%D7%A1%D7%99%D7%9E%D7%A0%D7%99%20%D7%9E%D7%A1%D7%97%D7%A8/",
+        "source": "/tags/סימני מסחר/",
         "destination": "/tags/%D7%A1%D7%99%D7%9E%D7%A0%D7%99-%D7%9E%D7%A1%D7%97%D7%A8/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%90%D7%AA%D7%A8%D7%99%20%D7%91%D7%A0%D7%99%D7%99%D7%94%20%D7%A9%D7%A0%D7%A1%D7%92%D7%A8%D7%95/",
+        "source": "/tags/אתרי בנייה שנסגרו/",
         "destination": "/tags/%D7%90%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%99%D7%94-%D7%A9%D7%A0%D7%A1%D7%92%D7%A8%D7%95/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A9%D7%9E%D7%90%D7%99%D7%9D%20%D7%9E%D7%9B%D7%A8%D7%99%D7%A2%D7%99%D7%9D/",
+        "source": "/tags/שמאים מכריעים/",
         "destination": "/tags/%D7%A9%D7%9E%D7%90%D7%99%D7%9D-%D7%9E%D7%9B%D7%A8%D7%99%D7%A2%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%90%D7%AA%D7%A8%D7%99%20%D7%91%D7%A0%D7%99%D7%99%D7%94/",
+        "source": "/tags/אתרי בנייה/",
         "destination": "/tags/%D7%90%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%99%D7%94/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A1%D7%99%D7%95%D7%95%D7%92%D7%99%20CPC/",
+        "source": "/tags/סיווגי CPC/",
         "destination": "/tags/%D7%A1%D7%99%D7%95%D7%95%D7%92%D7%99-CPC/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D%20%D7%91%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
+        "source": "/tags/שינויים בחברות/",
         "destination": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D-%D7%91%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D%20%D7%91%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D/",
+        "source": "/tags/שינויים בתאגידים/",
         "destination": "/tags/%D7%A9%D7%99%D7%A0%D7%95%D7%99%D7%99%D7%9D-%D7%91%D7%AA%D7%90%D7%92%D7%99%D7%93%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%9E%D7%A0%D7%94%D7%9C%20%D7%94%D7%98%D7%95%D7%91%D7%99%D7%9F/",
+        "source": "/tags/מנהל הטובין/",
         "destination": "/tags/%D7%9E%D7%A0%D7%94%D7%9C-%D7%94%D7%98%D7%95%D7%91%D7%99%D7%9F/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%9E%D7%A9%D7%A8%D7%93%20%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D/",
+        "source": "/tags/משרד המשפטים/",
         "destination": "/tags/%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%9E%D7%A9%D7%A4%D7%98%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%90%D7%AA%D7%A8%D7%99%20%D7%91%D7%A0%D7%99%D7%99%D7%94%20%D7%A4%D7%A2%D7%99%D7%9C%D7%99%D7%9D/",
+        "source": "/tags/אתרי בנייה פעילים/",
         "destination": "/tags/%D7%90%D7%AA%D7%A8%D7%99-%D7%91%D7%A0%D7%99%D7%99%D7%94-%D7%A4%D7%A2%D7%99%D7%9C%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A9%D7%9E%D7%90%D7%99%20%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F/",
+        "source": "/tags/שמאי מקרקעין/",
         "destination": "/tags/%D7%A9%D7%9E%D7%90%D7%99-%D7%9E%D7%A7%D7%A8%D7%A7%D7%A2%D7%99%D7%9F/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%AA%D7%A7%D7%A0%D7%99%D7%9D%20%D7%A8%D7%A9%D7%9E%D7%99%D7%99%D7%9D/",
+        "source": "/tags/תקנים רשמיים/",
         "destination": "/tags/%D7%AA%D7%A7%D7%A0%D7%99%D7%9D-%D7%A8%D7%A9%D7%9E%D7%99%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A2%D7%99%D7%A6%D7%95%D7%9E%D7%99%D7%9D%20%D7%9B%D7%A1%D7%A4%D7%99%D7%99%D7%9D/",
+        "source": "/tags/עיצומים כספיים/",
         "destination": "/tags/%D7%A2%D7%99%D7%A6%D7%95%D7%9E%D7%99%D7%9D-%D7%9B%D7%A1%D7%A4%D7%99%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A2%D7%95%D7%A8%D7%9B%D7%99%20%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
+        "source": "/tags/עורכי פטנטים/",
         "destination": "/tags/%D7%A2%D7%95%D7%A8%D7%9B%D7%99-%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%9E%D7%A9%D7%A8%D7%93%20%D7%94%D7%A2%D7%91%D7%95%D7%93%D7%94/",
+        "source": "/tags/משרד העבודה/",
         "destination": "/tags/%D7%9E%D7%A9%D7%A8%D7%93-%D7%94%D7%A2%D7%91%D7%95%D7%93%D7%94/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A8%D7%A9%D7%9D%20%D7%94%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
+        "source": "/tags/רשם החברות/",
         "destination": "/tags/%D7%A8%D7%A9%D7%9D-%D7%94%D7%97%D7%91%D7%A8%D7%95%D7%AA/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A8%D7%A9%D7%95%D7%AA%20%D7%94%D7%9E%D7%99%D7%9D/",
+        "source": "/tags/רשות המים/",
         "destination": "/tags/%D7%A8%D7%A9%D7%95%D7%AA-%D7%94%D7%9E%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%9E%D7%9E%D7%A6%D7%99%D7%90%D7%99%D7%9D%20%D7%9C%D7%91%D7%A7%D7%A9%D7%95%D7%AA%20%D7%A4%D7%98%D7%A0%D7%98/",
+        "source": "/tags/ממציאים לבקשות פטנט/",
         "destination": "/tags/%D7%9E%D7%9E%D7%A6%D7%99%D7%90%D7%99%D7%9D-%D7%9C%D7%91%D7%A7%D7%A9%D7%95%D7%AA-%D7%A4%D7%98%D7%A0%D7%98/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%91%D7%A7%D7%A9%D7%95%D7%AA%20%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
+        "source": "/tags/בקשות פטנטים/",
         "destination": "/tags/%D7%91%D7%A7%D7%A9%D7%95%D7%AA-%D7%A4%D7%98%D7%A0%D7%98%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%99%D7%9D%20%D7%94%D7%9E%D7%9C%D7%97/",
+        "source": "/tags/ים המלח/",
         "destination": "/tags/%D7%99%D7%9D-%D7%94%D7%9E%D7%9C%D7%97/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA%20%D7%94%D7%A0%D7%95%D7%98%D7%A8%D7%99%D7%95%D7%A0%D7%99%D7%9D/",
+        "source": "/tags/רשימת הנוטריונים/",
         "destination": "/tags/%D7%A8%D7%A9%D7%99%D7%9E%D7%AA-%D7%94%D7%A0%D7%95%D7%98%D7%A8%D7%99%D7%95%D7%A0%D7%99%D7%9D/",
         "type": 301
       },
       {
-        "source": "/tags/%D7%AA%D7%99%D7%A7%D7%99%20%D7%A4%D7%99%D7%A7%D7%95%D7%97/",
+        "source": "/tags/תיקי פיקוח/",
         "destination": "/tags/%D7%AA%D7%99%D7%A7%D7%99-%D7%A4%D7%99%D7%A7%D7%95%D7%97/",
         "type": 301
       }

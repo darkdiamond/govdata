@@ -87,14 +87,16 @@ for (const d of datasets) {
   dsCount++
 }
 
-// 2. Old space-form tag URL -> dash-form, when the tag still exists. Sources
-//    are percent-encoded so they match the way crawlers request Hebrew paths.
+// 2. Old space-form tag URL -> dash-form, when the tag still exists. Firebase
+//    Hosting matches `source` against the DECODED request path, so the source
+//    is the raw Hebrew (literal space), NOT percent-encoded — an encoded
+//    source never matches. The destination is a real URL, so it stays encoded.
 let tagCount = 0
 for (const t of OLD_SPACE_TAGS) {
   const dash = t.replace(/\s+/g, '-')
   if (!validTagSlugs.has(dash)) continue
   redirects.push({
-    source: `/tags/${encodeURI(t)}/`,
+    source: `/tags/${t}/`,
     destination: `/tags/${encodeURI(dash)}/`,
     type: 301,
   })
