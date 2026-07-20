@@ -227,6 +227,41 @@ class CKANClient:
         except (TypeError, ValueError):
             return None
 
+    async def _probe(self, url: str, params: dict) -> str:
+        """Shared tri-state probe. 403 → "gone", 2xx+success → "alive",
+        anything else (404, 5xx, success:false, parse/transport error) →
+        "unknown" (caller leaves the flag unchanged)."""
+        if not self._client:
+            raise RuntimeError("Client not initialized. Use 'async with' context.")
+        await self._rate_limit()
+        try:
+            response = await self._client.get(url, params=params)
+        except (httpx.HTTPError, httpx.TimeoutException):
+            return "unknown"
+        if response.status_code == 403:
+            return "gone"
+        if response.status_code >= 400:
+            return "unknown"
+        try:
+            data = response.json()
+        except ValueError:
+            return "unknown"
+        return "alive" if data.get("success") else "unknown"
+
+    async def probe_resource(self, resource_id: str) -> str:
+        """Is a datastore resource still readable? Uses a limit=0 probe."""
+        return await self._probe(
+            self.config.datastore_search_url,
+            {"resource_id": resource_id, "limit": 0},
+        )
+
+    async def probe_package(self, package_id: str) -> str:
+        """Is a package still readable? Fallback when there's no primary
+        datastore resource id."""
+        return await self._probe(
+            self.config.package_show_url, {"id": package_id}
+        )
+
     async def get_package_count(self) -> int:
         """
         Get the total number of datasets available.
