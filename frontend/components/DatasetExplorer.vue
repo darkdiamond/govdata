@@ -100,6 +100,18 @@ const searchText = ref('')
 const query = ref('')
 const loading = ref(false)
 const fetchError = ref(false)
+// Source made private / removed upstream: the live datastore_search returns
+// HTTP 403 ("Authorization Error"). Distinct from a resource that was never
+// datastore-backed (404 / success:false) — that still collapses the section.
+const sourceGone = ref(false)
+
+function isGoneError(err: unknown): boolean {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    (err as { status?: number }).status === 403
+  )
+}
 // Server-side sort over the whole resource, like search. null = CKAN's
 // default order (_id, or rank under q).
 const sortCol = ref<string | null>(null)
@@ -139,7 +151,11 @@ async function dsSearch(
   }
   if (p.sort) params.set('sort', p.sort)
   const res = await fetch(`${API}?${params}`, { signal })
-  if (!res.ok) throw new Error(`http ${res.status}`)
+  if (!res.ok) {
+    const err = new Error(`http ${res.status}`) as Error & { status?: number }
+    err.status = res.status
+    throw err
+  }
   const data = await res.json()
   if (!data?.success || !data.result) throw new Error('ckan reject')
   return {
@@ -190,7 +206,8 @@ async function loadSchema(rid: string): Promise<Schema | null> {
     }
     schemaCache.set(rid, sch)
     return sch
-  } catch {
+  } catch (err) {
+    if (isGoneError(err)) sourceGone.value = true
     return null
   }
 }
@@ -204,6 +221,12 @@ async function activate(rid: string) {
   const sch = await loadSchema(rid)
   if (activeRid.value !== rid) return // user switched away mid-probe
   if (!sch) {
+    if (sourceGone.value) {
+      // Access revoked upstream (403). Keep the section; the template
+      // renders the gone-state instead of the table.
+      loading.value = false
+      return
+    }
     // Resource isn't datastore-backed (or the datastore was dropped since
     // the scan). Unverified single candidate → the whole section goes;
     // verified candidate with siblings → drop just this tab.
@@ -258,6 +281,13 @@ async function loadPage() {
     void nextTick(updateFades)
   } catch (err) {
     if (seq !== reqSeq || (err instanceof DOMException && err.name === 'AbortError')) return
+    if (isGoneError(err)) {
+      sourceGone.value = true
+      rows.value = []
+      total.value = 0
+      loading.value = false
+      return
+    }
     rows.value = []
     total.value = 0
     fetchError.value = true
@@ -441,6 +471,11 @@ onBeforeUnmount(() => {
       <h2 class="m-0 text-lg font-semibold text-ink-deep">עיון בנתונים</h2>
     </div>
 
+    <div v-if="sourceGone" class="explorer-state explorer-state--error">
+      מאגר זה אינו זמין עוד במקור הנתונים (data.gov.il). הנתונים המוצגים בעמוד הם תמונת מצב מהסריקה האחרונה שלנו.
+    </div>
+
+    <template v-else>
     <div v-if="visibleCandidates.length > 1" class="flex flex-wrap gap-2 mb-3" role="group" aria-label="בחירת קובץ">
       <button
         v-for="c in visibleCandidates"
@@ -560,6 +595,7 @@ onBeforeUnmount(() => {
       </template>
       <span role="status" aria-live="polite" class="text-xs text-subtle">{{ rangeText }}</span>
     </div>
+    </template>
   </section>
 </template>
 
