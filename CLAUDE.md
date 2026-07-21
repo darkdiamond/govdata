@@ -24,7 +24,7 @@ landing pages. Four layers:
 3. **Agent runtime** — PydanticAI agent loop
    (`services/page_builder/model_harness.py::run_agent_session`)
    calling **OpenRouter** (`OPENROUTER_MODEL`, default
-   `minimax/minimax-m3`). Tools: bash + code_execution (subprocess in a
+   `tencent/hy3`). Tools: bash + code_execution (subprocess in a
    private per-session workdir via `local_sandbox.LocalSandbox`),
    web_fetch (httpx), web_search (DDG). System prompt:
    `agent/system-prompt.md` (canonical, hand-edited). Host-side
@@ -71,13 +71,16 @@ run auto-retry on subsequent days via `failed_attempts`, parked at 3).
   line-height `1.5` (gov.il standard). Tailwind logical properties
   (`ps-*`/`pe-*`) when using Tailwind.
 - **Model**: `OPENROUTER_MODEL` env on the builder (code default
-  `minimax/minimax-m3`; **prod runs `tencent/hy3:free` at
-  `OPENROUTER_REASONING_EFFORT=max` since 2026-07-15** — free tier,
-  validated over a 477-session backlog drain; MiniMax is the paid
-  fallback, one redeploy away). Free-tier caveats: upstream congestion
-  waves → `RATE_LIMIT_BACKOFF_S` between-attempt backoff, and
-  `MAX_CONCURRENT=2` (not 8). Do not change the production model
-  without asking.
+  `tencent/hy3`; **prod runs the paid `tencent/hy3` at
+  `OPENROUTER_REASONING_EFFORT=max` since 2026-07-21** — moved off the
+  `tencent/hy3:free` tier when OpenRouter discontinued it; the model was
+  validated over a 477-session backlog drain on the free tier before the
+  switch; MiniMax (`minimax/minimax-m3`) remains an available fallback,
+  one redeploy away). Legacy free-tier caveats (from the `:free` era):
+  upstream congestion waves drove `RATE_LIMIT_BACKOFF_S` between-attempt
+  backoff and `MAX_CONCURRENT=2` (not 8) — both may be revisited now that
+  prod is on the paid tier. Do not change the production model without
+  asking.
   Candidate models are evaluated first through the local harness
   (`cli/model_test.py`) per `docs/MODEL_EVAL.md` — comparison snapshots
   live in `services/page_builder/harness-comparison/`, which is

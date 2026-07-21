@@ -26,19 +26,19 @@ STAGING_BUCKET=${GCS_STAGING_BUCKET:-${PROJECT}-staging}
 PUBLISH_VIA=${PUBLISH_VIA:-github}
 TRIGGER_ID=${PUBLISH_TRIGGER_ID:-govdata-publish}
 PUBLISH_BRANCH=${PUBLISH_BRANCH:-main}
-# Production model (2026-07-15): tencent/hy3:free — free tier, validated
-# across 477 drain sessions (100% self-check pass, $0). Fallback if the
-# free tier degrades/disappears: minimax/minimax-m3 (paid, ~$0.03-0.08/page)
+# Production model (2026-07-21): tencent/hy3 — the PAID tier. Moved off
+# tencent/hy3:free when OpenRouter discontinued that free tier (the model
+# itself was validated across 477 free-tier drain sessions, 100% self-check
+# pass, before the switch). Fallback: minimax/minimax-m3 (~$0.03-0.08/page)
 # — one redeploy away. Reasoning effort max matches the eval that chose it.
-OPENROUTER_MODEL=${OPENROUTER_MODEL:-tencent/hy3:free}
+OPENROUTER_MODEL=${OPENROUTER_MODEL:-tencent/hy3}
 OPENROUTER_REASONING_EFFORT=${OPENROUTER_REASONING_EFFORT:-max}
-# hy3:free 429s are upstream congestion on a shared pool: back off between
-# session attempts instead of burning them (agent_runner, commit 7ab9136).
+# Backoff + low concurrency below were tuned for the free tier's shared-pool
+# 429 congestion. Kept conservative through the paid cutover; safe to relax
+# (higher MAX_CONCURRENT, lower RATE_LIMIT_BACKOFF_S) now that the pool isn't
+# shared — revisit against paid-tier rate limits before bumping.
 RATE_LIMIT_BACKOFF_S=${RATE_LIMIT_BACKOFF_S:-90}
 DAILY_CAP=${DAILY_CAP:-10}
-# 2 (not 8): hy3:free saturates under parallel draw during congestion
-# waves; 2-parallel with the 429 backoff is the proven sustainable rate.
-# Revisit if the model moves to a paid tier.
 MAX_CONCURRENT=${MAX_CONCURRENT:-2}
 SESSION_ATTEMPTS=${SESSION_ATTEMPTS:-3}
 SCAN_LIMIT=${SCAN_LIMIT:-800}
