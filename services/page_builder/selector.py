@@ -64,6 +64,11 @@ The gap does NOT apply to:
     no matter how recently their CKAN row changed.
   - Sources with a null `analyzed_metadata_modified`: legacy docs fall
     back to `last_analyzed_at`; null on both = always eligible.
+
+Sources flagged `analysis_status == "unavailable"` by the reconcile sweep
+are never re-selected in Track 2: their page is preserved as-is, and
+re-running the agent against a removed/unreadable datastore resource
+would just 403 and drop it.
 """
 from __future__ import annotations
 
@@ -125,6 +130,14 @@ def pick_next(
     if reanalyze and len(picks) < n:
         for src in store.list_changed_sources(limit=max((n - len(picks)) * 4, 16)):
             if src.id in seen:
+                continue
+            # A source removed upstream (reconcile flagged it `unavailable`)
+            # keeps its preserved snapshot page. Re-selecting it would run an
+            # agent session whose prefetch 403s → `restricted` → the page is
+            # dropped, undoing the preservation. Never rebuild it here; the
+            # reconcile self-heal path returns it to `succeeded` if it comes
+            # back.
+            if src.analysis_status == "unavailable":
                 continue
             if src.metadata_modified is None or _as_utc(src.metadata_modified) < age_cutoff:
                 break

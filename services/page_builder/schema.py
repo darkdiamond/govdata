@@ -91,6 +91,15 @@ class DatasetMeta(BaseModel):
     # leave it None and the frontend falls back to `last_analyzed_at`.
     analyzed_metadata_modified: Optional[datetime] = None
 
+    # Availability of the upstream source at data.gov.il. "available" (the
+    # default) or "unavailable" — set by the weekly reconcile sweep when a
+    # previously-published dataset is made private/removed upstream. The page
+    # is preserved (this snapshot); the frontend renders an archive banner
+    # and the explorer its gone-state.
+    source_status: str = "available"
+    # UTC timestamp when the source was first detected as unavailable.
+    unavailable_since: Optional[datetime] = None
+
     version: int = 1
 
 
@@ -163,6 +172,9 @@ class ManifestEntry(BaseModel):
     # Publisher-computed
     related_ids: list[str] = Field(default_factory=list, max_length=5)
     embedding: Optional[list[float]] = None
+
+    source_status: str = "available"
+    unavailable_since: Optional[datetime] = None
 
     version: int = 1
 

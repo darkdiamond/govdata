@@ -54,6 +54,7 @@ def _src(*, dataset_id: str, with_agent: bool, **overrides) -> SourceRecord:
 def _store_mock(records: list[SourceRecord]) -> MagicMock:
     store = MagicMock()
     store.iter_succeeded_sources.return_value = iter(records)
+    store.iter_publishable_sources.return_value = iter(records)
 
     def _set_embedding(_id, vec):
         for r in records:

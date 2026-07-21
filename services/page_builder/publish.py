@@ -1,7 +1,8 @@
 """Publisher — writes all per-dataset and aggregated frontend artifacts.
 
 One process, one source of truth: the Firestore `sources/<id>` document.
-For every source with `analysis_status == "succeeded"` we emit:
+For every source with `analysis_status == "succeeded"` OR "unavailable" we
+emit (unavailable sources keep their preserved snapshot page):
 
     <out_root>/datasets/<id>/data.json        — DatasetMeta (scanner facts)
     <out_root>/datasets/<id>/agent_data.json  — AgentData (agent judgments)
@@ -99,6 +100,10 @@ def dataset_meta_from_source(src: SourceRecord) -> DatasetMeta:
         notes=src.notes,
         last_analyzed_at=src.last_analyzed_at,
         analyzed_metadata_modified=src.analyzed_metadata_modified,
+        source_status=(
+            "unavailable" if src.analysis_status == "unavailable" else "available"
+        ),
+        unavailable_since=src.unavailable_since,
     )
 
 
@@ -235,6 +240,8 @@ _SEARCH_INDEX_FIELDS = {
     "license",
     "metadata_modified",
     "last_analyzed_at",
+    "source_status",
+    "unavailable_since",
 }
 
 
@@ -282,15 +289,16 @@ def publish(
     *,
     store: Optional[FirestoreStateStore] = None,
 ) -> dict:
-    """Emit data.json + agent_data.json for each succeeded source and the
+    """Emit data.json + agent_data.json for each succeeded or unavailable
+    source (unavailable sources keep their preserved snapshot page) and the
     merged manifest.json. Returns a small summary dict.
     """
     store = store or FirestoreStateStore()
 
     # First pass: load every successful source, build the un-related shape,
     # ensure each has an embedding cached on its doc.
-    sources: list[SourceRecord] = list(store.iter_succeeded_sources())
-    log.info("publish: %d succeeded source(s)", len(sources))
+    sources: list[SourceRecord] = list(store.iter_publishable_sources())
+    log.info("publish: %d publishable source(s) (succeeded + unavailable)", len(sources))
 
     metas: dict[str, DatasetMeta] = {}
     agents: dict[str, Optional[AgentData]] = {}

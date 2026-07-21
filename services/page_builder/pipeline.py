@@ -34,6 +34,12 @@ from .agent_runner import run_production_session
 log = logging.getLogger("page_builder.pipeline")
 
 
+def _reconcile_due(now: datetime, *, enabled: bool, weekday: int) -> bool:
+    """Weekly reconcile runs only when enabled AND today matches the
+    configured weekday (Python Monday=0 .. Sunday=6)."""
+    return enabled and now.weekday() == weekday
+
+
 async def _build_one(
     src: SourceRecord,
     staging_bucket: str,
@@ -252,6 +258,38 @@ async def run_pipeline(
             "GCS_STAGING_BUCKET must be set for a real pipeline run"
         )
 
+    # [0] weekly reconcile — probe already-published sources and flag those
+    # removed upstream (they vanish from CKAN's list, so the scan below
+    # never revisits them). Gated by RECONCILE_ENABLED + RECONCILE_WEEKDAY
+    # (Asia/Jerusalem), default off / Sunday. Full sweep, no cursor.
+    reconcile_summary = None
+    reconcile_enabled = os.environ.get("RECONCILE_ENABLED", "false").lower() in (
+        "true", "1", "yes",
+    )
+    try:
+        reconcile_weekday = int(os.environ.get("RECONCILE_WEEKDAY", "6"))
+    except ValueError:
+        log.warning("invalid RECONCILE_WEEKDAY=%r — defaulting to 6 (Sunday)",
+                    os.environ.get("RECONCILE_WEEKDAY"))
+        reconcile_weekday = 6
+    try:
+        from zoneinfo import ZoneInfo
+        il_now = datetime.now(ZoneInfo("Asia/Jerusalem"))
+    except Exception:
+        il_now = datetime.now(timezone.utc)
+    if not dry_run and not override_id and _reconcile_due(
+        il_now, enabled=reconcile_enabled, weekday=reconcile_weekday
+    ):
+        from services.scanner.client import CKANClient
+        from . import reconcile as _reconcile
+        log.info("reconcile: due (weekday=%s) — running sweep", reconcile_weekday)
+        try:
+            async with CKANClient(config=config) as _ckan:
+                reconcile_summary = await _reconcile.reconcile_sources(store, _ckan)
+            log.info("reconcile: %s", reconcile_summary)
+        except Exception:
+            log.exception("reconcile sweep failed — continuing with scan/build")
+
     # [1] scan — unless override_id is set (manual single-source invoke)
     scan_summary = None
     if not override_id:
@@ -274,6 +312,7 @@ async def run_pipeline(
         "dry_run": dry_run,
         "selected": [s.id for s in to_process],
         "scan": _scan_summary_dict(scan_summary) if scan_summary else None,
+        "reconcile": reconcile_summary,
     }
 
     if dry_run or not to_process:
