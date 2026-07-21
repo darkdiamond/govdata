@@ -53,7 +53,7 @@ from .schema import AgentData
 
 log = logging.getLogger(__name__)
 
-DEFAULT_MODEL = "minimax/minimax-m3"
+DEFAULT_MODEL = "tencent/hy3"
 SESSIONS_ROOT = Path(os.environ.get("SESSIONS_ROOT", "/tmp/sessions"))
 
 
