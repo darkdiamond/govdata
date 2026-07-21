@@ -72,13 +72,21 @@ would just 403 and drop it.
 """
 from __future__ import annotations
 
+import logging
 from datetime import datetime, timedelta, timezone
 
 from services.shared.firestore import FirestoreStateStore, SourceRecord
 
+log = logging.getLogger(__name__)
+
 DEFAULT_REANALYZE_GAP_DAYS = 30
 DEFAULT_MAX_AGE_DAYS = 365
 DEFAULT_MIN_MODIFIED_FLOOR = datetime(2026, 1, 1, tzinfo=timezone.utc)
+# Runaway guard for the Track-2 scan. `change_status` is sticky, so the
+# candidate stream can approach the whole corpus; the DESC-order age_cutoff
+# break is the real terminator, this only bounds a pathological run (e.g. a
+# floor set so low nothing breaks). Well above the live corpus (~1.2k docs).
+TRACK2_SCAN_CAP = 5000
 
 
 def pick_next(
@@ -128,7 +136,23 @@ def pick_next(
     # daily re-qualify every cooldown period — a full agent run each, for a
     # page that barely changes. Track 1 (never analyzed) is unaffected.
     if reanalyze and len(picks) < n:
-        for src in store.list_changed_sources(limit=max((n - len(picks)) * 4, 16)):
+        # Stream (not a fixed window): a day's daily-appender updates —
+        # recently rebuilt, so under the reanalyze gap — sort ahead of an
+        # older-gap eligible source by `metadata_modified` DESC. A small
+        # `limit` would fill entirely with those ineligible rows and starve
+        # the eligible tail below them. `iter_changed_sources` pages lazily;
+        # the `age_cutoff` break below (DESC order) is the natural terminator,
+        # with TRACK2_SCAN_CAP as a pathological-run backstop.
+        scanned = 0
+        for src in store.iter_changed_sources():
+            scanned += 1
+            if scanned > TRACK2_SCAN_CAP:
+                log.warning(
+                    "track2 scan hit cap (%d) without filling quota "
+                    "(%d/%d picked) — stopping",
+                    TRACK2_SCAN_CAP, len(picks), n,
+                )
+                break
             if src.id in seen:
                 continue
             # A source removed upstream (reconcile flagged it `unavailable`)

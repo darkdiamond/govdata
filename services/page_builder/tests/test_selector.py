@@ -43,8 +43,73 @@ def _track2_src(
 def _store(track2: list[SourceRecord]) -> MagicMock:
     store = MagicMock()
     store.list_never_analyzed.return_value = []
+    store.list_failed_retryable.return_value = []
     store.list_changed_sources.return_value = track2
+    store.iter_changed_sources.side_effect = lambda *a, **k: iter(track2)
     return store
+
+
+class _FakeStore:
+    """Store fake that honours `limit` and DESC ordering on the changed
+    query — a MagicMock returning a fixed list regardless of `limit`
+    can't expose the Track-2 window-truncation bug."""
+
+    def __init__(self, changed: list[SourceRecord]):
+        self._changed = sorted(
+            changed, key=lambda s: s.metadata_modified, reverse=True
+        )
+
+    def list_never_analyzed(self, limit: int = 50) -> list[SourceRecord]:
+        return []
+
+    def list_failed_retryable(
+        self, limit: int = 50, max_attempts: int = 3
+    ) -> list[SourceRecord]:
+        return []
+
+    def list_changed_sources(self, limit: int = 50) -> list[SourceRecord]:
+        return self._changed[:limit]
+
+    def iter_changed_sources(self, batch_size: int = 200):
+        yield from self._changed
+
+
+def _changed_src(
+    dataset_id: str, *, modified: datetime, gap_days: int
+) -> SourceRecord:
+    """A Track-2 candidate whose CKAN version (`modified`) sits `gap_days`
+    past the version its page was built from."""
+    return SourceRecord(
+        id=dataset_id,
+        title="מאגר לדוגמה",
+        metadata_modified=modified,
+        analyzed_metadata_modified=modified - timedelta(days=gap_days),
+        last_analyzed_at=modified - timedelta(days=gap_days),
+        analysis_status="succeeded",
+        change_status="updated",
+    )
+
+
+def test_track2_finds_eligible_behind_many_ineligible_recent_updates():
+    """A day's daily-appender updates (recently rebuilt → small gap →
+    ineligible) sort ahead of an older-gap eligible source. The eligible
+    one must still be selected even though it falls outside the old fixed
+    Track-2 fetch window."""
+    base = datetime(2026, 7, 21, 19, 0, tzinfo=timezone.utc)
+    appenders = [
+        _changed_src(f"appender-{i}", modified=base + timedelta(seconds=i), gap_days=9)
+        for i in range(60)
+    ]
+    # More recent appenders sort first; the eligible source sits below the
+    # 60-row run, past the (n*4)=20-row window the old code fetched.
+    eligible = _changed_src(
+        "eligible-old-gap", modified=base - timedelta(hours=1), gap_days=200
+    )
+    store = _FakeStore(appenders + [eligible])
+    picks = pick_next(
+        store, n=5, min_modified_floor=FLOOR_2025, max_age_days=100000
+    )
+    assert [s.id for s in picks] == ["eligible-old-gap"]
 
 
 def test_track2_skips_source_already_analyzed_at_current_version():
@@ -84,7 +149,7 @@ def test_reanalyze_false_pauses_track2_entirely():
     )
     store = _store([src])
     assert pick_next(store, n=5, reanalyze=False) == []
-    store.list_changed_sources.assert_not_called()
+    store.iter_changed_sources.assert_not_called()
 
 
 def test_reanalyze_false_keeps_track1():
@@ -97,7 +162,7 @@ def test_reanalyze_false_keeps_track1():
     )
     store = MagicMock()
     store.list_never_analyzed.return_value = [never]
-    store.list_changed_sources.return_value = []
+    store.iter_changed_sources.side_effect = lambda *a, **k: iter([])
     picks = pick_next(store, n=5, reanalyze=False)
     assert [s.id for s in picks] == ["brand-new"]
 
@@ -202,7 +267,7 @@ def test_floor_admits_2025_source_when_lowered():
     store = MagicMock()
     store.list_never_analyzed.return_value = [src]
     store.list_failed_retryable.return_value = []
-    store.list_changed_sources.return_value = []
+    store.iter_changed_sources.side_effect = lambda *a, **k: iter([])
     picks = pick_next(
         store, n=5, min_modified_floor=FLOOR_2025, max_age_days=100000
     )
@@ -214,7 +279,7 @@ def test_floor_still_excludes_2024_source():
     store = MagicMock()
     store.list_never_analyzed.return_value = [src]
     store.list_failed_retryable.return_value = []
-    store.list_changed_sources.return_value = []
+    store.iter_changed_sources.side_effect = lambda *a, **k: iter([])
     picks = pick_next(
         store, n=5, min_modified_floor=FLOOR_2025, max_age_days=100000
     )

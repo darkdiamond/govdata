@@ -315,6 +315,23 @@ class FirestoreStateStore:
         )
         return [SourceRecord.from_doc(d) for d in query.stream()]
 
+    def iter_changed_sources(self) -> Iterator[SourceRecord]:
+        """Stream changed sources (change_status in {new, updated}), newest
+        CKAN changes first. Unlike `list_changed_sources`, there is no fixed
+        limit: `stream()` pages lazily, so a caller can scan past a long run
+        of ineligible recent updates (e.g. daily-appender datasets rebuilt
+        within the reanalyze gap) without a small window truncating the
+        eligible tail below them. `change_status` is sticky so the set can be
+        large; callers terminate early — once they pass an age floor or fill
+        their quota — and the DESC order makes that safe."""
+        query = (
+            self.client.collection(SOURCES_COLL)
+            .where(filter=FieldFilter("change_status", "in", ["new", "updated"]))
+            .order_by("metadata_modified", direction=firestore.Query.DESCENDING)
+        )
+        for d in query.stream():
+            yield SourceRecord.from_doc(d)
+
     def list_never_analyzed(self, limit: int = 50) -> list[SourceRecord]:
         query = (
             self.client.collection(SOURCES_COLL)

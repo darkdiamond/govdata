@@ -23,7 +23,7 @@ def test_unavailable_source_not_reselected_in_track2():
     store = MagicMock()
     store.list_never_analyzed.return_value = []
     store.list_failed_retryable.return_value = []
-    store.list_changed_sources.return_value = [src]
+    store.iter_changed_sources.side_effect = lambda *a, **k: iter([src])
 
     picks = selector.pick_next(
         store, n=5, reanalyze=True,
