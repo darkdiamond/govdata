@@ -300,6 +300,17 @@ _TEMPLATE_LEAK_RE = re.compile(
     r"|\{\{\s*[A-Za-z_]\w*\s*:"  # `.format()`-escaped object literal `{{ x:`
 )
 
+# A model's own placeholder convention left unsubstituted: `const c1 =
+# __C1__;`. Unlike the Python-template leak above this is *valid* JS (an
+# undefined-identifier reference), so the syntax/balance checks pass — but
+# the browser throws `ReferenceError: __C1__ is not defined`, killing the
+# whole <script> so no chart initialises. Match ALL-CAPS dunder-wrapped
+# tokens (`__C1__`, `__CHART_DATA__`); real dunder identifiers are lowercase
+# (`__proto__`) and constants like `Number.MAX_SAFE_INTEGER` aren't wrapped
+# in trailing `__`, so neither trips this. Verified zero hits across the
+# whole published corpus.
+_PLACEHOLDER_LEAK_RE = re.compile(r"__[A-Z][A-Z0-9_]*__")
+
 
 def check_unrendered_template(blocks: list[str]) -> None:
     for i, b in enumerate(blocks, 1):
@@ -311,6 +322,18 @@ def check_unrendered_template(blocks: list[str]) -> None:
                 "SyntaxError and no chart initialises. Render the template "
                 "(str.format / f-string) and write the RESULT, not the "
                 "template source.",
+                code=8,
+            )
+        m = _PLACEHOLDER_LEAK_RE.search(b)
+        if m:
+            fail(
+                f"PLACEHOLDER-LEAK: <script> block #{i} references an "
+                f"unsubstituted placeholder token {m.group(0)!r} — a marker "
+                "you meant to replace with the actual data array/object but "
+                "left as a literal. In the browser it throws `ReferenceError: "
+                f"{m.group(0)} is not defined`, killing the whole <script> so "
+                "no chart initialises. Inline the real data in place of the "
+                "placeholder.",
                 code=8,
             )
 

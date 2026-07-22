@@ -945,6 +945,14 @@ HARD CONSTRAINTS
         const sites = [[32.06, 34.78, "מלון התעשייה\n"]];
     `GovMap` sidesteps this entirely for point-set maps; prefer it
     over inlining marker arrays.
+  • Never ship a placeholder token you meant to fill in later. Writing
+    `const c1 = __C1__;` (or any `__NAME__` marker) and planning to
+    substitute the real data "after" leaves an undefined identifier —
+    the browser throws `ReferenceError: __C1__ is not defined` and the
+    whole `<script>` dies, blanking every chart. Inline the actual
+    array/object literal directly.
+      WRONG:  const c1 = __C1__;
+      RIGHT:  const c1 = { labels: ["מטרו","רק\"ל"], values: [182.2, 234.7] };
 
 TERMINATION: Do not end your turn until BOTH output files are written
 AND the CHECK_SCRIPT self-check returns 0. Then end with one short

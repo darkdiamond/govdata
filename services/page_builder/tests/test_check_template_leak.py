@@ -61,6 +61,37 @@ def test_format_escaped_object_fails():
         )
 
 
+# ── __NAME__ placeholder leak (88010ff2 shipped `const c1 = __C1__;`) ──
+# The model used its own placeholder convention for the chart-data JSON and
+# never substituted it. `const c1 = __C1__;` is *valid* JS (an undefined
+# identifier reference), so the syntax/balance checks pass — but the browser
+# throws `ReferenceError: __C1__ is not defined`, killing the whole <script>
+# so no chart initialises.
+def test_underscore_placeholder_fails():
+    with pytest.raises(SystemExit):
+        check.check_unrendered_template(
+            ["""
+  const c1 = __C1__;
+  const chart1 = echarts.init(document.getElementById('chart-type'));
+  chart1.setOption(GovEcharts.option({ series: [{ type: 'bar', data: c1.values }] }));
+"""]
+        )
+
+
+def test_underscore_placeholder_with_underscores_fails():
+    with pytest.raises(SystemExit):
+        check.check_unrendered_template(
+            ["  const data = __CHART_DATA__;\n"]
+        )
+
+
+# ── real dunder identifiers (lowercase) must NOT trip the placeholder rule ──
+def test_lowercase_dunder_passes():
+    check.check_unrendered_template(
+        ["  const p = obj.__proto__;\n  const n = Number.MAX_SAFE_INTEGER;\n"]
+    )
+
+
 # ── legitimate rendered JS must pass ──
 def test_rendered_chart_passes():
     check.check_unrendered_template(
