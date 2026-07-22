@@ -119,6 +119,10 @@ async def _trigger_publish_github(repo: str, workflow: str, branch: str) -> Opti
     def _run() -> Optional[str]:
         import httpx
 
+        # follow_redirects: GitHub answers a renamed repo with a 307 that
+        # preserves the POST method + body. Without this a repo rename
+        # silently breaks the daily publish dispatch (govdata→govil.ai did
+        # exactly that — 307 → logged failure, pages built but not deployed).
         r = httpx.post(
             f"https://api.github.com/repos/{repo}/actions/workflows/{workflow}/dispatches",
             json={"ref": branch},
@@ -128,6 +132,7 @@ async def _trigger_publish_github(repo: str, workflow: str, branch: str) -> Opti
                 "X-GitHub-Api-Version": "2022-11-28",
             },
             timeout=30.0,
+            follow_redirects=True,
         )
         if r.status_code != 204:
             log.error(
@@ -247,7 +252,7 @@ async def run_pipeline(
     # Publish mechanism: "github" (Actions workflow_dispatch, default),
     # "cloudbuild" (legacy trigger, fallback), or "" to disable publishing.
     publish_via = os.environ.get("PUBLISH_VIA", "github").strip().lower()
-    publish_repo = os.environ.get("PUBLISH_GITHUB_REPO", "darkdiamond/govdata")
+    publish_repo = os.environ.get("PUBLISH_GITHUB_REPO", "darkdiamond/govil.ai")
     publish_workflow = os.environ.get("PUBLISH_GITHUB_WORKFLOW", "publish.yml")
     trigger_id = os.environ.get("PUBLISH_TRIGGER_ID", "govdata-publish")
     publish_branch = os.environ.get("PUBLISH_BRANCH", "main")
